@@ -28,6 +28,12 @@ export const constantRoutes = [
         name: 'CreateEvent',
         component: () => import('@/views/createEvent/index'),
         meta: { title: '新建营销事件', icon: 'create' }
+      },
+      {
+        path: 'eventBoard',
+        name: 'EventBoard',
+        component: () => import('@/views/eventBoard/index'),
+        meta: { title: '事件看板', icon: 'user' }
       }]
   },
   // 404 page must be placed at the end !!!

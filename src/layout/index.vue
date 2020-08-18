@@ -1,47 +1,50 @@
 <template>
   <div class="app-wrapper">
-    <navbar/>
+    <navbar />
     <div class="main-container">
-      <shun-sidebar/>
-      <app-main/>
+      <shun-sidebar />
+      <app-main />
     </div>
   </div>
 </template>
 
 <script>
-  import {Navbar, ShunSidebar, AppMain} from './components'
-  import ResizeMixin from './mixin/ResizeHandler'
+import { Navbar, ShunSidebar, AppMain } from './components'
+import ResizeMixin from './mixin/ResizeHandler'
 
-  export default {
-    name: 'Layout',
-    components: {
-      Navbar,
-      ShunSidebar,
-      AppMain
-    },
-    mixins: [ResizeMixin],
-    computed: {
+export default {
+  name: 'Layout',
+  components: {
+    Navbar,
+    ShunSidebar,
+    AppMain
+  },
+  mixins: [ResizeMixin],
+  computed: {
 
-    },
-    methods: {
+  },
+  methods: {
 
-    }
   }
+}
 </script>
 
 <style lang="scss" scoped>
-  @import "~@/styles/mixin.scss";
-  @import "~@/styles/variables.scss";
+@import "~@/styles/mixin.scss";
+@import "~@/styles/variables.scss";
 
-  .app-wrapper {
-    @include clearfix;
-    position: relative;
-    height: 100%;
-    width: 100%;
+.app-wrapper {
+  @include clearfix;
+  position: relative;
+  height: 100%;
+  width: 100%;
 
-    .main-container {
-      height: calc(100% - 60px);
-      display: flex;
+  .main-container {
+    height: calc(100% - 60px);
+    display: flex;
+    ::v-deep .container {
+      width: 100%;
     }
   }
+}
 </style>

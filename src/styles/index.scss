@@ -44,7 +44,7 @@ a:hover {
   text-decoration: none;
 }
 
-div:focus {
+div:focus{
   outline: none;
 }
 
@@ -63,6 +63,12 @@ div:focus {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.elip {  
+  white-space:nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 // main-container global css
