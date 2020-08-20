@@ -51,12 +51,7 @@ export default {
             },
             {
               img: require('../../assets/home/1-2.png'),
-              title: '营销事件看板',
-              desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
-            },
-            {
-              img: require('../../assets/home/1-2.png'),
-              title: '我的营销事件',
+              title: '事件看板',
               desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
             }
           ]

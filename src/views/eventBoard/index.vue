@@ -64,7 +64,7 @@
                    icon="el-icon-search">
           搜索
         </el-button>
-        <el-button icon="el-icon-delete">
+        <el-button icon="el-icon-refresh">
           重置
         </el-button>
       </div>
@@ -77,8 +77,8 @@
           <div slot="label"
                class="tab-label">
             {{ item.name }}
-            <span class="count"
-                  :style="{background:item.color}">{{ item.count }}</span>
+            <div class="count"
+                 :style="{background:item.color}">{{ item.count }}</div>
           </div>
         </el-tab-pane>
       </el-tabs>
@@ -91,14 +91,24 @@
                 :default-sort="{prop: 'date', order: 'descending'}">
         <el-table-column prop="id"
                          label="事件ID"
+                         min-width="100px"
                          sortable />
-        <el-table-column width="280px"
+        <el-table-column min-width="300px"
                          label="状态/名称/起止日期">
           <template slot-scope="scope">
             <div class="name-group">
               <div class="top">
-                <span class="status">进行中</span>
-                <b class="elip">{{ scope.row.name }}</b>
+                <div class="status">进行中</div>
+
+                <el-tooltip class="name"
+                            effect="light"
+                            :content="scope.row.name"
+                            placement="top-start">
+                  <div class="elip blod">
+                    {{ scope.row.name }}
+                  </div>
+                </el-tooltip>
+
               </div>
               <div class="bottom">
                 {{ scope.row.start_time }} - {{ scope.row.end_time }}
@@ -106,24 +116,26 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="推送类型">
+        <el-table-column label="推送类型"
+                         min-width="150px">
           <template slot-scope="scope">
             <div class="td-group">
-              <b class="top">
+              <div class="top blod">
                 规则型
-              </b>
+              </div>
               <div class="bottom">
                 每天09:00
               </div>
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="触达渠道">
+        <el-table-column label="触达渠道"
+                         min-width="150px">
           <template slot-scope="scope">
             <div class="td-group">
-              <b class="top">
+              <div class="top blod">
                 电话营销
-              </b>
+              </div>
               <div class="bottom">
                 电销
               </div>
@@ -132,7 +144,7 @@
         </el-table-column>
         <el-table-column label="最近一次（天）计划触达/目标完成率"
                          sortable
-                         width="300px">
+                         min-width="300px">
           <template slot-scope="scope">
             <div class="main-group">
               <div class="left">
@@ -151,8 +163,8 @@
           </template>
         </el-table-column>
         <el-table-column prop="name"
-                         width="150px"
                          sortable
+                         min-width="200px"
                          label="整体目标完成率">
           <template slot-scope="scope">
             <div class="td-group">
@@ -161,7 +173,9 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作"
+                         fixed="right"
+                         width="280px">
           <template slot-scope="scope">
             <div class="action-group">
               <div class="btn"
@@ -271,12 +285,12 @@ export default {
         {
           name: '进行中',
           count: 25,
-          color: '#52C41A'
+          color: '#61c798'
 
         },
         {
           name: '暂停中',
-          color: '#FAAD14',
+          color: '#f90',
           count: 25
         }, {
           name: '待审批',
@@ -284,7 +298,7 @@ export default {
           count: 25
         }, {
           name: '已结束',
-          color: '#bfbfbf',
+          color: '#aaa',
           count: 25
         }
       ],
@@ -343,6 +357,7 @@ export default {
   flex: 1;
   display: flex;
   flex-direction: column;
+
   .title-container {
     display: flex;
     align-items: center;
@@ -401,13 +416,14 @@ export default {
         color: #fff;
         display: flex;
         align-items: center;
-        border-radius: 10px;
+        border-radius: 2px;
         margin-left: 5px;
       }
     }
 
     .table {
       .name-group {
+        // padding-top: 5px;
         .top {
           display: flex;
           .status {
@@ -421,6 +437,9 @@ export default {
             color: #52c41a;
             margin-right: 5px;
             font-size: 12px;
+          }
+          .name {
+            flex: 1;
           }
         }
       }
