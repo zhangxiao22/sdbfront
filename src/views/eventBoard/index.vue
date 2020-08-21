@@ -285,7 +285,7 @@ export default {
         {
           name: '进行中',
           count: 25,
-          color: '#61c798'
+          color: '#67c23a'
 
         },
         {
@@ -298,7 +298,7 @@ export default {
           count: 25
         }, {
           name: '已结束',
-          color: '#aaa',
+          color: '#909399',
           count: 25
         }
       ],
@@ -410,7 +410,7 @@ export default {
       align-items: center;
 
       .count {
-        height: 16px;
+        height: 20px;
         padding: 0 8px;
         font-size: 10px;
         color: #fff;
