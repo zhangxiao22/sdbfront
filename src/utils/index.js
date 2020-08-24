@@ -45,7 +45,7 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{([ymdhisa])+}/g, (result, key) => {
     const value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value] }
     return value.toString().padStart(2, '0')
   })
   return time_str
@@ -114,4 +114,14 @@ export function param2Obj(url) {
     }
   })
   return obj
+}
+
+export function isNumber(val) {
+  var regPos = / ^\d+$/ // 非负整数
+  var regNeg = /^\-[1-9][0-9]*$/ // 负整数
+  if (regPos.test(val) && regNeg.test(val)) {
+    return true
+  } else {
+    return false
+  }
 }

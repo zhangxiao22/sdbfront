@@ -134,7 +134,7 @@ export default {
       color: initial;
     }
 
-    ::v-deep.el-step__head.is-success {
+    ::v-deep .el-step__head.is-success {
       color: #090;
       .el-step__icon {
         border-radius: 50%;
