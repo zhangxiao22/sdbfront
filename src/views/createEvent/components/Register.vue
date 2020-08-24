@@ -37,10 +37,10 @@
         <el-input v-model="form.desc"
                   type="textarea" />
       </el-form-item>
-      <el-form-item>
+      <!-- <el-form-item>
         <el-button icon="el-icon-refresh"
                    @click="resetForm('form')">重置</el-button>
-      </el-form-item>
+      </el-form-item> -->
 
     </el-form>
   </div>
@@ -129,6 +129,7 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  padding: 50px;
   .reg-form {
     width: 500px;
     margin: 0 auto;

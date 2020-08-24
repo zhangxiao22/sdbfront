@@ -5,8 +5,10 @@
                 finish-status="success"
                 :active="stepActive">
         <el-step title="事件注册"
-                 icon="el-icon-edit-outline"
                  @click.native="handleClick">
+          <div slot="icon">
+            <i class="el-icon-edit-outline" />
+          </div>
           <div slot="description"
                class="register">
             <div v-show="stepDesc.name"
@@ -30,7 +32,13 @@
             </div>
           </div>
         </el-step>
-        <el-step title="步骤 2" />
+        <el-step title="客群配置">
+          <div slot="icon">
+            <svg-icon icon-class="users" />
+          </div>
+
+          <div slot="description">123</div>
+        </el-step>
         <el-step title="步骤 3"
                  description="这是一段很长很长很长的描述性文字" />
         <el-step title="步骤 4"
@@ -41,8 +49,12 @@
     </div>
     <div class="content-container">
       <div class="content">
-        <Register ref="contentRef"
+        <Register v-show="stepActive===0"
+                  ref="contentRef"
                   @renderSteps="renderSteps" />
+        <CustomerGroups v-show="stepActive===1"
+                        ref="contentRef"
+                        @renderSteps="renderSteps" />
       </div>
       <div class="bottom-container">
         <el-button :disabled="preDisabled"
@@ -56,18 +68,19 @@
 </template>
 
 <script>
-import { Register } from './components'
+import { Register, CustomerGroups } from './components'
 
 export default {
   components: {
-    Register
+    Register,
+    CustomerGroups
   },
   data() {
     return {
       stepDesc: {
         time: []
       },
-      stepActive: 0,
+      stepActive: 1,
       preDisabled: false
 
     }
@@ -78,11 +91,12 @@ export default {
     handleClick() {
     },
     next() {
-      this.$refs.contentRef.next(() => {
-        if (this.stepActive < 4) {
-          this.stepActive++
-        }
-      })
+      // this.$refs.contentRef[this.stepActive].next(() => {
+      //   if (this.stepActive < 4) {
+      //     this.stepActive++
+      //   }
+      // })
+      this.stepActive++
     },
     prev() {
       if (this.stepActive > 0) {
@@ -113,6 +127,9 @@ export default {
     background: #fff;
     border-radius: 4px;
     overflow: auto;
+    ::v-deep .el-step__icon.is-text {
+      border: 1px solid;
+    }
     ::v-deep .el-step__description.is-success {
       color: initial;
     }
@@ -199,7 +216,7 @@ export default {
       top: 0;
       bottom: 70px;
       overflow: auto;
-      padding: 50px 20px;
+      // padding: 20px;
     }
     .bottom-container {
       position: absolute;
