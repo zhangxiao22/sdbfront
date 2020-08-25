@@ -82,6 +82,57 @@
                          icon="el-icon-plus"
                          @click="addTarget" />
             </el-form-item>
+            <el-form-item>
+              <div slot="label">
+                <Info content="维度不能超过10个" />
+                维度补充：
+              </div>
+              <el-select v-model="form.paramValue"
+                         style="width:100%;"
+                         multiple
+                         filterable
+                         placeholder="请选择">
+                <el-option v-for="item in paramOpt"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+
+            </el-form-item>
+            <el-divider />
+            <el-form-item label="对照组：">
+              <el-switch v-model="form.contrast"
+                         active-text="开"
+                         inactive-text="关" />
+            </el-form-item>
+            <el-form-item label="抽样方式：">
+              <el-radio-group v-model="form.sample">
+                <el-radio label="1">随机抽样</el-radio>
+                <el-radio disabled
+                          label="2">分层抽样</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="分群：">
+              <el-switch v-model="form.group"
+                         active-text="是"
+                         inactive-text="否" />
+            </el-form-item>
+            <el-tabs v-model="form.labelIndex"
+                     type="card"
+                     addable
+                     @edit="handleTabsEdit">
+              <el-tab-pane v-for="(item, index) in form.labelTabs"
+                           :key="index"
+                           :closable="item.closable"
+                           :label="item.title"
+                           :name="item.name">
+                <!-- <el-form-item label="群组名称：">
+                  <el-input v-model="item.title" />
+                  {{ index }}
+                </el-form-item> -->
+                {{ index }}
+              </el-tab-pane>
+            </el-tabs>
           </el-form>
         </div>
       </el-tab-pane>
@@ -95,8 +146,11 @@
 </template>
 
 <script>
-
+import Info from '@/components/Info'
 export default {
+  components: {
+    Info
+  },
   data() {
     return {
       age: '',
@@ -109,7 +163,25 @@ export default {
           targetSelect: '',
           targetValue: '',
           unit: ''
-        }]
+        }],
+        paramValue: '',
+        contrast: true,
+        sample: '1',
+        group: true,
+        labelIndex: '1',
+        labelTabs: [
+          {
+            title: 'Tab 1',
+            name: '1',
+            closable: false
+
+          }, {
+            title: 'Tab 2',
+            name: '2',
+            closable: false
+          }
+        ],
+        labelTabsCounts: 2
       },
       targetForm: {},
       rules: {},
@@ -137,6 +209,24 @@ export default {
           value: '4',
           disabled: false
         }
+      ],
+      paramOpt: [
+        {
+          label: '性别',
+          value: '1'
+        },
+        {
+          label: '年龄',
+          value: '2'
+        },
+        {
+          label: '年龄2',
+          value: '3'
+        },
+        {
+          label: '年龄3',
+          value: '4'
+        }
       ]
 
     }
@@ -148,14 +238,6 @@ export default {
   },
 
   methods: {
-    // testTargetValue(rule, value, callback) {
-    //   console.log(value)
-    //   if (value === '') {
-    //     callback(new Error('目标值输入不正常'))
-    //   } else {
-    //     callback()
-    //   }
-    // },
     next(cb) {
 
     },
@@ -190,7 +272,41 @@ export default {
         n.disabled = temp.includes(n.value)
       })
     },
-    checkTargetValue() { }
+    handleTabsEdit(targetName, action) {
+      // editableTabsValue: '2', this.form.labelIndex
+      // tabIndex: 2  this.form.labelTabsCounts
+
+      // this.form.labelTabs
+
+      console.log(123)
+
+      if (action === 'add') {
+        const newTabName = ++this.form.labelTabsCounts + ''
+        this.form.labelTabs.push({
+          title: 'New Tab' + newTabName,
+          name: newTabName,
+          closable: true
+        })
+        this.form.labelIndex = newTabName
+      }
+      if (action === 'remove') {
+        const tabs = this.form.labelTabs
+        let activeName = this.form.labelIndex
+        if (activeName === targetName) {
+          tabs.forEach((tab, index) => {
+            if (tab.name === targetName) {
+              const nextTab = tabs[index + 1] || tabs[index - 1]
+              if (nextTab) {
+                activeName = nextTab.name
+              }
+            }
+          })
+        }
+
+        this.form.labelIndex = activeName
+        this.form.labelTabs = tabs.filter(tab => tab.name !== targetName)
+      }
+    }
 
   }
 }

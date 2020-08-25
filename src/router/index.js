@@ -34,7 +34,14 @@ export const constantRoutes = [
         name: 'EventBoard',
         component: () => import('@/views/eventBoard/index'),
         meta: { title: '事件看板', icon: 'users' }
-      }]
+      },
+      {
+        path: 'eventDetail',
+        name: 'EventDetail',
+        component: () => import('@/views/eventDetail/index'),
+        meta: { title: '事件详情', hide: true }
+      }
+    ]
   },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }

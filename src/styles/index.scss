@@ -44,7 +44,13 @@ a:hover {
   text-decoration: none;
 }
 
-.blod {
+ul,li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.bold {
   font-weight: bold;
 }
 
@@ -78,6 +84,12 @@ div:focus{
 // main-container global css
 .app-container {
   padding: 20px;
+}
+
+.shun-card {
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(0,0,0,.01);
+  background-color: #fff;
 }
 
 

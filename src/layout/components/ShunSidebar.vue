@@ -1,8 +1,8 @@
 <template>
   <div class="sidebar-container">
-    <template v-for="item of menu">
-
+    <template v-for="(item,i) of menu">
       <el-tooltip v-if="item.type === 'icon'"
+                  :key="i"
                   class="item"
                   effect="light"
                   :content="item.title"
@@ -15,6 +15,7 @@
       </el-tooltip>
 
       <div v-else
+           :key="i"
            class="line" />
     </template>
 
@@ -66,18 +67,20 @@ export default {
         if (n.path === '/') {
           n.children.forEach((m, j) => {
             // console.log(m)
-            this.menu.push({
-              type: 'icon',
-              path: m.path,
-              title: m.meta.title,
-              name: m.name,
-              icon: m.meta.icon,
-              active: this.$route.name === m.name
-            })
-            if (m.meta.line) {
+            if (!m.meta.hide) {
               this.menu.push({
-                type: 'line'
+                type: 'icon',
+                path: m.path,
+                title: m.meta.title,
+                name: m.name,
+                icon: m.meta.icon,
+                active: this.$route.name === m.name
               })
+              if (m.meta.line) {
+                this.menu.push({
+                  type: 'line'
+                })
+              }
             }
           })
         }

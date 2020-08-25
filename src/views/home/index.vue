@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container shun-card">
     <div v-for="(box,pi) of cardList"
          :key="pi"
          class="box">
@@ -159,7 +159,6 @@ export default {
 
 .container {
   padding: 28px;
-  background: #fff;
 
   .box {
     margin-bottom: 28px;

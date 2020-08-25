@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="steps-container">
+    <div class="steps-container shun-card">
       <el-steps direction="vertical"
                 finish-status="success"
                 :active="stepActive">
@@ -47,7 +47,7 @@
                  description="这是一段很长很长很长的描述性文字" />
       </el-steps>
     </div>
-    <div class="content-container">
+    <div class="content-container shun-card">
       <div class="content">
         <Register v-show="stepActive===0"
                   ref="contentRef"
@@ -124,8 +124,6 @@ export default {
     top: 0;
     bottom: 0;
     padding: 20px;
-    background: #fff;
-    border-radius: 4px;
     overflow: auto;
     ::v-deep .el-step__icon.is-text {
       border: 1px solid;
@@ -202,8 +200,6 @@ export default {
     }
   }
   .content-container {
-    background: #fff;
-    border-radius: 4px;
     position: absolute;
     left: 296px;
     right: 0;

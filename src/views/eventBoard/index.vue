@@ -31,7 +31,7 @@
         </el-select>
       </div>
 
-      <div class="filter-item">
+      <!-- <div class="filter-item">
         <div class="label">触达渠道：</div>
         <el-select v-model="value3"
                    clearable
@@ -41,7 +41,7 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-      </div>
+      </div> -->
       <div class="filter-item">
         <div class="label">事件名称：</div>
         <el-input v-model="input1"
@@ -70,7 +70,7 @@
       </div>
 
     </div>
-    <div class="table-container">
+    <div class="table-container shun-card">
       <el-tabs v-model="activeName">
         <el-tab-pane v-for="item of tabList"
                      :key="item.value">
@@ -94,21 +94,21 @@
                          min-width="100px"
                          sortable />
         <el-table-column min-width="300px"
-                         label="状态/名称/起止日期">
+                         style="cursor:pointer;"
+                         label="状态/名称/起止日期"
+                         :filters="[{text: '状态1', value: '1'}, {text: '状态2', value: '2'}, {text: '状态3', value: '3'}, {text: '状态4', value: '4'}]">
           <template slot-scope="scope">
             <div class="name-group">
               <div class="top">
                 <div class="status">进行中</div>
-
-                <el-tooltip class="name"
-                            effect="light"
+                <el-tooltip effect="light"
                             :content="scope.row.name"
                             placement="top-start">
-                  <div class="elip blod">
+                  <div class="name elip bold"
+                       @click="eventDetail(scope.row.id)">
                     {{ scope.row.name }}
                   </div>
                 </el-tooltip>
-
               </div>
               <div class="bottom">
                 {{ scope.row.start_time }} - {{ scope.row.end_time }}
@@ -120,7 +120,7 @@
                          min-width="150px">
           <template slot-scope="scope">
             <div class="td-group">
-              <div class="top blod">
+              <div class="top bold">
                 规则型
               </div>
               <div class="bottom">
@@ -133,7 +133,7 @@
                          min-width="150px">
           <template slot-scope="scope">
             <div class="td-group">
-              <div class="top blod">
+              <div class="top bold">
                 电话营销
               </div>
               <div class="bottom">
@@ -340,6 +340,13 @@ export default {
   },
   watch: {},
   methods: {
+    eventDetail(id) {
+      this.$router.push({
+        path: '/eventDetail', query: {
+          id
+        }
+      })
+    },
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
     },
@@ -361,7 +368,6 @@ export default {
   .title-container {
     display: flex;
     align-items: center;
-    padding: 0 8px;
 
     .title {
       font-size: 20px;
@@ -397,8 +403,6 @@ export default {
   }
   .table-container {
     flex: 1;
-    background: #fff;
-    border-radius: 4px;
     margin-top: 16px;
     padding: 6px 16px 16px;
 
@@ -440,6 +444,8 @@ export default {
           }
           .name {
             flex: 1;
+            color: $blue;
+            cursor: pointer;
           }
         }
       }

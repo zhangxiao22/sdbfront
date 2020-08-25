@@ -53,4 +53,14 @@
   margin-left: 20px;
 }
 
+//.el-divider
+.el-divider {
+  background: #f0f2f5;
+}
 
+//table
+.el-table__column-filter-trigger i {
+  transform: scale(1);
+  margin-left: 5px;
+  font-weight: bold;
+}
