@@ -15,7 +15,8 @@
             <div slot="tip"
                  class="el-upload__tip">
               只能上传xls/cvs文件
-              <el-link type="primary">模版下载</el-link>
+              <el-link type="primary"
+                       @click="download">模版下载</el-link>
               <!-- <a class="download">模版下载</a> -->
             </div>
           </el-upload>
@@ -68,10 +69,10 @@
                          class="center-center">{{ targetItem.unit }}</div>
                   </el-input>
                 </el-form-item>
-                <i class="el-icon-delete delete"
+                <i v-if="form.target.length > 1"
+                   class="el-icon-delete delete"
                    @click="delTargetItem(i)" />
               </div>
-
               <!-- <el-form-item
                             class="target-item">
 
@@ -240,6 +241,9 @@ export default {
   methods: {
     next(cb) {
 
+    },
+    download() {
+      console.log(123)
     },
     addTarget() {
       this.form.target.push({

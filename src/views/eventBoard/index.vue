@@ -7,69 +7,58 @@
         新建营销事件
       </el-button>
     </div>
-    <div class="filter-container">
-      <div class="filter-item">
-        <div class="label">事件类型：</div>
-        <el-select v-model="value1"
-                   clearable
-                   placeholder="请选择">
-          <el-option v-for="item in options1"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-      </div>
-      <div class="filter-item">
-        <div class="label">创建人：</div>
-        <el-select v-model="value2"
-                   clearable
-                   placeholder="请选择">
-          <el-option v-for="item in options2"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-      </div>
+    <div class="filter-container-box">
+      <el-form :inline="true"
+               :model="filterForm"
+               class="filter-container">
+        <el-form-item label="事件名称：">
+          <el-input v-model="filterForm.value3"
+                    style="width:300px"
+                    placeholder="搜索事件名称"
+                    clearable
+                    prefix-icon="el-icon-search" />
+        </el-form-item>
+        <el-form-item label="事件类型：">
+          <el-select v-model="filterForm.value1"
+                     clearable
+                     placeholder="请选择">
+            <el-option v-for="item in options1"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="创建人：">
+          <el-select v-model="filterForm.value2"
+                     clearable
+                     placeholder="请选择">
+            <el-option v-for="item in options2"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
 
-      <!-- <div class="filter-item">
-        <div class="label">触达渠道：</div>
-        <el-select v-model="value3"
-                   clearable
-                   placeholder="请选择">
-          <el-option v-for="item in options3"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-      </div> -->
-      <div class="filter-item">
-        <div class="label">事件名称：</div>
-        <el-input v-model="input1"
-                  style="width:400px"
-                  placeholder="搜索事件名称"
-                  clearable
-                  prefix-icon="el-icon-search" />
-      </div>
-      <div class="filter-item">
-        <div class="label"> 起止日期：</div>
-        <el-date-picker v-model="value4"
-                        type="datetimerange"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期" />
-      </div>
+        <el-form-item label="起止日期：">
+          <el-date-picker v-model="filterForm.value4"
+                          type="datetimerange"
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期" />
+        </el-form-item>
+        <el-form-item class="filter-item-end">
+          <el-button type="primary"
+                     icon="el-icon-search">
+            搜索
+          </el-button>
+          <el-button icon="el-icon-refresh">
+            重置
+          </el-button>
+        </el-form-item>
 
-      <div class="filter-item-end">
-        <el-button type="primary"
-                   icon="el-icon-search">
-          搜索
-        </el-button>
-        <el-button icon="el-icon-refresh">
-          重置
-        </el-button>
-      </div>
-
+      </el-form>
     </div>
+
     <div class="table-container shun-card">
       <el-tabs v-model="activeName">
         <el-tab-pane v-for="item of tabList"
@@ -94,7 +83,6 @@
                          min-width="100px"
                          sortable />
         <el-table-column min-width="300px"
-                         style="cursor:pointer;"
                          label="状态/名称/起止日期"
                          :filters="[{text: '状态1', value: '1'}, {text: '状态2', value: '2'}, {text: '状态3', value: '3'}, {text: '状态4', value: '4'}]">
           <template slot-scope="scope">
@@ -226,7 +214,7 @@ export default {
           label: '事件类型5'
         }
       ],
-      value1: '',
+
       options2: [
         {
           value: '1',
@@ -249,7 +237,7 @@ export default {
           label: '创建人5'
         }
       ],
-      value2: '',
+
       options3: [
         {
           value: '1',
@@ -272,9 +260,13 @@ export default {
           label: '触达渠道5'
         }
       ],
-      value3: '',
-      input1: '',
-      value4: '',
+
+      filterForm: {
+        value1: '',
+        value2: '',
+        value3: '',
+        value4: ''
+      },
       activeName: '0',
       tabList: [
         {
@@ -379,103 +371,92 @@ export default {
       margin-left: 12px;
     }
   }
-  .filter-container {
-    margin-top: 5px;
-    display: flex;
-    flex-wrap: wrap;
-    margin-left: -30px;
-
-    .filter-item {
+  .filter-container-box {
+    overflow: hidden;
+    .filter-container {
       margin-top: 20px;
-      margin-left: 30px;
-      display: flex;
-      align-items: center;
-
-      .label {
-        font-size: 14px;
+      margin-right: -20px;
+      overflow-x: hidden;
+      .filter-item-end {
+        float: right;
       }
-    }
-
-    .filter-item-end {
-      margin-left: auto;
-      margin-top: 20px;
     }
   }
-  .table-container {
-    flex: 1;
-    margin-top: 16px;
-    padding: 6px 16px 16px;
+}
+.table-container {
+  flex: 1;
+  margin-top: 16px;
+  padding: 6px 16px 16px;
 
-    ::v-deep .el-tabs__nav-wrap::after {
-      content: none;
-    }
-    .tab-label {
+  ::v-deep .el-tabs__nav-wrap::after {
+    content: none;
+  }
+  .tab-label {
+    display: flex;
+    align-items: center;
+
+    .count {
+      height: 20px;
+      padding: 0 8px;
+      font-size: 10px;
+      color: #fff;
       display: flex;
       align-items: center;
+      border-radius: 2px;
+      margin-left: 5px;
+    }
+  }
 
-      .count {
-        height: 20px;
-        padding: 0 8px;
-        font-size: 10px;
-        color: #fff;
+  .table {
+    .name-group {
+      // padding-top: 5px;
+      .top {
         display: flex;
-        align-items: center;
-        border-radius: 2px;
-        margin-left: 5px;
+        .status {
+          background: #f6ffed;
+          border: 1px solid #b7eb8f;
+          border-radius: 2px;
+          border-radius: 2px;
+          width: 52px;
+          height: 22px;
+          @include center-center;
+          color: #52c41a;
+          margin-right: 5px;
+          font-size: 12px;
+        }
+        .name {
+          flex: 1;
+          color: $blue;
+          cursor: pointer;
+        }
       }
     }
-
-    .table {
-      .name-group {
-        // padding-top: 5px;
-        .top {
-          display: flex;
-          .status {
-            background: #f6ffed;
-            border: 1px solid #b7eb8f;
-            border-radius: 2px;
-            border-radius: 2px;
-            width: 52px;
-            height: 22px;
-            @include center-center;
-            color: #52c41a;
-            margin-right: 5px;
-            font-size: 12px;
-          }
-          .name {
-            flex: 1;
-            color: $blue;
-            cursor: pointer;
-          }
+    .main-group {
+      display: flex;
+      .left {
+        font-size: 20px;
+        .unit {
+          font-size: 12px;
         }
       }
-      .main-group {
+      .right {
+        margin-left: 40px;
+        font-size: 18px;
         display: flex;
-        .left {
-          font-size: 20px;
-          .unit {
-            font-size: 12px;
-          }
-        }
-        .right {
-          margin-left: 40px;
-          font-size: 18px;
-          display: flex;
-          align-items: center;
-        }
+        align-items: center;
       }
-      .action-group {
-        display: flex;
-        flex-wrap: wrap;
-        .btn {
-          width: 40px;
-          height: 30px;
-          cursor: pointer;
-          @include center-center;
-          margin-right: 10px;
-          &:hover {
-            opacity: 0.8;
-          }
+    }
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      .btn {
+        width: 40px;
+        height: 30px;
+        cursor: pointer;
+        @include center-center;
+        margin-right: 10px;
+        &:hover {
+          opacity: 0.8;
         }
       }
     }
