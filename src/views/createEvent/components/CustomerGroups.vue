@@ -132,9 +132,9 @@
                              :closable="item.closable"
                              :label="item.title"
                              :name="item.name">
-                  <el-form-item label="群组名称："
-                                label-position="top">
+                  <el-form-item label="群组名称：">
                     <el-input v-model="item.title"
+                              style="width:300px"
                               :disabled="!item.closable"
                               placeholder="请输入群组名称" />
                   </el-form-item>
