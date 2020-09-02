@@ -33,7 +33,7 @@ export const constantRoutes = [
         path: 'eventBoard',
         name: 'EventBoard',
         component: () => import('@/views/eventBoard/index'),
-        meta: { title: '事件看板', icon: 'users' }
+        meta: { title: '事件看板', icon: 'list' }
       },
       {
         path: 'eventDetail',

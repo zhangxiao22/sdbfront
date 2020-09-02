@@ -16,7 +16,7 @@
             <el-tag v-show="stepDesc.type"
                     class="item"
                     size="mini"
-                    type="success">{{ stepDesc.type }}</el-tag>
+                    type="warning">{{ stepDesc.type }}</el-tag>
             <div v-show="stepDesc.time.length"
                  class="item time-group"
                  style="display:flex;">
@@ -37,7 +37,14 @@
             <svg-icon icon-class="users" />
           </div>
 
-          <div slot="description">123</div>
+          <div slot="description">
+            <div v-show="stepDesc.customerCount"
+                 class="customer-count">
+              <svg-icon style="font-size:18px;margin-right:5px;"
+                        icon-class="group" />
+              {{ parseInt(stepDesc.customerCount).toLocaleString() }}
+            </div>
+          </div>
         </el-step>
         <el-step title="步骤 3"
                  description="这是一段很长很长很长的描述性文字" />
@@ -49,12 +56,15 @@
     </div>
     <div class="content-container shun-card">
       <div class="content">
-        <Register v-show="stepActive===0"
+        <component :is="component[stepActive].type"
+                   :ref="component[stepActive].ref"
+                   @renderSteps="renderSteps" />
+        <!-- <Register v-show="stepActive===0"
                   ref="contentRef"
                   @renderSteps="renderSteps" />
         <CustomerGroups v-show="stepActive===1"
                         ref="contentRef"
-                        @renderSteps="renderSteps" />
+                        @renderSteps="renderSteps" /> -->
       </div>
       <div class="bottom-container">
         <el-button :disabled="preDisabled"
@@ -77,8 +87,21 @@ export default {
   },
   data() {
     return {
+      component: [
+        {
+          type: 'Register',
+          ref: 'regRef'
+        },
+        {
+          type: 'CustomerGroups',
+          ref: 'customerRef'
+        }
+      ],
       stepDesc: {
-        time: []
+        name: '',
+        type: '',
+        time: [],
+        customerCount: ''
       },
       stepActive: 1,
       preDisabled: false
@@ -198,10 +221,15 @@ export default {
         }
       }
     }
+    .customer-count {
+      display: flex;
+      align-items: center;
+      color: $blue;
+    }
   }
   .content-container {
     position: absolute;
-    left: 296px;
+    left: 290px;
     right: 0;
     bottom: 0;
     top: 0;
@@ -220,7 +248,7 @@ export default {
       left: 0;
       right: 0;
       height: 70px;
-      border-top: 1px solid #dcdfe6;
+      border-top: 1px solid #f0f2f5;
       @include center-center;
     }
   }

@@ -26,23 +26,27 @@
                    label-width="100px"
                    class="reg-form">
             <el-form-item label="客户数量：">
-              {{ form.customerNumber }}
+              {{ parseInt(form.customerCount).toLocaleString() }}
             </el-form-item>
             <el-form-item label="上传时间：">
               {{ form.updateTime }}
             </el-form-item>
             <el-form-item class="target-form-item"
-                          label="目标设置：">
+                          label="目标设置："
+                          prop="target"
+                          :rules="{
+                            required: true
+                          }">
               <div v-for="(targetItem,i) of form.target"
-                   :key="i "
+                   :key="i"
                    class="target-item">
                 <el-form-item :prop="'target.'+i+'.targetSelect'"
                               :rules="{
                                 required: true, message: '请选择目标名称', trigger: 'change'
                               }">
                   <el-select v-model="targetItem.targetSelect"
-                             style="width:180px;"
                              placeholder="请选择目标名称"
+                             class="target-item-input"
                              @change="selectTarget($event,i)">
                     <el-option v-for="optItem of targetOpt"
                                :key="optItem.value"
@@ -52,18 +56,16 @@
                   </el-select>
                 </el-form-item>
                 <span style="margin:0 10px;">:</span>
-
                 <el-form-item :prop="'target.'+i+'.targetValue'"
                               :rules="{
                                 required: true, message: '请输入正确的目标值', trigger: 'blur'
                               }">
                   <el-input v-model.number="targetItem.targetValue"
-                            style="width:180px;"
                             :disabled="!targetItem.targetSelect"
                             type="number"
                             autocomplete="off"
                             placeholder="请输入目标值"
-                            class="traget-input-with-select">
+                            class="target-item-input">
                     <div slot="suffix"
                          style="height:100%;"
                          class="center-center">{{ targetItem.unit }}</div>
@@ -73,12 +75,8 @@
                    class="el-icon-delete delete"
                    @click="delTargetItem(i)" />
               </div>
-              <!-- <el-form-item
-                            class="target-item">
 
-              </el-form-item> -->
-
-              <el-button v-show="form.target.length < targetOpt.length "
+              <el-button v-if="form.target.length < targetOpt.length "
                          class="add"
                          icon="el-icon-plus"
                          @click="addTarget" />
@@ -92,7 +90,7 @@
                          style="width:100%;"
                          multiple
                          filterable
-                         placeholder="请选择">
+                         placeholder="请搜索选择">
                 <el-option v-for="item in paramOpt"
                            :key="item.value"
                            :label="item.label"
@@ -105,6 +103,14 @@
               <el-switch v-model="form.contrast"
                          active-text="开"
                          inactive-text="关" />
+              <el-input-number v-model="form.contrastValue"
+                               :disabled="!form.contrast"
+                               style="margin-left:20px;"
+                               controls-position="right"
+                               :step="5"
+                               :min="1"
+                               :max="30" />
+              %
             </el-form-item>
             <el-form-item label="抽样方式：">
               <el-radio-group v-model="form.sample">
@@ -114,26 +120,29 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="分群：">
-              <el-switch v-model="form.group"
+              <!-- <el-switch v-model="form.group"
                          active-text="是"
-                         inactive-text="否" />
+                         inactive-text="否" /> -->
+              <el-tabs v-model="form.labelIndex"
+                       type="card"
+                       addable
+                       @edit="handleTabsEdit">
+                <el-tab-pane v-for="item of form.labelTabs"
+                             :key="item.name"
+                             :closable="item.closable"
+                             :label="item.title"
+                             :name="item.name">
+                  <el-form-item label="群组名称："
+                                label-position="top">
+                    <el-input v-model="item.title"
+                              :disabled="!item.closable"
+                              placeholder="请输入群组名称" />
+                  </el-form-item>
+                  <Group />
+                </el-tab-pane>
+              </el-tabs>
             </el-form-item>
-            <el-tabs v-model="form.labelIndex"
-                     type="card"
-                     addable
-                     @edit="handleTabsEdit">
-              <el-tab-pane v-for="(item, index) in form.labelTabs"
-                           :key="index"
-                           :closable="item.closable"
-                           :label="item.title"
-                           :name="item.name">
-                <!-- <el-form-item label="群组名称：">
-                  <el-input v-model="item.title" />
-                  {{ index }}
-                </el-form-item> -->
-                {{ index }}
-              </el-tab-pane>
-            </el-tabs>
+
           </el-form>
         </div>
       </el-tab-pane>
@@ -148,17 +157,21 @@
 
 <script>
 import Info from '@/components/Info'
+import Group from './Group'
 export default {
+  name: 'CustomerGroups',
   components: {
-    Info
+    Info, Group
   },
   data() {
     return {
+      //
+
       age: '',
       activeName: '1',
       form: {
         fileName: 'dsafdasfasd.ss',
-        customerNumber: '1000',
+        customerCount: 1234566,
         updateTime: '2020-09-09 09:09:09',
         target: [{
           targetSelect: '',
@@ -167,25 +180,28 @@ export default {
         }],
         paramValue: '',
         contrast: true,
+        contrastValue: 5,
         sample: '1',
         group: true,
-        labelIndex: '1',
-        labelTabs: [
-          {
-            title: 'Tab 1',
-            name: '1',
-            closable: false
 
-          }, {
-            title: 'Tab 2',
-            name: '2',
-            closable: false
-          }
-        ],
-        labelTabsCounts: 2
+        // editableTabsValue
+        // 值
+        labelIndex: '1',
+        // editableTabs
+        labelTabs: [{
+          title: '其他',
+          name: '1',
+          content: 'Tab 1 content',
+          closable: false
+        }],
+        // tabIndex
+        // 用于计数 累加
+        labelTabsCounts: 1
       },
       targetForm: {},
-      rules: {},
+      rules: {
+
+      },
 
       targetOpt: [
         {
@@ -235,7 +251,19 @@ export default {
   computed: {
   },
   watch: {
-
+    form: {
+      handler(newVal, oldVal) {
+        // console.log(newVal, '??')
+        const data = {
+          customerCount: 0
+        }
+        data.customerCount = newVal.customerCount
+        console.log(data)
+        this.$emit('renderSteps', data)
+      },
+      deep: true,
+      immediate: true
+    }
   },
 
   methods: {
@@ -277,18 +305,12 @@ export default {
       })
     },
     handleTabsEdit(targetName, action) {
-      // editableTabsValue: '2', this.form.labelIndex
-      // tabIndex: 2  this.form.labelTabsCounts
-
-      // this.form.labelTabs
-
-      console.log(123)
-
       if (action === 'add') {
         const newTabName = ++this.form.labelTabsCounts + ''
         this.form.labelTabs.push({
-          title: 'New Tab' + newTabName,
+          title: '新群组' + newTabName,
           name: newTabName,
+          content: 'New Tab content',
           closable: true
         })
         this.form.labelIndex = newTabName
@@ -339,13 +361,19 @@ export default {
       }
     }
     .reg-form {
-      width: 515px;
-      margin: 10px auto 0;
+      // width: 800px;
+      // margin: 10px auto 0;
       .target-form-item {
+        width: 600px;
         .target-item {
-          // margin-bottom: 18px;
           display: flex;
-          // align-items: center;
+          position: relative;
+          .el-form-item {
+            flex: 1;
+          }
+          .target-item-input {
+            width: 100%;
+          }
           .delete {
             color: $red;
             display: inline-block;
@@ -355,6 +383,9 @@ export default {
             margin-left: 10px;
             font-size: 18px;
             line-height: 32px;
+            position: absolute;
+            right: -30px;
+            top: 0;
             &:hover {
               opacity: 0.8;
             }
@@ -362,7 +393,6 @@ export default {
         }
         .add {
           width: 100%;
-          width: calc(100% - 30px);
           border-style: dashed;
         }
       }
