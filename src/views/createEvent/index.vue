@@ -46,8 +46,8 @@
             </div>
           </div>
         </el-step>
-        <el-step title="步骤 3"
-                 description="这是一段很长很长很长的描述性文字" />
+        <el-step title="策略配置"
+                 description="策略配置描述" />
         <el-step title="步骤 4"
                  description="这是一段很长很长很长的描述性文字" />
         <el-step title="步骤 5"
@@ -78,12 +78,13 @@
 </template>
 
 <script>
-import { Register, CustomerGroups } from './components'
+import { Register, CustomerGroups, Ploy } from './components'
 
 export default {
   components: {
     Register,
-    CustomerGroups
+    CustomerGroups,
+    Ploy
   },
   data() {
     return {
@@ -95,6 +96,10 @@ export default {
         {
           type: 'CustomerGroups',
           ref: 'customerRef'
+        },
+        {
+          type: 'Ploy',
+          ref: 'ployRef'
         }
       ],
       stepDesc: {
@@ -103,7 +108,7 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 1,
+      stepActive: 2,
       preDisabled: false
 
     }

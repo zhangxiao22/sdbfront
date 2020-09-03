@@ -138,6 +138,13 @@
                               :disabled="!item.closable"
                               placeholder="请输入群组名称" />
                   </el-form-item>
+                  <el-form-item label="群组描述：">
+                    <el-input v-model="item.desc"
+                              style="width:300px"
+                              type="textarea"
+                              :autosize="{ minRows: 2, maxRows: 4}"
+                              placeholder="请输入群组描述" />
+                  </el-form-item>
                   <Group />
                 </el-tab-pane>
               </el-tabs>
@@ -190,6 +197,7 @@ export default {
         // editableTabs
         labelTabs: [{
           title: '其他',
+          desc: '',
           name: '1',
           content: 'Tab 1 content',
           closable: false
@@ -309,6 +317,7 @@ export default {
         const newTabName = ++this.form.labelTabsCounts + ''
         this.form.labelTabs.push({
           title: '新群组' + newTabName,
+          desc: '',
           name: newTabName,
           content: 'New Tab content',
           closable: true

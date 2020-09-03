@@ -40,6 +40,12 @@ export const constantRoutes = [
         name: 'EventDetail',
         component: () => import('@/views/eventDetail/index'),
         meta: { title: '事件详情', hide: true }
+      },
+      {
+        path: 'product',
+        name: 'Product',
+        component: () => import('@/views/product/index'),
+        meta: { title: '产品库', icon: 'list' }
       }
     ]
   },

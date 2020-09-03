@@ -52,6 +52,7 @@ export default {
             {
               img: require('../../assets/home/1-2.png'),
               title: '事件看板',
+              path: '/eventBoard',
               desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
             }
           ]
@@ -72,7 +73,8 @@ export default {
             {
               img: require('../../assets/home/1-2.png'),
               title: '产品库',
-              desc: ''
+              desc: '',
+              path: '/product'
             },
             {
               img: require('../../assets/home/1-2.png'),

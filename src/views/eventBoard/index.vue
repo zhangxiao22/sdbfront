@@ -7,7 +7,7 @@
         新建营销事件
       </el-button>
     </div>
-    <div class="filter-container-box">
+    <div class="filter-container-box shun-card">
       <el-form :inline="true"
                :model="filterForm"
                class="filter-container">
@@ -76,8 +76,8 @@
                 class="table"
                 size="medium"
                 stripe
-                style="width: 100%"
-                :default-sort="{prop: 'date', order: 'descending'}">
+                max-height="500"
+                style="width: 100%">
         <el-table-column prop="id"
                          label="事件ID"
                          min-width="100px"
@@ -310,7 +310,8 @@ export default {
           percent: '0.33',
           p_1: '0.7',
           p_2: '0.66'
-        }, {
+        },
+        {
           id: '3333',
           name: '少儿医疗保险精准营销计划2',
           start_time: '2020-03-03 00:00',
@@ -360,6 +361,7 @@ export default {
   .title-container {
     display: flex;
     align-items: center;
+    margin-bottom: 16px;
 
     .title {
       font-size: 20px;
@@ -372,6 +374,8 @@ export default {
     }
   }
   .filter-container-box {
+    margin-bottom: 10px;
+    padding: 0 16px;
     overflow: hidden;
     .filter-container {
       margin-top: 20px;
@@ -385,7 +389,6 @@ export default {
 }
 .table-container {
   flex: 1;
-  margin-top: 16px;
   padding: 6px 16px 16px;
 
   ::v-deep .el-tabs__nav-wrap::after {

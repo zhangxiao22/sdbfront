@@ -31,6 +31,10 @@ html {
   box-sizing: inherit;
 }
 
+*:focus {
+  outline: none;
+}
+
 a:focus,
 a:active {
   outline: none;
