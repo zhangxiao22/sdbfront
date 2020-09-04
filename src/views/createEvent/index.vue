@@ -159,6 +159,11 @@ export default {
     ::v-deep .el-step__description.is-success {
       color: initial;
     }
+    ::v-deep .el-step__line {
+      width: 1px;
+      top: 32px;
+      bottom: 8px;
+    }
 
     ::v-deep .el-step__head.is-success {
       color: #090;
