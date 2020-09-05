@@ -41,7 +41,7 @@
 
         <el-form-item label="起止日期：">
           <el-date-picker v-model="filterForm.value4"
-                          type="datetimerange"
+                          type="daterange"
                           range-separator="至"
                           start-placeholder="开始日期"
                           end-placeholder="结束日期" />
@@ -265,7 +265,7 @@ export default {
         value1: '',
         value2: '',
         value3: '',
-        value4: ''
+        value4: []
       },
       activeName: '0',
       tabList: [

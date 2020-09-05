@@ -103,11 +103,11 @@
                          class="channel-card">
                   <div slot="header"
                        class="clearfix">
-                    <span style="font-weight:bold;">
+                    <span class="channel-card-title">
                       <svg-icon class="name-icon"
                                 :style="{color:channelCardItem.iconColor}"
                                 :icon-class="channelCardItem.icon" />
-                      {{ channelCardItem.label }}
+                      <span>{{ channelCardItem.label }}</span>
                     </span>
 
                     <el-popconfirm title="确定删除改渠道吗？">
@@ -117,21 +117,54 @@
                         删除
                       </el-button>
                     </el-popconfirm>
-
                   </div>
-                  <template v-if="channelCardItem.value==='1'">
-                    1111crm
+                  <el-form-item required
+                                label="下发类型：">
+                    <el-radio v-for="item of channelCardItem.type"
+                              :key="item.id"
+                              v-model="channelCardItem.chooseType"
+                              :label="item.id"
+                              border>
+                      <i :class="item.icon" />
+                      {{ item.name }}
+                    </el-radio>
+
+                    渠道：{{ channelCardItem.value }}
+                    类型：{{ channelCardItem.chooseType }}
+                    值：{{ channelCardItem.dateValue }}
+                  </el-form-item>
+                  <div>
+                    <template v-if="channelCardItem.chooseType==='1'">
+                      <el-form-item required
+                                    label="起止日期：">
+                        <el-date-picker v-model="channelCardItem.dateRange"
+                                        type="daterange"
+                                        range-separator="至"
+                                        :picker-options="pickerOptions"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期" />
+                      </el-form-item>
+                      <el-form-item required
+                                    label="触发时间：">
+                        123
+                      </el-form-item>
+
+                    </template>
+                    <template v-if="channelCardItem.chooseType==='2'">出发型</template>
+                  </div>
+                  <!-- <template v-if="channelCardItem.value==='1'">
                     <div>
-                      {{ channelCardItem.name }}</div>
+                      {{ channelCardItem.name }}
+                    </div>
                   </template>
                   <template v-if="channelCardItem.value==='2'">
-                    2222 微信
-                    <div>{{ channelCardItem.name }}</div>
+                    <div>{{ channelCardItem.name }}
+                    </div>
                   </template>
                   <template v-if="channelCardItem.value==='3'">
-                    3333 短信
-                    <div>{{ channelCardItem.name }}</div>
-                  </template>
+                    <div>{{ channelCardItem.name }}
+                    </div>
+                  </template> -->
                 </el-card>
               </el-tab-pane>
             </el-tabs>
@@ -169,9 +202,12 @@ const CHANNEL_OPT = [{
   disabled: false,
   icon: 'phone',
   iconColor: '#409eff',
+  chooseType: '1',
+  dateValue: 'CRM的值',
+  dateRange: [],
   type: [{
     id: '1',
-    name: '定时型_CRM'
+    name: '定时型'
   }]
 }, {
   value: '2',
@@ -179,9 +215,17 @@ const CHANNEL_OPT = [{
   disabled: false,
   icon: 'sms',
   iconColor: '#FF9933',
+  chooseType: '1',
+  dateValue: '短信的值',
+  dateRange: [],
   type: [{
     id: '1',
-    name: '定时型_短信'
+    name: '定时型',
+    icon: 'el-icon-alarm-clock'
+  }, {
+    id: '2',
+    name: '规则型',
+    icon: 'el-icon-tickets'
   }]
 }, {
   value: '3',
@@ -189,9 +233,15 @@ const CHANNEL_OPT = [{
   disabled: false,
   icon: 'wechat',
   iconColor: '#67c23a',
+  chooseType: '1',
+  dateValue: '微信的值',
+  dateRange: [],
   type: [{
     id: '1',
-    name: '定时型_微信'
+    name: '定时型'
+  }, {
+    id: '2',
+    name: '规则型'
   }]
 }]
 export default {
@@ -200,6 +250,7 @@ export default {
   },
   data() {
     return {
+      radio1: '',
       groupName: '0',
       // 人数初始值
       tweenedNumber: 0,
@@ -270,12 +321,15 @@ export default {
       tempProduct: {
         gi: null,
         pi: null
+      },
+      pickerOptions: {
+        disabledDate(time) {
+          const testStartTime = 1600128000000 // 2020-09-15
+          const testEndTime = 1602720000000 // 2020-10-15
+          return time.getTime() > testEndTime || time.getTime() < testStartTime
+        }
       }
-      // activeNames: []
-      //
-      // editableTabsValue: '0',
-      // editableTabs: [],
-      // tabIndex: 0
+
     }
   },
   computed: {
@@ -384,6 +438,7 @@ export default {
         n.disabled = tempArr.includes(n.value)
       })
     }
+
   }
 }
 </script>
@@ -419,9 +474,15 @@ export default {
   }
   .channel-card {
     .name-icon {
-      margin-right: 5px;
+      margin-right: 10px;
       color: $blue;
       font-size: 20px;
+    }
+    .channel-card-title {
+      font-weight: bold;
+      display: flex;
+      align-items: flex-start;
+      float: left;
     }
     .channel-card-delete {
       float: right;
