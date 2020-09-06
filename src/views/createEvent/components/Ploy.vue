@@ -96,8 +96,8 @@
                   </el-dropdown>
                 </el-form-item>
                 <!-- {{ ployItem.channel }} -->
-                <el-card v-for="(channelCardItem,i) of ployItem.channel"
-                         :key="i"
+                <el-card v-for="(channelCardItem,ci) of ployItem.channel"
+                         :key="ci"
                          shadow="hover"
                          style="margin-bottom:18px;"
                          class="channel-card">
@@ -123,15 +123,12 @@
                     <el-radio v-for="item of channelCardItem.type"
                               :key="item.id"
                               v-model="channelCardItem.chooseType"
+                              style="margin-right:0;"
                               :label="item.id"
                               border>
-                      <i :class="item.icon" />
                       {{ item.name }}
+                      <i :class="item.icon" />
                     </el-radio>
-
-                    渠道：{{ channelCardItem.value }}
-                    类型：{{ channelCardItem.chooseType }}
-                    值：{{ channelCardItem.dateValue }}
                   </el-form-item>
                   <div>
                     <template v-if="channelCardItem.chooseType==='1'">
@@ -145,12 +142,53 @@
                                         end-placeholder="结束日期" />
                       </el-form-item>
                       <el-form-item required
-                                    label="触发时间：">
-                        123
+                                    label="推送时间：">
+                        <el-cascader v-model="channelCardItem.timingDateValue"
+                                     style="width:190px;"
+                                     :props="{ expandTrigger: 'hover',multiple: true,checkStrictly: false }"
+                                     collapse-tags
+                                     :options="timingOpt" />
+                        <el-time-picker v-model="channelCardItem.timingTimeValue"
+                                        style="width:150px;margin-left:10px;"
+                                        :clearable="false"
+                                        format="HH:mm"
+                                        value-format="HH:mm" />
                       </el-form-item>
-
                     </template>
-                    <template v-if="channelCardItem.chooseType==='2'">出发型</template>
+                    <template v-if="channelCardItem.chooseType==='2'">
+                      <el-form-item required
+                                    class="rule-form"
+                                    label="推送时间：">
+                        <div v-for="(item,rule_i) of channelCardItem.ruleValue"
+                             :key="rule_i"
+                             class="rule-item">
+                          <Info content="名单生效日" />
+                          <span class="text-text">T</span>
+                          <span class="plus-text">+</span>
+                          <el-input-number v-model="item.date"
+                                           style="margin-right:10px;"
+                                           controls-position="right"
+                                           :min="0" />天
+                          <el-time-picker v-model="item.time"
+                                          style="width:150px;margin-left:10px;"
+                                          :clearable="false"
+                                          format="HH:mm"
+                                          value-format="HH:mm" />
+                          <i v-if="channelCardItem.ruleValue.length > 1"
+                             class="el-icon-delete delete"
+                             @click="delRuleItem(channelCardItem,rule_i)" />
+                        </div>
+                        <el-button class="add"
+                                   icon="el-icon-plus"
+                                   @click="addRuleItem(channelCardItem)" />
+                      </el-form-item>
+                    </template>
+
+                    <!-- 渠道：{{ channelCardItem.value }}
+                    类型：{{ channelCardItem.chooseType }}
+                    定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
+                    定时型的值2（时间）：{{ channelCardItem.timingTimeValue }}
+                    规则型的值：{{ channelCardItem.ruleValue }} -->
                   </div>
                   <!-- <template v-if="channelCardItem.value==='1'">
                     <div>
@@ -195,6 +233,7 @@
 
 <script>
 import gsap from 'gsap'
+import Info from '@/components/Info'
 import Product from '@/views/product/index'
 const CHANNEL_OPT = [{
   value: '1',
@@ -202,11 +241,18 @@ const CHANNEL_OPT = [{
   disabled: false,
   icon: 'phone',
   iconColor: '#409eff',
+  // 1:定时型 2:规则
   chooseType: '1',
-  dateValue: 'CRM的值',
+  timingDateValue: [],
+  timingTimeValue: '00:00',
   dateRange: [],
+  ruleValue: [{
+    date: 0,
+    time: '00:00'
+  }],
   type: [{
     id: '1',
+    icon: 'el-icon-alarm-clock',
     name: '定时型'
   }]
 }, {
@@ -216,8 +262,17 @@ const CHANNEL_OPT = [{
   icon: 'sms',
   iconColor: '#FF9933',
   chooseType: '1',
-  dateValue: '短信的值',
+  // 定时型的值-规则 (每周几或每月几) (暂定多选)
+  timingDateValue: [],
+  // 定时型的值-时间
+  timingTimeValue: '00:00',
+  // 定时型的值-起止时间
   dateRange: [],
+  // 规则型的值
+  ruleValue: [{
+    date: 0,
+    time: '00:00'
+  }],
   type: [{
     id: '1',
     name: '定时型',
@@ -234,8 +289,14 @@ const CHANNEL_OPT = [{
   icon: 'wechat',
   iconColor: '#67c23a',
   chooseType: '1',
-  dateValue: '微信的值',
+  timingDateValue: [],
+  timingTimeValue: '00:00',
+
   dateRange: [],
+  ruleValue: [{
+    date: 0,
+    time: '00:00'
+  }],
   type: [{
     id: '1',
     name: '定时型'
@@ -246,7 +307,7 @@ const CHANNEL_OPT = [{
 }]
 export default {
   components: {
-    Product
+    Product, Info
   },
   data() {
     return {
@@ -256,11 +317,48 @@ export default {
       tweenedNumber: 0,
       // 产品侧边栏
       showProduct: false,
+      // 定时型 下拉选项
+      timingOpt: [
+        {
+          value: '1',
+          label: '每周',
+          children: [{
+            value: '1',
+            label: '星期一'
+          }, {
+            value: '2',
+            label: '星期二'
+          }, {
+            value: '3',
+            label: '星期三'
+          }, {
+            value: '4',
+            label: '星期四'
+          }, {
+            value: '5',
+            label: '星期五'
+          }, {
+            value: '6',
+            label: '星期六'
+          }, {
+            value: '7',
+            label: '星期日'
+          }]
+        },
+        {
+          value: '2',
+          label: '每月',
+          children: Array.apply(null, Array(31)).map((n, i) => {
+            return { value: i + 1, label: i + 1 + '号' }
+          })
+        }
+      ],
       group: [
         {
           name: '群组1',
           people: 221324,
           desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
+          // 策略
           ployTabs: [{
             title: '新策略',
             name: '1',
@@ -430,15 +528,23 @@ export default {
     handleCommandChannel(index, item) {
       CHANNEL_OPT.forEach((n, i) => {
         if (n.value === index) {
-          item.channel.push(n)
+          item.channel.push(JSON.parse(JSON.stringify(n)))
         }
       })
       const tempArr = item.channel.map(n => n.value)
       item.channelOpt.forEach((n, i) => {
         n.disabled = tempArr.includes(n.value)
       })
+    },
+    addRuleItem(item) {
+      item.ruleValue.push({
+        date: 0,
+        time: '00:00'
+      })
+    },
+    delRuleItem(item, i) {
+      item.ruleValue.splice(i, 1)
     }
-
   }
 }
 </script>
@@ -490,6 +596,48 @@ export default {
       color: rgb(245, 108, 108);
       &:hover {
         opacity: 0.8;
+      }
+    }
+    .rule-form {
+      width: 470px;
+      .rule-item {
+        display: flex;
+        position: relative;
+        margin-bottom: 10px;
+        .text-text {
+          margin: 0 10px 0 5px;
+          font-size: 16px;
+        }
+        .plus-text {
+          font-size: 18px;
+          margin-right: 10px;
+        }
+        // .el-form-item {
+        //   flex: 1;
+        // }
+        // .target-item-input {
+        //   width: 100%;
+        // }
+        .delete {
+          color: $red;
+          display: inline-block;
+          width: 20px;
+          cursor: pointer;
+          height: 32px;
+          margin-left: 10px;
+          font-size: 18px;
+          line-height: 32px;
+          position: absolute;
+          right: -30px;
+          top: 0;
+          &:hover {
+            opacity: 0.8;
+          }
+        }
+      }
+      .add {
+        width: 100%;
+        border-style: dashed;
       }
     }
   }

@@ -76,7 +76,7 @@
                    @click="delTargetItem(i)" />
               </div>
 
-              <el-button v-if="form.target.length < targetOpt.length "
+              <el-button v-if="form.target.length < targetOpt.length"
                          class="add"
                          icon="el-icon-plus"
                          @click="addTarget" />
