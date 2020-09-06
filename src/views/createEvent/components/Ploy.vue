@@ -132,6 +132,7 @@
                   </el-form-item>
                   <div>
                     <template v-if="channelCardItem.chooseType==='1'">
+                      <!-- 定时型 -->
                       <el-form-item required
                                     label="起止日期：">
                         <el-date-picker v-model="channelCardItem.dateRange"
@@ -150,12 +151,16 @@
                                      :options="timingOpt" />
                         <el-time-picker v-model="channelCardItem.timingTimeValue"
                                         style="width:150px;margin-left:10px;"
+                                        :picker-options="{
+                                          selectableRange: '07:00:00 - 20:00:00'
+                                        }"
                                         :clearable="false"
                                         format="HH:mm"
                                         value-format="HH:mm" />
                       </el-form-item>
                     </template>
                     <template v-if="channelCardItem.chooseType==='2'">
+                      <!-- 规则型 -->
                       <el-form-item required
                                     class="rule-form"
                                     label="推送时间：">
@@ -190,19 +195,6 @@
                     定时型的值2（时间）：{{ channelCardItem.timingTimeValue }}
                     规则型的值：{{ channelCardItem.ruleValue }} -->
                   </div>
-                  <!-- <template v-if="channelCardItem.value==='1'">
-                    <div>
-                      {{ channelCardItem.name }}
-                    </div>
-                  </template>
-                  <template v-if="channelCardItem.value==='2'">
-                    <div>{{ channelCardItem.name }}
-                    </div>
-                  </template>
-                  <template v-if="channelCardItem.value==='3'">
-                    <div>{{ channelCardItem.name }}
-                    </div>
-                  </template> -->
                 </el-card>
               </el-tab-pane>
             </el-tabs>
@@ -244,7 +236,7 @@ const CHANNEL_OPT = [{
   // 1:定时型 2:规则
   chooseType: '1',
   timingDateValue: [],
-  timingTimeValue: '00:00',
+  timingTimeValue: '07:00',
   dateRange: [],
   ruleValue: [{
     date: 0,
@@ -265,7 +257,7 @@ const CHANNEL_OPT = [{
   // 定时型的值-规则 (每周几或每月几) (暂定多选)
   timingDateValue: [],
   // 定时型的值-时间
-  timingTimeValue: '00:00',
+  timingTimeValue: '07:00',
   // 定时型的值-起止时间
   dateRange: [],
   // 规则型的值
@@ -290,8 +282,7 @@ const CHANNEL_OPT = [{
   iconColor: '#67c23a',
   chooseType: '1',
   timingDateValue: [],
-  timingTimeValue: '00:00',
-
+  timingTimeValue: '07:00',
   dateRange: [],
   ruleValue: [{
     date: 0,
