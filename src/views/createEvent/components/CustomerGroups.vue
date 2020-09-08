@@ -120,36 +120,44 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="分群：">
-              <!-- <el-switch v-model="form.group"
-                         active-text="是"
-                         inactive-text="否" /> -->
-              <el-tabs v-model="form.labelIndex"
-                       type="card"
-                       addable
-                       @edit="handleTabsEdit">
-                <el-tab-pane v-for="item of form.labelTabs"
-                             :key="item.name"
-                             :closable="item.closable"
-                             :label="item.title"
-                             :name="item.name">
-                  <el-form-item label="群组名称：">
-                    <el-input v-model="item.title"
-                              style="width:300px"
-                              :disabled="!item.closable"
-                              placeholder="请输入群组名称" />
-                  </el-form-item>
-                  <el-form-item label="群组描述：">
-                    <el-input v-model="item.desc"
-                              style="width:300px"
-                              type="textarea"
-                              :autosize="{ minRows: 2, maxRows: 4}"
-                              placeholder="请输入群组描述" />
-                  </el-form-item>
-                  <Group />
-                </el-tab-pane>
-              </el-tabs>
-            </el-form-item>
+              <Info style="margin-right:10px;"
+                    content="客群先后顺序决定客群优先级" />
+              <el-button icon="el-icon-plus"
+                         type="primary"
+                         @click="addTab">
+                添加客群
+              </el-button>
 
+            </el-form-item>
+            <el-tabs id="group-tabs"
+                     v-model="form.labelIndex"
+                     type="card"
+                     @tab-remove="removeTab">
+
+              <el-tab-pane v-for="item of form.labelTabs"
+                           :key="item.name"
+                           :closable="item.closable"
+                           :label="item.title"
+                           :name="item.name">
+                <el-form-item label="群组名称：">
+                  <el-input v-model="item.title"
+                            style="width:300px"
+                            :disabled="!item.closable"
+                            placeholder="请输入群组名称" />
+                </el-form-item>
+                <el-form-item label="群组描述：">
+                  <el-input v-model="item.desc"
+                            style="width:300px"
+                            type="textarea"
+                            :disabled="!item.closable"
+                            :autosize="{ minRows: 2, maxRows: 4}"
+                            placeholder="请输入群组描述" />
+                </el-form-item>
+                <!-- <template v-if="item.closable"> -->
+                <Group v-if="item.closable" />
+                <!-- </template> -->
+              </el-tab-pane>
+            </el-tabs>
           </el-form>
         </div>
       </el-tab-pane>
@@ -165,6 +173,8 @@
 <script>
 import Info from '@/components/Info'
 import Group from './Group'
+import Sortable from 'sortablejs'
+
 export default {
   name: 'CustomerGroups',
   components: {
@@ -197,9 +207,8 @@ export default {
         // editableTabs
         labelTabs: [{
           title: '其他',
-          desc: '',
+          desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可删除。',
           name: '1',
-          content: 'Tab 1 content',
           closable: false
         }],
         // tabIndex
@@ -273,7 +282,9 @@ export default {
       immediate: true
     }
   },
-
+  mounted() {
+    this.tabDrop()
+  },
   methods: {
     next(cb) {
 
@@ -312,41 +323,54 @@ export default {
         n.disabled = temp.includes(n.value)
       })
     },
-    handleTabsEdit(targetName, action) {
-      if (action === 'add') {
-        const newTabName = ++this.form.labelTabsCounts + ''
-        this.form.labelTabs.push({
-          title: '新群组' + newTabName,
-          desc: '',
-          name: newTabName,
-          content: 'New Tab content',
-          closable: true
-        })
-        this.form.labelIndex = newTabName
-      }
-      if (action === 'remove') {
-        const tabs = this.form.labelTabs
-        let activeName = this.form.labelIndex
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              const nextTab = tabs[index + 1] || tabs[index - 1]
-              if (nextTab) {
-                activeName = nextTab.name
-              }
-            }
-          })
+    // tab拖拽
+    tabDrop() {
+      const el = document.querySelector('#group-tabs .el-tabs__nav')
+      console.log(el)
+      const _this = this
+      var sortable = Sortable.create(el, {
+        // filter: '#tab-1',
+        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
+          const currRow = _this.form.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
+          _this.form.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
         }
-
-        this.form.labelIndex = activeName
-        this.form.labelTabs = tabs.filter(tab => tab.name !== targetName)
+      })
+    },
+    addTab() {
+      const newTabName = ++this.form.labelTabsCounts + ''
+      this.form.labelTabs.push({
+        title: '新群组' + newTabName,
+        desc: '',
+        name: newTabName,
+        closable: true
+      })
+      this.form.labelIndex = newTabName
+    },
+    removeTab(targetName) {
+      const tabs = this.form.labelTabs
+      let activeName = this.form.labelIndex
+      if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          if (tab.name === targetName) {
+            const nextTab = tabs[index + 1] || tabs[index - 1]
+            if (nextTab) {
+              activeName = nextTab.name
+            }
+          }
+        })
       }
-    }
 
+      this.form.labelIndex = activeName
+      this.form.labelTabs = tabs.filter(tab => tab.name !== targetName)
+    }
   }
 }
 </script>
-
+<style>
+.sortable-drag {
+  box-shadow: 0 0 1px 1px rgba(34, 65, 145, 0.1) inset;
+}
+</style>
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 

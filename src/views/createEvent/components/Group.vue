@@ -182,6 +182,7 @@ export default {
     andOr(i) {
       this.form.condition[i].andOrText = this.form.condition[i].andOrText === '且' ? '或' : '且'
     }
+
   }
 }
 </script>
@@ -249,7 +250,7 @@ export default {
     }
   }
   .add {
-    width: 100%;
+    width: 50%;
     border-style: dashed;
   }
 }

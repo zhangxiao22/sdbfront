@@ -35,3 +35,14 @@ $red: #F56C6C;
   align-items: center;
   justify-content: center;
 }
+
+@mixin shun-text {
+  padding: 8px 16px;
+  background: #ecf5ff;
+  border-radius: 4px;
+  font-size: 12px;
+  color: $blue;
+  line-height: 1.5;
+  margin-bottom: 18px;
+  display: inline-block;
+}

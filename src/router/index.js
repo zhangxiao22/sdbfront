@@ -46,6 +46,18 @@ export const constantRoutes = [
         name: 'Product',
         component: () => import('@/views/product/index'),
         meta: { title: '产品库', icon: 'list' }
+      },
+      {
+        path: 'interest',
+        name: 'Interest',
+        component: () => import('@/views/interest/index'),
+        meta: { title: '权益库', icon: 'list' }
+      },
+      {
+        path: 'test',
+        name: 'Test',
+        component: () => import('@/views/test/index'),
+        meta: { title: '权益库', icon: 'list' }
       }
     ]
   },

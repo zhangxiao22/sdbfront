@@ -76,6 +76,17 @@
                                    label="比例" />
                 </el-table>
                 <el-form-item required
+                              label="推荐权益：">
+                  <el-button icon="el-icon-plus"
+                             @click="addInterest(ployItem)">
+                    选择权益
+                  </el-button>
+                </el-form-item>
+                <div v-show="ployItem.interest.name"
+                     class="ploy-card">
+                  {{ ployItem.interest.name }}
+                </div>
+                <el-form-item required
                               label="下发渠道：">
                   <el-dropdown trigger="click"
                                size="medium"
@@ -131,8 +142,8 @@
                     </el-radio>
                   </el-form-item>
                   <div>
+                    <!-- 定时型 -->
                     <template v-if="channelCardItem.chooseType==='1'">
-                      <!-- 定时型 -->
                       <el-form-item required
                                     label="起止日期：">
                         <el-date-picker v-model="channelCardItem.dateRange"
@@ -159,8 +170,8 @@
                                         value-format="HH:mm" />
                       </el-form-item>
                     </template>
+                    <!-- 规则型 -->
                     <template v-if="channelCardItem.chooseType==='2'">
-                      <!-- 规则型 -->
                       <el-form-item required
                                     class="rule-form"
                                     label="推送时间：">
@@ -188,7 +199,33 @@
                                    @click="addRuleItem(channelCardItem)" />
                       </el-form-item>
                     </template>
-
+                    <template v-if="channelCardItem.value==='1'">
+                      <el-form-item required
+                                    label="推荐话术：">
+                        <el-button icon="el-icon-plus"
+                                   @click="addCRMWords(channelCardItem)">
+                          选择话术
+                        </el-button>
+                      </el-form-item>
+                    </template>
+                    <template v-if="channelCardItem.value==='2'">
+                      <el-form-item required
+                                    label="短信模版：">
+                        <el-button icon="el-icon-plus"
+                                   @click="addSmsWords(channelCardItem)">
+                          选择模版
+                        </el-button>
+                      </el-form-item>
+                    </template>
+                    <template v-if="channelCardItem.value==='3'">
+                      <el-form-item required
+                                    label="微信模版：">
+                        <el-button icon="el-icon-plus"
+                                   @click="addWeChatWords(channelCardItem)">
+                          选择模版
+                        </el-button>
+                      </el-form-item>
+                    </template>
                     <!-- 渠道：{{ channelCardItem.value }}
                     类型：{{ channelCardItem.chooseType }}
                     定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
@@ -202,8 +239,8 @@
           <!-- 策略end -->
         </el-form>
       </el-tab-pane>
-
     </el-tabs>
+
     <el-drawer title="选择产品"
                class="el-drawer_product"
                :visible.sync="showProduct"
@@ -220,6 +257,24 @@
         </el-button>
       </div>
     </el-drawer>
+
+    <el-drawer title="选择权益"
+               class="el-drawer_product"
+               :visible.sync="showInterest"
+               size="80%"
+               direction="rtl">
+      <div class="drawer-container">
+        <Interest ref="interestRef"
+                  :show-selection="true" />
+      </div>
+      <div class="drawer-bottom">
+        <el-button type="primary"
+                   @click="submitInterest()">
+          确 认
+        </el-button>
+      </div>
+    </el-drawer>
+
   </div>
 </template>
 
@@ -227,78 +282,82 @@
 import gsap from 'gsap'
 import Info from '@/components/Info'
 import Product from '@/views/product/index'
-const CHANNEL_OPT = [{
-  value: '1',
-  label: 'CRM',
-  disabled: false,
-  icon: 'phone',
-  iconColor: '#409eff',
-  // 1:定时型 2:规则
-  chooseType: '1',
-  timingDateValue: [],
-  timingTimeValue: '07:00',
-  dateRange: [],
-  ruleValue: [{
-    date: 0,
-    time: '00:00'
-  }],
-  type: [{
-    id: '1',
-    icon: 'el-icon-alarm-clock',
-    name: '定时型'
-  }]
-}, {
-  value: '2',
-  label: '短信',
-  disabled: false,
-  icon: 'sms',
-  iconColor: '#FF9933',
-  chooseType: '1',
-  // 定时型的值-规则 (每周几或每月几) (暂定多选)
-  timingDateValue: [],
-  // 定时型的值-时间
-  timingTimeValue: '07:00',
-  // 定时型的值-起止时间
-  dateRange: [],
-  // 规则型的值
-  ruleValue: [{
-    date: 0,
-    time: '00:00'
-  }],
-  type: [{
-    id: '1',
-    name: '定时型',
-    icon: 'el-icon-alarm-clock'
+import Interest from '@/views/interest/index'
+
+const CHANNEL_OPT = [
+  {
+    value: '1',
+    label: 'CRM',
+    disabled: false,
+    icon: 'phone',
+    iconColor: '#409eff',
+    // 1:定时型 2:规则
+    chooseType: '1',
+    timingDateValue: [],
+    timingTimeValue: '07:00',
+    dateRange: [],
+    ruleValue: [{
+      date: 0,
+      time: '00:00'
+    }],
+    type: [{
+      id: '1',
+      icon: 'el-icon-alarm-clock',
+      name: '定时型'
+    }]
   }, {
-    id: '2',
-    name: '规则型',
-    icon: 'el-icon-tickets'
-  }]
-}, {
-  value: '3',
-  label: '微信',
-  disabled: false,
-  icon: 'wechat',
-  iconColor: '#67c23a',
-  chooseType: '1',
-  timingDateValue: [],
-  timingTimeValue: '07:00',
-  dateRange: [],
-  ruleValue: [{
-    date: 0,
-    time: '00:00'
-  }],
-  type: [{
-    id: '1',
-    name: '定时型'
+    value: '2',
+    label: '短信',
+    disabled: false,
+    icon: 'sms',
+    iconColor: '#FF9933',
+    chooseType: '1',
+    // 定时型的值-规则 (每周几或每月几) (暂定多选)
+    timingDateValue: [],
+    // 定时型的值-时间
+    timingTimeValue: '07:00',
+    // 定时型的值-起止时间
+    dateRange: [],
+    // 规则型的值
+    ruleValue: [{
+      date: 0,
+      time: '00:00'
+    }],
+    type: [{
+      id: '1',
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    }, {
+      id: '2',
+      name: '规则型',
+      icon: 'el-icon-tickets'
+    }]
   }, {
-    id: '2',
-    name: '规则型'
-  }]
-}]
+    value: '3',
+    label: '微信',
+    disabled: false,
+    icon: 'wechat',
+    iconColor: '#67c23a',
+    chooseType: '1',
+    timingDateValue: [],
+    timingTimeValue: '07:00',
+    dateRange: [],
+    ruleValue: [{
+      date: 0,
+      time: '00:00'
+    }],
+    type: [{
+      id: '1',
+      name: '定时型'
+    }, {
+      id: '2',
+      name: '规则型'
+    }]
+  }
+]
 export default {
   components: {
-    Product, Info
+    Product, Info, Interest
   },
   data() {
     return {
@@ -308,6 +367,8 @@ export default {
       tweenedNumber: 0,
       // 产品侧边栏
       showProduct: false,
+      // 权益侧边栏
+      showInterest: false,
       // 定时型 下拉选项
       timingOpt: [
         {
@@ -353,6 +414,7 @@ export default {
           ployTabs: [{
             title: '新策略',
             name: '1',
+            // 产品
             product: {
               groupName: '组合A',
               amount1: '3.065-3.385%',
@@ -389,6 +451,8 @@ export default {
                 }
               ]
             },
+            // 权益
+            interest: {},
             channel: [],
             channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
           }],
@@ -411,6 +475,7 @@ export default {
         gi: null,
         pi: null
       },
+      tempPloyItem: null,
       pickerOptions: {
         disabledDate(time) {
           const testStartTime = 1600128000000 // 2020-09-15
@@ -451,6 +516,8 @@ export default {
         name: newTabName,
         // 产品
         product: {},
+        // 权益
+        interest: {},
         // 渠道
         channel: [],
         channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
@@ -491,6 +558,19 @@ export default {
       const { gi, pi } = this.tempProduct
       // this.group[gi].ployTabs[pi].product
       this.showProduct = false
+    },
+    // 权益
+    addInterest(item) {
+      this.tempPloyItem = item
+      this.showInterest = true
+      this.$nextTick(() => {
+        this.$refs.interestRef.select(item.interest.id)
+      })
+    },
+    submitInterest() {
+      const val = this.$refs.interestRef.getVal()
+      this.tempPloyItem.interest = val
+      this.showInterest = false
     },
     parseTable(data) {
       return data.list.map((n, i) => {
@@ -535,6 +615,19 @@ export default {
     },
     delRuleItem(item, i) {
       item.ruleValue.splice(i, 1)
+    },
+
+    // crm话术
+    addCRMWords(item) {
+      // todo
+    },
+    // 短信话术
+    addSmsWords(item) {
+      // todo
+    },
+    // 微信话术
+    addWeChatWords(item) {
+      // todo
     }
   }
 }
@@ -561,13 +654,13 @@ export default {
     }
   }
   .desc {
-    padding: 8px 16px;
-    background: #ecf5ff;
-    border-radius: 4px;
-    font-size: 12px;
-    color: $blue;
-    line-height: 1.5;
-    margin-bottom: 15px;
+    @include shun-text;
+  }
+  .ploy-card {
+    @include shun-text;
+    border: 1px solid #ebeef5;
+    background: #fafafa;
+    color: #444;
   }
   .channel-card {
     .name-icon {
@@ -595,6 +688,7 @@ export default {
         display: flex;
         position: relative;
         margin-bottom: 10px;
+        // height: 32px;
         .text-text {
           margin: 0 10px 0 5px;
           font-size: 16px;
