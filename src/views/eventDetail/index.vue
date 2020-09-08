@@ -25,7 +25,7 @@
       <div class="base-info">
         <el-form ref="form"
                  class="base-form"
-                 label-width="100px">
+                 label-width="110px">
           <div class="title">事件信息</div>
           <el-form-item label="事件类别：">
             一般营销事件
@@ -44,7 +44,7 @@
         </el-form>
         <el-form ref="form"
                  class="base-form"
-                 label-width="100px">
+                 label-width="110px">
           <div class="title">试点信息</div>
           <el-form-item label="试点时间：">
             2020-01-01 ～ 2020-03-03

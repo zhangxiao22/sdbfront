@@ -108,7 +108,7 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 1,
+      stepActive: 2,
       preDisabled: false
 
     }

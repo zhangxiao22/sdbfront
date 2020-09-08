@@ -23,7 +23,7 @@
           <el-form ref="form"
                    :model="form"
                    :rules="rules"
-                   label-width="100px"
+                   label-width="110px"
                    class="reg-form">
             <el-form-item label="客户数量：">
               {{ parseInt(form.customerCount).toLocaleString() }}
@@ -119,9 +119,11 @@
                           label="2">分层抽样</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="分群：">
-              <Info style="margin-right:10px;"
-                    content="客群先后顺序决定客群优先级" />
+            <el-form-item>
+              <div slot="label">
+                <Info content="客群先后顺序决定客群优先级（客群标签可拖拽排序）" />
+                分群：
+              </div>
               <el-button icon="el-icon-plus"
                          type="primary"
                          @click="addTab">
@@ -366,11 +368,7 @@ export default {
   }
 }
 </script>
-<style>
-.sortable-drag {
-  box-shadow: 0 0 1px 1px rgba(34, 65, 145, 0.1) inset;
-}
-</style>
+
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 
@@ -429,6 +427,9 @@ export default {
           border-style: dashed;
         }
       }
+    }
+    ::v-deep .sortable-drag {
+      box-shadow: 0 0 1px 1px rgba(34, 65, 145, 0.1) inset;
     }
   }
 }

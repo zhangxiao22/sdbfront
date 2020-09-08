@@ -3,7 +3,7 @@
     <el-form ref="form"
              :model="form"
              :rules="rules"
-             label-width="100px"
+             label-width="110px"
              class="reg-form">
       <el-form-item label="分群规则：">
         <el-form-item v-for="(conditionItem,i) of form.condition"

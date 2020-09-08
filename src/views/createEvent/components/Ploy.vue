@@ -9,7 +9,7 @@
 
         <el-form :ref="'form'+gi"
                  :model="group[gi]"
-                 label-width="100px">
+                 label-width="110px">
           <div class="top">
             <div class="left">当前群组人数：<b>{{ animatedNumber }}</b></div>
             <div>
@@ -38,6 +38,25 @@
                   <el-input v-model="ployItem.title"
                             style="width:300px"
                             placeholder="请输入策略名称" />
+                </el-form-item>
+                <el-form-item :prop="'ployTabs.' + pi + '.percent'"
+                              :rules="[{
+                                required: true, message: '值不能为空', trigger: 'blur'
+                              },{
+                                validator: validatePass2, trigger: 'change'
+                              }]"
+                              class="shun-label">
+                  <div slot="label">
+                    <Info content="同一客群下所有策略分发范围总和为100%" />
+                    分发范围：
+                  </div>
+                  <el-input-number v-model="ployItem.percent"
+                                   controls-position="right"
+                                   style="margin-right:10px;"
+                                   :precision="2"
+                                   :min="0"
+                                   :max="100"
+                                   :step="10" />%
                 </el-form-item>
                 <el-form-item required
                               label="推荐产品：">
@@ -361,7 +380,7 @@ export default {
   },
   data() {
     return {
-      radio1: '',
+      // 客群tab对应的值
       groupName: '0',
       // 人数初始值
       tweenedNumber: 0,
@@ -412,7 +431,11 @@ export default {
           desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
           // 策略
           ployTabs: [{
+            // 策略名称
             title: '新策略',
+            // 策略分发范围
+            percent: 100,
+            // 策略tab id
             name: '1',
             // 产品
             product: {
@@ -511,9 +534,15 @@ export default {
     },
     addTab(gi) {
       const newTabName = ++this.group[gi].ployTabIndex + ''
+      let percent = 100
+      this.group[gi].ployTabs.forEach((n, i) => {
+        percent = (percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2)
+      })
+      console.log(percent)
       this.group[gi].ployTabs.push({
         title: '新策略' + newTabName,
         name: newTabName,
+        percent,
         // 产品
         product: {},
         // 权益
@@ -545,6 +574,21 @@ export default {
         })
         .catch(() => {
         })
+    },
+    // 分发百分比校验
+    validatePass2(rule, value, callback) {
+      console.log(this.$refs.form0.validate)
+      let total = 0
+      this.group[+this.groupName].ployTabs.forEach((n, i) => {
+        // console.log(n.percent)
+        total += n.percent
+      })
+      if (total > 100) {
+        callback(new Error('分发范围总和不能大于100%'))
+      }
+      // console.log(valid)
+      // return valid.
+      // console.log(rule, value, callback, source, options, caonima)
     },
     addProduct(gi, pi) {
       // console.log(gi, pi)
@@ -655,6 +699,10 @@ export default {
   }
   .desc {
     @include shun-text;
+  }
+  .shun-label ::v-deep .el-form-item__label {
+    display: flex;
+    justify-content: flex-end;
   }
   .ploy-card {
     @include shun-text;
