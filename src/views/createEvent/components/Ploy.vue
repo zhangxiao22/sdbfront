@@ -111,7 +111,8 @@
                                size="medium"
                                @command="handleCommandChannel($event,ployItem)">
                     <el-button>
-                      选择添加<i class="el-icon-arrow-down el-icon--right" />
+                      选择添加
+                      <i class="el-icon-arrow-down el-icon--right" />
                     </el-button>
                     <el-dropdown-menu slot="dropdown">
                       <el-dropdown-item v-for="(channelItem,i) of ployItem.channelOpt"
@@ -218,6 +219,7 @@
                                    @click="addRuleItem(channelCardItem)" />
                       </el-form-item>
                     </template>
+                    <!-- crm -->
                     <template v-if="channelCardItem.value==='1'">
                       <el-form-item required
                                     label="推荐话术：">
@@ -227,6 +229,7 @@
                         </el-button>
                       </el-form-item>
                     </template>
+                    <!-- 短信 -->
                     <template v-if="channelCardItem.value==='2'">
                       <el-form-item required
                                     label="短信模版：">
@@ -235,7 +238,25 @@
                           选择模版
                         </el-button>
                       </el-form-item>
+                      <el-form-item>
+
+                        <div slot="label">
+                          <Info content="选择电话号码或输入电话号码并按回车" />
+                          精准内测：
+                        </div>
+                        <el-select v-model="valuex"
+                                   style="width:500px;margin-right:10px;"
+                                   multiple
+                                   filterable
+                                   allow-create
+                                   default-first-option
+                                   placeholder="请输入电话号码" />
+                        <el-button icon="el-icon-thumb">
+                          测试一下
+                        </el-button>
+                      </el-form-item>
                     </template>
+                    <!-- 微信 -->
                     <template v-if="channelCardItem.value==='3'">
                       <el-form-item required
                                     label="微信模版：">
@@ -380,6 +401,7 @@ export default {
   },
   data() {
     return {
+      valuex: [],
       // 客群tab对应的值
       groupName: '0',
       // 人数初始值
