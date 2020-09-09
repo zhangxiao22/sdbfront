@@ -2,12 +2,12 @@
   <div class="container">
     <div class="steps-container shun-card">
       <el-steps direction="vertical"
-                finish-status="success"
                 :active="stepActive">
         <el-step title="事件注册"
                  @click.native="handleClick">
           <div slot="icon">
-            <i class="el-icon-edit-outline" />
+            <svg-icon style=""
+                      icon-class="_create" />
           </div>
           <div slot="description"
                class="register">
@@ -34,7 +34,8 @@
         </el-step>
         <el-step title="客群配置">
           <div slot="icon">
-            <svg-icon icon-class="users" />
+            <svg-icon style=""
+                      icon-class="_users" />
           </div>
 
           <div slot="description">
@@ -47,11 +48,20 @@
           </div>
         </el-step>
         <el-step title="策略配置"
-                 description="策略配置描述" />
-        <el-step title="步骤 4"
-                 description="这是一段很长很长很长的描述性文字" />
-        <el-step title="步骤 5"
-                 description="这是一段很长很长很长的描述性文字" />
+                 description="策略配置描述">
+          <div slot="icon">
+            <svg-icon icon-class="_bulb"
+                      style="" />
+          </div>
+        </el-step>
+        <el-step title="发布预览"
+                 description="预览并发布">
+          <div slot="icon">
+            <svg-icon style=""
+                      icon-class="_eye" />
+          </div>
+
+        </el-step>
       </el-steps>
     </div>
     <div class="content-container shun-card">
@@ -59,32 +69,36 @@
         <component :is="component[stepActive].type"
                    :ref="component[stepActive].ref"
                    @renderSteps="renderSteps" />
-        <!-- <Register v-show="stepActive===0"
-                  ref="contentRef"
-                  @renderSteps="renderSteps" />
-        <CustomerGroups v-show="stepActive===1"
-                        ref="contentRef"
-                        @renderSteps="renderSteps" /> -->
       </div>
       <div class="bottom-container">
-        <el-button :disabled="preDisabled"
+        <el-button icon="el-icon-document">保存</el-button>
+        <el-button :disabled="stepActive===0"
                    icon="el-icon-arrow-left"
-                   @click="prev">上一步</el-button>
-        <el-button type="primary"
-                   @click="next">下一步<i class="el-icon-arrow-right el-icon--right" /></el-button>
+                   @click="prev">
+          上一步
+        </el-button>
+        <el-button :disabled="stepActive===component.length-1"
+                   type="primary"
+                   @click="next">
+          下一步
+          <i class="el-icon-arrow-right el-icon--right" />
+        </el-button>
+        <el-button icon="el-icon-upload2"
+                   type="primary">发布</el-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { Register, CustomerGroups, Ploy } from './components'
+import { Register, CustomerGroups, Ploy, Preview } from './components'
 
 export default {
   components: {
     Register,
     CustomerGroups,
-    Ploy
+    Ploy,
+    Preview
   },
   data() {
     return {
@@ -100,6 +114,10 @@ export default {
         {
           type: 'Ploy',
           ref: 'ployRef'
+        },
+        {
+          type: 'Preview',
+          ref: 'previewRef'
         }
       ],
       stepDesc: {
@@ -108,9 +126,7 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 2,
-      preDisabled: false
-
+      stepActive: 3
     }
   },
   computed: {
@@ -146,15 +162,29 @@ export default {
   position: relative;
 
   .steps-container {
-    width: 280px;
+    width: 260px;
     position: absolute;
     left: 0;
     top: 0;
     bottom: 0;
     padding: 20px;
     overflow: auto;
+    ::v-deep .el-step__title.is-process,
+    ::v-deep .el-step__head.is-process {
+      color: $blue;
+      font-size: 17px;
+      transition: font-size 0.1s;
+      .el-step__icon.is-text {
+        filter: grayscale(0);
+        opacity: 1;
+      }
+    }
     ::v-deep .el-step__icon.is-text {
-      border: 1px solid;
+      // border: 1px solid;
+      font-size: 22px;
+      border: none;
+      filter: grayscale(100%);
+      opacity: 0.4;
     }
     ::v-deep .el-step__description.is-success {
       color: initial;
@@ -168,8 +198,9 @@ export default {
     ::v-deep .el-step__head.is-success {
       color: #090;
       .el-step__icon {
-        border-radius: 50%;
-        border: 2px solid #090;
+        // border-radius: 50%;
+        // border: 2px solid #090;
+        border: none;
         transition: color 0.3s;
       }
     }
@@ -239,7 +270,7 @@ export default {
   }
   .content-container {
     position: absolute;
-    left: 290px;
+    left: 270px;
     right: 0;
     bottom: 0;
     top: 0;
@@ -259,6 +290,7 @@ export default {
       right: 0;
       height: 70px;
       border-top: 1px solid #f0f2f5;
+      background: #fcfcfc;
       @include center-center;
     }
   }

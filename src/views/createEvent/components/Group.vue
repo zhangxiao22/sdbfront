@@ -5,7 +5,11 @@
              :rules="rules"
              label-width="110px"
              class="reg-form">
-      <el-form-item label="分群规则：">
+      <el-form-item>
+        <div slot="label">
+          <Info content="最多设置5个规则" />
+          分群规则：
+        </div>
         <el-form-item v-for="(conditionItem,i) of form.condition"
                       :key="i"
                       class="condition-item">
@@ -70,18 +74,29 @@
                  @click="andOr(i)">{{ conditionItem.andOrText }}</div>
           </div>
         </el-form-item>
-        <el-button v-if="form.condition.length < 5"
-                   class="add"
-                   icon="el-icon-plus"
-                   @click="addItem" />
+        <el-button-group>
+          <el-button v-if="form.condition.length<5"
+                     class="add"
+                     style="width:300px;"
+                     icon="el-icon-plus"
+                     @click="addItem">
+            添加规则
+          </el-button>
+          <el-button icon="el-icon-thumb">
+            预估人数
+          </el-button>
+        </el-button-group>
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+import Info from '@/components/Info'
+
 export default {
   components: {
+    Info
   },
   data() {
     return {

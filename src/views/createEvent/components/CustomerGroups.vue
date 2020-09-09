@@ -87,7 +87,7 @@
                 维度补充：
               </div>
               <el-select v-model="form.paramValue"
-                         style="width:100%;"
+                         style="width:800px;"
                          multiple
                          filterable
                          placeholder="请搜索选择">
@@ -155,9 +155,8 @@
                             :autosize="{ minRows: 2, maxRows: 4}"
                             placeholder="请输入群组描述" />
                 </el-form-item>
-                <!-- <template v-if="item.closable"> -->
                 <Group v-if="item.closable" />
-                <!-- </template> -->
+                <el-form-item label="客户人数：">12,344</el-form-item>
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -208,8 +207,8 @@ export default {
         labelIndex: '1',
         // editableTabs
         labelTabs: [{
-          title: '其他',
-          desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可删除。',
+          title: '其他群组',
+          desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
           name: '1',
           closable: false
         }],
@@ -373,7 +372,7 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  padding: 0 20px;
+  padding: 5px 20px;
   .whitelist {
     .upload {
       width: 360px;

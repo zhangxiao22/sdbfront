@@ -116,12 +116,3 @@ export function param2Obj(url) {
   return obj
 }
 
-export function isNumber(val) {
-  var regPos = / ^\d+$/ // 非负整数
-  var regNeg = /^\-[1-9][0-9]*$/ // 负整数
-  if (regPos.test(val) && regNeg.test(val)) {
-    return true
-  } else {
-    return false
-  }
-}

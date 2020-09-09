@@ -45,9 +45,10 @@ export default {
     const _this = this
     var sortable = Sortable.create(el, {
       onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        console.log(newIndex, oldIndex)
-        // const currRow = _this.tableData.splice(oldIndex - 1, 1)[0] // 鼠标拖拽当前的el-tabs-pane
-        // _this.tableData.splice(newIndex - 1, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
+        // console.log(newIndex, oldIndex)
+        // const currRow = _this.tableData[oldIndex - 1]
+        const currRow = _this.tableData.splice(oldIndex - 1, 1)[0] // 鼠标拖拽当前的el-tabs-pane
+        _this.tableData.splice(newIndex - 1, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
       }
     })
     // })

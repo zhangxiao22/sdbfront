@@ -130,10 +130,10 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  padding: 50px;
+  padding: 50px 20px;
   .reg-form {
     width: 500px;
-    margin: 0 auto;
+    // margin: 0 auto;
   }
 }
 </style>

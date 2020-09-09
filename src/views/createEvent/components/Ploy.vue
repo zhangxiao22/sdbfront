@@ -105,6 +105,7 @@
                      class="ploy-card">
                   {{ ployItem.interest.name }}
                 </div>
+                <el-divider />
                 <el-form-item required
                               label="下发渠道：">
                   <el-dropdown trigger="click"
@@ -119,7 +120,7 @@
                                         :key="i"
                                         :disabled="channelItem.disabled"
                                         :command="channelItem.value">
-                        <svg-icon style="margin-right:4px;"
+                        <svg-icon style="margin-right:10px;"
                                   :icon-class="channelItem.icon" />
                         {{ channelItem.label }}
                       </el-dropdown-item>
@@ -238,20 +239,24 @@
                           选择模版
                         </el-button>
                       </el-form-item>
-                      <el-form-item>
-
+                      <el-form-item :prop="'ployTabs.' + pi + '.channel.' + ci + '.test'"
+                                    :rules="[{
+                                      validator: testSelectValidator, trigger: 'change'
+                                    }]">
                         <div slot="label">
-                          <Info content="选择电话号码或输入电话号码并按回车" />
+                          <Info content="对当前策略进行测试" />
                           精准内测：
                         </div>
-                        <el-select v-model="valuex"
-                                   style="width:500px;margin-right:10px;"
+                        <el-select v-model="channelCardItem.test"
+                                   style="width:500px;margin-right:10px;float:left;"
                                    multiple
                                    filterable
                                    allow-create
                                    default-first-option
-                                   placeholder="请输入电话号码" />
-                        <el-button icon="el-icon-thumb">
+                                   placeholder="请选择电话号码/输入电话号码并按回车添加"
+                                   @change="handleTestChange" />
+                        <el-button icon="el-icon-thumb"
+                                   style="float:left;">
                           测试一下
                         </el-button>
                       </el-form-item>
@@ -323,6 +328,7 @@ import gsap from 'gsap'
 import Info from '@/components/Info'
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
+import { isPhone } from '@/utils/validate'
 
 const CHANNEL_OPT = [
   {
@@ -363,6 +369,8 @@ const CHANNEL_OPT = [
       date: 0,
       time: '00:00'
     }],
+    // 精准内测
+    test: [],
     type: [{
       id: '1',
       name: '定时型',
@@ -388,10 +396,12 @@ const CHANNEL_OPT = [
     }],
     type: [{
       id: '1',
-      name: '定时型'
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
     }, {
       id: '2',
-      name: '规则型'
+      name: '规则型',
+      con: 'el-icon-tickets'
     }]
   }
 ]
@@ -694,6 +704,19 @@ export default {
     // 微信话术
     addWeChatWords(item) {
       // todo
+    },
+    handleTestChange(val) {
+      console.log(val)
+    },
+    testSelectValidator(rule, value, callback) {
+      // console.log(rule, value, callback)
+      const b = value.every((n, i) => {
+        console.log(isPhone(n))
+        return isPhone(n)
+      })
+      if (!b) {
+        callback(new Error('请输入正确的手机号码'))
+      }
     }
   }
 }
@@ -703,7 +726,7 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .ploy-container {
-  padding: 0 20px;
+  padding: 5px 20px;
   .top {
     display: flex;
     justify-content: space-between;
@@ -731,6 +754,7 @@ export default {
     border: 1px solid #ebeef5;
     background: #fafafa;
     color: #444;
+    margin-bottom: 0;
   }
   .channel-card {
     .name-icon {
