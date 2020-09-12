@@ -4,10 +4,9 @@
       <el-steps direction="vertical"
                 :active="stepActive">
         <el-step title="事件注册"
-                 @click.native="handleClick">
+                 @click.native="handleClick(0)">
           <div slot="icon">
-            <svg-icon style=""
-                      icon-class="_create" />
+            <svg-icon icon-class="_create" />
           </div>
           <div slot="description"
                class="register step-detail">
@@ -26,10 +25,10 @@
             </div>
           </div>
         </el-step>
-        <el-step title="客群配置">
+        <el-step title="客群配置"
+                 @click.native="handleClick(1)">
           <div slot="icon">
-            <svg-icon style=""
-                      icon-class="_users" />
+            <svg-icon icon-class="_users" />
           </div>
 
           <div slot="description"
@@ -43,17 +42,17 @@
           </div>
         </el-step>
         <el-step title="策略配置"
-                 description="策略配置描述">
+                 description="策略配置描述"
+                 @click.native="handleClick(2)">
           <div slot="icon">
-            <svg-icon icon-class="_bulb"
-                      style="" />
+            <svg-icon icon-class="_bulb" />
           </div>
         </el-step>
         <el-step title="发布预览"
-                 description="预览并发布">
+                 description="预览并发布"
+                 @click.native="handleClick(3)">
           <div slot="icon">
-            <svg-icon style=""
-                      icon-class="_eye" />
+            <svg-icon icon-class="_eye" />
           </div>
 
         </el-step>
@@ -121,13 +120,15 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 3
+      stepActive: 0
     }
   },
   computed: {
   },
   methods: {
-    handleClick() {
+    handleClick(i) {
+      this.stepActive = i
+      // console.log(i)
     },
     next() {
       // this.$refs.contentRef[this.stepActive].next(() => {
@@ -164,6 +165,9 @@ export default {
     bottom: 0;
     padding: 20px;
     overflow: auto;
+    .el-step {
+      cursor: pointer;
+    }
     ::v-deep .el-step__title.is-process,
     ::v-deep .el-step__head.is-process {
       color: $blue;
