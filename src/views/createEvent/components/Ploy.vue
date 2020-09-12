@@ -39,11 +39,14 @@
                             style="width:300px"
                             placeholder="请输入策略名称" />
                 </el-form-item>
+                <!-- :rules="[{
+                required: true, message: '值不能为空', trigger: 'blur'
+                },{
+                validator: validatePass2, trigger: 'change'
+                }]" -->
                 <el-form-item :prop="'ployTabs.' + pi + '.percent'"
                               :rules="[{
                                 required: true, message: '值不能为空', trigger: 'blur'
-                              },{
-                                validator: validatePass2, trigger: 'change'
                               }]"
                               class="shun-label">
                   <div slot="label">
@@ -56,7 +59,13 @@
                                    :precision="2"
                                    :min="0"
                                    :max="100"
-                                   :step="10" />%
+                                   :step="10"
+                                   @change="handleChangePercent" />%
+                  <el-alert :title="'当前客群总和'+groupItem.totalPercent+'%'"
+                            style="display:inline;margin-left:10px;"
+                            :closable="false"
+                            :type="groupItem.totalPercent===100?'success':'error'" />
+                  <!-- {{ groupItem.totalPercen }} -->
                 </el-form-item>
                 <el-form-item required
                               label="推荐产品：">
@@ -72,7 +81,7 @@
                           style="width: 100%;margin-bottom:18px;">
                   <el-table-column prop="groupName"
                                    label="组合" />
-                  <el-table-column prop="amount1"
+                  <el-table-column prop="income"
                                    min-width="100"
                                    label="综合收益" />
                   <el-table-column prop="productName"
@@ -401,7 +410,7 @@ const CHANNEL_OPT = [
     }, {
       id: '2',
       name: '规则型',
-      con: 'el-icon-tickets'
+      icon: 'el-icon-tickets'
     }]
   }
 ]
@@ -461,6 +470,8 @@ export default {
           name: '群组1',
           people: 221324,
           desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
+          // 当前分发范围设置总和
+          totalPercent: 100,
           // 策略
           ployTabs: [{
             // 策略名称
@@ -472,7 +483,7 @@ export default {
             // 产品
             product: {
               groupName: '组合A',
-              amount1: '3.065-3.385%',
+              income: '3.065-3.385%',
               list: [
                 {
                   productName: '顺盈2号',
@@ -519,6 +530,7 @@ export default {
         {
           name: '群组2',
           people: 1324123,
+          totalPercent: 100,
           ployTabs: [],
           // v-model值
           ployTabsValue: '0',
@@ -564,11 +576,18 @@ export default {
       const num = this.group[i].people.toFixed(0)
       gsap.to(this.$data, { duration: 0.5, tweenedNumber: num })
     },
+    getTotalPercent(gi) {
+      let p = 0
+      this.group[gi].ployTabs.forEach((n, i) => {
+        p += n.percent
+      })
+      return p
+    },
     addTab(gi) {
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
       this.group[gi].ployTabs.forEach((n, i) => {
-        percent = (percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2)
+        percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
       })
       console.log(percent)
       this.group[gi].ployTabs.push({
@@ -584,6 +603,8 @@ export default {
         channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
       })
       this.group[gi].ployTabsValue = newTabName
+      this.group[gi].totalPercent = this.getTotalPercent(gi)
+      // console.log(typeof this.group[gi].totalPercent, typeof percent)
     },
     removeTab(targetName, gi) {
       this.$confirm('确认删除？')
@@ -603,24 +624,34 @@ export default {
 
           this.group[gi].ployTabsValue = activeName
           this.group[gi].ployTabs = tabs.filter(tab => tab.name !== targetName)
+          this.group[gi].totalPercent = this.getTotalPercent(gi)
         })
         .catch(() => {
         })
     },
     // 分发百分比校验
-    validatePass2(rule, value, callback) {
-      console.log(this.$refs.form0.validate)
+    // validatePass2(rule, value, callback) {
+    //   console.log(this.$refs.form0.validate)
+    //   let total = 0
+    //   this.group[+this.groupName].ployTabs.forEach((n, i) => {
+    //     // console.log(n.percent)
+    //     total += n.percent
+    //   })
+    //   if (total > 100) {
+    //     callback(new Error('分发范围总和不能大于100%'))
+    //   }
+    //   // console.log(valid)
+    //   // return valid.
+    //   // console.log(rule, value, callback, source, options, caonima)
+    // },
+    handleChangePercent() {
       let total = 0
       this.group[+this.groupName].ployTabs.forEach((n, i) => {
         // console.log(n.percent)
         total += n.percent
       })
-      if (total > 100) {
-        callback(new Error('分发范围总和不能大于100%'))
-      }
-      // console.log(valid)
-      // return valid.
-      // console.log(rule, value, callback, source, options, caonima)
+      // console.log(total)
+      this.group[+this.groupName].totalPercent = total
     },
     addProduct(gi, pi) {
       // console.log(gi, pi)
@@ -652,13 +683,13 @@ export default {
       return data.list.map((n, i) => {
         return Object.assign({
           groupName: data.groupName,
-          amount1: data.amount1,
+          income: data.income,
           total: data.list.length
         }, n)
       })
     },
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.property === 'groupName' || column.property === 'amount1') {
+      if (column.property === 'groupName' || column.property === 'income') {
         if (rowIndex === 0) {
           return {
             rowspan: row.total,
@@ -736,6 +767,8 @@ export default {
       color: #888;
       font-size: 14px;
       flex: 1;
+      display: flex;
+      align-items: center;
       b {
         color: #444;
         font-size: 18px;

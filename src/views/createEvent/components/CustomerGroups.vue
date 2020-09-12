@@ -55,7 +55,7 @@
                                :value="optItem.value" />
                   </el-select>
                 </el-form-item>
-                <span style="margin:0 10px;">:</span>
+                <span style="margin:0 10px;color:#224191;"> > </span>
                 <el-form-item :prop="'target.'+i+'.targetValue'"
                               :rules="{
                                 required: true, message: '请输入正确的目标值', trigger: 'blur'
@@ -103,16 +103,19 @@
               <el-switch v-model="form.contrast"
                          active-text="开"
                          inactive-text="关" />
-              <el-input-number v-model="form.contrastValue"
-                               :disabled="!form.contrast"
-                               style="margin-left:20px;"
-                               controls-position="right"
-                               :step="5"
-                               :min="1"
-                               :max="30" />
-              %
+              <template v-if="form.contrast">
+                <el-input-number v-model="form.contrastValue"
+                                 :disabled="!form.contrast"
+                                 style="margin:0 5px 0 20px;"
+                                 controls-position="right"
+                                 :step="5"
+                                 :min="1"
+                                 :max="30" />
+                %
+              </template>
             </el-form-item>
-            <el-form-item label="抽样方式：">
+            <el-form-item v-show="form.contrast"
+                          label="抽样方式：">
               <el-radio-group v-model="form.sample">
                 <el-radio label="1">随机抽样</el-radio>
                 <el-radio disabled

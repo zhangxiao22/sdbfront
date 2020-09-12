@@ -10,7 +10,7 @@
                       icon-class="_create" />
           </div>
           <div slot="description"
-               class="register">
+               class="register step-detail">
             <div v-show="stepDesc.name"
                  class="name item elip">{{ stepDesc.name }}</div>
             <el-tag v-show="stepDesc.type"
@@ -19,16 +19,10 @@
                     type="warning">{{ stepDesc.type }}</el-tag>
             <div v-show="stepDesc.time.length"
                  class="item time-group"
-                 style="display:flex;">
-              <b>
-                <i class="el-icon-time"
-                   style="font-weight:bold;" />
-                起止日期：
-              </b>
-              <div class="time">
-                <div class="time-item">{{ stepDesc.time[0] }}</div>
-                <div class="time-item">{{ stepDesc.time[1] }}</div>
-              </div>
+                 style="display:flex;align-items:center;">
+              <i class="el-icon-time"
+                 style="margin-right:5px;" />
+              <div class="time">{{ stepDesc.time[0] }} 至 {{ stepDesc.time[1] }}</div>
             </div>
           </div>
         </el-step>
@@ -38,10 +32,11 @@
                       icon-class="_users" />
           </div>
 
-          <div slot="description">
+          <div slot="description"
+               class="group step-detail">
             <div v-show="stepDesc.customerCount"
                  class="customer-count">
-              <svg-icon style="font-size:18px;margin-right:5px;"
+              <svg-icon style="margin-right:5px;"
                         icon-class="group" />
               {{ parseInt(stepDesc.customerCount).toLocaleString() }}
             </div>
@@ -181,7 +176,7 @@ export default {
     }
     ::v-deep .el-step__icon.is-text {
       // border: 1px solid;
-      font-size: 22px;
+      font-size: 24px;
       border: none;
       filter: grayscale(100%);
       opacity: 0.4;
@@ -207,13 +202,20 @@ export default {
     ::v-deep.el-step__title.is-success {
       color: #090;
     }
+    .step-detail {
+      color: #666;
+      font-size: 12px;
+    }
     .register {
       display: flex;
       flex-flow: column;
       align-items: flex-start;
 
       .item {
-        margin-top: 5px;
+        margin-top: 10px;
+        &:first-child {
+          margin-top: 0;
+        }
       }
 
       .name {
@@ -223,49 +225,10 @@ export default {
         line-height: 18px;
         color: $blue;
       }
-
-      .type {
-      }
-
-      .time-group {
-        .time {
-          color: #888;
-          position: relative;
-
-          &::before {
-            position: absolute;
-            content: "";
-            left: 2px;
-            top: 10px;
-            bottom: 10px;
-            width: 1px;
-            background: #409eff;
-            transform: translateX(-50%) scaleX(0.5);
-          }
-
-          .time-item {
-            position: relative;
-            padding-left: 10px;
-
-            &::before {
-              position: absolute;
-              content: "";
-              width: 4px;
-              height: 4px;
-              border-radius: 50%;
-              background: #409eff;
-              left: 0;
-              top: 50%;
-              transform: translateY(-50%);
-            }
-          }
-        }
-      }
     }
     .customer-count {
       display: flex;
       align-items: center;
-      color: $blue;
     }
   }
   .content-container {
