@@ -16,10 +16,19 @@
         <span class="message-text">未读信息</span>
       </div>
 
-      <img class="profile"
-           src="@/assets/profile.png">
-      <div class="user-name">张三</div>
-      <div class="user-authority">营销规划岗</div>
+      <el-dropdown trigger="click">
+        <span class="el-dropdown-link">
+          <img class="profile"
+               :src="user.avatar">
+          <div class="user-name">{{ user.name }}</div>
+          <div class="user-authority">{{ user.suBranchName }}</div>
+          <i class="el-icon-arrow-down el-icon--right" />
+        </span>
+        <el-dropdown-menu slot="dropdown"
+                          @command="handleCommand">
+          <el-dropdown-item @click.native="logout">切换用户</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
 
     </div>
   </div>
@@ -27,8 +36,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Breadcrumb from '@/components/Breadcrumb'
-import Hamburger from '@/components/Hamburger'
+// import Breadcrumb from '@/components/Breadcrumb'
+// import Hamburger from '@/components/Hamburger'
 
 export default {
   components: {
@@ -37,17 +46,19 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'sidebar',
-      'avatar'
+      'user'
     ])
   },
   methods: {
-    toggleSideBar() {
-      this.$store.dispatch('app/toggleSideBar')
+    // toggleSideBar() {
+    //   this.$store.dispatch('app/toggleSideBar')
+    // },
+    handleCommand(command) {
+      this.$message('click on item ' + command)
     },
     async logout() {
       await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+      this.$router.push(`/start?redirect=${this.$route.fullPath}`)
     }
   }
 }
@@ -105,22 +116,27 @@ export default {
       }
     }
 
-    .profile {
-      margin-left: 28px;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
+    .el-dropdown-link {
       cursor: pointer;
-    }
+      display: flex;
+      align-items: center;
+      .profile {
+        margin-left: 28px;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
 
-    .user-name {
-      margin-left: 8px;
-      cursor: pointer;
-    }
+      .user-name {
+        margin-left: 8px;
+        cursor: pointer;
+      }
 
-    .user-authority {
-      margin-left: 8px;
-      cursor: pointer;
+      .user-authority {
+        margin-left: 8px;
+        cursor: pointer;
+      }
     }
   }
 }

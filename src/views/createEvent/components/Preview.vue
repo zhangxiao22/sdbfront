@@ -509,7 +509,7 @@ export default {
       color: #666;
       &.active {
         border: 1px solid rgba(34, 65, 145, 0.4);
-        box-shadow: 0 1px 5px rgba(34, 65, 145, 0.1);
+        box-shadow: 0 1px 5px rgba(34, 65, 145, 0.05);
         opacity: 1;
         transform: scale(1);
         color: #444;
@@ -535,18 +535,35 @@ export default {
     width: 100%;
     box-sizing: border-box;
     padding: 15px 20px 20px;
-    --swiper-navigation-color: #224191; /* 单独设置按钮颜色 */
-    --swiper-navigation-size: 40px; /* 设置按钮大小 */
+    --swiper-navigation-color: #fff; /* 单独设置按钮颜色 */
+    --swiper-navigation-size: 20px; /* 设置按钮大小 */
+    .swiper-button-prev,
+    .swiper-button-next {
+      opacity: 0.8;
+      transition: opacity 0.3s;
+      width: 40px;
+      height: 40px;
+      // border: 1px solid #c6cee3;
+      border-radius: 4px;
+      background: $blue;
+      &:hover {
+        opacity: 1;
+      }
+    }
     .swiper-button-prev {
-      left: 30px;
+      left: 15px;
     }
     .swiper-button-next {
-      right: 30px;
+      right: 15px;
     }
     * {
       box-sizing: border-box;
     }
     .swiper-slide {
+      // opacity: 0;
+      // &.swiper-slide-active {
+      //   opacity: 1;
+      // }
       .swiper-no-swiping {
         cursor: text;
       }

@@ -1,6 +1,6 @@
 <template>
   <div class="app-wrapper">
-    <navbar />
+    <header-bar />
     <div class="main-container">
       <shun-sidebar />
       <app-main />
@@ -9,13 +9,13 @@
 </template>
 
 <script>
-import { Navbar, ShunSidebar, AppMain } from './components'
+import { HeaderBar, ShunSidebar, AppMain } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 
 export default {
   name: 'Layout',
   components: {
-    Navbar,
+    HeaderBar,
     ShunSidebar,
     AppMain
   },

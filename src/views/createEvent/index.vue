@@ -10,12 +10,11 @@
           </div>
           <div slot="description"
                class="register step-detail">
-            <div v-show="stepDesc.name"
-                 class="name item elip">{{ stepDesc.name }}</div>
-            <el-tag v-show="stepDesc.type"
-                    class="item"
+            <div class="name item elip">{{ eventData.baseInfo.eventName }}</div>
+
+            <el-tag class="item"
                     size="mini"
-                    type="warning">{{ stepDesc.type }}</el-tag>
+                    type="warning">{{ eventData.baseInfo.eventCategory }}</el-tag>
             <div v-show="stepDesc.time.length"
                  class="item time-group"
                  style="display:flex;align-items:center;">
@@ -86,6 +85,7 @@
 
 <script>
 import { Register, CustomerGroups, Ploy, Preview } from './components'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {
@@ -120,10 +120,20 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 0
+      stepActive: 0,
+      eventData: {
+        baseInfo: {
+          eventName: '',
+          eventType: '',
+          eventStartDate: '',
+          eventEndDate: '',
+          eventDescription: ''
+        }
+      }
     }
   },
   computed: {
+
   },
   methods: {
     handleClick(i) {

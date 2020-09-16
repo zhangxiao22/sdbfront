@@ -6,16 +6,16 @@
              label-width="110px"
              class="reg-form">
       <el-form-item label="事件名称"
-                    prop="name">
+                    prop="eventName">
         <el-input v-model="form.name" />
       </el-form-item>
       <el-form-item label="事件类型"
-                    prop="type">
+                    prop="eventCategory">
         <el-select v-model="form.type"
                    style="width:100%"
                    placeholder="请选择事件类型">
 
-          <el-option v-for="item in typeOpt"
+          <el-option v-for="item in eventCategoryOpt"
                      :key="item.value"
                      :label="item.label"
                      :value="item.value" />
@@ -37,16 +37,13 @@
         <el-input v-model="form.desc"
                   type="textarea" />
       </el-form-item>
-      <!-- <el-form-item>
-        <el-button icon="el-icon-refresh"
-                   @click="resetForm('form')">重置</el-button>
-      </el-form-item> -->
 
     </el-form>
   </div>
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'Register',
@@ -59,17 +56,17 @@ export default {
         desc: ''
       },
       rules: {
-        name: [
+        eventName: [
           { required: true, message: '请输入事件名称', trigger: 'blur' }
         ],
-        type: [
+        eventCategory: [
           { required: true, message: '请选择事件类型', trigger: 'change' }
         ],
         time: [
           { required: true, message: '请选择起止日期', trigger: 'change' }
         ]
       },
-      typeOpt: [
+      eventCategoryOpt: [
         {
           value: 1,
           label: '事件类型1'
@@ -79,35 +76,40 @@ export default {
           label: '事件类型2'
         }
       ]
-
     }
   },
   computed: {
+
   },
   watch: {
-    form: {
-      handler(newVal, oldVal) {
-        // console.log(newVal)
-        const data = {
-          name: '',
-          type: '',
-          time: []
-        }
-        data.name = newVal.name
-        this.typeOpt.forEach((n, i) => {
-          if (n.value === newVal.type) {
-            data.type = n.label
-          }
-        })
-        data.time = newVal.time || []
-        console.log(data)
-        this.$emit('renderSteps', data)
-      },
-      deep: true,
-      immediate: true
-    }
+    // form: {
+    //   handler(newVal, oldVal) {
+    //     // console.log(newVal)
+    //     const data = {
+    //       name: '',
+    //       type: '',
+    //       time: []
+    //     }
+    //     data.name = newVal.name
+    //     this.typeOpt.forEach((n, i) => {
+    //       if (n.value === newVal.type) {
+    //         data.type = n.label
+    //       }
+    //     })
+    //     data.time = newVal.time || []
+    //     console.log(data)
+    //     this.$emit('renderSteps', data)
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
   },
-
+  created() {
+    console.log(1, this.$root)
+  },
+  mounted() {
+    // console.log(2, this.$root)
+  },
   methods: {
     next(cb) {
       this.$refs.form.validate((valid) => {

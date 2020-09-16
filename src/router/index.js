@@ -9,7 +9,12 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/404',
-    component: () => import('@/views/404'),
+    component: () => import('@/views/errPage/404'),
+    hidden: true
+  },
+  {
+    path: '/start',
+    component: () => import('@/views/start'),
     hidden: true
   },
   {
@@ -52,15 +57,26 @@ export const constantRoutes = [
         name: 'Interest',
         component: () => import('@/views/interest/index'),
         meta: { title: '权益库', icon: 'list' }
-      },
+      }
+
+    ]
+  }
+]
+
+export const asyncRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    children: [
       {
         path: 'test',
         name: 'Test',
         component: () => import('@/views/test/index'),
-        meta: { title: '权益库', icon: 'list' }
+        meta: { title: 'test', icon: 'list', roles: ['admin'] }
       }
     ]
   },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

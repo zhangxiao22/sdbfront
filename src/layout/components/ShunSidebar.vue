@@ -4,7 +4,6 @@
       <el-tooltip v-if="item.type === 'icon'"
                   :key="i"
                   class="item"
-                  effect="light"
                   :content="item.title"
                   placement="right">
         <span class="svg-container"
@@ -23,7 +22,7 @@
 </template>
 
 <script>
-// import {mapGetters} from 'vuex'
+import { mapGetters } from 'vuex'
 
 export default {
   components: {},
@@ -33,9 +32,9 @@ export default {
     }
   },
   computed: {
-    // ...mapGetters([
-    //   'name'
-    // ]),
+    ...mapGetters([
+      'routes'
+    ])
 
   },
   watch: {
@@ -54,16 +53,19 @@ export default {
         })
       },
       deep: true
+    },
+    routes(val) {
+      this.getMenu()
     }
   },
   created() {
     this.getMenu()
+    // console.log('this.routes???', this.routes)
   },
   methods: {
     getMenu() {
       this.menu = []
-      // console.log(this.$router.options.routes)
-      this.$router.options.routes.forEach((n, i) => {
+      this.routes.forEach((n, i) => {
         if (n.path === '/') {
           n.children.forEach((m, j) => {
             // console.log(m)
