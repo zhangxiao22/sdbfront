@@ -1,30 +1,28 @@
 <template>
   <div class="container">
-    <el-form ref="form"
-             :model="form"
+    <el-form ref="regFormRef"
+             :model="baseInfo"
              :rules="rules"
              label-width="110px"
              class="reg-form">
       <el-form-item label="事件名称"
                     prop="eventName">
-        <el-input v-model="form.name" />
+        <el-input v-model="baseInfo.eventName" />
       </el-form-item>
       <el-form-item label="事件类型"
                     prop="eventCategory">
-        <el-select v-model="form.type"
+        <el-select v-model="baseInfo.eventCategory"
                    style="width:100%"
                    placeholder="请选择事件类型">
-
           <el-option v-for="item in eventCategoryOpt"
                      :key="item.value"
                      :label="item.label"
                      :value="item.value" />
-
         </el-select>
       </el-form-item>
       <el-form-item label="起止日期"
-                    prop="time">
-        <el-date-picker v-model="form.time"
+                    prop="eventDate">
+        <el-date-picker v-model="baseInfo.eventDate"
                         style="width:100%"
                         type="daterange"
                         value-format="yyyy-MM-dd"
@@ -34,10 +32,9 @@
       </el-form-item>
       <el-form-item label="事件描述"
                     prop="desc">
-        <el-input v-model="form.desc"
+        <el-input v-model="baseInfo.eventDescription"
                   type="textarea" />
       </el-form-item>
-
     </el-form>
   </div>
 </template>
@@ -49,6 +46,7 @@ export default {
   name: 'Register',
   data() {
     return {
+      baseInfo: this.$parent.eventData.baseInfo,
       form: {
         name: '',
         type: '',
@@ -62,7 +60,7 @@ export default {
         eventCategory: [
           { required: true, message: '请选择事件类型', trigger: 'change' }
         ],
-        time: [
+        eventDate: [
           { required: true, message: '请选择起止日期', trigger: 'change' }
         ]
       },
@@ -82,47 +80,48 @@ export default {
 
   },
   watch: {
-    // form: {
-    //   handler(newVal, oldVal) {
-    //     // console.log(newVal)
-    //     const data = {
-    //       name: '',
-    //       type: '',
-    //       time: []
-    //     }
-    //     data.name = newVal.name
-    //     this.typeOpt.forEach((n, i) => {
-    //       if (n.value === newVal.type) {
-    //         data.type = n.label
-    //       }
-    //     })
-    //     data.time = newVal.time || []
-    //     console.log(data)
-    //     this.$emit('renderSteps', data)
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // }
+    baseInfo: {
+      handler(newVal, oldVal) {
+        // console.log(newVal)
+        this.changePicker()
+        this.changeEventCategory()
+        // this.assignDate()
+      },
+      deep: true,
+      immediate: true
+    }
   },
   created() {
-    console.log(1, this.$root)
   },
   mounted() {
     // console.log(2, this.$root)
   },
   methods: {
-    next(cb) {
-      this.$refs.form.validate((valid) => {
-        if (valid) {
-          cb()
-        } else {
-          console.log('error submit!!')
-          return false
+    validateAndNext() {
+      return new Promise((resolve, reject) => {
+        this.$refs.regFormRef.validate((valid) => {
+          if (valid) {
+            resolve()
+          } else {
+            reject()
+          }
+        })
+      })
+    },
+    changeEventCategory() {
+      this.eventCategoryOpt.forEach((n, i) => {
+        if (n.value === this.baseInfo.eventCategory) {
+          this.baseInfo.eventCategoryValue = n.label
         }
       })
     },
-    resetForm(formName) {
-      this.$refs[formName].resetFields()
+    changePicker() {
+      if (this.baseInfo.eventDate) {
+        [this.baseInfo.eventStartDate, this.baseInfo.eventEndDate] = this.baseInfo.eventDate
+      } else {
+        this.baseInfo.eventStartDate = ''
+        this.baseInfo.eventEndDate = ''
+      }
     }
   }
 }

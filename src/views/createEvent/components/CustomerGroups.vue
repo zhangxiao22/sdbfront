@@ -290,8 +290,10 @@ export default {
     this.tabDrop()
   },
   methods: {
-    next(cb) {
-
+    validateAndNext() {
+      return new Promise(resolve => {
+        resolve()
+      })
     },
     download() {
       console.log(123)

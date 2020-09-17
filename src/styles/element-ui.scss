@@ -76,3 +76,11 @@
 .el-input-number.el-input-number--small.is-controls-right {
   height: 32px;
 }
+
+// 侧边栏
+.el-drawer__header {
+  margin-bottom: 20px;
+}
+.el-drawer__body {
+  min-height: 0;
+}

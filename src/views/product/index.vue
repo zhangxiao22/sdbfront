@@ -26,12 +26,14 @@
       </el-form>
     </div>
     <div class="table-container shun-card">
-      <el-table :data="tableData"
+      <el-table ref="table"
+                :data="tableData"
                 class="table"
                 size="medium"
                 max-height="500"
                 stripe
                 style="width: 100%"
+                @row-click="handleRowClick"
                 @selection-change="handleSelectionChange">
         <el-table-column v-if="showSelection"
                          type="selection"
@@ -58,7 +60,7 @@
         <el-table-column prop="end_time"
                          label="到期日"
                          min-width="100px" />
-        <el-table-column label="操作"
+        <!-- <el-table-column label="操作"
                          fixed="right"
                          width="100px">
           <template slot-scope="scope">
@@ -67,7 +69,7 @@
                    style="color:#F56C6C;">删除</div>
             </div>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
 
       <el-pagination :current-page="currentPage"
@@ -146,6 +148,9 @@ export default {
   },
   watch: {},
   methods: {
+    handleRowClick(row, col, event) {
+      this.$refs.table.toggleRowSelection(row)
+    },
     eventDetail(id) {
       this.$router.push({
         path: '/eventDetail', query: {
@@ -184,7 +189,7 @@ export default {
     margin-bottom: 16px;
 
     .title {
-      font-size: 20px;
+      font-size: 18px;
       color: #303133;
       font-weight: bold;
     }
@@ -209,7 +214,7 @@ export default {
 }
 .table-container {
   flex: 1;
-  padding: 6px 16px 16px;
+  padding: 6px 10px 10px;
 
   ::v-deep .el-tabs__nav-wrap::after {
     content: none;

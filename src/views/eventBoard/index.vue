@@ -389,7 +389,7 @@ export default {
 }
 .table-container {
   flex: 1;
-  padding: 6px 16px 16px;
+  padding: 6px 10px 10px;
 
   ::v-deep .el-tabs__nav-wrap::after {
     content: none;

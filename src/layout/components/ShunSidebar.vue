@@ -120,9 +120,12 @@ export default {
     color: #909399;
     font-size: 24px;
 
-    &:hover,
-    &.active {
+    &:hover {
       color: $blue;
+    }
+    &.active {
+      color: #fff;
+      background: $blue;
     }
     &:focus {
       border: none;

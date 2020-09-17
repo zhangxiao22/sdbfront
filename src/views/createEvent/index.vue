@@ -3,33 +3,30 @@
     <div class="steps-container shun-card">
       <el-steps direction="vertical"
                 :active="stepActive">
-        <el-step title="事件注册"
-                 @click.native="handleClick(0)">
+        <el-step title="事件注册">
           <div slot="icon">
             <svg-icon icon-class="_create" />
           </div>
           <div slot="description"
                class="register step-detail">
             <div class="name item elip">{{ eventData.baseInfo.eventName }}</div>
-
-            <el-tag class="item"
+            <el-tag v-show="eventData.baseInfo.eventCategory"
+                    class="item"
                     size="mini"
-                    type="warning">{{ eventData.baseInfo.eventCategory }}</el-tag>
-            <div v-show="stepDesc.time.length"
+                    type="warning">{{ eventData.baseInfo.eventCategoryValue }}</el-tag>
+            <div v-show="eventData.baseInfo.eventDate"
                  class="item time-group"
                  style="display:flex;align-items:center;">
               <i class="el-icon-time"
                  style="margin-right:5px;" />
-              <div class="time">{{ stepDesc.time[0] }} 至 {{ stepDesc.time[1] }}</div>
+              <div class="time">{{ eventData.baseInfo.eventStartDate }} 至 {{ eventData.baseInfo.eventEndDate }}</div>
             </div>
           </div>
         </el-step>
-        <el-step title="客群配置"
-                 @click.native="handleClick(1)">
+        <el-step title="客群配置">
           <div slot="icon">
             <svg-icon icon-class="_users" />
           </div>
-
           <div slot="description"
                class="group step-detail">
             <div v-show="stepDesc.customerCount"
@@ -41,30 +38,27 @@
           </div>
         </el-step>
         <el-step title="策略配置"
-                 description="策略配置描述"
-                 @click.native="handleClick(2)">
+                 description="策略配置描述">
           <div slot="icon">
             <svg-icon icon-class="_bulb" />
           </div>
         </el-step>
         <el-step title="发布预览"
-                 description="预览并发布"
-                 @click.native="handleClick(3)">
+                 description="预览并发布">
           <div slot="icon">
             <svg-icon icon-class="_eye" />
           </div>
-
         </el-step>
       </el-steps>
     </div>
     <div class="content-container shun-card">
       <div class="content">
         <component :is="component[stepActive].type"
-                   :ref="component[stepActive].ref"
-                   @renderSteps="renderSteps" />
+                   :ref="component[stepActive].ref" />
       </div>
       <div class="bottom-container">
-        <el-button icon="el-icon-document">保存</el-button>
+        <el-button icon="el-icon-document"
+                   @click="save">保存</el-button>
         <el-button :disabled="stepActive===0"
                    icon="el-icon-arrow-left"
                    @click="prev">
@@ -77,7 +71,10 @@
           <i class="el-icon-arrow-right el-icon--right" />
         </el-button>
         <el-button icon="el-icon-upload2"
-                   type="primary">发布</el-button>
+                   type="primary"
+                   :disabled="stepActive!==3"
+                   @click="publish">发布</el-button>
+        <!-- {{ eventData.baseInfo }} -->
       </div>
     </div>
   </div>
@@ -120,11 +117,13 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 0,
+      stepActive: 2,
       eventData: {
         baseInfo: {
           eventName: '',
-          eventType: '',
+          eventCategory: '',
+          eventCategoryValue: '',
+          eventDate: '',
           eventStartDate: '',
           eventEndDate: '',
           eventDescription: ''
@@ -137,25 +136,43 @@ export default {
   },
   methods: {
     handleClick(i) {
-      this.stepActive = i
-      // console.log(i)
+      const ref = this.component[this.stepActive].ref
+      this.$refs[ref].validateAndNext().then(() => {
+        this.stepActive = i
+      }).catch(() => {
+        // console.log('err')
+      })
     },
     next() {
-      // this.$refs.contentRef[this.stepActive].next(() => {
-      //   if (this.stepActive < 4) {
-      //     this.stepActive++
-      //   }
-      // })
-      this.stepActive++
+      const ref = this.component[this.stepActive].ref
+      this.$refs[ref].validateAndNext().then(() => {
+        this.stepActive++
+      }).catch(() => {
+        // console.log('err')
+      })
     },
     prev() {
       if (this.stepActive > 0) {
         this.stepActive--
       }
     },
-    renderSteps(data) {
-      this.stepDesc = Object.assign({}, this.stepDesc, data)
-      // console.log(this.stepDesc)
+
+    getData() {
+      const data = {
+        baseInfo: {}
+      }
+      data.baseInfo.eventName = this.eventData.baseInfo.eventName
+      data.baseInfo.eventCategory = this.eventData.baseInfo.eventCategory
+      data.baseInfo.eventStartDate = this.eventData.baseInfo.eventStartDate
+      data.baseInfo.eventEndDate = this.eventData.baseInfo.eventEndDate
+      data.baseInfo.eventDescription = this.eventData.baseInfo.eventDescription
+      return data
+    },
+    save() {
+      console.log(this.getData())
+    },
+    publish() {
+      console.log(this.getData())
     }
   }
 }
@@ -175,9 +192,9 @@ export default {
     bottom: 0;
     padding: 20px;
     overflow: auto;
-    .el-step {
-      cursor: pointer;
-    }
+    // .el-step {
+    //   cursor: pointer;
+    // }
     ::v-deep .el-step__title.is-process,
     ::v-deep .el-step__head.is-process {
       color: $blue;

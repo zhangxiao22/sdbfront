@@ -1,30 +1,14 @@
 <template>
   <div class="container">
+    <!-- 表格名字 + 一个全局按钮（如新增） -->
     <div class="title-container">
-      <div class="title">权益库</div>
+      <div class="title">{{ title }}</div>
     </div>
+    <!-- 筛选条件 -->
     <div class="filter-container-box shun-card">
-      <el-form :inline="true"
-               :model="filterForm"
-               class="filter-container">
-        <el-form-item label="权益名称：">
-          <el-input v-model="filterForm.value1"
-                    style="width:300px"
-                    placeholder="搜索事件名称"
-                    clearable
-                    prefix-icon="el-icon-search" />
-        </el-form-item>
-        <el-form-item class="filter-item-end">
-          <el-button type="primary"
-                     icon="el-icon-search">
-            搜索
-          </el-button>
-          <el-button icon="el-icon-refresh">
-            重置
-          </el-button>
-        </el-form-item>
-      </el-form>
+      <slot name="filter" />
     </div>
+    <!-- 表格 -->
     <div class="table-container shun-card">
       <el-table ref="table"
                 :data="tableData"
@@ -39,24 +23,15 @@
                          type="selection"
                          fixed="left"
                          width="55" />
-        <el-table-column prop="name"
-                         label="名称"
-                         min-width="300px" />
-        <el-table-column prop="type"
-                         label="类型" />
-        <!-- <el-table-column label="操作"
-                         fixed="right"
-                         width="100px">
-          <template slot-scope="scope">
-            <div class="action-group">
-              <div class="btn"
-                   style="color:#F56C6C;">删除</div>
-            </div>
-          </template>
-        </el-table-column> -->
+        <template v-for="(item,index) of tableColumnList">
+          <el-table-column :key="index"
+                           :prop="item.prop"
+                           :label="item.label"
+                           min-width="300px" />
+        </template>
       </el-table>
       <!-- {{ selection }} -->
-      <el-pagination :current-page="currentPage"
+      <!-- <el-pagination :current-page="currentPage"
                      background
                      style="margin-top:10px;text-align:right;"
                      :page-sizes="[10, 20, 30]"
@@ -64,30 +39,29 @@
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="400"
                      @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange" />
+                     @current-change="handleCurrentChange" /> -->
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Product',
+  name: 'ShunTable',
   props: {
-    showSelection: {
-      type: Boolean,
-      default: false
-    },
-    value: {
-      type: [String, Number],
-      default: null
+    title: {
+      type: String,
+      default: ''
     }
   },
   data() {
     return {
-      filterForm: {
-        value1: ''
-      },
-      activeName: '0',
+      showSelection: true,
+      tableColumnList: [
+        {
+          prop: 'name',
+          label: '名称'
+        }
+      ],
       tableData: [
         {
           id: '1',
@@ -197,7 +171,7 @@ export default {
 }
 .table-container {
   flex: 1;
-  padding: 6px 10px 10px;
+  padding: 6px 16px 16px;
 
   .table {
     ::v-deep .el-table__fixed-header-wrapper .el-checkbox {

@@ -301,7 +301,7 @@
                size="80%"
                direction="rtl">
       <div class="drawer-container">
-        <Product ref="productRef"
+        <product ref="productRef"
                  :show-selection="true" />
       </div>
       <div class="drawer-bottom">
@@ -318,8 +318,24 @@
                size="80%"
                direction="rtl">
       <div class="drawer-container">
-        <Interest ref="interestRef"
+        <interest ref="interestRef"
                   :show-selection="true" />
+      </div>
+      <div class="drawer-bottom">
+        <el-button type="primary"
+                   @click="submitInterest()">
+          确 认
+        </el-button>
+      </div>
+    </el-drawer>
+    <el-drawer title="选择话术"
+               class="el-drawer_product"
+               :visible.sync="showCRMWord"
+               size="80%"
+               direction="rtl">
+      <div class="drawer-container">
+        <word ref="wordRef"
+              :show-selection="true" />
       </div>
       <div class="drawer-bottom">
         <el-button type="primary"
@@ -337,8 +353,9 @@ import gsap from 'gsap'
 import Info from '@/components/Info'
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
+import Word from '@/views/word/index'
 import { isPhone } from '@/utils/validate'
-
+// import { getWordList } from '@/api/api'
 const CHANNEL_OPT = [
   {
     value: '1',
@@ -359,7 +376,8 @@ const CHANNEL_OPT = [
       id: '1',
       icon: 'el-icon-alarm-clock',
       name: '定时型'
-    }]
+    }],
+    model: []
   }, {
     value: '2',
     label: '短信',
@@ -416,7 +434,7 @@ const CHANNEL_OPT = [
 ]
 export default {
   components: {
-    Product, Info, Interest
+    Product, Info, Interest, Word
   },
   data() {
     return {
@@ -429,6 +447,8 @@ export default {
       showProduct: false,
       // 权益侧边栏
       showInterest: false,
+      // crm话术侧边栏
+      showCRMWord: false,
       // 定时型 下拉选项
       timingOpt: [
         {
@@ -567,6 +587,11 @@ export default {
   },
 
   methods: {
+    validateAndNext() {
+      return new Promise(resolve => {
+        resolve()
+      })
+    },
     beforeHandleGroupTabClick(activeName, oldActiveName) {
       this.animateNum(+activeName)
     },
@@ -726,7 +751,12 @@ export default {
 
     // crm话术
     addCRMWords(item) {
-      // todo
+      console.log(item)
+      // this.tempPloyItem = item
+      this.showCRMWord = true
+      // this.$nextTick(() => {
+      //   this.$refs.interestRef.select(item.interest.id)
+      // })
     },
     // 短信话术
     addSmsWords(item) {
@@ -867,7 +897,7 @@ export default {
   }
   .drawer-bottom {
     margin-top: auto;
-    padding: 0 20px 20px;
+    padding: 20px;
   }
 }
 </style>

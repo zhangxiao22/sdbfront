@@ -23,10 +23,18 @@ import request from '@/utils/request'
 //   })
 // }
 
+// 获取用户信息
 export function getUserInfo(params) {
   return request({
     url: '/login/getLoginUserInfo',
     method: 'post',
     params
+  })
+}
+// 获取话术列表
+export function getWordList() {
+  return request({
+    url: 'http://10.5.8.12:8848/resource/script/query/list',
+    method: 'get'
   })
 }
