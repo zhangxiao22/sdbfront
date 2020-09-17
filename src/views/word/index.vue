@@ -32,6 +32,7 @@
                 :data="tableData"
                 class="table"
                 size="medium"
+                max-height="500"
                 stripe
                 style="width: 100%"
                 @row-click="handleRowClick"
