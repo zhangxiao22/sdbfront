@@ -100,7 +100,7 @@ div:focus{
 
 .shun-card {
   border-radius: 2px;
-  box-shadow: 0 2px 10px rgba(0,0,0,.09);
+  box-shadow: 0 2px 10px rgba(0,0,0,.05);
   background-color: #fff;
 }
 
@@ -113,5 +113,21 @@ input::-webkit-inner-spin-button {
  
 input[type="number"] {
     -moz-appearance: textfield;
+}
+
+
+// 筛选条件公用样式
+.shun-filter-container-box {
+  margin-bottom: 10px;
+  padding: 0 15px;
+  overflow: hidden;
+  .shun-filter-container {
+    margin-top: 18px;
+    margin-right: -20px;
+    overflow-x: hidden;
+    .filter-item-end {
+      float: right;
+    }
+  }
 }
 

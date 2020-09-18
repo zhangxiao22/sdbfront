@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="30px" height="22px" viewBox="0 0 30 22" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Shape备份 2</title>
+    <defs>
+        <linearGradient x1="17.1218754%" y1="29.7520661%" x2="79.0946143%" y2="70.2479339%" id="linearGradient-1">
+            <stop stop-color="#6DBAF3" offset="0%"></stop>
+            <stop stop-color="#258BF2" offset="100%"></stop>
+        </linearGradient>
+        <path d="M295.216216,1159.1464 C288.378378,1161.37162 283.027027,1154.69597 275.594595,1157.87485 C275.297297,1157.87485 275,1158.51062 275,1159.1464 L275,1167.4115 C275,1168.36516 275.594595,1169.31883 276.783784,1169.00094 C283.918919,1166.45783 289.27027,1173.13348 296.108108,1170.27249 C296.702703,1169.9546 297,1169.31883 297,1168.68305 L297,1160.73584 C297,1159.78218 296.108108,1158.82851 295.216216,1159.1464 L295.216216,1159.1464 Z M286.157895,1167 C284.263158,1167 283,1165.73684 283,1163.84211 C283,1161.94737 284.263158,1161 286.157895,1161 C288.052632,1161 289,1162.26316 289,1163.84211 C289,1165.42105 287.736842,1167 286.157895,1167 Z" id="path-2"></path>
+        <filter x="-31.8%" y="-35.7%" width="163.6%" height="200.0%" filterUnits="objectBoundingBox" id="filter-3">
+            <feOffset dx="0" dy="2" in="SourceAlpha" result="shadowOffsetOuter1"></feOffset>
+            <feGaussianBlur stdDeviation="2" in="shadowOffsetOuter1" result="shadowBlurOuter1"></feGaussianBlur>
+            <feColorMatrix values="0 0 0 0 0.699269327   0 0 0 0 0.763651104   0 0 0 0 0.849581069  0 0 0 0.5 0" type="matrix" in="shadowBlurOuter1"></feColorMatrix>
+        </filter>
+    </defs>
+    <g id="营销结果看板" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(-271.000000, -1155.000000)" fill-rule="nonzero" id="Shape备份-2">
+            <g>
+                <use fill="black" fill-opacity="1" filter="url(#filter-3)" xlink:href="#path-2"></use>
+                <use fill="url(#linearGradient-1)" xlink:href="#path-2"></use>
+            </g>
+        </g>
+    </g>
+</svg>

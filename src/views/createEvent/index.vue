@@ -57,8 +57,8 @@
                    :ref="component[stepActive].ref" />
       </div>
       <div class="bottom-container">
-        <el-button icon="el-icon-document"
-                   @click="save">保存</el-button>
+        <!-- <el-button icon="el-icon-document"
+                   @click="save">保存</el-button> -->
         <el-button :disabled="stepActive===0"
                    icon="el-icon-arrow-left"
                    @click="prev">
@@ -73,7 +73,7 @@
         <el-button icon="el-icon-upload2"
                    type="primary"
                    :disabled="stepActive!==3"
-                   @click="publish">发布</el-button>
+                   @click="publish">提交审批</el-button>
         <!-- {{ eventData.baseInfo }} -->
       </div>
     </div>

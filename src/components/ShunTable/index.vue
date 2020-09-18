@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="shun-table-container">
     <!-- 表格名字 + 一个全局按钮（如新增） -->
     <div class="title-container">
       <div class="title">{{ title }}</div>
@@ -14,7 +14,6 @@
                 :data="tableData"
                 class="table"
                 size="medium"
-                max-height="500"
                 stripe
                 style="width: 100%"
                 @row-click="handleRowClick"
@@ -25,21 +24,30 @@
                          width="55" />
         <template v-for="(item,index) of tableColumnList">
           <el-table-column :key="index"
+                           :show-overflow-tooltip="!item.notShowOverflowTooltip"
                            :prop="item.prop"
                            :label="item.label"
-                           min-width="300px" />
+                           :min-width="item.minWidth">
+
+            <template slot-scope="scope">
+              <slot v-if="item.slot"
+                    :name="`${item.prop}Slot`"
+                    :row="scope.row" />
+              <template v-else>{{ scope.row[item.prop] }}</template>
+            </template>
+          </el-table-column>
         </template>
       </el-table>
       <!-- {{ selection }} -->
-      <!-- <el-pagination :current-page="currentPage"
+      <el-pagination :current-page="currentPage"
                      background
                      style="margin-top:10px;text-align:right;"
-                     :page-sizes="[10, 20, 30]"
-                     :page-size="100"
+                     :page-sizes="[5, 10, 20, 30]"
+                     :page-size="tableData.lang"
                      layout="total, sizes, prev, pager, next, jumper"
                      :total="400"
                      @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange" /> -->
+                     @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
@@ -51,57 +59,37 @@ export default {
     title: {
       type: String,
       default: ''
+    },
+    showSelection: {
+      type: Boolean,
+      default: false
+    },
+    tableData: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    tableColumnList: {
+      type: Array,
+      default() {
+        return []
+      }
     }
+
   },
   data() {
     return {
-      showSelection: true,
-      tableColumnList: [
-        {
-          prop: 'name',
-          label: '名称'
-        }
-      ],
-      tableData: [
-        {
-          id: '1',
-          name: '权益权益权益权益权益权益权益权益权益权益权益权益权益权益111',
-          type: '类型1'
-        },
-        {
-          id: '2',
-          name: '权益权益权益权益权益权益权益权益权益权益权益权益权益权益222',
-          type: '类型2'
-        },
-        {
-          id: '3',
-          name: '权益权益权益权益权益权益权益权益权益权益权益权益权益权益333',
-          type: '类型2'
-        },
-        {
-          id: '4',
-          name: '权益权益权益权益权益权益权益权益权益权益权益权益权益权益444',
-          type: '类型1'
-        }
-      ],
+
       currentPage: 1,
       selection: []
     }
   },
   watch: {
-    // value(val) {
-    //   console.log('????', val)
-    // }
+
   },
 
   methods: {
-    eventDetail(id) {
-      this.$router.push({
-        path: '/eventDetail', query: {
-          id
-        }
-      })
-    },
     handleRowClick(row, col, event) {
       this.$refs.table.toggleRowSelection(row)
     },
@@ -135,7 +123,7 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 
-.container {
+.shun-table-container {
   flex: 1;
   display: flex;
   flex-direction: column;

@@ -11,17 +11,21 @@ const tokens = {
 const users = {
   'admin-token': {
     roles: ['admin'],
-    // introduction: 'I am a super administrator',
     suBranchName: '支行名称1',
     avatar: 'https://ss2.bdstatic.com/70cFvnSh_Q1YnxGkpoWK1HF6hhy/it/u=3772671935,4236099565&fm=26&gp=0.jpg',
     name: '管理员'
   },
   'editor-token': {
     roles: ['editor'],
-    // introduction: 'I am an editor',
     suBranchName: '支行名称2',
     avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=1155743917,3051821294&fm=26&gp=0.jpg',
     name: '一般用户'
+  },
+  'boss-token': {
+    roles: ['boss'],
+    suBranchName: '支行名称3',
+    avatar: 'https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=992578492,3552038133&fm=26&gp=0.jpg',
+    name: '行长'
   }
 }
 

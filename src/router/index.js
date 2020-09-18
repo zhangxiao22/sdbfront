@@ -83,6 +83,20 @@ export const asyncRoutes = [
     ]
   },
 
+  // 营销结果看板
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'resultsBoard',
+        name: 'ResultsBoard',
+        component: () => import('@/views/resultsBoard/index'),
+        meta: { title: '营销结果看板', icon: 'list', roles: ['boss'] }
+      }
+    ]
+  },
+
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

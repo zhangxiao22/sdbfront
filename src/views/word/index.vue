@@ -1,90 +1,56 @@
 <template>
   <div class="container">
-    <div class="title-container">
-      <div class="title">话术库</div>
-    </div>
-    <div class="filter-container-box shun-card">
-      <el-form :inline="true"
-               :model="filterForm"
-               class="filter-container">
-        <el-form-item label="话术分类：">
-          <el-select v-model="filterForm.type"
-                     placeholder="请选择">
-            <el-option v-for="item in typeOpt"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item class="filter-item-end">
-          <el-button type="primary"
-                     icon="el-icon-search">
-            搜索
-          </el-button>
-          <el-button icon="el-icon-refresh">
-            重置
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div class="table-container shun-card">
-      <el-table ref="table"
-                :data="tableData"
-                class="table"
-                size="medium"
-                max-height="500"
-                stripe
-                style="width: 100%"
-                @row-click="handleRowClick"
-                @selection-change="handleSelectionChange">
-        <el-table-column v-if="showSelection"
-                         type="selection"
-                         fixed="left"
-                         width="55" />
-        <el-table-column prop="content"
-                         label="话术内容"
-                         min-width="300px" />
-        <el-table-column prop="category"
-                         label="话术分类"
-                         min-width="100px" />
-        <el-table-column prop="desc"
-                         label="话术说明"
-                         min-width="200px" />
-        <el-table-column prop="params"
-                         label="参数说明"
-                         min-width="180px">
-          <template slot-scope="scope">
-            <pre>{{ scope.row.params }}</pre>
-          </template>
-        </el-table-column>
-        <!-- <el-table-column label="操作"
-                         width="100px">
-          <template slot-scope="scope">
-            <div class="action-group">
-              <div class="btn"
-                   style="color:#F56C6C;">删除</div>
-            </div>
-          </template>
-        </el-table-column> -->
-      </el-table>
+    <shun-table title="话术库"
+                :show-selection="showSelection"
+                :table-data="tableData"
+                :table-column-list="tableColumnList">
+      <template v-slot:filter>
+        <el-form :inline="true"
+                 :model="filterForm"
+                 class="filter-container">
+          <el-form-item label="话术内容：">
+            <el-input v-model="filterForm.content"
+                      style="width:300px"
+                      placeholder="请输入话术内容"
+                      clearable />
+          </el-form-item>
+          <el-form-item label="话术分类：">
+            <el-select v-model="filterForm.type"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in typeOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
 
-      <el-pagination :current-page="currentPage"
-                     background
-                     style="margin-top:10px;text-align:right;"
-                     :page-sizes="[10, 20, 30]"
-                     :page-size="100"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="400"
-                     @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange" />
-    </div>
+          <el-form-item class="filter-item-end">
+            <el-button type="primary"
+                       icon="el-icon-search">
+              搜索
+            </el-button>
+            <el-button icon="el-icon-refresh">
+              重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </template>
+      <template v-slot:paramsSlot="props">
+        <pre>{{ props.row.params }}</pre>
+      </template>
+    </shun-table>
   </div>
 </template>
 
 <script>
+import ShunTable from '@/components/ShunTable/index'
 import { getWordList } from '@/api/api'
 export default {
   name: 'Product',
+  components: {
+    ShunTable
+  },
   props: {
     showSelection: {
       type: Boolean,
@@ -94,10 +60,32 @@ export default {
   data() {
     return {
       filterForm: {
+        content: '',
         type: ''
       },
       typeOpt: [],
       tableData: [],
+      tableColumnList: [
+        {
+          prop: 'content',
+          label: '话术内容',
+          minWidth: 300,
+          notShowOverflowTooltip: true
+        },
+        {
+          prop: 'category',
+          label: '话术分类'
+        },
+        {
+          prop: 'desc',
+          label: '话术说明'
+        },
+        {
+          prop: 'params',
+          label: '参数说明',
+          slot: true
+        }
+      ],
       currentPage: 1,
       selection: []
     }

@@ -1,7 +1,9 @@
 <template>
-  <div class="ploy-container">
+  <div ref="ployRef"
+       class="ploy-container">
     <el-tabs v-model="groupName"
              :before-leave="beforeHandleGroupTabClick">
+      {{ groupIndex }}{{ ployIndex }}
       <el-tab-pane v-for="(groupItem,gi) of group"
                    :key="gi"
                    :label="groupItem.name"
@@ -138,6 +140,7 @@
                 </el-form-item>
                 <!-- {{ ployItem.channel }} -->
                 <el-card v-for="(channelCardItem,ci) of ployItem.channel"
+                         ref="`channelRef${gi}${pi}${ci}`"
                          :key="ci"
                          shadow="hover"
                          style="margin-bottom:18px;"
@@ -576,8 +579,13 @@ export default {
   computed: {
     animatedNumber() {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()
+    },
+    groupIndex() {
+      return +this.groupName
+    },
+    ployIndex() {
+      return +this.group[this.groupIndex].ployTabsValue
     }
-
   },
   watch: {
 
@@ -734,6 +742,13 @@ export default {
           item.channel.push(JSON.parse(JSON.stringify(n)))
         }
       })
+      this.$nextTick(() => {
+        console.log(this.$refs.channelRef)
+        // todo
+        // this.$refs.pronbit.getBoundingClientRect().top
+        // document.querySelector('.content').scrollTop = 800
+      })
+
       const tempArr = item.channel.map(n => n.value)
       item.channelOpt.forEach((n, i) => {
         n.disabled = tempArr.includes(n.value)

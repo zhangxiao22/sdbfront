@@ -7,10 +7,10 @@
         新建营销事件
       </el-button>
     </div>
-    <div class="filter-container-box shun-card">
+    <div class="shun-filter-container-box shun-card">
       <el-form :inline="true"
                :model="filterForm"
-               class="filter-container">
+               class="shun-filter-container">
         <el-form-item label="事件名称：">
           <el-input v-model="filterForm.value3"
                     style="width:300px"
@@ -76,7 +76,6 @@
                 class="table"
                 size="medium"
                 stripe
-                max-height="500"
                 style="width: 100%">
         <el-table-column prop="id"
                          label="事件ID"
@@ -89,8 +88,7 @@
             <div class="name-group">
               <div class="top">
                 <div class="status">进行中</div>
-                <el-tooltip effect="light"
-                            :content="scope.row.name"
+                <el-tooltip :content="scope.row.name"
                             placement="top-start">
                   <div class="name elip bold"
                        @click="eventDetail(scope.row.id)">
@@ -371,19 +369,6 @@ export default {
 
     .button {
       margin-left: 12px;
-    }
-  }
-  .filter-container-box {
-    margin-bottom: 10px;
-    padding: 0 16px;
-    overflow: hidden;
-    .filter-container {
-      margin-top: 20px;
-      margin-right: -20px;
-      overflow-x: hidden;
-      .filter-item-end {
-        float: right;
-      }
     }
   }
 }

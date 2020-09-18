@@ -1,10 +1,11 @@
 <template>
   <div class="wscn-http401-container center-center">
-    <!-- <div>401</div> -->
     <el-button type="primary"
-               @click="next('admin-token')">管理员</el-button>
+               @click="next('editor-token')">一般员工</el-button>
     <el-button type="primary"
-               @click="next('editor-token')">非管理员</el-button>
+               @click="next('admin-token')">审批人员</el-button>
+    <el-button type="primary"
+               @click="next('boss-token')">高级管理员</el-button>
     <!-- {{ user }} -->
     <!-- {{ routes }} -->
   </div>
@@ -15,7 +16,7 @@ import { setToken, getToken, removeToken } from '@/utils/auth'
 import { mapGetters } from 'vuex'
 
 export default {
-  name: 'Page401',
+  name: 'Start',
   computed: {
     ...mapGetters([
       'user',
