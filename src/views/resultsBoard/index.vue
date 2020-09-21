@@ -77,10 +77,12 @@
           <div class="charts">
             <div class="charts-title">渠道分布</div>
             <div class="chart-left">
-              <PieChart id="pie-chart1" />
+              <PieChart id="1-pie-chart"
+                        :data="data_1_pie" />
             </div>
             <div class="chart-right">
-              <LineChart id="line-chart1"
+              <LineChart id="1-line-chart"
+                         :data="data_1_line"
                          alias="下发数量（万条）" />
             </div>
           </div>
@@ -115,10 +117,14 @@
           <div class="charts">
             <div class="charts-title">执行情况</div>
             <div class="chart-left">
-              <ScatterChart id="scatter-chart1" />
+              <ScatterChart id="2-scatter-chart"
+                            :data="data_2_scatter"
+                            alias-x="线索量（万条）"
+                            alias-y="执行率" />
             </div>
             <div class="chart-right">
-              <LineChart id="line-chart2"
+              <LineChart id="2-line-chart"
+                         :data="data_2_line"
                          alias="执行率" />
             </div>
           </div>
@@ -152,10 +158,14 @@
           <div class="charts">
             <div class="charts-title">购买情况</div>
             <div class="chart-left">
-              <ScatterChart id="scatter-chart2" />
+              <ScatterChart id="3-scatter-chart"
+                            :data="data_3_scatter"
+                            alias-x="购买金额(亿元)"
+                            alias-y="购买率" />
             </div>
             <div class="chart-right">
-              <LineChart id="line-chart3"
+              <LineChart id="3-line-chart"
+                         :data="data_3_line"
                          alias="购买率" />
             </div>
           </div>
@@ -189,10 +199,14 @@
           <div class="charts">
             <div class="charts-title">提升情况</div>
             <div class="chart-left">
-              <ScatterChart id="scatter-chart3" />
+              <ScatterChart id="4-scatter-chart"
+                            :data="data_4_scatter"
+                            alias-x="购买金额(亿元)"
+                            alias-y="购买率" />
             </div>
             <div class="chart-right">
-              <LineChart id="line-chart4"
+              <LineChart id="4-line-chart"
+                         :data="data_4_line"
                          alias="累计提升金额（亿元）" />
             </div>
           </div>
@@ -207,7 +221,7 @@
 import PieChart from './components/PieChart'
 import LineChart from './components/LineChart'
 import ScatterChart from './components/ScatterChart'
-
+import { getPie, getLine, getScatter } from '@/api/api'
 export default {
   components: {
     PieChart,
@@ -216,6 +230,14 @@ export default {
   },
   data() {
     return {
+      data_1_pie: [],
+      data_1_line: [],
+      data_2_scatter: [],
+      data_2_line: [],
+      data_3_scatter: [],
+      data_3_line: [],
+      data_4_scatter: [],
+      data_4_line: [],
       filterForm: {
         range: []
       },
@@ -258,9 +280,59 @@ export default {
 
   },
   watch: {},
+  created() {
+    this.get_1_pie()
+    this.get_1_line()
+    this.get_2_scatter()
+    this.get_2_line()
+    this.get_3_scatter()
+    this.get_3_line()
+    this.get_4_scatter()
+    this.get_4_line()
+  },
   mounted() {
   },
   methods: {
+    get_1_pie() {
+      getPie().then(res => {
+        this.data_1_pie = res.data
+      })
+    },
+    get_1_line() {
+      getLine().then(res => {
+        this.data_1_line = res.data
+      })
+    },
+    get_2_scatter() {
+      getScatter().then(res => {
+        this.data_2_scatter = res.data
+      })
+    },
+    get_2_line() {
+      getLine().then(res => {
+        this.data_2_line = res.data
+      })
+    },
+    get_3_scatter() {
+      getScatter().then(res => {
+        this.data_3_scatter = res.data
+      })
+    },
+    get_3_line() {
+      getLine().then(res => {
+        this.data_3_line = res.data
+      })
+    },
+    get_4_scatter() {
+      getScatter().then(res => {
+        this.data_4_scatter = res.data
+      })
+    },
+    get_4_line() {
+      getLine().then(res => {
+        this.data_4_line = res.data
+      })
+    }
   }
 }
 </script>
@@ -325,7 +397,7 @@ export default {
         display: flex;
         .text-box {
           display: inline-flex;
-          background: #f6f9fb;
+          background: #f4f9ff;
           align-items: center;
           justify-content: center;
           border-radius: 10px;
@@ -376,7 +448,7 @@ export default {
           left: 0;
         }
         .chart-left {
-          width: 500px;
+          width: 40%;
           margin-right: 20px;
         }
         .chart-right {

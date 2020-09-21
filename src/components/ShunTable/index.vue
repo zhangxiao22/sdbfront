@@ -11,13 +11,18 @@
     <!-- 表格 -->
     <div class="table-container shun-card">
       <el-table ref="table"
-                :data="tableData"
+                :data="displayData"
                 class="table"
                 size="medium"
                 stripe
                 style="width: 100%"
                 @row-click="handleRowClick"
                 @selection-change="handleSelectionChange">
+        <!-- index -->
+        <el-table-column v-if="showIndex"
+                         type="index"
+                         :index="indexMethod" />
+        <!-- 选择框 -->
         <el-table-column v-if="showSelection"
                          type="selection"
                          fixed="left"
@@ -25,10 +30,10 @@
         <template v-for="(item,index) of tableColumnList">
           <el-table-column :key="index"
                            :show-overflow-tooltip="!item.notShowOverflowTooltip"
+                           :sortable="item.sortable"
                            :prop="item.prop"
                            :label="item.label"
                            :min-width="item.minWidth">
-
             <template slot-scope="scope">
               <slot v-if="item.slot"
                     :name="`${item.prop}Slot`"
@@ -38,14 +43,15 @@
           </el-table-column>
         </template>
       </el-table>
-      <!-- {{ selection }} -->
+      {{ selection }}
+      <!-- {{ currentPage }}{{ pagesize }} -->
       <el-pagination :current-page="currentPage"
                      background
                      style="margin-top:10px;text-align:right;"
                      :page-sizes="[5, 10, 20, 30]"
-                     :page-size="tableData.lang"
+                     :page-size="pagesize"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="400"
+                     :total="tableData.length"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange" />
     </div>
@@ -60,7 +66,16 @@ export default {
       type: String,
       default: ''
     },
+    showIndex: {
+      type: Boolean,
+      default: false
+    },
     showSelection: {
+      type: Boolean,
+      default: false
+    },
+    // 是否多选
+    multiple: {
       type: Boolean,
       default: false
     },
@@ -80,9 +95,15 @@ export default {
   },
   data() {
     return {
-
+      pagesize: 10,
       currentPage: 1,
+      allSelection: [],
       selection: []
+    }
+  },
+  computed: {
+    displayData() {
+      return this.tableData.slice((this.currentPage - 1) * this.pagesize, this.currentPage * this.pagesize)
     }
   },
   watch: {
@@ -90,22 +111,31 @@ export default {
   },
 
   methods: {
+    indexMethod(index) {
+      return index + (this.currentPage - 1) * this.pagesize + 1
+    },
     handleRowClick(row, col, event) {
       this.$refs.table.toggleRowSelection(row)
     },
     handleSelectionChange(selection) {
-      if (selection.length > 1) {
-        this.$refs.table.clearSelection()
-        this.$refs.table.toggleRowSelection(selection.pop())
+      if (this.multiple) {
+        this.selection = selection
       } else {
-        this.selection = selection.pop()
+        if (selection.length > 1) {
+          this.$refs.table.clearSelection()
+          this.$refs.table.toggleRowSelection(selection.pop())
+        } else {
+          this.selection = selection.pop()
+        }
       }
     },
     handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
+      this.pagesize = val
     },
     handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
+      this.currentPage = val
+      this.allSelection.push(this.selection)
+      this.$refs.table.toggleRowSelection(this.allSelection)
     },
     select(id) {
       this.tableData.forEach((n, i) => {
@@ -163,7 +193,7 @@ export default {
 
   .table {
     ::v-deep .el-table__fixed-header-wrapper .el-checkbox {
-      display: none;
+      // display: none;
     }
     .action-group {
       display: flex;

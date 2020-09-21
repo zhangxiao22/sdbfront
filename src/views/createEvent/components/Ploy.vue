@@ -909,6 +909,9 @@ export default {
   }
   .drawer-container {
     padding: 0 20px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
   }
   .drawer-bottom {
     margin-top: auto;

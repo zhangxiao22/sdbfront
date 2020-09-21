@@ -2,6 +2,8 @@
   <div class="container">
     <shun-table title="话术库"
                 :show-selection="showSelection"
+                multiple
+                :show-index="true"
                 :table-data="tableData"
                 :table-column-list="tableColumnList">
       <template v-slot:filter>
@@ -74,7 +76,8 @@ export default {
         },
         {
           prop: 'category',
-          label: '话术分类'
+          label: '话术分类',
+          sortable: true
         },
         {
           prop: 'desc',
