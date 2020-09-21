@@ -115,7 +115,7 @@
           <div class="charts">
             <div class="charts-title">执行情况</div>
             <div class="chart-left">
-              <PieChart id="pie-chart2" />
+              <ScatterChart id="scatter-chart1" />
             </div>
             <div class="chart-right">
               <LineChart id="line-chart2"
@@ -152,7 +152,7 @@
           <div class="charts">
             <div class="charts-title">购买情况</div>
             <div class="chart-left">
-              <PieChart id="pie-chart3" />
+              <ScatterChart id="scatter-chart2" />
             </div>
             <div class="chart-right">
               <LineChart id="line-chart3"
@@ -189,7 +189,7 @@
           <div class="charts">
             <div class="charts-title">提升情况</div>
             <div class="chart-left">
-              <PieChart id="pie-chart4" />
+              <ScatterChart id="scatter-chart3" />
             </div>
             <div class="chart-right">
               <LineChart id="line-chart4"
@@ -206,11 +206,13 @@
 <script>
 import PieChart from './components/PieChart'
 import LineChart from './components/LineChart'
+import ScatterChart from './components/ScatterChart'
 
 export default {
   components: {
     PieChart,
-    LineChart
+    LineChart,
+    ScatterChart
   },
   data() {
     return {
@@ -360,7 +362,7 @@ export default {
       .charts {
         height: 400px;
         width: 100%;
-        padding: 40px 0;
+        padding: 40px 0 40px 40px;
         position: relative;
         flex: 1;
         min-width: 0;
@@ -371,9 +373,11 @@ export default {
           border-left: 4px solid $blue;
           padding-left: 4px;
           color: $blue;
+          left: 0;
         }
         .chart-left {
           width: 500px;
+          margin-right: 20px;
         }
         .chart-right {
           flex: 1;
