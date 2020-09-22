@@ -342,7 +342,7 @@
       </div>
       <div class="drawer-bottom">
         <el-button type="primary"
-                   @click="submitInterest()">
+                   @click="submitWord()">
           确 认
         </el-button>
       </div>
@@ -712,6 +712,12 @@ export default {
       this.tempPloyItem.interest = val
       this.showInterest = false
     },
+    submitWord() {
+      const val = this.$refs.wordRef.getVal()
+      // this.tempPloyItem.interest = val
+      this.showCRMWord = false
+    },
+
     parseTable(data) {
       return data.list.map((n, i) => {
         return Object.assign({

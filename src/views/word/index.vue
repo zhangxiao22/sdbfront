@@ -76,8 +76,8 @@ export default {
         },
         {
           prop: 'category',
-          label: '话术分类',
-          sortable: true
+          label: '话术分类'
+          // sortable: true
         },
         {
           prop: 'desc',
@@ -86,6 +86,7 @@ export default {
         {
           prop: 'params',
           label: '参数说明',
+          minWidth: 150,
           slot: true
         }
       ],

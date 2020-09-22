@@ -10,12 +10,20 @@
     </div>
     <!-- 表格 -->
     <div class="table-container shun-card">
+      <el-alert v-show="selection.length"
+                :title="`已选择 ${selection.length} 项`"
+                style="margin:10px 0;"
+                type="success"
+                close-text="清空"
+                show-icon
+                @close="handleClearSelection" />
       <el-table ref="table"
                 :data="displayData"
                 class="table"
                 size="medium"
                 stripe
                 style="width: 100%"
+                :row-key="(row)=>{return row.id}"
                 @row-click="handleRowClick"
                 @selection-change="handleSelectionChange">
         <!-- index -->
@@ -25,6 +33,7 @@
         <!-- 选择框 -->
         <el-table-column v-if="showSelection"
                          type="selection"
+                         :reserve-selection="true"
                          fixed="left"
                          width="55" />
         <template v-for="(item,index) of tableColumnList">
@@ -43,7 +52,7 @@
           </el-table-column>
         </template>
       </el-table>
-      {{ selection }}
+      <!-- {{ selection }} -->
       <!-- {{ currentPage }}{{ pagesize }} -->
       <el-pagination :current-page="currentPage"
                      background
@@ -97,7 +106,6 @@ export default {
     return {
       pagesize: 10,
       currentPage: 1,
-      allSelection: [],
       selection: []
     }
   },
@@ -134,14 +142,14 @@ export default {
     },
     handleCurrentChange(val) {
       this.currentPage = val
-      this.allSelection.push(this.selection)
-      this.$refs.table.toggleRowSelection(this.allSelection)
+    },
+    handleClearSelection() {
+      this.$refs.table.clearSelection()
     },
     select(id) {
       this.tableData.forEach((n, i) => {
         this.$refs.table.toggleRowSelection(n, n.id === id)
       })
-      console.log(id)
     },
     getVal() {
       return this.selection
