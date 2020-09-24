@@ -1,11 +1,11 @@
 <template>
   <div class="wscn-http401-container center-center">
     <el-button type="primary"
-               @click="next('editor-token')">一般员工</el-button>
+               @click="next(3)">一般员工</el-button>
     <el-button type="primary"
-               @click="next('admin-token')">审批人员</el-button>
+               @click="next(2)">审批人员</el-button>
     <el-button type="primary"
-               @click="next('boss-token')">高级管理员</el-button>
+               @click="next(1)">高级管理员</el-button>
     <!-- {{ user }} -->
     <!-- {{ routes }} -->
   </div>

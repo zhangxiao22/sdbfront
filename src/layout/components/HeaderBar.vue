@@ -8,6 +8,7 @@
     <div class="right-menu">
       <div class="message-container">
         <el-badge :value="12"
+                  hidden
                   class="icon">
           <span class="svg-container message">
             <svg-icon icon-class="message" />
@@ -18,10 +19,10 @@
 
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">
-          <img class="profile"
-               :src="user.avatar">
-          <div class="user-name">{{ user.name }}</div>
-          <div class="user-authority">{{ user.suBranchName }}</div>
+          <!-- <img class="profile"
+               :src="user.avatar"> -->
+          <div class="user-name">{{ user.userName }}</div>
+          <div class="user-authority">{{ user.subBranchName }}</div>
           <i class="el-icon-arrow-down el-icon--right" />
         </span>
         <el-dropdown-menu slot="dropdown"
@@ -105,6 +106,12 @@ export default {
       align-items: center;
       height: 100%;
       cursor: pointer;
+      padding: 0 10px;
+      transition: all 0.3s;
+      margin-right: 20px;
+      &:hover {
+        background: #f0f2f5;
+      }
 
       .message {
         font-size: 24px;
@@ -116,26 +123,38 @@ export default {
       }
     }
 
-    .el-dropdown-link {
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      .profile {
-        margin-left: 28px;
-        width: 28px;
-        height: 28px;
-        border-radius: 50%;
-        cursor: pointer;
+    .el-dropdown {
+      height: 100%;
+      transition: all 0.3s;
+      padding: 0 10px;
+
+      &:hover {
+        background: #f0f2f5;
       }
 
-      .user-name {
-        margin-left: 8px;
-        cursor: pointer;
-      }
+      .el-dropdown-link {
+        height: 100%;
 
-      .user-authority {
-        margin-left: 8px;
         cursor: pointer;
+        display: flex;
+        align-items: center;
+        .profile {
+          // margin-left: 28px;
+          width: 28px;
+          height: 28px;
+          border-radius: 50%;
+          cursor: pointer;
+        }
+
+        .user-name {
+          // margin-left: 8px;
+          cursor: pointer;
+        }
+
+        .user-authority {
+          margin-left: 8px;
+          cursor: pointer;
+        }
       }
     }
   }

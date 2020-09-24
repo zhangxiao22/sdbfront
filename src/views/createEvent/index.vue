@@ -9,17 +9,26 @@
           </div>
           <div slot="description"
                class="register step-detail">
-            <div class="name item elip">{{ eventData.baseInfo.eventName }}</div>
-            <el-tag v-show="eventData.baseInfo.eventCategory"
+            <!-- 事件名称 -->
+            <div class="name item elip">{{ baseInfoDetail.name }}</div>
+            <!-- 事件类型 -->
+            <el-tag v-show="baseInfoDetail.categoryValue"
                     class="item"
                     size="mini"
-                    type="warning">{{ eventData.baseInfo.eventCategoryValue }}</el-tag>
-            <div v-show="eventData.baseInfo.eventDate"
+                    type="warning">{{ baseInfoDetail.categoryValue }}</el-tag>
+            <!-- 起止日期 -->
+            <div v-show="baseInfoDetail.startDate && baseInfoDetail.endDate"
                  class="item time-group"
                  style="display:flex;align-items:center;">
               <i class="el-icon-time"
                  style="margin-right:5px;" />
-              <div class="time">{{ eventData.baseInfo.eventStartDate }} 至 {{ eventData.baseInfo.eventEndDate }}</div>
+              <div class="time">{{ baseInfoDetail.startDate }} 至 {{ baseInfoDetail.endDate }}</div>
+            </div>
+            <!-- 对照组 && 抽样方式 -->
+            <div v-show="baseInfoDetail.trial"
+                 class="shun-sibling-box item">
+              <div class="value">{{ baseInfoDetail.control }}%</div>
+              <div class="value">{{ baseInfoDetail.sampleValue }}</div>
             </div>
           </div>
         </el-step>
@@ -51,7 +60,8 @@
         </el-step>
       </el-steps>
     </div>
-    <div class="content-container shun-card">
+    <div v-loading="mainLoading"
+         class="content-container shun-card">
       <div class="content">
         <component :is="component[stepActive].type"
                    :ref="component[stepActive].ref" />
@@ -67,20 +77,21 @@
         <el-button :disabled="stepActive===component.length-1"
                    type="primary"
                    @click="next">
-          下一步
+          保存并进入下一步
           <i class="el-icon-arrow-right el-icon--right" />
         </el-button>
         <el-button icon="el-icon-upload2"
-                   type="primary"
+                   type="success"
                    :disabled="stepActive!==3"
                    @click="publish">提交审批</el-button>
-        <!-- {{ eventData.baseInfo }} -->
+        <!-- {{ baseInfoDetail }} -->
       </div>
     </div>
   </div>
 </template>
 
 <script>
+
 import { Register, CustomerGroups, Ploy, Preview } from './components'
 import { mapGetters } from 'vuex'
 
@@ -93,6 +104,17 @@ export default {
   },
   data() {
     return {
+      baseInfoDetail: {
+        name: '',
+        categoryValue: '',
+        startDate: '',
+        endDate: '',
+        targetCount: '',
+        trial: false,
+        control: '',
+        sampleValue: ''
+      },
+      mainLoading: false,
       component: [
         {
           type: 'Register',
@@ -117,59 +139,36 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 2,
-      eventData: {
-        baseInfo: {
-          eventName: '',
-          eventCategory: '',
-          eventCategoryValue: '',
-          eventDate: '',
-          eventStartDate: '',
-          eventEndDate: '',
-          eventDescription: ''
-        }
-      }
+      stepActive: 0
     }
   },
   computed: {
 
   },
+  created() {
+  },
   methods: {
-    handleClick(i) {
-      const ref = this.component[this.stepActive].ref
-      this.$refs[ref].validateAndNext().then(() => {
-        this.stepActive = i
-      }).catch(() => {
-        // console.log('err')
-      })
-    },
+    // handleClick(i) {
+    //   const ref = this.component[this.stepActive].ref
+    //   this.$refs[ref].validateAndNext().then(() => {
+    //     this.stepActive = i
+    //   }).catch(() => {
+    //     // console.log('err')
+    //   })
+    // },
     next() {
       const ref = this.component[this.stepActive].ref
       this.$refs[ref].validateAndNext().then(() => {
         this.stepActive++
+        this.mainLoading = false
       }).catch(() => {
-        // console.log('err')
+        this.mainLoading = false
       })
     },
     prev() {
       if (this.stepActive > 0) {
         this.stepActive--
       }
-    },
-
-    getData() {
-      const data = {
-        baseInfo: {}
-      }
-      data.baseInfo.eventName = this.eventData.baseInfo.eventName
-      data.baseInfo.eventCategory = this.eventData.baseInfo.eventCategory
-      data.baseInfo.eventStartDate = this.eventData.baseInfo.eventStartDate
-      data.baseInfo.eventEndDate = this.eventData.baseInfo.eventEndDate
-      data.baseInfo.eventDescription = this.eventData.baseInfo.eventDescription
-      return data
-    },
-    save() {
-      console.log(this.getData())
     },
     publish() {
       console.log(this.getData())
@@ -285,7 +284,10 @@ export default {
       height: 70px;
       border-top: 1px solid #f0f2f5;
       background: #fcfcfc;
-      @include center-center;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
     }
   }
 }

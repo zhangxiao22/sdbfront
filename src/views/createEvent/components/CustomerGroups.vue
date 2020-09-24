@@ -31,56 +31,7 @@
             <el-form-item label="上传时间：">
               {{ form.updateTime }}
             </el-form-item>
-            <el-form-item class="target-form-item"
-                          label="目标设置："
-                          prop="target"
-                          :rules="{
-                            required: true
-                          }">
-              <div v-for="(targetItem,i) of form.target"
-                   :key="i"
-                   class="target-item">
-                <el-form-item :prop="'target.'+i+'.targetSelect'"
-                              :rules="{
-                                required: true, message: '请选择目标名称', trigger: 'change'
-                              }">
-                  <el-select v-model="targetItem.targetSelect"
-                             placeholder="请选择目标名称"
-                             class="target-item-input"
-                             @change="selectTarget($event,i)">
-                    <el-option v-for="optItem of targetOpt"
-                               :key="optItem.value"
-                               :disabled="optItem.disabled"
-                               :label="optItem.label"
-                               :value="optItem.value" />
-                  </el-select>
-                </el-form-item>
-                <span style="margin:0 10px;color:#224191;"> > </span>
-                <el-form-item :prop="'target.'+i+'.targetValue'"
-                              :rules="{
-                                required: true, message: '请输入正确的目标值', trigger: 'blur'
-                              }">
-                  <el-input v-model.number="targetItem.targetValue"
-                            :disabled="!targetItem.targetSelect"
-                            type="number"
-                            autocomplete="off"
-                            placeholder="请输入目标值"
-                            class="target-item-input">
-                    <div slot="suffix"
-                         style="height:100%;"
-                         class="center-center">{{ targetItem.unit }}</div>
-                  </el-input>
-                </el-form-item>
-                <i v-if="form.target.length > 1"
-                   class="el-icon-delete delete"
-                   @click="delTargetItem(i)" />
-              </div>
 
-              <el-button v-if="form.target.length < targetOpt.length"
-                         class="add"
-                         icon="el-icon-plus"
-                         @click="addTarget" />
-            </el-form-item>
             <el-form-item>
               <div slot="label">
                 <Info content="维度不能超过10个" />
@@ -90,7 +41,7 @@
                          style="width:800px;"
                          multiple
                          filterable
-                         placeholder="请搜索选择">
+                         placeholder="可输入匹配项并搜索选择">
                 <el-option v-for="item in paramOpt"
                            :key="item.value"
                            :label="item.label"
@@ -99,29 +50,7 @@
 
             </el-form-item>
             <el-divider />
-            <el-form-item label="对照组：">
-              <el-switch v-model="form.contrast"
-                         active-text="开"
-                         inactive-text="关" />
-              <template v-if="form.contrast">
-                <el-input-number v-model="form.contrastValue"
-                                 :disabled="!form.contrast"
-                                 style="margin:0 5px 0 20px;"
-                                 controls-position="right"
-                                 :step="5"
-                                 :min="1"
-                                 :max="30" />
-                %
-              </template>
-            </el-form-item>
-            <el-form-item v-show="form.contrast"
-                          label="抽样方式：">
-              <el-radio-group v-model="form.sample">
-                <el-radio label="1">随机抽样</el-radio>
-                <el-radio disabled
-                          label="2">分层抽样</el-radio>
-              </el-radio-group>
-            </el-form-item>
+
             <el-form-item>
               <div slot="label">
                 <Info content="客群先后顺序决定客群优先级（客群标签可拖拽排序）" />
@@ -187,7 +116,6 @@ export default {
   data() {
     return {
       //
-
       age: '',
       activeName: '1',
       form: {
@@ -224,30 +152,6 @@ export default {
 
       },
 
-      targetOpt: [
-        {
-          label: 'AUM日均1',
-          value: '1',
-          unit: '元',
-          disabled: false
-        },
-        {
-          label: 'AUM日均2',
-          unit: '万元',
-          value: '2',
-          disabled: false
-        }, {
-          label: 'AUM日均3',
-          unit: '%',
-          value: '3',
-          disabled: false
-        }, {
-          label: 'AUM日均4',
-          unit: '美元',
-          value: '4',
-          disabled: false
-        }
-      ],
       paramOpt: [
         {
           label: '性别',
@@ -298,37 +202,7 @@ export default {
     download() {
       console.log(123)
     },
-    addTarget() {
-      this.form.target.push({
-        targetSelect: '',
-        targetValue: ''
-      })
-    },
-    delTargetItem(i) {
-      this.form.target.splice(i, 1)
-      this.resetTargetOpt()
-    },
-    selectTarget(val, index) {
-      // 清空输入
-      this.form.target[index].targetValue = ''
-      // 设置不可选项
-      this.resetTargetOpt()
-      // 显示单位
-      this.targetOpt.forEach((n, i) => {
-        if (n.value === val) {
-          this.form.target[index].unit = n.unit
-        }
-      })
-    },
-    resetTargetOpt() {
-      const temp = []
-      this.form.target.forEach((n, i) => {
-        n.targetSelect && temp.push(n.targetSelect)
-      })
-      this.targetOpt.forEach((n, i) => {
-        n.disabled = temp.includes(n.value)
-      })
-    },
+
     // tab拖拽
     tabDrop() {
       const el = document.querySelector('#group-tabs .el-tabs__nav')
@@ -398,39 +272,6 @@ export default {
     .reg-form {
       // width: 800px;
       // margin: 10px auto 0;
-      .target-form-item {
-        width: 600px;
-        .target-item {
-          display: flex;
-          position: relative;
-          .el-form-item {
-            flex: 1;
-          }
-          .target-item-input {
-            width: 100%;
-          }
-          .delete {
-            color: $red;
-            display: inline-block;
-            width: 20px;
-            cursor: pointer;
-            height: 32px;
-            margin-left: 10px;
-            font-size: 18px;
-            line-height: 32px;
-            position: absolute;
-            right: -30px;
-            top: 0;
-            &:hover {
-              opacity: 0.8;
-            }
-          }
-        }
-        .add {
-          width: 100%;
-          border-style: dashed;
-        }
-      }
     }
     ::v-deep .sortable-drag {
       box-shadow: 0 0 1px 1px rgba(34, 65, 145, 0.1) inset;

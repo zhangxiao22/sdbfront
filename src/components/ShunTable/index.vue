@@ -9,7 +9,8 @@
       <slot name="filter" />
     </div>
     <!-- 表格 -->
-    <div class="table-container shun-card">
+    <div v-loading="loading"
+         class="table-container shun-card">
       <el-alert v-show="selection.length"
                 :title="`已选择 ${selection.length} 项`"
                 style="margin:10px 0;"
@@ -18,7 +19,7 @@
                 show-icon
                 @close="handleClearSelection" />
       <el-table ref="table"
-                :data="displayData"
+                :data="tableData"
                 class="table"
                 size="medium"
                 stripe
@@ -53,14 +54,14 @@
         </template>
       </el-table>
       <!-- {{ selection }} -->
-      <!-- {{ currentPage }}{{ pagesize }} -->
+      <!-- {{ currentPage }}{{ pageSize }} -->
       <el-pagination :current-page="currentPage"
                      background
                      style="margin-top:10px;text-align:right;"
                      :page-sizes="[5, 10, 20, 30]"
-                     :page-size="pagesize"
+                     :page-size="pageSize"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="tableData.length"
+                     :total="total"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange" />
     </div>
@@ -71,6 +72,22 @@
 export default {
   name: 'ShunTable',
   props: {
+    pageSize: {
+      type: Number,
+      default: 10
+    },
+    currentPage: {
+      type: Number,
+      default: 1
+    },
+    total: {
+      type: Number,
+      default: 0
+    },
+    loading: {
+      type: Boolean,
+      default: false
+    },
     title: {
       type: String,
       default: ''
@@ -104,23 +121,26 @@ export default {
   },
   data() {
     return {
-      pagesize: 10,
-      currentPage: 1,
+
       selection: []
     }
   },
   computed: {
-    displayData() {
-      return this.tableData.slice((this.currentPage - 1) * this.pagesize, this.currentPage * this.pagesize)
-    }
+    // displayData() {
+    //   return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
+    // }
   },
   watch: {
 
   },
-
+  created() {
+  },
   methods: {
+    renderList() {
+      this.$emit('render')
+    },
     indexMethod(index) {
-      return index + (this.currentPage - 1) * this.pagesize + 1
+      return index + (this.currentPage - 1) * this.pageSize + 1
     },
     handleRowClick(row, col, event) {
       this.$refs.table.toggleRowSelection(row)
@@ -138,10 +158,13 @@ export default {
       }
     },
     handleSizeChange(val) {
-      this.pagesize = val
+      this.$emit('update:pageSize', val)
+      this.$emit('render')
     },
     handleCurrentChange(val) {
-      this.currentPage = val
+      console.log(val)
+      this.$emit('update:currentPage', val)
+      this.$emit('render')
     },
     handleClearSelection() {
       this.$refs.table.clearSelection()
@@ -185,7 +208,7 @@ export default {
     margin-bottom: 10px;
     padding: 0 16px;
     overflow: hidden;
-    .filter-container {
+    ::v-deep .filter-container {
       margin-top: 20px;
       margin-right: -20px;
       overflow-x: hidden;

@@ -50,7 +50,7 @@ export const constantRoutes = [
         path: 'product',
         name: 'Product',
         component: () => import('@/views/product/index'),
-        meta: { title: '产品库', icon: 'list' }
+        meta: { title: '产品库', icon: 'product' }
       },
       {
         path: 'word',

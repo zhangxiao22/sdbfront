@@ -131,3 +131,21 @@ input[type="number"] {
   }
 }
 
+.shun-sibling-box {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ebeef5;
+  padding: 0 4px;
+  height: 24px;
+  border-radius: 4px;
+  line-height: 14px;
+  .value {
+     padding: 0 4px; 
+     border-right: 1px solid #ebeef5;
+     height: 14px;
+     &:last-of-type {
+       border: none;
+     }
+  }
+}
+
