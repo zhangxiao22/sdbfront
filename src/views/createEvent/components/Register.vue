@@ -137,7 +137,14 @@ export default {
         name: '',
         category: '',
         // categoryValue: '',
-        target: [],
+        target: [
+          [{
+            targetSelect: '',
+            targetValue: ''
+            // compare: '',
+            // nuit: ''
+          }]
+        ],
         date: null,
         // startDate: '',
         // endDate: '',
