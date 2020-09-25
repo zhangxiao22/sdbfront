@@ -17,10 +17,11 @@
                  class="filter-container">
           <el-form-item label="话术内容："
                         prop="content">
-            <el-input v-model="filterForm.content"
+            <el-input v-model.trim="filterForm.content"
                       style="width:300px"
                       placeholder="请输入话术内容"
-                      clearable />
+                      clearable
+                      @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item label="话术分类："
                         prop="category">
@@ -37,7 +38,7 @@
           <el-form-item class="filter-item-end">
             <el-button type="primary"
                        icon="el-icon-search"
-                       @click="currentPage=1;getList()">
+                       @click="search">
               搜索
             </el-button>
             <el-button icon="el-icon-refresh"
@@ -78,6 +79,8 @@ export default {
         content: '',
         category: ''
       },
+      searchForm: {
+      },
       typeOpt: [],
       tableColumnList: [
         {
@@ -105,22 +108,29 @@ export default {
   watch: {},
   created() {
     this.getType()
-    this.getList()
+    this.getList(1)
   },
   methods: {
     reset() {
       this.$refs.filterRef.resetFields()
+      this.search()
+    },
+    search() {
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.getList(1)
     },
     getType() {
       getWordCategory().then(res => {
         this.typeOpt = res.data
       })
     },
-    getList() {
+    getList(pageNo) {
+      this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
         pageNo: this.currentPage,
         pageSize: this.pageSize
-      }, this.filterForm)
+      }, this.searchForm)
+      this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getWordList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {

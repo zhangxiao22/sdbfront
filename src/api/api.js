@@ -79,7 +79,7 @@ export function getTargetList() {
 }
 
 /** ************************************************ 事件注册 ************************************************************/
-
+// 保存事件详情 第1步
 export function saveEventBaseInfo(data) {
   return request({
     url: '/event/save',
@@ -88,10 +88,19 @@ export function saveEventBaseInfo(data) {
   })
 }
 
-// 获取事件详情 第一步
+// 获取事件详情 第1步
 export function getEventBaseInfo(data) {
   return request({
     url: '/event/query',
+    method: 'post',
+    data
+  })
+}
+
+// 保存策略 第3步
+export function savePloy(data) {
+  return request({
+    url: 'http://10.5.12.233:8848/sub_group/strategy',
     method: 'post',
     data
   })

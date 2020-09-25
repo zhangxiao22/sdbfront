@@ -20,12 +20,13 @@
             <el-input v-model="filterForm.content"
                       style="width:300px"
                       placeholder="请输入短信内容"
-                      clearable />
+                      clearable
+                      @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item class="filter-item-end">
             <el-button type="primary"
                        icon="el-icon-search"
-                       @click="currentPage=1;getList()">
+                       @click="search">
               搜索
             </el-button>
             <el-button icon="el-icon-refresh"
@@ -65,6 +66,7 @@ export default {
       filterForm: {
         name: ''
       },
+      searchForm: {},
       typeOpt: [],
       tableColumnList: [
         {
@@ -91,17 +93,23 @@ export default {
   },
   watch: {},
   created() {
-    this.getList()
+    this.getList(1)
   },
   methods: {
     reset() {
       this.$refs.filterRef.resetFields()
+      this.search()
     },
-    getList() {
+    search() {
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.getList(1)
+    },
+    getList(pageNo) {
+      this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
         pageNo: this.currentPage,
         pageSize: this.pageSize
-      }, this.filterForm)
+      }, this.searchForm)
       this.loading = true
       getSmsList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {

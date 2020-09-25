@@ -20,24 +20,13 @@
             <el-input v-model="filterForm.name"
                       style="width:300px"
                       placeholder="请输入权益内容"
-                      clearable />
+                      clearable
+                      @keyup.enter.native="search" />
           </el-form-item>
-          <!-- <el-form-item label="话术分类："
-                        prop="category">
-            <el-select v-model="filterForm.category"
-                       clearable
-                       placeholder="请选择">
-              <el-option v-for="item in typeOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item> -->
-
           <el-form-item class="filter-item-end">
             <el-button type="primary"
                        icon="el-icon-search"
-                       @click="currentPage=1;getList()">
+                       @click="search">
               搜索
             </el-button>
             <el-button icon="el-icon-refresh"
@@ -46,9 +35,6 @@
             </el-button>
           </el-form-item>
         </el-form>
-      </template>
-      <template v-slot:paramsSlot="props">
-        <pre>{{ props.row.params }}</pre>
       </template>
     </shun-table>
   </div>
@@ -77,6 +63,7 @@ export default {
       filterForm: {
         name: ''
       },
+      searchForm: {},
       // typeOpt: [],
       tableColumnList: [
         {
@@ -113,17 +100,24 @@ export default {
   },
   watch: {},
   created() {
-    this.getList()
+    this.getList(1)
   },
   methods: {
     reset() {
       this.$refs.filterRef.resetFields()
+      this.search()
     },
-    getList() {
+    search() {
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.getList(1)
+    },
+    getList(pageNo) {
+      this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
         pageNo: this.currentPage,
         pageSize: this.pageSize
-      }, this.filterForm)
+      }, this.searchForm)
+      this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getInterestList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {

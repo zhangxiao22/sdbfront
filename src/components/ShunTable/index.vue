@@ -125,6 +125,13 @@ export default {
       default() {
         return []
       }
+    },
+    // 表格已选中id
+    selectedId: {
+      type: Array,
+      default() {
+        return []
+      }
     }
 
   },
@@ -144,9 +151,6 @@ export default {
   created() {
   },
   methods: {
-    renderList() {
-      this.$emit('render')
-    },
     indexMethod(index) {
       return index + (this.currentPage - 1) * this.pageSize + 1
     },

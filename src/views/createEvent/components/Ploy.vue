@@ -176,12 +176,13 @@
                   </el-form-item>
                   <div>
                     <!-- 定时型 -->
-                    <template v-if="channelCardItem.chooseType==='1'">
+                    <template v-if="channelCardItem.chooseType===1">
                       <el-form-item required
                                     label="起止日期：">
                         <el-date-picker v-model="channelCardItem.dateRange"
                                         type="daterange"
                                         range-separator="至"
+                                        value-format="yyyy-MM-dd"
                                         :picker-options="pickerOptions"
                                         start-placeholder="开始日期"
                                         end-placeholder="结束日期" />
@@ -204,7 +205,7 @@
                       </el-form-item>
                     </template>
                     <!-- 规则型 -->
-                    <template v-if="channelCardItem.chooseType==='2'">
+                    <template v-if="channelCardItem.chooseType===2">
                       <el-form-item required
                                     class="rule-form"
                                     label="推送时间：">
@@ -233,7 +234,7 @@
                       </el-form-item>
                     </template>
                     <!-- crm -->
-                    <template v-if="channelCardItem.value==='1'">
+                    <template v-if="channelCardItem.value===1">
                       <el-form-item required
                                     label="推荐话术：">
                         <el-button icon="el-icon-plus"
@@ -243,7 +244,7 @@
                       </el-form-item>
                     </template>
                     <!-- 短信 -->
-                    <template v-if="channelCardItem.value==='2'">
+                    <template v-if="channelCardItem.value===2">
                       <el-form-item required
                                     label="短信模版：">
                         <el-button icon="el-icon-plus"
@@ -274,7 +275,7 @@
                       </el-form-item>
                     </template>
                     <!-- 微信 -->
-                    <template v-if="channelCardItem.value==='3'">
+                    <template v-if="channelCardItem.value===3">
                       <el-form-item required
                                     label="微信模版：">
                         <el-button icon="el-icon-plus"
@@ -283,11 +284,11 @@
                         </el-button>
                       </el-form-item>
                     </template>
-                    <!-- 渠道：{{ channelCardItem.value }}
+                    渠道：{{ channelCardItem.value }}
                     类型：{{ channelCardItem.chooseType }}
                     定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
                     定时型的值2（时间）：{{ channelCardItem.timingTimeValue }}
-                    规则型的值：{{ channelCardItem.ruleValue }} -->
+                    规则型的值：{{ channelCardItem.ruleValue }}
                   </div>
                 </el-card>
               </el-tab-pane>
@@ -352,6 +353,7 @@
 </template>
 
 <script>
+import { savePloy } from '@/api/api'
 import gsap from 'gsap'
 import Info from '@/components/Info'
 import Product from '@/views/product/index'
@@ -361,13 +363,13 @@ import { isPhone } from '@/utils/validate'
 // import { getWordList } from '@/api/api'
 const CHANNEL_OPT = [
   {
-    value: '1',
+    value: 1,
     label: 'CRM',
     disabled: false,
     icon: 'phone',
     iconColor: '#409eff',
     // 1:定时型 2:规则
-    chooseType: '1',
+    chooseType: 1,
     timingDateValue: [],
     timingTimeValue: '07:00',
     dateRange: [],
@@ -376,18 +378,18 @@ const CHANNEL_OPT = [
       time: '00:00'
     }],
     type: [{
-      id: '1',
+      id: 1,
       icon: 'el-icon-alarm-clock',
       name: '定时型'
     }],
     model: []
   }, {
-    value: '2',
+    value: 2,
     label: '短信',
     disabled: false,
     icon: 'sms',
     iconColor: '#FF9933',
-    chooseType: '1',
+    chooseType: 1,
     // 定时型的值-规则 (每周几或每月几) (暂定多选)
     timingDateValue: [],
     // 定时型的值-时间
@@ -402,21 +404,21 @@ const CHANNEL_OPT = [
     // 精准内测
     test: [],
     type: [{
-      id: '1',
+      id: 1,
       name: '定时型',
       icon: 'el-icon-alarm-clock'
     }, {
-      id: '2',
+      id: 2,
       name: '规则型',
       icon: 'el-icon-tickets'
     }]
   }, {
-    value: '3',
+    value: 3,
     label: '微信',
     disabled: false,
     icon: 'wechat',
     iconColor: '#67c23a',
-    chooseType: '1',
+    chooseType: 1,
     timingDateValue: [],
     timingTimeValue: '07:00',
     dateRange: [],
@@ -425,11 +427,11 @@ const CHANNEL_OPT = [
       time: '00:00'
     }],
     type: [{
-      id: '1',
+      id: 1,
       name: '定时型',
       icon: 'el-icon-alarm-clock'
     }, {
-      id: '2',
+      id: 2,
       name: '规则型',
       icon: 'el-icon-tickets'
     }]
@@ -441,7 +443,6 @@ export default {
   },
   data() {
     return {
-      valuex: [],
       // 客群tab对应的值
       groupName: '0',
       // 人数初始值
@@ -455,33 +456,33 @@ export default {
       // 定时型 下拉选项
       timingOpt: [
         {
-          value: '1',
+          value: 1,
           label: '每周',
           children: [{
-            value: '1',
+            value: 1,
             label: '星期一'
           }, {
-            value: '2',
+            value: 2,
             label: '星期二'
           }, {
-            value: '3',
+            value: 3,
             label: '星期三'
           }, {
-            value: '4',
+            value: 4,
             label: '星期四'
           }, {
-            value: '5',
+            value: 5,
             label: '星期五'
           }, {
-            value: '6',
+            value: 6,
             label: '星期六'
           }, {
-            value: '7',
+            value: 7,
             label: '星期日'
           }]
         },
         {
-          value: '2',
+          value: 2,
           label: '每月',
           children: Array.apply(null, Array(31)).map((n, i) => {
             return { value: i + 1, label: i + 1 + '号' }
@@ -490,6 +491,7 @@ export default {
       ],
       group: [
         {
+          gid: 1,
           name: '群组1',
           people: 221324,
           desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
@@ -551,8 +553,10 @@ export default {
           ployTabIndex: 1
         },
         {
+          gid: 2,
           name: '群组2',
           people: 1324123,
+          desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
           totalPercent: 100,
           ployTabs: [],
           // v-model值
@@ -596,8 +600,62 @@ export default {
 
   methods: {
     validateAndNext() {
-      return new Promise(resolve => {
-        resolve()
+      return new Promise((resolve, reject) => {
+        // 客群
+        const data = this.group.map((gn, gi) => {
+          return {
+            // 客群id
+            group_id: gn.gid,
+            // 策略
+            strategies: gn.ployTabs.map((pn, pi) => {
+              return {
+                // 策略名称
+                name: pn.title,
+                // 分发范围
+                range: pn.percent / 100,
+                // 产品id
+                product_id: 1,
+                // 权益id
+                material_id: 2,
+                // 渠道
+                push_channels: pn.channel.map((cn, ci) => {
+                  console.log(cn)
+                  return {
+                    // 渠道类型 1:cem 2:短信 3:微信
+                    channel_id: cn.value,
+                    // 推送类型 1:定时 2:规则
+                    push_type: cn.chooseType,
+                    // 定时型的值
+                    push_timer: cn.chooseType === 1 ? {
+                      start_date: cn.dateRange[0],
+                      end_date: cn.dateRange[1],
+                      interval: cn.timingDateValue.map((dateItem, date_i) => {
+                        return {
+                          type: dateItem[0],
+                          value: dateItem[1]
+                        }
+                      }),
+                      moment: cn.timingTimeValue
+                    } : undefined,
+                    // 规则型的值
+                    push_schedule: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
+                      return {
+                        delay: ruleItem.date,
+                        moment: ruleItem.time
+                      }
+                    }) : undefined
+                  }
+                })
+              }
+            })
+          }
+        })
+
+        savePloy({ payload: JSON.stringify(data) }).then(res => {
+          resolve()
+        }).catch(() => {
+          reject()
+        })
       })
     },
     beforeHandleGroupTabClick(activeName, oldActiveName) {
@@ -749,7 +807,7 @@ export default {
         }
       })
       this.$nextTick(() => {
-        console.log(this.$refs.channelRef)
+        // console.log(this.$refs.channelRef)
         // todo
         // this.$refs.pronbit.getBoundingClientRect().top
         // document.querySelector('.content').scrollTop = 800
