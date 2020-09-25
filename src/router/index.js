@@ -56,13 +56,19 @@ export const constantRoutes = [
         path: 'word',
         name: 'Word',
         component: () => import('@/views/word/index'),
-        meta: { title: '话术库', icon: 'list' }
+        meta: { title: '话术库', icon: 'chat' }
       },
       {
         path: 'interest',
         name: 'Interest',
         component: () => import('@/views/interest/index'),
-        meta: { title: '权益库', icon: 'list' }
+        meta: { title: '权益库', icon: 'interest' }
+      },
+      {
+        path: 'sms',
+        name: 'Sms',
+        component: () => import('@/views/sms/index'),
+        meta: { title: '权益库', icon: 'shortmessage' }
       }
 
     ]

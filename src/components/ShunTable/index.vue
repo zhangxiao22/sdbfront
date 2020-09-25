@@ -72,30 +72,37 @@
 export default {
   name: 'ShunTable',
   props: {
+    // 每页显示条数
     pageSize: {
       type: Number,
       default: 10
     },
+    // 当前页码
     currentPage: {
       type: Number,
       default: 1
     },
+    // 总条数
     total: {
       type: Number,
       default: 0
     },
+    // 表格是否加载
     loading: {
       type: Boolean,
       default: false
     },
+    // 总标题
     title: {
       type: String,
       default: ''
     },
+    // 是否显示编号
     showIndex: {
       type: Boolean,
       default: false
     },
+    // 是否显示选择框
     showSelection: {
       type: Boolean,
       default: false
@@ -105,23 +112,30 @@ export default {
       type: Boolean,
       default: false
     },
+    // 表格展示数据
     tableData: {
       type: Array,
       default() {
         return []
       }
     },
+    // 表格展示字段
     tableColumnList: {
       type: Array,
       default() {
         return []
       }
+    },
+    // 选中的数据
+    selectedId: {
+      type: Array,
+      default() {
+        return []
+      }
     }
-
   },
   data() {
     return {
-
       selection: []
     }
   },
@@ -131,7 +145,13 @@ export default {
     // }
   },
   watch: {
-
+    tableData: {
+      handler(newVal, oldVal) {
+        // this.select()
+      },
+      deep: true
+      // immediate: true
+    }
   },
   created() {
   },
@@ -143,6 +163,7 @@ export default {
       return index + (this.currentPage - 1) * this.pageSize + 1
     },
     handleRowClick(row, col, event) {
+      if (!this.showSelection) return
       this.$refs.table.toggleRowSelection(row)
     },
     handleSelectionChange(selection) {
@@ -162,16 +183,15 @@ export default {
       this.$emit('render')
     },
     handleCurrentChange(val) {
-      console.log(val)
       this.$emit('update:currentPage', val)
       this.$emit('render')
     },
     handleClearSelection() {
       this.$refs.table.clearSelection()
     },
-    select(id) {
+    select() {
       this.tableData.forEach((n, i) => {
-        this.$refs.table.toggleRowSelection(n, n.id === id)
+        this.$refs.table.toggleRowSelection(n, this.selectedId.includes(n.id))
       })
     },
     getVal() {

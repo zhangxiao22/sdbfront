@@ -7,6 +7,7 @@
                 :current-page.sync="currentPage"
                 :total="total"
                 multiple
+                :selected-id="selectedId"
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -36,9 +37,6 @@
             </el-button>
           </el-form-item>
         </el-form>
-      </template>
-      <template v-slot:paramsSlot="props">
-        <pre>{{ props.row.params }}</pre>
       </template>
     </shun-table>
   </div>
@@ -101,7 +99,8 @@ export default {
         }
       ],
       tableData: [],
-      selection: []
+      selection: [],
+      selectedId: []
     }
   },
   watch: {},
@@ -119,16 +118,22 @@ export default {
       }, this.filterForm)
       this.loading = true
       getProductList(data).then(res => {
-        this.tableData = res.data
-        this.tableData.forEach((n, i) => {
-          n.startDate = n.startDate.split(' ')[0]
-          n.endDate = n.endDate.split(' ')[0]
+        this.tableData = res.data.resultList.map((n) => {
+          return Object.assign(n, {
+            classify: n.classify.label,
+            riskLevel: n.riskLevel.label,
+            startDate: n.startDate.split(' ')[0],
+            endDate: n.endDate.split(' ')[0]
+          })
         })
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
+    },
+    getVal() {
+
     }
   }
 }

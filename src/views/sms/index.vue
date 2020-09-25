@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <shun-table title="话术库"
+    <shun-table title="短信库"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -15,25 +15,13 @@
                  :inline="true"
                  :model="filterForm"
                  class="filter-container">
-          <el-form-item label="话术内容："
+          <el-form-item label="短信内容："
                         prop="content">
             <el-input v-model="filterForm.content"
                       style="width:300px"
-                      placeholder="请输入话术内容"
+                      placeholder="请输入短信内容"
                       clearable />
           </el-form-item>
-          <el-form-item label="话术分类："
-                        prop="category">
-            <el-select v-model="filterForm.category"
-                       clearable
-                       placeholder="请选择">
-              <el-option v-for="item in typeOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
-
           <el-form-item class="filter-item-end">
             <el-button type="primary"
                        icon="el-icon-search"
@@ -56,7 +44,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getWordList } from '@/api/api'
+import { getSmsList } from '@/api/api'
 export default {
   name: 'Product',
   components: {
@@ -75,25 +63,24 @@ export default {
       pageSize: 10,
       total: 0,
       filterForm: {
-        content: '',
-        category: ''
+        name: ''
       },
       typeOpt: [],
       tableColumnList: [
         {
           prop: 'content',
-          label: '话术内容',
+          label: '短信内容',
           minWidth: 300,
           notShowOverflowTooltip: true
         },
         {
           prop: 'category',
-          label: '话术分类'
+          label: '短信分类'
           // sortable: true
         },
         {
           prop: 'description',
-          label: '话术说明',
+          label: '短信说明',
           minWidth: 200,
           notShowOverflowTooltip: true
         }
@@ -104,13 +91,6 @@ export default {
   },
   watch: {},
   created() {
-    this.typeOpt = [
-      { value: 1, label: '开场白' },
-      { value: 2, label: '跟进处理场景' },
-      { value: 3, label: '推荐产品话术' },
-      { value: 4, label: '活动/权益介绍' },
-      { value: 5, label: '操作指引' }
-    ]
     this.getList()
   },
   methods: {
@@ -123,7 +103,7 @@ export default {
         pageSize: this.pageSize
       }, this.filterForm)
       this.loading = true
-      getWordList(data).then(res => {
+      getSmsList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {
           return Object.assign(n, {
             category: n.category.label

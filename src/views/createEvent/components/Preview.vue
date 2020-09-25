@@ -396,7 +396,7 @@ export default {
         noSwiping: true,
         centeredSlides: true,
         slidesPerView: 1.1,
-        spaceBetween: 20
+        spaceBetween: '10%'
 
         // thumbs: {
         //   swiper: overviewSwiper

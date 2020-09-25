@@ -8,11 +8,36 @@ export function getUserInfo(params) {
     params
   })
 }
-// 获取话术列表
-export function getWordList() {
+// 获取产品列表
+export function getProductList(data) {
   return request({
-    url: 'http://10.5.8.12:8848/resource/script/query/list',
-    method: 'get'
+    url: '/resource/select',
+    method: 'post',
+    data
+  })
+}
+// 获取话术列表
+export function getWordList(data) {
+  return request({
+    url: '/script/select',
+    method: 'post',
+    data
+  })
+}
+// 获取权益库
+export function getInterestList(data) {
+  return request({
+    url: '/material/equity/select',
+    method: 'post',
+    data
+  })
+}
+// 获取权益库
+export function getSmsList(data) {
+  return request({
+    url: '/material/sms/select',
+    method: 'post',
+    data
   })
 }
 // 获取事件类型
@@ -30,14 +55,6 @@ export function getSampleList() {
   })
 }
 
-// 获取产品列表
-export function getProductList(data) {
-  return request({
-    url: 'http://10.5.0.240:8080/resource/select',
-    method: 'post',
-    data
-  })
-}
 // 获取目标列表
 export function getTargetList() {
   return request({
