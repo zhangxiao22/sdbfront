@@ -91,7 +91,7 @@ export default {
         {
           prop: 'description',
           label: '权益说明',
-          minWidth: 100,
+          minWidth: 200,
           notShowOverflowTooltip: true
         },
         {

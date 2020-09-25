@@ -151,6 +151,7 @@ export default {
       return index + (this.currentPage - 1) * this.pageSize + 1
     },
     handleRowClick(row, col, event) {
+      if (!this.showSelection) return
       this.$refs.table.toggleRowSelection(row)
     },
     handleSelectionChange(selection) {

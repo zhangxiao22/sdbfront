@@ -114,6 +114,10 @@ export default {
         control: '',
         sampleValue: ''
       },
+      groupDetail: {
+        peopleNum: '',
+        groupNum: ''
+      },
       mainLoading: false,
       component: [
         {
@@ -139,7 +143,7 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 0
+      stepActive: 1
     }
   },
   computed: {

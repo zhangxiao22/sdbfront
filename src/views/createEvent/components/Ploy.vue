@@ -703,9 +703,9 @@ export default {
     addInterest(item) {
       this.tempPloyItem = item
       this.showInterest = true
-      this.$nextTick(() => {
-        this.$refs.interestRef.select(item.interest.id)
-      })
+      // this.$nextTick(() => {
+      //   this.$refs.interestRef.select(item.interest.id)
+      // })
     },
     submitInterest() {
       const val = this.$refs.interestRef.getVal()

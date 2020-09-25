@@ -8,7 +8,6 @@
                      drag
                      action="https://jsonplaceholder.typicode.com/posts/"
                      multiple>
-            <!-- <i class="el-icon-upload" /> -->
             <svg-icon class="el-icon-upload"
                       icon-class="upload-file" />
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
@@ -17,7 +16,6 @@
               只能上传xls/cvs文件
               <el-link type="primary"
                        @click="download">模版下载</el-link>
-              <!-- <a class="download">模版下载</a> -->
             </div>
           </el-upload>
           <el-form ref="form"
@@ -122,17 +120,7 @@ export default {
         fileName: 'dsafdasfasd.ss',
         customerCount: 1234566,
         updateTime: '2020-09-09 09:09:09',
-        target: [{
-          targetSelect: '',
-          targetValue: '',
-          unit: ''
-        }],
         paramValue: '',
-        contrast: true,
-        contrastValue: 5,
-        sample: '1',
-        group: true,
-
         // editableTabsValue
         // 值
         labelIndex: '1',
