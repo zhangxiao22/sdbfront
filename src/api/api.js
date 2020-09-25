@@ -8,6 +8,7 @@ export function getUserInfo(params) {
     params
   })
 }
+/** ************************************************ 产品 ************************************************************/
 // 获取产品列表
 export function getProductList(data) {
   return request({
@@ -16,6 +17,8 @@ export function getProductList(data) {
     data
   })
 }
+
+/** ************************************************ 话术 ************************************************************/
 // 获取话术列表
 export function getWordList(data) {
   return request({
@@ -24,6 +27,15 @@ export function getWordList(data) {
     data
   })
 }
+// 获取话术类型
+export function getWordCategory() {
+  return request({
+    url: '/script/getCategory',
+    method: 'get'
+  })
+}
+
+/** ************************************************ 权益 ************************************************************/
 // 获取权益库
 export function getInterestList(data) {
   return request({
@@ -32,7 +44,9 @@ export function getInterestList(data) {
     data
   })
 }
-// 获取权益库
+
+/** ************************************************ 短信 ************************************************************/
+// 获取短信库
 export function getSmsList(data) {
   return request({
     url: '/material/sms/select',
@@ -40,6 +54,7 @@ export function getSmsList(data) {
     data
   })
 }
+
 // 获取事件类型
 export function getEventCategory() {
   return request({

@@ -56,7 +56,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getWordList } from '@/api/api'
+import { getWordList, getWordCategory } from '@/api/api'
 export default {
   name: 'Product',
   components: {
@@ -104,18 +104,17 @@ export default {
   },
   watch: {},
   created() {
-    this.typeOpt = [
-      { value: 1, label: '开场白' },
-      { value: 2, label: '跟进处理场景' },
-      { value: 3, label: '推荐产品话术' },
-      { value: 4, label: '活动/权益介绍' },
-      { value: 5, label: '操作指引' }
-    ]
+    this.getType()
     this.getList()
   },
   methods: {
     reset() {
       this.$refs.filterRef.resetFields()
+    },
+    getType() {
+      getWordCategory().then(res => {
+        this.typeOpt = res.data
+      })
     },
     getList() {
       const data = Object.assign({

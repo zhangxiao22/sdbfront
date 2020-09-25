@@ -68,7 +68,7 @@ export const constantRoutes = [
         path: 'sms',
         name: 'Sms',
         component: () => import('@/views/sms/index'),
-        meta: { title: '权益库', icon: 'shortmessage' }
+        meta: { title: '短信库', icon: 'shortmessage' }
       }
 
     ]

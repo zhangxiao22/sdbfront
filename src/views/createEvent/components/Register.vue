@@ -256,7 +256,7 @@ export default {
   created() {
     this.eventCategoryList()
     this.sampleList()
-    this.targetList()
+    // this.targetList()
     if (this.id) {
       this.getDetail()
     }

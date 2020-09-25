@@ -107,7 +107,7 @@ export default {
   overflow-x: hidden;
   overflow-y: auto;
   background: #fff;
-  display: flex;
+  // display: flex;
   flex-direction: column;
   align-items: center;
   /*padding: 8px 0;*/
@@ -139,6 +139,7 @@ export default {
     width: 42px;
     height: 1px;
     background: #f0f2f5;
+    margin: 0 auto;
   }
 }
 </style>
