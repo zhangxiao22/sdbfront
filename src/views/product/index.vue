@@ -7,7 +7,6 @@
                 :current-page.sync="currentPage"
                 :total="total"
                 multiple
-                :selected-id="selectedId"
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -100,9 +99,10 @@ export default {
       ],
       tableData: [],
       selection: [],
-      selectedId: []
+      selectedId: [1, 20]
     }
   },
+
   watch: {},
   created() {
     this.getList()

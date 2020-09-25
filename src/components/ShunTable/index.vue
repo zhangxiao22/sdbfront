@@ -125,14 +125,8 @@ export default {
       default() {
         return []
       }
-    },
-    // 选中的数据
-    selectedId: {
-      type: Array,
-      default() {
-        return []
-      }
     }
+
   },
   data() {
     return {
@@ -145,13 +139,7 @@ export default {
     // }
   },
   watch: {
-    tableData: {
-      handler(newVal, oldVal) {
-        // this.select()
-      },
-      deep: true
-      // immediate: true
-    }
+
   },
   created() {
   },
@@ -163,7 +151,6 @@ export default {
       return index + (this.currentPage - 1) * this.pageSize + 1
     },
     handleRowClick(row, col, event) {
-      if (!this.showSelection) return
       this.$refs.table.toggleRowSelection(row)
     },
     handleSelectionChange(selection) {
@@ -183,15 +170,16 @@ export default {
       this.$emit('render')
     },
     handleCurrentChange(val) {
+      console.log(val)
       this.$emit('update:currentPage', val)
       this.$emit('render')
     },
     handleClearSelection() {
       this.$refs.table.clearSelection()
     },
-    select() {
+    select(id) {
       this.tableData.forEach((n, i) => {
-        this.$refs.table.toggleRowSelection(n, this.selectedId.includes(n.id))
+        this.$refs.table.toggleRowSelection(n, n.id === id)
       })
     },
     getVal() {
