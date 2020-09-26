@@ -1,12 +1,13 @@
 <template>
   <div class="container">
-    <shun-table title="产品库"
+    <shun-table ref="table"
+                title="产品库"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
-                multiple
+                :multiple="multiple"
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -55,6 +56,11 @@ export default {
     showSelection: {
       type: Boolean,
       default: false
+    },
+    // 是否多选
+    multiple: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -68,6 +74,7 @@ export default {
       },
       searchForm: {},
       tableColumnList: [
+
         {
           prop: 'name',
           label: '产品名称',
@@ -75,33 +82,38 @@ export default {
         },
         {
           prop: 'classify',
-          label: '产品类型'
+          label: '产品类型',
+          minWidth: 100
         },
         {
           prop: 'riskLevel',
-          label: '风险等级'
+          label: '风险等级',
+          minWidth: 100
         },
         {
           prop: 'returnBenchmark',
           label: '收益率/行业比较基准',
-          minWidth: 100
+          minWidth: 130
         },
         {
           prop: 'purchaseAmount',
-          label: '起购金额'
+          label: '起购金额',
+          minWidth: 100
         },
         {
           prop: 'startDate',
-          label: '起息日'
+          label: '起息日',
+          minWidth: 100
         },
         {
           prop: 'endDate',
-          label: '到期日'
+          label: '到期日',
+          minWidth: 100
         }
       ],
       tableData: [],
-      selection: [],
-      selectedId: [1, 20]
+      selection: []
+      // selectedId: [1, 20]
     }
   },
 
@@ -143,7 +155,7 @@ export default {
       })
     },
     getVal() {
-
+      return this.$refs.table.getVal()
     }
   }
 }

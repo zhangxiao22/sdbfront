@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <shun-table title="权益库"
+    <shun-table ref="table"
+                title="权益库"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
-                multiple
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -68,30 +68,33 @@ export default {
       tableColumnList: [
         {
           prop: 'name',
-          label: '权益名称'
+          label: '权益名称',
+          minWidth: 200
         },
         {
-          prop: 'name',
+          prop: 'content',
           label: '权益内容',
-          notShowOverflowTooltip: true
+          minWidth: 300
         },
         {
           prop: 'description',
           label: '权益说明',
-          minWidth: 200,
-          notShowOverflowTooltip: true
+          minWidth: 300
         },
         {
           prop: 'category',
-          label: '话术分类'
+          label: '权益分类',
+          minWidth: 100
         },
         {
           prop: 'validite_start_date',
-          label: '开始时间'
+          label: '开始时间',
+          minWidth: 100
         },
         {
           prop: 'validite_end_date',
-          label: '结束时间'
+          label: '结束时间',
+          minWidth: 100
         }
       ],
       tableData: [],
@@ -135,7 +138,7 @@ export default {
       })
     },
     getVal() {
-      // return this.selection
+      return this.$refs.table.getVal()
     }
   }
 }

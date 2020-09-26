@@ -1,12 +1,12 @@
 <template>
   <div class="container">
-    <shun-table title="短信库"
+    <shun-table ref="table"
+                title="短信库"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
-                multiple
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -70,7 +70,7 @@ export default {
       typeOpt: [],
       tableColumnList: [
         {
-          prop: 'content',
+          prop: 'content2',
           label: '短信内容',
           minWidth: 300,
           notShowOverflowTooltip: true
@@ -125,7 +125,7 @@ export default {
     },
 
     getVal() {
-      // return this.selection
+      return this.$refs.table.getVal()
     }
   }
 }

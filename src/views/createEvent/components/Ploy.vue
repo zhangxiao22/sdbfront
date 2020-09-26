@@ -3,12 +3,11 @@
        class="ploy-container">
     <el-tabs v-model="groupName"
              :before-leave="beforeHandleGroupTabClick">
-      {{ groupIndex }}{{ ployIndex }}
+      <!-- {{ groupIndex }}{{ ployIndex }} -->
       <el-tab-pane v-for="(groupItem,gi) of group"
                    :key="gi"
                    :label="groupItem.name"
                    :name="gi+''">
-
         <el-form :ref="'form'+gi"
                  :model="group[gi]"
                  label-width="110px">
@@ -72,7 +71,9 @@
                 <el-form-item required
                               label="推荐产品：">
                   <el-button icon="el-icon-plus"
-                             @click="addProduct(gi,pi)">
+                             type="primary"
+                             plain
+                             @click="addProduct()">
                     选择产品
                   </el-button>
                 </el-form-item>
@@ -108,13 +109,26 @@
                 <el-form-item required
                               label="推荐权益：">
                   <el-button icon="el-icon-plus"
+                             type="primary"
+                             plain
                              @click="addInterest(ployItem)">
                     选择权益
                   </el-button>
                 </el-form-item>
-                <div v-show="ployItem.interest.name"
+                <div v-show="ployItem.interest.length"
                      class="ploy-card">
-                  {{ ployItem.interest.name }}
+                  <el-table :data="ployItem.interest"
+                            border
+                            style="width: 100%;margin-bottom:18px;">
+                    <el-table-column prop="name"
+                                     width="200"
+                                     show-overflow-tooltip
+                                     label="名称" />
+                    <el-table-column prop="content"
+                                     show-overflow-tooltip
+                                     :min-width="300"
+                                     label="内容" />
+                  </el-table>
                 </div>
                 <el-divider />
                 <el-form-item required
@@ -122,7 +136,8 @@
                   <el-dropdown trigger="click"
                                size="medium"
                                @command="handleCommandChannel($event,ployItem)">
-                    <el-button>
+                    <el-button type="primary"
+                               plain>
                       选择添加
                       <i class="el-icon-arrow-down el-icon--right" />
                     </el-button>
@@ -140,21 +155,23 @@
                 </el-form-item>
                 <!-- {{ ployItem.channel }} -->
                 <el-card v-for="(channelCardItem,ci) of ployItem.channel"
-                         ref="`channelRef${gi}${pi}${ci}`"
-                         :key="ci"
+                         :id="`channelRef-${gi}-${pi}-${ci}`"
+                         :key="`${gi}-${pi}-${ci}`"
                          shadow="hover"
                          style="margin-bottom:18px;"
                          class="channel-card">
                   <div slot="header"
                        class="clearfix">
                     <span class="channel-card-title">
+                      <!-- {{ `channelRef-${groupIndex}-${ployIndex}-${ci}` }} -->
                       <svg-icon class="name-icon"
                                 :style="{color:channelCardItem.iconColor}"
                                 :icon-class="channelCardItem.icon" />
                       <span>{{ channelCardItem.label }}</span>
                     </span>
 
-                    <el-popconfirm title="确定删除改渠道吗？">
+                    <el-popconfirm title="确定删除改渠道吗？"
+                                   @onConfirm="deleteChannel(ployItem,ci)">
                       <el-button slot="reference"
                                  class="channel-card-delete"
                                  type="text">
@@ -238,20 +255,44 @@
                       <el-form-item required
                                     label="推荐话术：">
                         <el-button icon="el-icon-plus"
-                                   @click="addCRMWords(channelCardItem)">
+                                   @click="addCRMWords(ci)">
                           选择话术
                         </el-button>
                       </el-form-item>
+                      <el-table v-show="channelCardItem.model.length"
+                                :data="channelCardItem.model"
+                                border
+                                style="width: 100%;margin-bottom:18px;">
+                        <el-table-column prop="content2"
+                                         :min-width="400"
+                                         label="话术内容" />
+                        <el-table-column prop="category"
+                                         show-overflow-tooltip
+                                         label="话术分类" />
+
+                      </el-table>
                     </template>
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
                       <el-form-item required
                                     label="短信模版：">
                         <el-button icon="el-icon-plus"
-                                   @click="addSmsWords(channelCardItem)">
+                                   @click="addSmsWords(ci)">
                           选择模版
                         </el-button>
                       </el-form-item>
+                      <el-table v-show="channelCardItem.model.length"
+                                :data="channelCardItem.model"
+                                border
+                                style="width: 100%;margin-bottom:18px;">
+                        <el-table-column prop="content2"
+                                         :min-width="400"
+                                         label="短信内容" />
+                        <el-table-column prop="category"
+                                         show-overflow-tooltip
+                                         label="短信分类" />
+
+                      </el-table>
                       <el-form-item :prop="'ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
                                       validator: testSelectValidator, trigger: 'change'
@@ -279,16 +320,27 @@
                       <el-form-item required
                                     label="微信模版：">
                         <el-button icon="el-icon-plus"
-                                   @click="addWeChatWords(channelCardItem)">
+                                   @click="addWeChatWords(ci)">
                           选择模版
                         </el-button>
                       </el-form-item>
+                      <el-table v-show="channelCardItem.model.length"
+                                :data="channelCardItem.model"
+                                border
+                                style="width: 100%;margin-bottom:18px;">
+                        <el-table-column prop="content2"
+                                         :min-width="400"
+                                         label="短信内容" />
+                        <el-table-column prop="category"
+                                         show-overflow-tooltip
+                                         label="短信分类" />
+                      </el-table>
                     </template>
-                    渠道：{{ channelCardItem.value }}
+                    <!-- 渠道：{{ channelCardItem.value }}
                     类型：{{ channelCardItem.chooseType }}
                     定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
                     定时型的值2（时间）：{{ channelCardItem.timingTimeValue }}
-                    规则型的值：{{ channelCardItem.ruleValue }}
+                    规则型的值：{{ channelCardItem.ruleValue }} -->
                   </div>
                 </el-card>
               </el-tab-pane>
@@ -298,57 +350,42 @@
         </el-form>
       </el-tab-pane>
     </el-tabs>
-
-    <el-drawer title="选择产品"
-               class="el-drawer_product"
-               :visible.sync="showProduct"
-               size="80%"
-               direction="rtl">
-      <div class="drawer-container">
+    <!-- 产品 -->
+    <ShunDrawer title="选择产品"
+                :show.sync="showProduct"
+                @submit="submitProduct()">
+      <template v-slot:container>
         <product ref="productRef"
                  :show-selection="true" />
-      </div>
-      <div class="drawer-bottom">
-        <el-button type="primary"
-                   @click="submitProduct()">
-          确 认
-        </el-button>
-      </div>
-    </el-drawer>
-
-    <el-drawer title="选择权益"
-               class="el-drawer_product"
-               :visible.sync="showInterest"
-               size="80%"
-               direction="rtl">
-      <div class="drawer-container">
+      </template>
+    </ShunDrawer>
+    <!-- 权益 -->
+    <ShunDrawer title="选择权益"
+                :show.sync="showInterest"
+                @submit="submitInterest()">
+      <template v-slot:container>
         <interest ref="interestRef"
                   :show-selection="true" />
-      </div>
-      <div class="drawer-bottom">
-        <el-button type="primary"
-                   @click="submitInterest()">
-          确 认
-        </el-button>
-      </div>
-    </el-drawer>
-    <el-drawer title="选择话术"
-               class="el-drawer_product"
-               :visible.sync="showCRMWord"
-               size="80%"
-               direction="rtl">
-      <div class="drawer-container">
+      </template>
+    </ShunDrawer>
+    <!-- 话术 -->
+    <ShunDrawer title="选择话术"
+                :show.sync="showCRMWord"
+                @submit="submitWord()">
+      <template v-slot:container>
         <word ref="wordRef"
               :show-selection="true" />
-      </div>
-      <div class="drawer-bottom">
-        <el-button type="primary"
-                   @click="submitWord()">
-          确 认
-        </el-button>
-      </div>
-    </el-drawer>
-
+      </template>
+    </ShunDrawer>
+    <!-- 短信 -->
+    <ShunDrawer title="选择短信"
+                :show.sync="showSms"
+                @submit="submitSms()">
+      <template v-slot:container>
+        <sms ref="smsRef"
+             :show-selection="true" />
+      </template>
+    </ShunDrawer>
   </div>
 </template>
 
@@ -356,11 +393,52 @@
 import { savePloy } from '@/api/api'
 import gsap from 'gsap'
 import Info from '@/components/Info'
+import ShunDrawer from '@/components/ShunDrawer'
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
+import Sms from '@/views/sms/index'
 import { isPhone } from '@/utils/validate'
+import { MessageBox, Message } from 'element-ui'
 // import { getWordList } from '@/api/api'
+const PRODUCT = ({ name, classify, riskLevel, returnBenchmark, purchaseAmount, startDate, endDate }) => {
+  return {
+    groupName: '组合A',
+    income: '3.065-3.385%',
+    list: [
+      {
+        productName: name,
+        productType: classify,
+        risklLevel: riskLevel,
+        rateOfReturn: returnBenchmark,
+        minimumPurchaseAmount: purchaseAmount,
+        begin_time: startDate,
+        end_time: endDate,
+        proportion: '50%'
+      },
+      {
+        productName: '顺盈3号',
+        productType: '开放式理财',
+        risklLevel: 'R2',
+        rateOfReturn: '2.8-3.2%',
+        minimumPurchaseAmount: '10000',
+        begin_time: 'XXXX',
+        end_time: 'XXXX',
+        proportion: '30%'
+      },
+      {
+        productName: '三年期定期',
+        productType: '存款',
+        risklLevel: '',
+        rateOfReturn: '4.13%',
+        minimumPurchaseAmount: '50',
+        begin_time: 'T',
+        end_time: 'T+3年',
+        proportion: '20%'
+      }
+    ]
+  }
+}
 const CHANNEL_OPT = [
   {
     value: 1,
@@ -411,7 +489,8 @@ const CHANNEL_OPT = [
       id: 2,
       name: '规则型',
       icon: 'el-icon-tickets'
-    }]
+    }],
+    model: []
   }, {
     value: 3,
     label: '微信',
@@ -434,12 +513,13 @@ const CHANNEL_OPT = [
       id: 2,
       name: '规则型',
       icon: 'el-icon-tickets'
-    }]
+    }],
+    model: []
   }
 ]
 export default {
   components: {
-    Product, Info, Interest, Word
+    Product, Info, Interest, Word, ShunDrawer, Sms
   },
   data() {
     return {
@@ -453,6 +533,8 @@ export default {
       showInterest: false,
       // crm话术侧边栏
       showCRMWord: false,
+      // 短信侧边栏
+      showSms: false,
       // 定时型 下拉选项
       timingOpt: [
         {
@@ -490,71 +572,36 @@ export default {
         }
       ],
       group: [
+        // {
+        //   gid: 1,
+        //   name: '群组1',
+        //   people: 221324,
+        //   desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
+        //   // 当前分发范围设置总和
+        //   totalPercent: 100,
+        //   // 策略
+        //   ployTabs: [{
+        //     // 策略名称
+        //     title: '新策略',
+        //     // 策略分发范围
+        //     percent: 100,
+        //     // 策略tab id
+        //     name: '1',
+        //     // 产品
+        //     product: JSON.parse(JSON.stringify(PRODUCT)),
+        //     // 权益
+        //     interest: {},
+        //     channel: [],
+        //     channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
+        //   }],
+        //   // v-model值
+        //   ployTabsValue: '1',
+        //   // 累加数量
+        //   ployTabIndex: 1
+        // },
         {
           gid: 1,
           name: '群组1',
-          people: 221324,
-          desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
-          // 当前分发范围设置总和
-          totalPercent: 100,
-          // 策略
-          ployTabs: [{
-            // 策略名称
-            title: '新策略',
-            // 策略分发范围
-            percent: 100,
-            // 策略tab id
-            name: '1',
-            // 产品
-            product: {
-              groupName: '组合A',
-              income: '3.065-3.385%',
-              list: [
-                {
-                  productName: '顺盈2号',
-                  productType: '开放式理财',
-                  risklLevel: 'R2',
-                  rateOfReturn: '2.8-3.2%',
-                  minimumPurchaseAmount: '10000',
-                  begin_time: 'XXXX',
-                  end_time: 'XXXX',
-                  proportion: '50%'
-                },
-                {
-                  productName: '顺盈3号',
-                  productType: '开放式理财',
-                  risklLevel: 'R2',
-                  rateOfReturn: '2.8-3.2%',
-                  minimumPurchaseAmount: '10000',
-                  begin_time: 'XXXX',
-                  end_time: 'XXXX',
-                  proportion: '30%'
-                },
-                {
-                  productName: '三年期定期',
-                  productType: '存款',
-                  risklLevel: '',
-                  rateOfReturn: '4.13%',
-                  minimumPurchaseAmount: '50',
-                  begin_time: 'T',
-                  end_time: 'T+3年',
-                  proportion: '20%'
-                }
-              ]
-            },
-            // 权益
-            interest: {},
-            channel: [],
-            channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
-          }],
-          // v-model值
-          ployTabsValue: '1',
-          // 累加数量
-          ployTabIndex: 1
-        },
-        {
-          gid: 2,
-          name: '群组2',
           people: 1324123,
           desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
           totalPercent: 100,
@@ -564,11 +611,20 @@ export default {
           // 累加数量
           ployTabIndex: 0
         }
+        // {
+        //   gid: 2,
+        //   name: '群组2',
+        //   people: 66664123,
+        //   desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
+        //   totalPercent: 100,
+        //   ployTabs: [],
+        //   // v-model值
+        //   ployTabsValue: '0',
+        //   // 累加数量
+        //   ployTabIndex: 0
+        // }
       ],
-      tempProduct: {
-        gi: null,
-        pi: null
-      },
+
       tempPloyItem: null,
       pickerOptions: {
         disabledDate(time) {
@@ -576,11 +632,14 @@ export default {
           const testEndTime = 1602720000000 // 2020-10-15
           return time.getTime() > testEndTime || time.getTime() < testStartTime
         }
-      }
-
+      },
+      channelIndex: null
     }
   },
   computed: {
+    id() {
+      return this.$route.query.id
+    },
     animatedNumber() {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()
     },
@@ -588,7 +647,7 @@ export default {
       return +this.groupName
     },
     ployIndex() {
-      return +this.group[this.groupIndex].ployTabsValue
+      return this.group[this.groupIndex].ployTabsValue > 0 ? this.group[this.groupIndex].ployTabsValue - 1 : null
     }
   },
   watch: {
@@ -614,15 +673,16 @@ export default {
                 // 分发范围
                 range: pn.percent / 100,
                 // 产品id
-                product_id: 1,
+                product_id: pn.productId,
                 // 权益id
-                material_id: 2,
+                material_id: pn.interest.length ? pn.interest[0].id : null,
                 // 渠道
                 push_channels: pn.channel.map((cn, ci) => {
-                  console.log(cn)
                   return {
                     // 渠道类型 1:cem 2:短信 3:微信
                     channel_id: cn.value,
+                    // 话术/模版id
+                    script_id: cn.model.length ? cn.model[0].id : null,
                     // 推送类型 1:定时 2:规则
                     push_type: cn.chooseType,
                     // 定时型的值
@@ -650,8 +710,13 @@ export default {
             })
           }
         })
-
-        savePloy({ payload: JSON.stringify(data) }).then(res => {
+        // console.log(data)
+        // reject()
+        const param = {
+          event_id: this.id,
+          data
+        }
+        savePloy(param).then(res => {
           resolve()
         }).catch(() => {
           reject()
@@ -680,15 +745,15 @@ export default {
       this.group[gi].ployTabs.forEach((n, i) => {
         percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
       })
-      console.log(percent)
       this.group[gi].ployTabs.push({
         title: '新策略' + newTabName,
         name: newTabName,
         percent,
         // 产品
         product: {},
+        productId: null,
         // 权益
-        interest: {},
+        interest: [],
         // 渠道
         channel: [],
         channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
@@ -712,7 +777,6 @@ export default {
               }
             })
           }
-
           this.group[gi].ployTabsValue = activeName
           this.group[gi].ployTabs = tabs.filter(tab => tab.name !== targetName)
           this.group[gi].totalPercent = this.getTotalPercent(gi)
@@ -720,21 +784,7 @@ export default {
         .catch(() => {
         })
     },
-    // 分发百分比校验
-    // validatePass2(rule, value, callback) {
-    //   console.log(this.$refs.form0.validate)
-    //   let total = 0
-    //   this.group[+this.groupName].ployTabs.forEach((n, i) => {
-    //     // console.log(n.percent)
-    //     total += n.percent
-    //   })
-    //   if (total > 100) {
-    //     callback(new Error('分发范围总和不能大于100%'))
-    //   }
-    //   // console.log(valid)
-    //   // return valid.
-    //   // console.log(rule, value, callback, source, options, caonima)
-    // },
+
     handleChangePercent() {
       let total = 0
       this.group[+this.groupName].ployTabs.forEach((n, i) => {
@@ -744,38 +794,43 @@ export default {
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
     },
-    addProduct(gi, pi) {
-      // console.log(gi, pi)
-      this.tempProduct.gi = gi
-      this.tempProduct.pi = pi
+    // 选择产品
+    addProduct() {
       this.showProduct = true
     },
+    // 选择产品-确定
     submitProduct() {
       const val = this.$refs.productRef.getVal()
-      console.log(val)
-      const { gi, pi } = this.tempProduct
-      // this.group[gi].ployTabs[pi].product
-      this.showProduct = false
+      if (val.length) {
+        this.showProduct = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].product = PRODUCT(val[0])
+        this.group[this.groupIndex].ployTabs[this.ployIndex].productId = val[0].id
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
     },
-    // 权益
+    // 选择权益
     addInterest(item) {
-      this.tempPloyItem = item
       this.showInterest = true
-      // this.$nextTick(() => {
-      //   this.$refs.interestRef.select(item.interest.id)
-      // })
     },
+    // 选择权益-确定
     submitInterest() {
       const val = this.$refs.interestRef.getVal()
-      this.tempPloyItem.interest = val
-      this.showInterest = false
+      if (val.length) {
+        this.showInterest = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
     },
-    submitWord() {
-      const val = this.$refs.wordRef.getVal()
-      // this.tempPloyItem.interest = val
-      this.showCRMWord = false
-    },
-
     parseTable(data) {
       return data.list.map((n, i) => {
         return Object.assign({
@@ -785,6 +840,7 @@ export default {
         }, n)
       })
     },
+
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
       if (column.property === 'groupName' || column.property === 'income') {
         if (rowIndex === 0) {
@@ -800,6 +856,8 @@ export default {
         }
       }
     },
+
+    // 添加渠道
     handleCommandChannel(index, item) {
       CHANNEL_OPT.forEach((n, i) => {
         if (n.value === index) {
@@ -807,14 +865,21 @@ export default {
         }
       })
       this.$nextTick(() => {
-        // console.log(this.$refs.channelRef)
-        // todo
-        // this.$refs.pronbit.getBoundingClientRect().top
-        // document.querySelector('.content').scrollTop = 800
+        const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item.channel.length - 1}`
+        const top = document.querySelector(id).getBoundingClientRect().top
+        document.querySelector('.content').scrollTop = top
       })
 
       const tempArr = item.channel.map(n => n.value)
       item.channelOpt.forEach((n, i) => {
+        n.disabled = tempArr.includes(n.value)
+      })
+    },
+    // 删除渠道
+    deleteChannel(ployItem, ci) {
+      ployItem.channel.splice(ci, 1)
+      const tempArr = ployItem.channel.map(n => n.value)
+      ployItem.channelOpt.forEach((n, i) => {
         n.disabled = tempArr.includes(n.value)
       })
     },
@@ -828,30 +893,60 @@ export default {
       item.ruleValue.splice(i, 1)
     },
 
-    // crm话术
-    addCRMWords(item) {
-      console.log(item)
-      // this.tempPloyItem = item
+    // crm选择话术
+    addCRMWords(ci) {
       this.showCRMWord = true
-      // this.$nextTick(() => {
-      //   this.$refs.interestRef.select(item.interest.id)
-      // })
+      this.channelIndex = ci
     },
-    // 短信话术
-    addSmsWords(item) {
-      // todo
+
+    // 短信
+    addSmsWords(ci) {
+      this.showSms = true
+      this.channelIndex = ci
     },
-    // 微信话术
-    addWeChatWords(item) {
-      // todo
+    // 微信
+    addWeChatWords(ci) {
+      this.showSms = true
+      this.channelIndex = ci
     },
+    // 选择话术-确认
+    submitWord() {
+      const val = this.$refs.wordRef.getVal()
+      if (val.length) {
+        this.showCRMWord = false
+        // console.log(this.groupIndex, this.ployIndex, this.channelIndex)
+        // console.log(this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex])
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
+    // 短信/微信-确认
+    submitSms() {
+      const val = this.$refs.smsRef.getVal()
+      if (val.length) {
+        this.showSms = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
+    // 精准内测
     handleTestChange(val) {
       console.log(val)
     },
     testSelectValidator(rule, value, callback) {
       // console.log(rule, value, callback)
       const b = value.every((n, i) => {
-        console.log(isPhone(n))
+        // console.log(isPhone(n))
         return isPhone(n)
       })
       if (!b) {
@@ -892,11 +987,13 @@ export default {
     justify-content: flex-end;
   }
   .ploy-card {
-    @include shun-text;
-    border: 1px solid #ebeef5;
-    background: #fafafa;
-    color: #444;
-    margin-bottom: 0;
+    // @include shun-text;
+    // border: 1px solid #ebeef5;
+    // background: #fafafa;
+    // color: #444;
+    // margin-bottom: 0;
+    // font-size: 13px;
+    // display: flex;
   }
   .channel-card {
     .name-icon {
@@ -961,25 +1058,6 @@ export default {
         border-style: dashed;
       }
     }
-  }
-}
-.el-drawer_product {
-  ::v-deep .el-drawer {
-    background: #f8f8fa;
-    .el-drawer__body {
-      display: flex;
-      flex-direction: column;
-    }
-  }
-  .drawer-container {
-    padding: 0 20px;
-    flex: 1;
-    min-height: 0;
-    overflow: auto;
-  }
-  .drawer-bottom {
-    margin-top: auto;
-    padding: 20px;
   }
 }
 </style>

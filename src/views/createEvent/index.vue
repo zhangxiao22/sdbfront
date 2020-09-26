@@ -165,8 +165,9 @@ export default {
       this.$refs[ref].validateAndNext().then(() => {
         this.stepActive++
         this.mainLoading = false
-      }).catch(() => {
+      }).catch(err => {
         this.mainLoading = false
+        console.log(err)
       })
     },
     prev() {

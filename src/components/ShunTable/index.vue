@@ -26,6 +26,8 @@
                 style="width: 100%"
                 :row-key="(row)=>{return row.id}"
                 @row-click="handleRowClick"
+                @select="handSelect"
+                @select-all="handleSelectAll"
                 @selection-change="handleSelectionChange">
         <!-- index -->
         <el-table-column v-if="showIndex"
@@ -53,7 +55,7 @@
           </el-table-column>
         </template>
       </el-table>
-      <!-- {{ selection }} -->
+      <!-- {{ selection.map(n => n.id) }} -->
       <!-- {{ currentPage }}{{ pageSize }} -->
       <el-pagination :current-page="currentPage"
                      background
@@ -149,16 +151,33 @@ export default {
 
   },
   created() {
+    // console.log(123)
+  },
+  mounted() {
+    // console.log(223)
   },
   methods: {
     indexMethod(index) {
       return index + (this.currentPage - 1) * this.pageSize + 1
     },
     handleRowClick(row, col, event) {
-      if (!this.showSelection) return
-      this.$refs.table.toggleRowSelection(row)
+      // if (!this.showSelection) return
+      // this.$refs.table.toggleRowSelection(row)
     },
+
+    handSelect(selection, row) {
+      // this.$refs.table.clearSelection()
+      // if (selection.length === 0) return
+      // this.$refs.table.toggleRowSelection(row, true)
+    },
+    handleSelectAll() {
+      if (!this.multiple) {
+        this.$refs.table.clearSelection()
+      }
+    },
+
     handleSelectionChange(selection) {
+      this.selection = selection
       if (this.multiple) {
         this.selection = selection
       } else {
@@ -166,7 +185,7 @@ export default {
           this.$refs.table.clearSelection()
           this.$refs.table.toggleRowSelection(selection.pop())
         } else {
-          this.selection = selection.pop()
+          this.selection = selection
         }
       }
     },
@@ -175,7 +194,7 @@ export default {
       this.$emit('render')
     },
     handleCurrentChange(val) {
-      console.log(val)
+      // console.log(val)
       this.$emit('update:currentPage', val)
       this.$emit('render')
     },
@@ -234,7 +253,10 @@ export default {
 .table-container {
   flex: 1;
   padding: 6px 16px 16px;
-
+  ::v-deep .el-alert.is-light .el-alert__closebtn {
+    color: #f56c6c;
+    line-height: 20px;
+  }
   .table {
     ::v-deep .el-table__fixed-header-wrapper .el-checkbox {
       // display: none;
