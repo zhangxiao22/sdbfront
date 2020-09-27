@@ -206,6 +206,9 @@ export default {
         this.$refs.table.toggleRowSelection(n, n.id === id)
       })
     },
+    resetSelection() {
+      this.$refs.table.clearSelection()
+    },
     getVal() {
       return this.selection
     }

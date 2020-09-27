@@ -42,7 +42,7 @@
               搜索
             </el-button>
             <el-button icon="el-icon-refresh"
-                       @click="reset">
+                       @click="resetAll">
               重置
             </el-button>
           </el-form-item>
@@ -66,7 +66,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -111,6 +111,10 @@ export default {
     this.getList(1)
   },
   methods: {
+    resetAll() {
+      this.reset()
+      this.$refs.table.resetSelection()
+    },
     reset() {
       this.$refs.filterRef.resetFields()
       this.search()

@@ -796,6 +796,7 @@ export default {
     },
     // 选择产品
     addProduct() {
+      this.$refs.productRef && this.$refs.productRef.resetAll()
       this.showProduct = true
     },
     // 选择产品-确定
@@ -815,6 +816,7 @@ export default {
     },
     // 选择权益
     addInterest(item) {
+      this.$refs.interestRef && this.$refs.interestRef.resetAll()
       this.showInterest = true
     },
     // 选择权益-确定
@@ -895,23 +897,26 @@ export default {
 
     // crm选择话术
     addCRMWords(ci) {
+      this.$refs.wordRef && this.$refs.wordRef.resetAll()
       this.showCRMWord = true
       this.channelIndex = ci
     },
 
     // 短信
     addSmsWords(ci) {
+      this.$refs.smsRef && this.$refs.smsRef.resetAll()
       this.showSms = true
       this.channelIndex = ci
     },
     // 微信
     addWeChatWords(ci) {
+      this.$refs.smsRef && this.$refs.smsRef.resetAll()
       this.showSms = true
       this.channelIndex = ci
     },
     // 选择话术-确认
     submitWord() {
-      const val = this.$refs.wordRef.getVal()
+      const val = this.$refs.smsRef.getVal()
       if (val.length) {
         this.showCRMWord = false
         // console.log(this.groupIndex, this.ployIndex, this.channelIndex)

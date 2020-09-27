@@ -96,6 +96,10 @@ export default {
     this.getList(1)
   },
   methods: {
+    resetAll() {
+      this.reset()
+      this.$refs.table.resetSelection()
+    },
     reset() {
       this.$refs.filterRef.resetFields()
       this.search()
