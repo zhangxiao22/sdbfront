@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const api1 = 'http://10.5.3.185:8080'
+const api2 = process.env.VUE_APP_BASE_API_2
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -101,7 +101,7 @@ export function getEventBaseInfo(data) {
 // 白名单上传
 export function uploadFile(data) {
   return request({
-    url: api1 + '/customer/upload',
+    url: '/customer/upload',
     method: 'post',
     data
   })
@@ -110,7 +110,7 @@ export function uploadFile(data) {
 // 获取维度补充的维度
 export function getLabelList(params) {
   return request({
-    url: api1 + '/customer/querySupply',
+    url: '/customer/querySupply',
     method: 'get',
     params
   })
@@ -119,7 +119,7 @@ export function getLabelList(params) {
 // 获取分群规则
 export function getCustomerLabel(params) {
   return request({
-    url: api1 + '/customer/queryTagsCandy',
+    url: '/customer/queryTagsCandy',
     method: 'get',
     params
   })
@@ -127,7 +127,7 @@ export function getCustomerLabel(params) {
 // 预估人数
 export function getPeopleCount(data) {
   return request({
-    url: api1 + '/customer/queryTagCount',
+    url: '/customer/queryTagCount',
     method: 'post',
     data
   })
@@ -137,7 +137,7 @@ export function getPeopleCount(data) {
 // 保存策略
 export function savePloy(data) {
   return request({
-    url: 'http://10.5.12.233:8848/sub_group/strategy',
+    url: api2 + '/sub_group/strategy',
     method: 'post',
     data
   })
@@ -147,7 +147,7 @@ export function savePloy(data) {
 // 饼图
 export function getPie() {
   return request({
-    url: 'http://10.5.8.12:8848/mock/pie',
+    url: api2 + '/mock/pie',
     method: 'get'
   })
 }
@@ -155,14 +155,14 @@ export function getPie() {
 // 折线图
 export function getLine() {
   return request({
-    url: 'http://10.5.8.12:8848/mock/line',
+    url: api2 + '/mock/line',
     method: 'get'
   })
 }
 // 散点图
 export function getScatter() {
   return request({
-    url: 'http://10.5.8.12:8848/mock/scatter',
+    url: api2 + '/mock/scatter',
     method: 'get'
   })
 }
