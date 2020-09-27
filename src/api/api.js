@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-
+const api1 = 'http://10.5.3.185:8080'
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -79,7 +79,8 @@ export function getTargetList() {
 }
 
 /** ************************************************ 事件注册 ************************************************************/
-// 保存事件详情 第1步
+// 第1步
+// 保存事件详情
 export function saveEventBaseInfo(data) {
   return request({
     url: '/event/save',
@@ -88,7 +89,7 @@ export function saveEventBaseInfo(data) {
   })
 }
 
-// 获取事件详情 第1步
+// 获取事件详情
 export function getEventBaseInfo(data) {
   return request({
     url: '/event/query',
@@ -96,8 +97,44 @@ export function getEventBaseInfo(data) {
     data
   })
 }
+// 第2步
+// 白名单上传
+export function uploadFile(data) {
+  return request({
+    url: api1 + '/customer/upload',
+    method: 'post',
+    data
+  })
+}
 
-// 保存策略 第3步
+// 获取维度补充的维度
+export function getLabelList(params) {
+  return request({
+    url: api1 + '/customer/querySupply',
+    method: 'get',
+    params
+  })
+}
+
+// 获取分群规则
+export function getCustomerLabel(params) {
+  return request({
+    url: api1 + '/customer/queryTagsCandy',
+    method: 'get',
+    params
+  })
+}
+// 预估人数
+export function getPeopleCount(data) {
+  return request({
+    url: api1 + '/customer/queryTagCount',
+    method: 'post',
+    data
+  })
+}
+
+// 第3步
+// 保存策略
 export function savePloy(data) {
   return request({
     url: 'http://10.5.12.233:8848/sub_group/strategy',

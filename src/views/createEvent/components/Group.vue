@@ -1,20 +1,19 @@
 <template>
   <div class="group-container">
     <el-form ref="form"
-             :model="form"
              :rules="rules"
              label-width="110px"
              class="reg-form">
-      <el-form-item>
+      <el-form-item required
+                    class="shun-label">
         <div slot="label">
           <Info content="最多设置5个规则" />
           分群规则：
         </div>
-        <el-form-item v-for="(conditionItem,i) of form.condition"
+        <el-form-item v-for="(conditionItem,i) of condition"
                       :key="i"
                       class="condition-item">
-
-          <el-tooltip :content="conditionItem.conditionLabel"
+          <el-tooltip :content="conditionItem.conditionLabel||'请选择'"
                       placement="left">
             <el-select v-model="conditionItem.conditionSelect"
                        filterable
@@ -27,45 +26,78 @@
             </el-select>
           </el-tooltip>
 
-          <template v-if="conditionItem.type==='boolean'">
-            <el-select v-model="conditionItem.conditionValue"
-                       class="item"
-                       placeholder="请选择">
-              <el-option label="是"
-                         value="1" />
-              <el-option label="否"
-                         value="0" />
-            </el-select>
-          </template>
-          <template v-if="conditionItem.type==='double'||conditionItem.type==='int'">
+          <!-- type:1 数字型 -->
+          <template v-if="conditionItem.type===1">
             <el-select v-model="conditionItem.compare"
                        class="item"
-                       style="width:80px">
-              <el-option v-for="item in compareOpt"
+                       style="width:90px">
+              <el-option v-for="item in conditionItem.compareOpt"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value" />
             </el-select>
+            <Info class="item">
+              <template v-slot:content>
+                <div style="line-height:1.5">最小值：{{ conditionItem.min }}</div>
+                <div style="line-height:1.5">最大值：{{ conditionItem.max||'不限' }}</div>
+                <div style="line-height:1.5">精度：保留{{ conditionItem.precision? `${conditionItem.precision}位小数`:'整数' }}</div>
+              </template>
+            </Info>
             <el-input-number v-model="conditionItem.conditionValue"
-                             :precision="conditionItem.type==='int'?0:undefined"
+                             placeholder="请输入值"
+                             :precision="conditionItem.precision"
+                             :min="conditionItem.min"
+                             :max="conditionItem.max"
                              style="width:200px;"
                              class="item"
                              controls-position="right" />
             <div class="item">{{ conditionItem.unit }}</div>
-          </template>
-          <template v-if="conditionItem.type==='date'">
-            <el-date-picker v-model="conditionItem.conditionValue[0]"
-                            class="item"
-                            type="date"
-                            placeholder="开始日期" />
 
+          </template>
+          <!-- type:2 布尔型 -->
+          <template v-if="conditionItem.type===2">
+            <div class="item">
+              <el-radio v-for="(item,x) of conditionItem.selectOpt"
+                        :key="x"
+                        v-model="conditionItem.conditionValue"
+                        style="margin-right:0;"
+                        border
+                        :label="item.value">{{ item.label }}</el-radio>
+            </div>
+          </template>
+          <!-- type:3 字符串型 -->
+          <!-- type:4 枚举型 -->
+          <template v-if="conditionItem.type===4">
+            <el-select v-model="conditionItem.conditionValue"
+                       class="item"
+                       placeholder="请选择">
+              <el-option v-for="item of conditionItem.selectOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </template>
+          <!-- type:5 日期型 -->
+          <template v-if="conditionItem.type===5">
+            <el-select v-model="conditionItem.compare"
+                       class="item"
+                       style="width:90px">
+              <el-option label="包含于"
+                         value="1" />
+            </el-select>
+            <el-date-picker v-model="conditionItem.conditionValue.startDate"
+                            class="item"
+                            value-format="yyyy-MM-dd"
+                            type="date"
+                            placeholder="从前" />
             <div class="item">至</div>
-            <el-date-picker v-model="conditionItem.conditionValue[1]"
+            <el-date-picker v-model="conditionItem.conditionValue.endDate"
+                            value-format="yyyy-MM-dd"
                             class="item"
                             type="date"
-                            placeholder="结束日期" />
+                            placeholder="现在" />
           </template>
-          <i v-if="form.condition.length > 1"
+          <i v-if="condition.length > 1"
              class="el-icon-delete delete"
              @click="delconditionItem(i)" />
           <div v-if="i!==0"
@@ -74,130 +106,135 @@
                  @click="andOr(i)">{{ conditionItem.andOrText }}</div>
           </div>
         </el-form-item>
-        <el-button-group>
-          <el-button v-if="form.condition.length<5"
-                     class="add"
-                     style="width:300px;"
-                     icon="el-icon-plus"
-                     @click="addItem">
-            添加规则
-          </el-button>
-          <el-button icon="el-icon-thumb">
-            预估人数
-          </el-button>
-        </el-button-group>
+        <!-- <el-button-group> -->
+        <el-button v-if="condition.length<=4"
+                   class="add"
+                   style="width:300px;"
+                   icon="el-icon-plus"
+                   @click="addItem">
+          添加规则
+        </el-button>
+        <slot name="button" />
+        <!-- </el-button-group> -->
       </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
+
 import Info from '@/components/Info'
 
 export default {
   components: {
     Info
   },
+  props: {
+    // 每页显示条数
+    originData: {
+      type: Array,
+      default() {
+        return []
+      }
+    }
+  },
   data() {
     return {
-      tags: [
-        {
-          label: '是否受薪客户',
-          value: '1',
-          type: 'boolean'
-        },
-        {
-          label: 'AUM-余额',
-          value: '2',
-          type: 'double',
-          unit: '元'
-        },
-        {
-          label: '定期_当天 购买次数',
-          value: '3',
-          type: 'int',
-          unit: '次'
-        },
-        {
-          label: '不定期储蓄_当天购买利率',
-          value: '4',
-          type: 'double',
-          unit: '%'
-        },
-        {
-          label: '最近半年最大转入金额对应日期',
-          value: '5',
-          type: 'date'
-        }
-      ],
-      compareOpt: [{
-        value: '1',
-        label: '>'
-      }, {
-        value: '2',
-        label: '≥'
-      }, {
-        value: '3',
-        label: '='
-      }, {
-        value: '4',
-        label: '<'
-      }, {
-        value: '5',
-        label: '≤'
-      }],
-      form: {
-        condition: []
-      },
+      condition: [{}],
       rules: {}
     }
   },
   computed: {
-
+    tags() {
+      return this.originData.map((n) => {
+        return {
+          label: n.name,
+          value: n.id
+        }
+      })
+    }
   },
   watch: {
 
   },
   created() {
-    this.tagsInit(0, 0)
+    // this.tagsInit(0, 0)
   },
 
   methods: {
-    resetOpt(index) {
-      const { value, label, type, unit } = this.tags[index]
-      const compare = (type === 'double' || type === 'int') ? '1' : ''
-      const conditionValue = (type === 'date') ? [] : ''
-      return {
-        conditionSelect: value,
-        conditionValue,
-        conditionLabel: label,
-        type,
-        compare,
-        unit,
-        andOrText: '且'
+    // 通过规则选中的值，返回一条规则应该展示的数据
+    resetOpt(optValue) {
+      if (!optValue) {
+        return {
+          andOrText: '且'
+        }
+      } else {
+        let item
+        this.originData.filter((n) => {
+          if (n.id === optValue) {
+            item = n
+          }
+        })
+        const conditionValue = item.type.value === 5 ? { startDate: '', endDate: '' } : null
+        const data = {
+          // 规则选中选项的值
+          conditionSelect: item.id,
+          // 规则选中的名称
+          conditionLabel: item.name,
+          // 类型
+          type: item.type.value,
+          // 比较符号
+          compareOpt: item.relations,
+          // 比较值
+          compare: '',
+          // 可选项
+          selectOpt: item.enumCandidateList,
+          // 数字型-小数点精度
+          precision: item.precision || 0,
+          // 数字型-最小值
+          min: item.min || 0,
+          // 数字型-最大值
+          max: item.max || undefined,
+          // 数字型-单位
+          unit: item.unit.label,
+          // 规则的值
+          conditionValue,
+          andOrText: '且'
+        }
+        return data
       }
     },
-    tagsInit(gi, oi) {
-      this.form.condition.splice(gi, 1, this.resetOpt(oi))
+    tagsInit(gi, optValue) {
+      /**
+       * gi: 客群的index
+         optValue: 选项的值
+       */
+      this.condition.splice(gi, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
       for (let j = 0; j < this.tags.length; j++) {
         if (this.tags[j].value === val) {
-          this.tagsInit(i, j)
+          this.tagsInit(i, val)
           break
         }
       }
     },
     addItem() {
-      this.form.condition.push(this.resetOpt(0))
+      this.condition.push(this.resetOpt())
     },
     delconditionItem(i) {
-      this.form.condition.splice(i, 1)
+      this.condition.splice(i, 1)
     },
     andOr(i) {
-      this.form.condition[i].andOrText = this.form.condition[i].andOrText === '且' ? '或' : '且'
+      this.condition[i].andOrText = this.condition[i].andOrText === '且' ? '或' : '且'
+    },
+    getVal() {
+      return this.condition
+      // const data = this.condition.map((n, i) => {
+      //   console.log(this.condition)
+      // })
+      // return data
     }
-
   }
 }
 </script>
@@ -206,6 +243,10 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .group-container {
+  .shun-label ::v-deep .el-form-item__label {
+    display: flex;
+    justify-content: flex-end;
+  }
   .condition-item {
     position: relative;
     ::v-deep .el-form-item__content {

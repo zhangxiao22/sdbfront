@@ -4,6 +4,9 @@
                 :content="content"
                 placement="top">
       <i class="el-icon-info" />
+      <template v-slot:content>
+        <slot name="content" />
+      </template>
     </el-tooltip>
   </div>
 </template>

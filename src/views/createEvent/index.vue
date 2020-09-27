@@ -143,7 +143,7 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 2
+      stepActive: 1
     }
   },
   computed: {

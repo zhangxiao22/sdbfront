@@ -449,7 +449,7 @@ export default {
         }
         .chart-left {
           width: 40%;
-          margin-right: 20px;
+          margin-right: 5%;
         }
         .chart-right {
           flex: 1;

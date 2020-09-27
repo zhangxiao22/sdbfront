@@ -4,30 +4,37 @@
       <el-tab-pane label="白名单上传"
                    name="1">
         <div class="whitelist">
-          <el-upload class="upload"
+          <el-upload ref="uploadRef"
+                     class="upload"
                      drag
-                     action="https://jsonplaceholder.typicode.com/posts/"
-                     multiple>
+                     :on-change="handleFileChange"
+                     :show-file-list="false"
+                     :http-request="uploadFile"
+                     :accept="accept.map(n => `.${n}`).join(',')"
+                     action="">
             <svg-icon class="el-icon-upload"
                       icon-class="upload-file" />
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             <div slot="tip"
                  class="el-upload__tip">
-              只能上传xls/cvs文件
+              只能上传xls/xlsx/cvs文件
               <el-link type="primary"
                        @click="download">模版下载</el-link>
             </div>
           </el-upload>
-          <el-form ref="form"
-                   :model="form"
+          <el-form v-show="fileId"
+                   ref="form"
                    :rules="rules"
                    label-width="110px"
                    class="reg-form">
+            <el-form-item label="文件名称：">
+              {{ fileName }}
+            </el-form-item>
             <el-form-item label="客户数量：">
-              {{ parseInt(form.customerCount).toLocaleString() }}
+              {{ customerCount ? parseInt(customerCount).toLocaleString() : '' }}
             </el-form-item>
             <el-form-item label="上传时间：">
-              {{ form.updateTime }}
+              {{ updateTime }}
             </el-form-item>
 
             <el-form-item>
@@ -35,7 +42,7 @@
                 <Info content="维度不能超过10个" />
                 维度补充：
               </div>
-              <el-select v-model="form.paramValue"
+              <el-select v-model="paramValue"
                          style="width:800px;"
                          multiple
                          filterable
@@ -62,16 +69,17 @@
 
             </el-form-item>
             <el-tabs id="group-tabs"
-                     v-model="form.labelIndex"
+                     v-model="labelIndex"
                      type="card"
                      @tab-remove="removeTab">
 
-              <el-tab-pane v-for="item of form.labelTabs"
+              <el-tab-pane v-for="item of labelTabs"
                            :key="item.name"
                            :closable="item.closable"
                            :label="item.title"
                            :name="item.name">
-                <el-form-item label="群组名称：">
+                <el-form-item required
+                              label="群组名称：">
                   <el-input v-model="item.title"
                             style="width:300px"
                             :disabled="!item.closable"
@@ -85,8 +93,17 @@
                             :autosize="{ minRows: 2, maxRows: 4}"
                             placeholder="请输入群组描述" />
                 </el-form-item>
-                <Group v-if="item.closable" />
-                <el-form-item label="客户人数：">12,344</el-form-item>
+                <Group v-if="item.closable"
+                       ref="groupRef"
+                       :origin-data="originData">
+                  <template slot="button">
+                    <el-button icon="el-icon-thumb"
+                               @click="predict">
+                      预估人数
+                    </el-button>
+                  </template>
+                </Group>
+                <el-form-item label="客户人数：">{{ item.people ? parseInt(item.people).toLocaleString() : '' }}</el-form-item>
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -105,6 +122,8 @@
 import Info from '@/components/Info'
 import Group from './Group'
 import Sortable from 'sortablejs'
+import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount } from '@/api/api'
+import { getToken } from '@/utils/auth'
 
 export default {
   name: 'CustomerGroups',
@@ -114,109 +133,201 @@ export default {
   data() {
     return {
       //
-      age: '',
       activeName: '1',
-      form: {
-        fileName: 'dsafdasfasd.ss',
-        customerCount: 1234566,
-        updateTime: '2020-09-09 09:09:09',
-        paramValue: '',
-        // editableTabsValue
-        // 值
-        labelIndex: '1',
-        // editableTabs
-        labelTabs: [{
-          title: '其他群组',
-          desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
-          name: '1',
-          closable: false
-        }],
-        // tabIndex
-        // 用于计数 累加
-        labelTabsCounts: 1
-      },
-      targetForm: {},
+      fileId: null,
+      accept: ['xls', 'xlsx', 'cvs'],
+      file: '',
+      // fileList: [],
+      fileName: '',
+      customerCount: '',
+      updateTime: '',
+      paramValue: '',
+      labelTabs: [{
+        title: '其他群组',
+        desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
+        name: '1',
+        closable: false,
+        people: ''
+      }],
+      // 值
+      labelIndex: '1',
+      // 用于计数 累加
+      labelTabsCounts: 1,
       rules: {
 
       },
-
-      paramOpt: [
-        {
-          label: '性别',
-          value: '1'
-        },
-        {
-          label: '年龄',
-          value: '2'
-        },
-        {
-          label: '年龄2',
-          value: '3'
-        },
-        {
-          label: '年龄3',
-          value: '4'
-        }
-      ]
-
+      paramOpt: [],
+      originData: []
     }
   },
   computed: {
+    id() {
+      return this.$route.query.id
+    },
+    groupId() {
+      return this.labelIndex - 1
+    }
+
   },
   watch: {
-    form: {
-      handler(newVal, oldVal) {
-        // console.log(newVal, '??')
-        const data = {
-          customerCount: 0
-        }
-        data.customerCount = newVal.customerCount
-        console.log(data)
-        this.$emit('renderSteps', data)
-      },
-      deep: true,
-      immediate: true
-    }
+    // form: {
+    //   handler(newVal, oldVal) {
+    //     // console.log(newVal, '??')
+    //     const data = {
+    //       customerCount: 0
+    //     }
+    //     data.customerCount = newVal.customerCount
+    //     console.log(data)
+    //     this.$emit('renderSteps', data)
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
   },
   mounted() {
     this.tabDrop()
   },
+  created() {
+    this.getParamOpt()
+    // this.getRuleList()
+  },
   methods: {
     validateAndNext() {
-      return new Promise(resolve => {
-        resolve()
+      // console.log(this.$refs.groupRef, this.groupId - 1)
+      const data = this.$refs.groupRef[this.groupId - 1].getVal()
+      console.log(data)
+      return new Promise((resolve, reject) => {
+        reject()
       })
     },
     download() {
-      console.log(123)
+    },
+    handleFileChange(file) {
+      this.file = file.raw
+      // this.$refs.uploadRef.submit()
     },
 
+    resetFile() {
+      this.file = ''
+      this.$refs.uploadRef.clearFiles()
+    },
+    uploadFile() {
+      const index = this.file.name.lastIndexOf('.')
+      const suffix = this.file.name.substr(index + 1)
+      // console.log(suffix)
+      if (!this.accept.includes(suffix)) {
+        this.$message({
+          message: '请上传正确的文件格式',
+          type: 'error',
+          duration: '5000'
+        })
+        this.resetFile()
+        return
+      } else {
+        const formData = new FormData()
+        formData.append('file', this.file)
+        formData.append('baseId', this.id)
+        uploadFile(formData).then(res => {
+          // console.log(res)
+          this.fileId = res.data.fileId
+          this.fileName = res.data.fileName
+          this.customerCount = res.data.recordNum
+          this.updateTime = res.data.uploadTime
+          this.getRuleList()
+        }).catch(() => {
+          this.resetFile()
+        })
+      }
+    },
+
+    getParamOpt() {
+      getLabelList().then(res => {
+        this.paramOpt = res.data.slice(0, 10).map((n) => {
+          return {
+            value: n.id,
+            label: n.name
+          }
+        })
+      })
+    },
+
+    // 获取规则列表
+    getRuleList() {
+      const data = {
+        baseId: this.id
+      }
+      getCustomerLabel(data).then(res => {
+        this.originData = res.data
+      }).catah(() => { })
+    },
+    transformData(data) {
+      return data.map(item => {
+        const type = item.type
+        let contentWithRelation
+        if (type === 5) {
+          contentWithRelation = [
+            {
+              content: item.conditionValue.startDate,
+              tagRelation: 3
+            },
+            {
+              content: item.conditionValue.endDate,
+              tagRelation: 5
+            }
+          ]
+        } else {
+          contentWithRelation = [
+            {
+              content: item.conditionValue,
+              tagRelation: item.compare
+            }
+          ]
+        }
+        return {
+          tagId: item.conditionSelect,
+          contentWithRelation,
+          combineRelation: item.andOrText === '且' ? 1 : 2
+        }
+      })
+    },
+    // 预估人数
+    predict() {
+      let val = this.$refs.groupRef[this.groupId - 1].getVal()
+      val = this.transformData(val)
+      const data = {
+        baseId: this.id,
+        searchRuleList: val
+      }
+      getPeopleCount(data).then(res => {
+        this.labelTabs[this.groupId].people = res.data.count
+      })
+    },
     // tab拖拽
     tabDrop() {
       const el = document.querySelector('#group-tabs .el-tabs__nav')
-      console.log(el)
+      // console.log(el)
       const _this = this
       var sortable = Sortable.create(el, {
         // filter: '#tab-1',
         onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-          const currRow = _this.form.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
-          _this.form.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
+          const currRow = _this.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
+          _this.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
         }
       })
     },
     addTab() {
-      const newTabName = ++this.form.labelTabsCounts + ''
-      this.form.labelTabs.push({
+      const newTabName = ++this.labelTabsCounts + ''
+      this.labelTabs.push({
         title: '新群组' + newTabName,
         desc: '',
         name: newTabName,
         closable: true
       })
-      this.form.labelIndex = newTabName
+      this.labelIndex = newTabName
     },
     removeTab(targetName) {
-      const tabs = this.form.labelTabs
-      let activeName = this.form.labelIndex
+      const tabs = this.labelTabs
+      let activeName = this.labelIndex
       if (activeName === targetName) {
         tabs.forEach((tab, index) => {
           if (tab.name === targetName) {
@@ -228,8 +339,8 @@ export default {
         })
       }
 
-      this.form.labelIndex = activeName
-      this.form.labelTabs = tabs.filter(tab => tab.name !== targetName)
+      this.labelIndex = activeName
+      this.labelTabs = tabs.filter(tab => tab.name !== targetName)
     }
   }
 }

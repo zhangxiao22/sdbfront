@@ -149,3 +149,7 @@ input[type="number"] {
   }
 }
 
+.shun-label ::v-deep .el-form-item__label {
+  display: flex;
+  justify-content: flex-end;
+}
