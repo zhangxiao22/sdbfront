@@ -20,7 +20,6 @@
                 添加策略
               </el-button>
             </div>
-
           </div>
           <div v-show="groupItem.desc"
                class="desc">{{ groupItem.desc }}</div>
