@@ -197,7 +197,7 @@ export default {
       const data = this.$refs.groupRef[this.groupId - 1].getVal()
       console.log(data)
       return new Promise((resolve, reject) => {
-        reject()
+        resolve()
       })
     },
     download() {
