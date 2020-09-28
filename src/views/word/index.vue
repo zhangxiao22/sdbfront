@@ -66,7 +66,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {

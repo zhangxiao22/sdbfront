@@ -448,10 +448,12 @@ export default {
           left: 0;
         }
         .chart-left {
+          height: 100%;
           width: 40%;
           margin-right: 5%;
         }
         .chart-right {
+          height: 100%;
           flex: 1;
           min-width: 0;
         }
