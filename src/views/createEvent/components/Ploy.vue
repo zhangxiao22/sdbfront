@@ -915,7 +915,7 @@ export default {
     },
     // 选择话术-确认
     submitWord() {
-      const val = this.$refs.smsRef.getVal()
+      const val = this.$refs.wordRef.getVal()
       if (val.length) {
         this.showCRMWord = false
         // console.log(this.groupIndex, this.ployIndex, this.channelIndex)

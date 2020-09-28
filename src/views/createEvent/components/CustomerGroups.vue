@@ -103,7 +103,7 @@
                     </el-button>
                   </template>
                 </Group>
-                <el-form-item label="客户人数：">{{ item.people ? parseInt(item.people).toLocaleString() : '' }}</el-form-item>
+                <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -280,7 +280,7 @@ export default {
           contentWithRelation = [
             {
               content: item.conditionValue,
-              tagRelation: item.compare
+              tagRelation: item.compare || null
             }
           ]
         }
@@ -322,7 +322,8 @@ export default {
         title: '新群组' + newTabName,
         desc: '',
         name: newTabName,
-        closable: true
+        closable: true,
+        people: ''
       })
       this.labelIndex = newTabName
     },
