@@ -69,7 +69,8 @@ export default {
             {
               img: require('../../assets/home/1-2.png'),
               title: '可用策略',
-              desc: ''
+              desc: '',
+              path: '/interest'
             },
             {
               img: require('../../assets/home/1-2.png'),
@@ -80,7 +81,8 @@ export default {
             {
               img: require('../../assets/home/1-2.png'),
               title: '话术库',
-              desc: ''
+              desc: '',
+              path: '/word'
             },
             {
               img: require('../../assets/home/1-2.png'),

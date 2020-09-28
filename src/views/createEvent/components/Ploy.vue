@@ -637,7 +637,7 @@ export default {
   },
   computed: {
     id() {
-      return this.$route.query.id
+      return +this.$route.query.id
     },
     animatedNumber() {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()

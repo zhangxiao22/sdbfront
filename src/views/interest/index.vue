@@ -129,9 +129,9 @@ export default {
       getInterestList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {
           return Object.assign(n, {
-            category: n.category.label,
-            validite_start_date: n.validite_start_date ? n.validite_start_date.split(' ')[0] : '',
-            validite_end_date: n.validite_end_date ? n.validite_start_date.split(' ')[0] : ''
+            category: n.category.label
+            // validite_start_date: n.validite_start_date ? n.validite_start_date.split(' ')[0] : '',
+            // validite_end_date: n.validite_end_date ? n.validite_start_date.split(' ')[0] : ''
           })
         })
         this.total = res.pagination.totalItemCount

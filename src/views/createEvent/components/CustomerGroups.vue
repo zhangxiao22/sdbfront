@@ -162,7 +162,7 @@ export default {
   },
   computed: {
     id() {
-      return this.$route.query.id
+      return +this.$route.query.id
     },
     groupId() {
       return this.labelIndex - 1
@@ -193,11 +193,33 @@ export default {
   },
   methods: {
     validateAndNext() {
-      // console.log(this.$refs.groupRef, this.groupId - 1)
-      const data = this.$refs.groupRef[this.groupId - 1].getVal()
-      console.log(data)
+      const value = this.$refs.groupRef[this.groupId - 1].getVal()
+      console.log(this.transformData(value))
+      const data = {
+        baseId: this.id,
+        loadType: 1,
+        fileId: this.fileId,
+        groupSaveCriteriaList: [
+          // {
+          //   'ruleList': [
+          //     {
+          //       'tagId': xxx,
+          //       'contentWithRelation': [
+          //         {
+          //           'content': xxx,
+          //           'tagRelation': xxx
+          //         }
+          //       ],
+          //       'combineRelation': 1
+          //     }
+          //   ],
+          //   'groupDesc': xxx,
+          //   'isRaw': false // 是否为粗筛标签
+          // }
+        ]
+      }
       return new Promise((resolve, reject) => {
-        resolve()
+        reject()
       })
     },
     download() {
@@ -274,6 +296,13 @@ export default {
             {
               content: item.conditionValue.endDate,
               tagRelation: 5
+            }
+          ]
+        } else if (type === 1) {
+          contentWithRelation = [
+            {
+              content: item.conditionValue.toFixed(item.precision),
+              tagRelation: item.compare || null
             }
           ]
         } else {

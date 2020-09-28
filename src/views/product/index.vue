@@ -146,9 +146,9 @@ export default {
         this.tableData = res.data.resultList.map((n) => {
           return Object.assign(n, {
             classify: n.classify.label,
-            riskLevel: n.riskLevel.label,
-            startDate: n.startDate.split(' ')[0],
-            endDate: n.endDate.split(' ')[0]
+            riskLevel: n.riskLevel.label
+            // startDate: n.startDate.split(' ')[0],
+            // endDate: n.endDate.split(' ')[0]
           })
         })
         this.total = res.pagination.totalItemCount

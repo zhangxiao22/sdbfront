@@ -97,7 +97,7 @@
                 </el-tooltip>
               </div>
               <div class="bottom">
-                {{ scope.row.start_time }} - {{ scope.row.end_time }}
+                {{ scope.row.start_date }} - {{ scope.row.end_date }}
               </div>
             </div>
           </template>
@@ -187,6 +187,7 @@
 </template>
 
 <script>
+import { getEventList } from '@/api/api'
 export default {
   data() {
     return {
@@ -293,44 +294,52 @@ export default {
         }
       ],
       tableData: [
-        {
-          id: '2222',
-          status: 1,
-          name: '少儿医疗保险精准营销计划',
-          start_time: '2020-03-03 00:00',
-          end_time: '2020-03-03 10:00',
-          push_type: '规则型',
-          push_name: '每天 09:00',
-          channel_type: '电话营销',
-          channel_name: '电话',
-          aaa: '4,768',
-          aaa_unit: '人',
-          percent: '0.33',
-          p_1: '0.7',
-          p_2: '0.66'
-        },
-        {
-          id: '3333',
-          name: '少儿医疗保险精准营销计划2',
-          start_time: '2020-03-03 00:00',
-          end_time: '2020-03-03 10:00'
-        }, {
-          id: '4444',
-          name: '少儿医疗保险精准营销计划3',
-          start_time: '2020-03-03 00:00',
-          end_time: '2020-03-03 10:00'
-        }, {
-          id: '5555',
-          name: '少儿医疗保险精准营销计划4',
-          start_time: '2020-03-03 00:00',
-          end_time: '2020-03-03 10:00'
-        }
+        // {
+        //   id: '2222',
+        //   status: 1,
+        //   name: '少儿医疗保险精准营销计划',
+        //   start_time: '2020-03-03 00:00',
+        //   end_time: '2020-03-03 10:00',
+        //   push_type: '规则型',
+        //   push_name: '每天 09:00',
+        //   channel_type: '电话营销',
+        //   channel_name: '电话',
+        //   aaa: '4,768',
+        //   aaa_unit: '人',
+        //   percent: '0.33',
+        //   p_1: '0.7',
+        //   p_2: '0.66'
+        // },
+        // {
+        //   id: '3333',
+        //   name: '少儿医疗保险精准营销计划2',
+        //   start_time: '2020-03-03 00:00',
+        //   end_time: '2020-03-03 10:00'
+        // }, {
+        //   id: '4444',
+        //   name: '少儿医疗保险精准营销计划3',
+        //   start_time: '2020-03-03 00:00',
+        //   end_time: '2020-03-03 10:00'
+        // }, {
+        //   id: '5555',
+        //   name: '少儿医疗保险精准营销计划4',
+        //   start_time: '2020-03-03 00:00',
+        //   end_time: '2020-03-03 10:00'
+        // }
       ],
       currentPage: 1
     }
   },
   watch: {},
+  created() {
+    this.getList()
+  },
   methods: {
+    getList() {
+      getEventList().then(res => {
+        this.tableData = res.data
+      })
+    },
     eventDetail(id) {
       this.$router.push({
         path: '/eventDetail', query: {

@@ -17,7 +17,7 @@
                       placement="left">
             <el-select v-model="conditionItem.conditionSelect"
                        filterable
-                       class="condition-item-input"
+                       class="condition-item-input item"
                        @change="selectCondition($event,i)">
               <el-option v-for="optItem of tags"
                          :key="optItem.value"
@@ -43,16 +43,16 @@
                 <div style="line-height:1.5">精度：保留{{ conditionItem.precision? `${conditionItem.precision}位小数`:'整数' }}</div>
               </template>
             </Info>
-            <el-input-number v-model="conditionItem.conditionValue"
-                             placeholder="请输入值"
-                             :precision="conditionItem.precision"
-                             :min="conditionItem.min"
-                             :max="conditionItem.max"
-                             style="width:200px;"
-                             class="item"
-                             controls-position="right" />
-            <div class="item">{{ conditionItem.unit }}</div>
-
+            <div class="item">
+              <el-input-number v-model="conditionItem.conditionValue"
+                               placeholder="请输入值"
+                               :precision="conditionItem.precision"
+                               :min="conditionItem.min"
+                               :max="conditionItem.max"
+                               class="number-input"
+                               controls-position="right" />
+              <div class="unit">{{ conditionItem.unit }}</div>
+            </div>
           </template>
           <!-- type:2 布尔型 -->
           <template v-if="conditionItem.type===2">
@@ -249,12 +249,26 @@ export default {
   }
   .condition-item {
     position: relative;
+    left: -5px;
     ::v-deep .el-form-item__content {
       display: flex;
       flex-wrap: wrap;
     }
     .item {
-      margin-left: 10px;
+      margin: 5px;
+      position: relative;
+      .number-input {
+        width: 200px;
+        ::v-deep .el-input__inner {
+          padding-right: 80px;
+          text-align: left;
+        }
+      }
+      .unit {
+        position: absolute;
+        top: 0;
+        right: 42px;
+      }
     }
     .delete {
       color: $red;

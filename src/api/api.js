@@ -133,6 +133,15 @@ export function getPeopleCount(data) {
   })
 }
 
+// 保存客群
+export function saveGroup(data) {
+  return request({
+    url: '/aa',
+    method: 'post',
+    data
+  })
+}
+
 // 第3步
 // 保存策略
 export function savePloy(data) {
@@ -142,7 +151,16 @@ export function savePloy(data) {
     data
   })
 }
+/** ************************************************ 事件看板 ************************************************************/
 
+// 获取事件列表
+export function getEventList(params) {
+  return request({
+    url: api2 + '/events',
+    method: 'get',
+    params
+  })
+}
 /** ************************************************ 事件汇总 ************************************************************/
 // 饼图
 export function getPie() {
