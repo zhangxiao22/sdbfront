@@ -68,7 +68,8 @@
               </el-button>
 
             </el-form-item>
-            <el-tabs id="group-tabs"
+            <el-tabs v-show="labelTabs.length"
+                     id="group-tabs"
                      v-model="labelIndex"
                      type="card"
                      @tab-remove="removeTab">
@@ -122,7 +123,7 @@
 import Info from '@/components/Info'
 import Group from './Group'
 import Sortable from 'sortablejs'
-import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount } from '@/api/api'
+import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount, saveGroup } from '@/api/api'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -142,17 +143,19 @@ export default {
       customerCount: '',
       updateTime: '',
       paramValue: '',
-      labelTabs: [{
-        title: '其他群组',
-        desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
-        name: '1',
-        closable: false,
-        people: ''
-      }],
+      labelTabs: [
+        //   {
+        //   title: '其他群组',
+        //   desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
+        //   name: '1',
+        //   closable: false,
+        //   people: ''
+        // }
+      ],
       // 值
-      labelIndex: '1',
+      labelIndex: '0',
       // 用于计数 累加
-      labelTabsCounts: 1,
+      labelTabsCounts: 0,
       rules: {
 
       },
@@ -193,33 +196,33 @@ export default {
   },
   methods: {
     validateAndNext() {
-      const value = this.$refs.groupRef[this.groupId - 1].getVal()
-      console.log(this.transformData(value))
       const data = {
         baseId: this.id,
         loadType: 1,
         fileId: this.fileId,
-        groupSaveCriteriaList: [
-          // {
-          //   'ruleList': [
-          //     {
-          //       'tagId': xxx,
-          //       'contentWithRelation': [
-          //         {
-          //           'content': xxx,
-          //           'tagRelation': xxx
-          //         }
-          //       ],
-          //       'combineRelation': 1
-          //     }
-          //   ],
-          //   'groupDesc': xxx,
-          //   'isRaw': false // 是否为粗筛标签
-          // }
-        ]
+        supplyIdList: this.paramValue,
+        groupSaveCriteriaList: this.labelTabs.map((n, i) => {
+          const value = this.$refs.groupRef[i].getVal()
+          const ruleList = this.transformData(value)
+          return {
+            name: n.title,
+            groupDesc: n.desc,
+            ruleList,
+            isRaw: false
+          }
+        })
       }
+      // console.log(data)
       return new Promise((resolve, reject) => {
-        reject()
+        saveGroup(data).then(res => {
+          if (res.code === 200) {
+            resolve()
+          } else {
+            reject()
+          }
+        }).catch(() => {
+          reject()
+        })
       })
     },
     download() {
@@ -322,7 +325,7 @@ export default {
     },
     // 预估人数
     predict() {
-      let val = this.$refs.groupRef[this.groupId - 1].getVal()
+      let val = this.$refs.groupRef[this.groupId].getVal()
       val = this.transformData(val)
       const data = {
         baseId: this.id,
@@ -384,8 +387,11 @@ export default {
   padding: 5px 20px;
   .whitelist {
     .upload {
-      width: 360px;
+      width: 600px;
       margin: 0 auto;
+      ::v-deep .el-upload-dragger {
+        width: 600px;
+      }
       .el-icon-upload {
         font-size: 58px;
       }

@@ -335,13 +335,17 @@ export default {
           if (valid) {
             this.mainLoading = true
             saveEventBaseInfo(this.getData).then(res => {
-              this.$router.replace({
-                path: '/createEvent',
-                query: {
-                  id: res.data.id
-                }
-              })
-              resolve()
+              if (res.code === 200) {
+                this.$router.replace({
+                  path: '/createEvent',
+                  query: {
+                    id: res.data.id
+                  }
+                })
+                resolve()
+              } else {
+                reject()
+              }
             }).catch(() => {
               reject()
             })

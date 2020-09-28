@@ -93,7 +93,7 @@ export default {
         {
           prop: 'returnBenchmark',
           label: '收益率/行业比较基准',
-          minWidth: 130
+          minWidth: 160
         },
         {
           prop: 'purchaseAmount',

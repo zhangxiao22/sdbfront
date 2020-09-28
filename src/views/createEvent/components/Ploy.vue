@@ -389,7 +389,7 @@
 </template>
 
 <script>
-import { savePloy } from '@/api/api'
+import { savePloy, getGroupList } from '@/api/api'
 import gsap from 'gsap'
 import Info from '@/components/Info'
 import ShunDrawer from '@/components/ShunDrawer'
@@ -598,22 +598,10 @@ export default {
         //   // 累加数量
         //   ployTabIndex: 1
         // },
-        {
-          gid: 1,
-          name: '群组1',
-          people: 1324123,
-          desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
-          totalPercent: 100,
-          ployTabs: [],
-          // v-model值
-          ployTabsValue: '0',
-          // 累加数量
-          ployTabIndex: 0
-        }
         // {
-        //   gid: 2,
-        //   name: '群组2',
-        //   people: 66664123,
+        //   gid: 1,
+        //   name: '群组1',
+        //   people: 1324123,
         //   desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
         //   totalPercent: 100,
         //   ployTabs: [],
@@ -653,10 +641,43 @@ export default {
 
   },
   created() {
-    this.beforeHandleGroupTabClick(0)
+    if (this.id) {
+      this.getCustomer().then(() => {
+        this.$nextTick(() => {
+          this.beforeHandleGroupTabClick(0)
+        })
+      })
+    }
   },
 
   methods: {
+    getCustomer() {
+      return new Promise((resolve, reject) => {
+        getGroupList({ baseId: this.id }).then(res => {
+          if (res.code === 200) {
+            this.group = res.data.customerInfoList.map((n, i) => {
+              return {
+                gid: n.infoId,
+                name: n.name,
+                people: n.count,
+                desc: n.desc,
+                totalPercent: 100,
+                ployTabs: [],
+                // v-model值
+                ployTabsValue: '0',
+                // 累加数量
+                ployTabIndex: 0
+              }
+            })
+            resolve()
+          } else {
+            reject()
+          }
+        }).catch(() => {
+          reject()
+        })
+      })
+    },
     validateAndNext() {
       return new Promise((resolve, reject) => {
         // 客群

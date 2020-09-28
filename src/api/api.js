@@ -136,13 +136,21 @@ export function getPeopleCount(data) {
 // 保存客群
 export function saveGroup(data) {
   return request({
-    url: '/aa',
+    url: '/customer/save',
     method: 'post',
     data
   })
 }
 
 // 第3步
+// 获取事件的客群
+export function getGroupList(params) {
+  return request({
+    url: '/customer/getInfoList',
+    method: 'get',
+    params
+  })
+}
 // 保存策略
 export function savePloy(data) {
   return request({
