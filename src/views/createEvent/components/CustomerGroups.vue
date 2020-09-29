@@ -22,93 +22,77 @@
                        @click="download">模版下载</el-link>
             </div>
           </el-upload>
-          <el-form v-show="fileId"
-                   ref="form"
-                   :rules="rules"
-                   label-width="110px"
-                   class="reg-form">
-            <el-form-item label="文件名称：">
-              {{ fileName }}
-            </el-form-item>
-            <el-form-item label="客户数量：">
-              {{ customerCount ? parseInt(customerCount).toLocaleString() : '' }}
-            </el-form-item>
-            <el-form-item label="上传时间：">
-              {{ updateTime }}
-            </el-form-item>
-
-            <el-form-item>
-              <div slot="label">
-                <Info content="维度不能超过10个" />
-                维度补充：
-              </div>
-              <el-select v-model="paramValue"
-                         style="width:800px;"
-                         multiple
-                         filterable
-                         placeholder="可输入匹配项并搜索选择">
-                <el-option v-for="item in paramOpt"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-
-            </el-form-item>
-            <el-divider />
-
-            <el-form-item>
-              <div slot="label">
-                <Info content="客群先后顺序决定客群优先级（客群标签可拖拽排序）" />
-                分群：
-              </div>
-              <el-button icon="el-icon-plus"
-                         type="primary"
-                         @click="addTab">
-                添加客群
-              </el-button>
-
-            </el-form-item>
-            <el-tabs v-show="labelTabs.length"
-                     id="group-tabs"
-                     v-model="labelIndex"
-                     type="card"
-                     @tab-remove="removeTab">
-
-              <el-tab-pane v-for="item of labelTabs"
-                           :key="item.name"
-                           :closable="item.closable"
-                           :label="item.title"
-                           :name="item.name">
-                <el-form-item required
-                              label="群组名称：">
-                  <el-input v-model="item.title"
-                            style="width:300px"
-                            :disabled="!item.closable"
-                            placeholder="请输入群组名称" />
-                </el-form-item>
-                <el-form-item label="群组描述：">
-                  <el-input v-model="item.desc"
-                            style="width:300px"
-                            type="textarea"
-                            :disabled="!item.closable"
-                            :autosize="{ minRows: 2, maxRows: 4}"
-                            placeholder="请输入群组描述" />
-                </el-form-item>
-                <Group v-if="item.closable"
-                       ref="groupRef"
-                       :origin-data="originData">
-                  <template slot="button">
-                    <el-button icon="el-icon-thumb"
-                               @click="predict">
-                      预估人数
-                    </el-button>
-                  </template>
-                </Group>
-                <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
-              </el-tab-pane>
-            </el-tabs>
-          </el-form>
         </div>
+        <el-form v-show="fileId"
+                 ref="form"
+                 label-width="110px"
+                 class="reg-form">
+          <el-form-item label="文件名称：">
+            {{ fileName }}
+          </el-form-item>
+          <el-form-item label="客户数量：">
+            {{ customerCount ? parseInt(customerCount).toLocaleString() : '' }}
+          </el-form-item>
+          <el-form-item label="上传时间：">
+            {{ updateTime }}
+          </el-form-item>
+          <el-form-item>
+            <div slot="label">
+              <Info content="维度不能超过10个" />
+              维度补充：
+            </div>
+            <el-select v-model="paramValue"
+                       style="max-width:800px;width:100%;"
+                       multiple
+                       filterable
+                       placeholder="可输入匹配项并搜索选择">
+              <el-option v-for="item in paramOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+
+          </el-form-item>
+          <div class="table-container">
+            <el-table :data="tableData"
+                      style="width:100%;"
+                      class="table">
+              <el-table-column prop="name"
+                               label="群组名称"
+                               width="180" />
+              <el-table-column prop="count"
+                               label="人数"
+                               width="180" />
+              <el-table-column label="备注">
+                <div slot-scope="scope"
+                     class="desc">
+                  <template v-if="!scope.row.isEdit">
+                    <div v-show="scope.row._desc.length"
+                         style="margin-right:10px;">{{ scope.row._desc }}</div>
+                    <el-button size="mini"
+                               class="button"
+                               icon="el-icon-edit"
+                               @click="scope.row.isEdit=true">编辑</el-button>
+                  </template>
+                  <template v-else>
+                    <el-input v-model="scope.row._desc"
+                              type="textarea"
+                              style="margin-right:10px;"
+                              autosize
+                              placeholder="请输入内容" />
+                    <el-button size="mini"
+                               class="button"
+                               type="success"
+                               icon="el-icon-check"
+                               @click="scope.row.desc=scope.row._desc;scope.row.isEdit=false">确认</el-button>
+                  </template>
+
+                </div>
+              </el-table-column>
+            </el-table>
+          </div>
+        </el-form>
+
       </el-tab-pane>
       <!-- <el-tab-pane label="CRM导入"
                    name="second">CRM导入</el-tab-pane>
@@ -129,7 +113,7 @@ import { getToken } from '@/utils/auth'
 export default {
   name: 'CustomerGroups',
   components: {
-    Info, Group
+    Info
   },
   data() {
     return {
@@ -143,24 +127,8 @@ export default {
       customerCount: '',
       updateTime: '',
       paramValue: '',
-      labelTabs: [
-        //   {
-        //   title: '其他群组',
-        //   desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
-        //   name: '1',
-        //   closable: false,
-        //   people: ''
-        // }
-      ],
-      // 值
-      labelIndex: '0',
-      // 用于计数 累加
-      labelTabsCounts: 0,
-      rules: {
-
-      },
-      paramOpt: [],
-      originData: []
+      tableData: [],
+      paramOpt: []
     }
   },
   computed: {
@@ -188,11 +156,12 @@ export default {
     // }
   },
   mounted() {
-    this.tabDrop()
   },
   created() {
     this.getParamOpt()
-    // this.getRuleList()
+    // this.tableData = [{ 'name': '娱乐需求客户', 'count': 283 }, { 'name': '教育需求客户', 'count': 276 }, { 'name': '公积金客群', 'count': 68 }, { 'name': '理财投资需求客户', 'count': 271 }, { 'name': '生活服务需求客户', 'count': 75 }, { 'name': '村居分红客群', 'count': 418 }].map((n) => {
+    //   return Object.assign(n, { desc: '', _desc: '', isEdit: false })
+    // })
   },
   methods: {
     validateAndNext() {
@@ -201,14 +170,11 @@ export default {
         loadType: 1,
         fileId: this.fileId,
         supplyIdList: this.paramValue,
-        groupSaveCriteriaList: this.labelTabs.map((n, i) => {
-          const value = this.$refs.groupRef[i].getVal()
-          const ruleList = this.transformData(value)
+        groupSaveCriteriaList: this.tableData.map((n, i) => {
           return {
-            name: n.title,
-            groupDesc: n.desc,
-            ruleList,
-            isRaw: false
+            name: n.name,
+            count: n.count,
+            dec: n.desc
           }
         })
       }
@@ -230,9 +196,7 @@ export default {
     },
     handleFileChange(file) {
       this.file = file.raw
-      // this.$refs.uploadRef.submit()
     },
-
     resetFile() {
       this.file = ''
       this.$refs.uploadRef.clearFiles()
@@ -253,22 +217,31 @@ export default {
         const formData = new FormData()
         formData.append('file', this.file)
         formData.append('baseId', this.id)
+        this.$parent.mainLoading = true
         uploadFile(formData).then(res => {
           // console.log(res)
           this.fileId = res.data.fileId
           this.fileName = res.data.fileName
           this.customerCount = res.data.recordNum
           this.updateTime = res.data.uploadTime
-          this.getRuleList()
+          this.tableData = res.data.groupInfoWithCount.map((n) => {
+            return Object.assign(n, {
+              desc: '',
+              _desc: '',
+              isEdit: false
+            })
+          })
+          this.$parent.mainLoading = false
         }).catch(() => {
           this.resetFile()
+          this.$parent.mainLoading = false
         })
       }
     },
 
     getParamOpt() {
       getLabelList().then(res => {
-        this.paramOpt = res.data.slice(0, 10).map((n) => {
+        this.paramOpt = res.data.map((n) => {
           return {
             value: n.id,
             label: n.name
@@ -276,106 +249,10 @@ export default {
         })
       })
     },
+    handleEdit(index, row) {
 
-    // 获取规则列表
-    getRuleList() {
-      const data = {
-        baseId: this.id
-      }
-      getCustomerLabel(data).then(res => {
-        this.originData = res.data
-      }).catah(() => { })
-    },
-    transformData(data) {
-      return data.map(item => {
-        const type = item.type
-        let contentWithRelation
-        if (type === 5) {
-          contentWithRelation = [
-            {
-              content: item.conditionValue.startDate,
-              tagRelation: 3
-            },
-            {
-              content: item.conditionValue.endDate,
-              tagRelation: 5
-            }
-          ]
-        } else if (type === 1) {
-          contentWithRelation = [
-            {
-              content: item.conditionValue.toFixed(item.precision),
-              tagRelation: item.compare || null
-            }
-          ]
-        } else {
-          contentWithRelation = [
-            {
-              content: item.conditionValue,
-              tagRelation: item.compare || null
-            }
-          ]
-        }
-        return {
-          tagId: item.conditionSelect,
-          contentWithRelation,
-          combineRelation: item.andOrText === '且' ? 1 : 2
-        }
-      })
-    },
-    // 预估人数
-    predict() {
-      let val = this.$refs.groupRef[this.groupId].getVal()
-      val = this.transformData(val)
-      const data = {
-        baseId: this.id,
-        searchRuleList: val
-      }
-      getPeopleCount(data).then(res => {
-        this.labelTabs[this.groupId].people = res.data.count
-      })
-    },
-    // tab拖拽
-    tabDrop() {
-      const el = document.querySelector('#group-tabs .el-tabs__nav')
-      // console.log(el)
-      const _this = this
-      var sortable = Sortable.create(el, {
-        // filter: '#tab-1',
-        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-          const currRow = _this.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
-          _this.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
-        }
-      })
-    },
-    addTab() {
-      const newTabName = ++this.labelTabsCounts + ''
-      this.labelTabs.push({
-        title: '新群组' + newTabName,
-        desc: '',
-        name: newTabName,
-        closable: true,
-        people: ''
-      })
-      this.labelIndex = newTabName
-    },
-    removeTab(targetName) {
-      const tabs = this.labelTabs
-      let activeName = this.labelIndex
-      if (activeName === targetName) {
-        tabs.forEach((tab, index) => {
-          if (tab.name === targetName) {
-            const nextTab = tabs[index + 1] || tabs[index - 1]
-            if (nextTab) {
-              activeName = nextTab.name
-            }
-          }
-        })
-      }
-
-      this.labelIndex = activeName
-      this.labelTabs = tabs.filter(tab => tab.name !== targetName)
     }
+
   }
 }
 </script>
@@ -405,12 +282,13 @@ export default {
         }
       }
     }
-    .reg-form {
-      // width: 800px;
-      // margin: 10px auto 0;
-    }
-    ::v-deep .sortable-drag {
-      box-shadow: 0 0 1px 1px rgba(34, 65, 145, 0.1) inset;
+  }
+  .table-container {
+    width: 100%;
+    margin: 20px 0;
+    .desc {
+      display: flex;
+      align-items: center;
     }
   }
 }
