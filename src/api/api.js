@@ -151,6 +151,14 @@ export function getGroupList(params) {
     params
   })
 }
+// 第4步
+export function getEventDetail(params) {
+  return request({
+    url: api2 + '/event',
+    method: 'get',
+    params
+  })
+}
 // 保存策略
 export function savePloy(data) {
   return request({

@@ -19,10 +19,10 @@ export default {
   },
   mounted() {
     const isMobile = this.$_isMobile()
-    if (isMobile) {
-      store.dispatch('app/toggleDevice', 'mobile')
-      store.dispatch('app/closeSideBar', { withoutAnimation: true })
-    }
+    // if (isMobile) {
+    //   store.dispatch('app/toggleDevice', 'mobile')
+    //   store.dispatch('app/closeSideBar', { withoutAnimation: true })
+    // }
   },
   methods: {
     // use $_ for mixins properties

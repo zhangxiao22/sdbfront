@@ -76,7 +76,27 @@
                     选择产品
                   </el-button>
                 </el-form-item>
-                <el-table v-if="JSON.stringify(ployItem.product) !== '{}'"
+                <!-- {{ ployItem.product }} -->
+                <el-table v-show="ployItem.product.length"
+                          :data="ployItem.product"
+                          border
+                          style="width: 100%;margin-bottom:18px;">
+                  <el-table-column prop="name"
+                                   label="产品名称" />
+                  <el-table-column prop="classify"
+                                   label="产品类型" />
+                  <el-table-column prop="riskLevel"
+                                   label="风险等级" />
+                  <el-table-column prop="returnBenchmark"
+                                   label="收益率/行业比较基准" />
+                  <el-table-column prop="purchaseAmount"
+                                   label="起购金额" />
+                  <el-table-column prop="startDate"
+                                   label="气息日" />
+                  <el-table-column prop="endDate"
+                                   label="到期日" />
+                </el-table>
+                <!-- <el-table v-if="JSON.stringify(ployItem.product) !== '{}'"
                           :data="parseTable(ployItem.product)"
                           :span-method="objectSpanMethod"
                           border
@@ -104,7 +124,7 @@
                                    label="到期日" />
                   <el-table-column prop="proportion"
                                    label="比例" />
-                </el-table>
+                </el-table> -->
                 <el-form-item required
                               label="推荐权益：">
                   <el-button icon="el-icon-plus"
@@ -770,7 +790,7 @@ export default {
         name: newTabName,
         percent,
         // 产品
-        product: {},
+        product: [],
         productId: null,
         // 权益
         interest: [],
@@ -824,7 +844,8 @@ export default {
       const val = this.$refs.productRef.getVal()
       if (val.length) {
         this.showProduct = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].product = PRODUCT(val[0])
+        // this.group[this.groupIndex].ployTabs[this.ployIndex].product = PRODUCT(val[0])
+        this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
         this.group[this.groupIndex].ployTabs[this.ployIndex].productId = val[0].id
       } else {
         Message({

@@ -2,35 +2,33 @@
   <div class="preview-container">
     <div class="header">
       <div class="title">
-        {{ detail.name }}
-        <el-tag effect="dark"
-                style="margin-left:10px;">{{ detail.category_name }}</el-tag>
-        <div v-show="detail.trial"
-             class="main-info-box">
+        AUM增长计划
+        <el-tag style="margin-left:10px;">什么事件类型</el-tag>
+        <div class="main-info-box">
           <div class="label">对照组</div>
-          <div class="value">{{ detail.control*100 }}%</div>
+          <div class="value">15%</div>
           <div class="value">随机抽样</div>
         </div>
       </div>
       <div class="time">
         <i class="el-icon-time" />
-        {{ detail.start_date }} 至 {{ detail.end_date }}
+        2020-01-11 至 2020-01-22
       </div>
       <div class="group-target">
         <div class="item">
-          <el-tag>
+          <el-tag type="success">
             <i class="el-icon-aim" />
             拉新人数 > 300人/月
           </el-tag>
         </div>
         <div class="item">
-          <el-tag>
+          <el-tag type="success">
             <i class="el-icon-aim" />
             拉新人数 > 300人/月
           </el-tag>
         </div>
       </div>
-      <div class="desc">{{ detail.desc }}</div>
+      <div class="desc">描述文字描述诉讼法描述大撒发苏打粉描述描述描述大撒发撒的描述描述描述大撒发撒上描述文字描述诉讼法描述大撒发苏打粉描述描述描述大撒发撒的描述描述描述大撒发撒上描述文字描述诉讼法描述大撒发苏打粉描述描述描述大撒发撒的描述描述描述大撒发撒上描述文字描述诉讼法描述大撒发苏打粉描述描述描述大撒发撒的描述描述描述大撒发撒上</div>
     </div>
     <div class="swiper-container overview-swiper-container">
       <div class="swiper-wrapper">
@@ -39,14 +37,17 @@
              class="swiper-slide"
              :class="{active:i===mainSwiper.activeIndex}"
              @click="handleClickSwiperSlider(i)">
-          <div class="tooltip">
-            <div class="g-name elip">{{ item.groupName }}</div>
-            <div class="p-name elip">{{ item.ployName }}</div>
-          </div>
+          <el-tooltip effect="dark"
+                      content="群组名称-策略名称名称"
+                      placement="top">
+            <div class="tooltip">
+              <div class="g-name elip">群组名称是{{ i+1 }}</div>
+              <div class="p-name elip">策略名称名称{{ i+1 }}</div>
+            </div>
+          </el-tooltip>
         </div>
       </div>
     </div>
-    <!-- swiper-no-swiping -->
     <div class="swiper-container main-swiper-container swiper-no-swiping">
       <div class="swiper-wrapper">
         <div v-for="(item,i) of mainData"
@@ -54,19 +55,40 @@
              class="swiper-slide shun-card">
           <div class="group">
             <div class="group-name">
-              {{ item.groupName }}
-              <span class="counts">（ {{ item.count | formatMoney }}<span>人</span> ）</span>
+              群组名称是什么{{ i+1 }}
+              <span class="counts">（ 12,213<span>人</span> ）</span>
             </div>
-            <div v-show="item.desc"
-                 class="desc">{{ item.desc }}</div>
+            <div class="group-rule">
+              <div class="item">
+                <el-tag type="warning">
+                  <i class="el-icon-tickets" />
+                  是否受薪客户：是
+                </el-tag>
+              </div>
+              <div class="item">
+                <span class="andor">且</span>
+                <el-tag type="warning">
+                  <i class="el-icon-tickets" />
+                  AUM余额 > 100元
+                </el-tag>
+              </div>
+              <div class="item">
+                <span class="andor">或</span>
+                <el-tag type="warning">
+                  <i class="el-icon-tickets" />
+                  定期_当天 购买次数 > 10次
+                </el-tag>
+              </div>
+            </div>
+            <div class="desc">群组描述什么群组描述什么群组描述什么群组描述什么群组描述什么群组描述什么群组描述什么</div>
           </div>
           <div class="ploy">
             <div class="name">
-              {{ item.ployName }}
-              <span class="counts">（ {{ item.range * 100 }}% ）</span>
+              策略名称名称{{ i+1 }}
+              <span class="counts">（ 50% ）</span>
             </div>
             <div class="product">
-              <!-- <div class="left">
+              <div class="left">
                 <div class="item">
                   <div class="lab">组合名称</div>
                   <div class="val">{{ product.groupName }}</div>
@@ -75,62 +97,55 @@
                   <div class="lab">综合收益</div>
                   <div class="val">{{ product.income }}</div>
                 </div>
-              </div> -->
+              </div>
               <div class="right">
-                <el-table :data="[item.product]"
+                <el-table :data="product.list"
                           class="product-table"
                           size="mini"
                           style="width: 100%">
-                  <el-table-column prop="name"
+                  <el-table-column prop="productName"
                                    min-width="120"
                                    label="产品名称" />
-                  <el-table-column prop="class_name"
+                  <el-table-column prop="productType"
                                    label="产品类型" />
-                  <el-table-column prop="risk_name"
+                  <el-table-column prop="risklLevel"
                                    label="风险等级" />
-                  <el-table-column prop="return_benchmark"
+                  <el-table-column prop="rateOfReturn"
                                    min-width="150"
                                    label="收益率/行业比较基准" />
-                  <el-table-column prop="purchase_amount"
+                  <el-table-column prop="minimumPurchaseAmount"
                                    label="起购金额" />
-                  <el-table-column prop="start_date"
+                  <el-table-column prop="begin_time"
                                    label="起息日" />
-                  <el-table-column prop="end_date"
+                  <el-table-column prop="end_time"
                                    label="到期日" />
-                  <!-- <el-table-column prop="proportion"
-                                   label="比例" /> -->
+                  <el-table-column prop="proportion"
+                                   label="比例" />
                 </el-table>
               </div>
             </div>
-
-            <div class="interest">
-              <svg-icon class="icon"
-                        icon-class="interest-board" />
-              <div class="text">
-                <div class="name">{{ item.interest.name }}</div>
-                <div class="desc">{{ item.interest.content }}</div>
-              </div>
-            </div>
-            <!-- {{ item.channels }} -->
+            <el-alert title="权益权益权益权益权益苏打粉权益权益权益阿迪撒发多少分权益权益权益大撒发大撒发v"
+                      class="interest"
+                      type="warning"
+                      :closable="false" />
             <div class="channel">
-              <div v-for="(channelItem,ci) of item.channels"
-                   :key="ci"
+              <div v-for="(item,i) of channel"
+                   :key="i"
                    class="channel-item">
                 <div class="box">
-                  <!-- {{ channelItem }} -->
                   <div class="left"
-                       :style="{color:channelItem.iconColor}">
+                       :style="{color:item.iconColor}">
                     <div class="bg abs"
-                         :style="{background:channelItem.iconColor}" />
+                         :style="{background:item.iconColor}" />
                     <div class="border abs"
-                         :style="{border:'1px solid '+channelItem.iconColor}" />
+                         :style="{border:'1px solid '+item.iconColor}" />
                     <div class="name">
                       <svg-icon class="name-icon"
-                                :icon-class="channelItem.icon" />
-                      {{ channelItem.label }}
+                                :icon-class="item.icon" />
+                      {{ item.label }}
                     </div>
-                    <template v-for="(typeItem,x) of channelItem.type">
-                      <div v-if="typeItem.id === channelItem.push_type"
+                    <template v-for="(typeItem,x) of item.type">
+                      <div v-if="typeItem.id === item.chooseType"
                            :key="x"
                            class="type">
                         <i class="icon"
@@ -142,36 +157,44 @@
                   </div>
                   <div class="right">
                     <div class="bg abs"
-                         :style="{background:channelItem.iconColor}" />
+                         :style="{background:item.iconColor}" />
                     <div class="border abs"
-                         :style="{border:'1px solid '+channelItem.iconColor}" />
-                    <div v-if="channelItem.push_type===1"
+                         :style="{border:'1px solid '+item.iconColor}" />
+                    <div v-if="item.chooseType==='1'"
                          class="timing right-left">
                       <!-- 定时型 -->
-                      <div class="range">{{ channelItem.push_time[0].start_date }} <span>至</span> {{ channelItem.push_time[0].end_date }}</div>
+                      <div class="range">2020-01-02 <span>至</span> 2020-01-20</div>
                       <div class="item-box"
                            style="margin-top:5px">
-                        <div v-for="(timeItem,timeIndex) of channelItem.push_time"
-                             :key="timeIndex"
-                             class="item">
-                          <div class="date">{{ timeItem.timer_time }}</div>
+                        <div class="item">
+                          <div class="date">每月1号</div>
+                          <div class="time">09:00</div>
+                        </div>
+                        <div class="item">
+                          <div class="date">每月10号</div>
+                          <div class="time">09:00</div>
+                        </div>
+                        <div class="item">
+                          <div class="date">每月10号</div>
                           <div class="time">09:00</div>
                         </div>
                       </div>
                     </div>
-                    <div v-if="item.push_type === 2"
+                    <div v-if="item.chooseType==='2'"
                          class="rule right-left">
                       <!-- 规则型 -->
                       <div class="item-box">
-                        <div v-for="(timeItem,timeIndex) of channelItem.push_time"
-                             :key="timeIndex"
-                             class="item">
-                          <div class="date">T + {{ timeItem.delay }}</div>
-                          <div class="time">{{ timeItem.moment }}</div>
+                        <div class="item">
+                          <div class="date">T + 1</div>
+                          <div class="time">09:00</div>
+                        </div>
+                        <div class="item">
+                          <div class="date">T + 2</div>
+                          <div class="time">09:00</div>
                         </div>
                       </div>
                     </div>
-                    <div class="right-right">{{ channelItem.script_info.content }}</div>
+                    <div class="right-right">话术话术模版模版话术话术模版模版话术话术模版模版话术话术模版模版话术话术模版模版</div>
                   </div>
                 </div>
 
@@ -197,7 +220,6 @@
 // If you use Swiper 6.0.0 or higher
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { getEventDetail } from '@/api/api'
 export default {
   name: 'Preview',
   components: {
@@ -209,127 +231,94 @@ export default {
   },
   data() {
     return {
-      timingOpt: [
-        {
-          value: 1,
-          label: '每周',
-          children: [{
-            value: 1,
-            label: '星期一'
-          }, {
-            value: 2,
-            label: '星期二'
-          }, {
-            value: 3,
-            label: '星期三'
-          }, {
-            value: 4,
-            label: '星期四'
-          }, {
-            value: 5,
-            label: '星期五'
-          }, {
-            value: 6,
-            label: '星期六'
-          }, {
-            value: 7,
-            label: '星期日'
-          }]
-        },
-        {
-          value: 2,
-          label: '每月',
-          children: Array.apply(null, Array(31)).map((n, i) => {
-            return { value: i + 1, label: i + 1 + '号' }
-          })
-        }
-      ],
-      detail: {
-
-      },
       mainSwiper: {},
       mainData: [
-        // {
-        //   active: false
-        // },
-        // {
-        //   active: false
-        // },
-        // {
-        //   active: false
-        // },
-        // {
-        //   active: false
-        // },
+        {
+          active: false
+        },
+        {
+          active: false
+        },
+        {
+          active: false
+        },
+        {
+          active: false
+        },
+        {
+          active: false
+        }
       ],
       channel: [
         {
-          value: 1,
+          value: '1',
           label: 'CRM',
           disabled: false,
           icon: 'phone',
           iconColor: '#409eff',
           // 1:定时型 2:规则
-          // chooseType: '1',
-          // timingDateValue: [],
-          // timingTimeValue: '07:00',
-          // dateRange: [],
-          // ruleValue: [{
-          //   date: 0,
-          //   time: '00:00'
-          // }],
+          chooseType: '1',
+          timingDateValue: [],
+          timingTimeValue: '07:00',
+          dateRange: [],
+          ruleValue: [{
+            date: 0,
+            time: '00:00'
+          }],
           type: [{
-            id: 1,
+            id: '1',
             icon: 'el-icon-alarm-clock',
             name: '定时型'
           }]
         }, {
-          value: 2,
+          value: '2',
           label: '短信',
           disabled: false,
           icon: 'sms',
           iconColor: '#FF9933',
-          // chooseType: '2',
+          chooseType: '2',
           // 定时型的值-规则 (每周几或每月几) (暂定多选)
-          // timingDateValue: [],
+          timingDateValue: [],
           // 定时型的值-时间
-          // timingTimeValue: '07:00',
+          timingTimeValue: '07:00',
           // 定时型的值-起止时间
-          // dateRange: [],
+          dateRange: [],
           // 规则型的值
-          // ruleValue: [{
-          //   date: 0,
-          //   time: '00:00'
-          // }],
+          ruleValue: [{
+            date: 0,
+            time: '00:00'
+          }],
+          // 精准内测
+          test: [],
           type: [{
-            id: 1,
+            id: '1',
             name: '定时型',
             icon: 'el-icon-alarm-clock'
           }, {
-            id: 2,
+            id: '2',
             name: '规则型',
             icon: 'el-icon-tickets'
           }]
         }, {
-          value: 3,
+          value: '3',
           label: '微信',
           disabled: false,
           icon: 'wechat',
           iconColor: '#67c23a',
-          // chooseType: '1',
-          // timingDateValue: [],
-          // timingTimeValue: '07:00',
-          // dateRange: [],
-          // ruleValue: [{
-          //   date: 0,
-          //   time: '00:00'
-          // }],
+          chooseType: '1',
+          timingDateValue: [],
+          timingTimeValue: '07:00',
+          dateRange: [],
+          ruleValue: [{
+            date: 0,
+            time: '00:00'
+          }],
           type: [{
-            id: 1,
+            id: '1',
             name: '定时型',
             icon: 'el-icon-alarm-clock'
           }, {
-            id: 2,
+            id: '2',
             name: '规则型',
             icon: 'el-icon-tickets'
           }]
@@ -374,71 +363,15 @@ export default {
     }
   },
   computed: {
-    id() {
-      return +this.$route.query.id
-    }
+    // swiper() {
+    //   return this.$refs.mySwiper.$swiper
+    // }
   },
   watch: {
 
   },
-  created() {
-    this.getDetail().then(() => {
-      this.$nextTick(() => {
-        this.renderSwiper()
-      })
-    })
-  },
   mounted() {
-
-  },
-  methods: {
-    getDetail() {
-      const data = {
-        event_id: this.id
-      }
-      return new Promise((resolve) => {
-        getEventDetail(data).then(res => {
-          this.detail = res.data.event_info
-          this.mainData = []
-          res.data.groups.forEach((n, i) => {
-            n.strategies.forEach((m, j) => {
-              this.mainData.push({
-                groupName: n.group_info.name,
-                count: n.group_info.count,
-                desc: n.group_info.description,
-                ployName: m.name,
-                range: m.range,
-                product: m.product_info,
-                interest: m.channels.length && m.channels[0].material_info,
-                channels: m.channels.map(x => {
-                  const item = this.channel.filter(item => item.value === x.channel)[0]
-                  return Object.assign({}, item, x, {
-                    push_time: x.push_time.map(a => {
-                      // console.log(a)
-                      let timer_time
-                      this.timingOpt.forEach(b => {
-                        if (b.value === a.interval_type) {
-                          b.children.forEach(c => {
-                            if (c.value === a.interval) {
-                              timer_time = `${b.label}${c.label}`
-                            }
-                          })
-                        }
-                      })
-                      return Object.assign(a, {
-                        timer_time
-                      })
-                    })
-                  })
-                })
-              })
-            })
-          })
-          resolve()
-        })
-      })
-    },
-    renderSwiper() {
+    this.$nextTick(() => {
       // 小图
       this.overviewSwiper = new Swiper('.overview-swiper-container', {
         // loop: true,
@@ -455,15 +388,14 @@ export default {
 
         }
       })
-
       this.mainSwiper = new Swiper('.main-swiper-container', {
         autoHeight: true,
         // loop: true,
         // loopAdditionalSlides: 1,
-        // noSwiping: true,
-        // centeredSlides: true,
-        slidesPerView: 'auto',
-        spaceBetween: 20
+        noSwiping: true,
+        centeredSlides: true,
+        slidesPerView: 1.1,
+        spaceBetween: '10%'
 
         // thumbs: {
         //   swiper: overviewSwiper
@@ -472,18 +404,24 @@ export default {
         // observer: true,
         // observeParents: true
       })
-    },
+    })
+  },
+  methods: {
     handleClickSwiperSlider(index) {
-      // console.log(index)
-      this.overviewSwiper.slideTo(index)
+      console.log(index)
       this.mainSwiper.slideTo(index)
+      // this.mainData.forEach((n, i) => {
+      //   n.active = (i === index)
+      // })
     },
     prev(i) {
-      this.overviewSwiper.slidePrev()
+      // const index = i - 1 < 0 ? this.mainData.length - 1 :
+      // this.handleClickSwiperSlider(i - 1)
       this.mainSwiper.slidePrev()
     },
     next(i) {
-      this.overviewSwiper.slideNext()
+      // const index = i + 1 >= this.mainData.length ? 0 :
+      // this.handleClickSwiperSlider(i + 1)
       this.mainSwiper.slideNext()
     }
   }
@@ -600,7 +538,7 @@ export default {
     --swiper-navigation-size: 20px; /* 设置按钮大小 */
     .swiper-button-prev,
     .swiper-button-next {
-      opacity: 0.3;
+      opacity: 0.8;
       transition: opacity 0.3s;
       width: 40px;
       height: 40px;
@@ -625,7 +563,6 @@ export default {
       // &.swiper-slide-active {
       //   opacity: 1;
       // }
-      border: 1px solid #ebeef5;
       .swiper-no-swiping {
         cursor: text;
       }
@@ -669,7 +606,7 @@ export default {
           }
         }
         .desc {
-          margin-top: 10px;
+          margin-top: 3px;
           line-height: 1.5;
           color: #888;
           font-size: 10px;
@@ -692,7 +629,7 @@ export default {
         border: 1px solid #ebeef5;
         overflow: hidden;
         display: flex;
-        // min-height: 100px;
+        min-height: 100px;
         margin-top: 15px;
         border-radius: 4px;
         box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.02);
@@ -725,8 +662,6 @@ export default {
           }
         }
         .right {
-          padding: 5px 0;
-          background: #fbfcfd;
           flex: 1;
           min-width: 0;
           .product-table {
@@ -735,9 +670,6 @@ export default {
             &::before {
               content: none;
             }
-            // ::v-deep .table-row {
-            //   background: #fbfcfd;
-            // }
             ::v-deep tr:hover > td {
               background: none;
             }
@@ -746,7 +678,6 @@ export default {
               border: none;
               text-align: center !important;
               color: #444;
-              background: #fbfcfd;
               // font-weight: bold;
             }
             ::v-deep th.is-leaf {
@@ -757,32 +688,9 @@ export default {
       }
       .interest {
         margin-top: 15px;
-        display: flex;
-        align-items: center;
-        background: #fbfcfd;
-        border: 1px solid #ebeef5;
-        border-radius: 4px;
-        padding: 10px;
-        color: #666;
-
-        .icon {
-          font-size: 30px;
-          margin-right: 10px;
-          color: #ccc;
-        }
-        .text {
-          flex: 1;
-          .name {
-            font-size: 13px;
-            line-height: 18px;
-            font-weight: bold;
-          }
-          .desc {
-            font-size: 12px;
-            margin-top: 5px;
-            line-height: 1.2;
-          }
-        }
+        padding: 8px;
+        background: #fff4ed;
+        color: #f78539;
       }
       .channel {
         margin-top: 15px;
@@ -873,7 +781,7 @@ export default {
                   justify-content: center;
                   span {
                     font-size: 12px;
-                    // color: #888;
+                    color: #888;
                     margin: 0 5px;
                   }
                 }

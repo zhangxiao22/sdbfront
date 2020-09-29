@@ -19,7 +19,7 @@ export default {
     ShunSidebar,
     AppMain
   },
-  mixins: [ResizeMixin],
+  // mixins: [ResizeMixin],
   computed: {
 
   },
