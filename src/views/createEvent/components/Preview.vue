@@ -148,7 +148,7 @@
                     <div v-if="channelItem.push_type===1"
                          class="timing right-left">
                       <!-- 定时型 -->
-                      <div class="range">{{ channelItem.push_time[0].start_date }} <span>至</span> {{ channelItem.push_time[0].end_date }}</div>
+                      <div class="range">{{ channelItem.push_time.length ? channelItem.push_time[0].start_date.slice(0,8) : '' }} <span>至</span> {{ channelItem.push_time.length ? channelItem.push_time[0].end_date.slice(0,8) : '' }}</div>
                       <div class="item-box"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.push_time"

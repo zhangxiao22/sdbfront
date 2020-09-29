@@ -42,7 +42,7 @@
                  class="customer-count">
               <svg-icon style="margin-right:5px;"
                         icon-class="group" />
-              {{ parseInt(stepDesc.customerCount).toLocaleString() }}
+              {{ stepDesc.customerCount | formatMoney }}
             </div>
           </div>
         </el-step>
@@ -93,7 +93,8 @@
 <script>
 
 import { Register, CustomerGroups, Ploy, Preview } from './components'
-import { mapGetters } from 'vuex'
+// import { mapGetters } from 'vuex'
+import { eventPublish } from '@/api/api'
 
 export default {
   components: {
@@ -143,11 +144,13 @@ export default {
         time: [],
         customerCount: ''
       },
-      stepActive: 3
+      stepActive: 0
     }
   },
   computed: {
-
+    id() {
+      return +this.$route.query.id
+    }
   },
   created() {
   },
@@ -176,7 +179,12 @@ export default {
       }
     },
     publish() {
-      console.log(this.getData())
+      const data = { baseId: this.id }
+      eventPublish(data).then(res => {
+        if (res.code === 200) {
+          this.$router.replace('/eventBoard')
+        }
+      })
     }
   }
 }

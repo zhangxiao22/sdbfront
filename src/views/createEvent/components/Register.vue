@@ -64,7 +64,7 @@
                              :disabled="!targetItem.targetSelect"
                              controls-position="right"
                              placeholder="请输入目标值"
-                             class="target-item-input" />
+                             class="target-item-input number-input" />
             <div class="target-unit">{{ targetItem.unit }}</div>
           </el-form-item>
           <i v-if="baseInfo.target.length > 1"
@@ -138,12 +138,12 @@ export default {
         category: '',
         // categoryValue: '',
         target: [
-          [{
+          {
             targetSelect: '',
             targetValue: ''
             // compare: '',
             // nuit: ''
-          }]
+          }
         ],
         date: null,
         // startDate: '',
@@ -172,32 +172,32 @@ export default {
       categoryOpt: [],
       // 目标
       targetOpt: [
-        {
-          label: 'AUM日均1',
-          value: '1',
-          compare: '大于',
-          unit: '元',
-          disabled: false
-        },
-        {
-          label: 'AUM日均2',
-          unit: '万元',
-          compare: '高于',
-          value: '2',
-          disabled: false
-        }, {
-          label: '流失率',
-          compare: '小于',
-          unit: '%',
-          value: '3',
-          disabled: false
-        }, {
-          label: '流失金额2',
-          compare: '低于',
-          unit: '美元',
-          value: '4',
-          disabled: false
-        }
+        // {
+        //   label: 'AUM日均1',
+        //   value: '1',
+        //   compare: '大于',
+        //   unit: '元',
+        //   disabled: false
+        // },
+        // {
+        //   label: 'AUM日均2',
+        //   unit: '万元',
+        //   compare: '高于',
+        //   value: '2',
+        //   disabled: false
+        // }, {
+        //   label: '流失率',
+        //   compare: '小于',
+        //   unit: '%',
+        //   value: '3',
+        //   disabled: false
+        // }, {
+        //   label: '流失金额2',
+        //   compare: '低于',
+        //   unit: '美元',
+        //   value: '4',
+        //   disabled: false
+        // }
       ],
       // 抽样方式
       sampleOpt: []
@@ -217,10 +217,12 @@ export default {
       data.startDate = this.baseInfo.date[0]
       data.endDate = this.baseInfo.date[1]
       // 目标
-      data.eventAchieveBOList = [{
-        head: 'AUM',
-        value: 12
-      }]
+      data.eventAchieveBOList = this.baseInfo.target.map(n => {
+        return {
+          head: 'AUM',
+          value: n.targetValue
+        }
+      })
       // 是否试点
       data.trial = this.baseInfo.trial
       // 比例
@@ -256,7 +258,7 @@ export default {
   created() {
     this.eventCategoryList()
     this.sampleList()
-    // this.targetList()
+    this.targetList()
     if (this.id) {
       this.getDetail()
     }
@@ -271,12 +273,7 @@ export default {
         this.baseInfo.name = data.name
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
-        this.baseInfo.target = [{
-          targetSelect: '1',
-          targetValue: '22',
-          compare: '大于',
-          nuit: '元'
-        }]
+        this.baseInfo.target = []
         this.resetTargetOpt()
         this.baseInfo.trial = data.trial
         this.baseInfo.sample = data.sample.value
@@ -299,7 +296,14 @@ export default {
     // 获取目标
     targetList() {
       getTargetList().then(res => {
-
+        this.targetOpt = res.data.achieveTagBOList.map(n => {
+          return {
+            label: n.name,
+            unit: n.unit.label,
+            value: n.id,
+            disabled: false
+          }
+        })
       })
     },
     // 试点值为空时置为1
@@ -422,9 +426,11 @@ export default {
             width: 100%;
             position: relative;
 
-            ::v-deep .el-input__inner {
-              padding-right: 80px;
-              text-align: left;
+            &.number-input {
+              ::v-deep .el-input__inner {
+                padding-right: 80px;
+                text-align: left;
+              }
             }
           }
           .target-unit {

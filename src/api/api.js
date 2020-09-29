@@ -159,6 +159,16 @@ export function getEventDetail(params) {
     params
   })
 }
+
+// 保存event
+
+export function eventPublish(params) {
+  return request({
+    url: '/clue/save',
+    method: 'get',
+    params
+  })
+}
 // 保存策略
 export function savePloy(data) {
   return request({
