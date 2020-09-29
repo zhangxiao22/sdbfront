@@ -55,7 +55,7 @@
                          :value="optItem.value" />
             </el-select>
           </el-form-item>
-          <span class="compare"> {{ targetItem.compare||':' }} </span>
+          <span class="compare">:</span>
           <el-form-item :prop="'target.'+i+'.targetValue'"
                         :rules="{
                           required: true, message: '请输入目标值', trigger: 'change'
@@ -414,7 +414,7 @@ export default {
         display: flex;
         position: relative;
         .compare {
-          width: 30px;
+          // width: 30px;
           margin: 0 10px;
           color: #888;
           text-align: center;
