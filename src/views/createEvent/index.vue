@@ -10,12 +10,13 @@
           <div slot="description"
                class="register step-detail">
             <!-- 事件名称 -->
-            <div class="name item elip">{{ baseInfoDetail.name }}</div>
+            <div class="name item">{{ baseInfoDetail.name }}</div>
             <!-- 事件类型 -->
             <el-tag v-show="baseInfoDetail.categoryValue"
                     class="item"
                     size="mini"
-                    type="warning">{{ baseInfoDetail.categoryValue }}</el-tag>
+                    type="warning">{{ baseInfoDetail.categoryValue }}
+            </el-tag>
             <!-- 起止日期 -->
             <div v-show="baseInfoDetail.startDate && baseInfoDetail.endDate"
                  class="item time-group"
@@ -24,6 +25,13 @@
                  style="margin-right:5px;" />
               <div class="time">{{ baseInfoDetail.startDate }} 至 {{ baseInfoDetail.endDate }}</div>
             </div>
+            <!-- 目标设置 -->
+            <el-tag v-show="baseInfoDetail.targetCount"
+                    class="item"
+                    size="mini"
+                    type="warning">
+              {{ baseInfoDetail.targetCount }}个目标
+            </el-tag>
             <!-- 对照组 && 抽样方式 -->
             <div v-show="baseInfoDetail.trial"
                  class="shun-sibling-box item">
@@ -106,13 +114,21 @@ export default {
   data() {
     return {
       baseInfoDetail: {
+        // 事件名称
         name: '',
+        // 类型
         categoryValue: '',
+        // 开始日期
         startDate: '',
+        // 结束日期
         endDate: '',
-        targetCount: '',
+        // 目标数量
+        targetCount: 12,
+        // 是否试点
         trial: false,
+        // 试点比例
         control: '',
+        // 试点抽样样式
         sampleValue: ''
       },
       groupDetail: {
@@ -197,7 +213,7 @@ export default {
   position: relative;
 
   .steps-container {
-    width: 260px;
+    width: 240px;
     position: absolute;
     left: 0;
     top: 0;
@@ -223,6 +239,9 @@ export default {
       border: none;
       filter: grayscale(100%);
       opacity: 0.4;
+    }
+    ::v-deep .el-step__description {
+      padding-right: 0;
     }
     ::v-deep .el-step__description.is-success {
       color: initial;
@@ -262,11 +281,12 @@ export default {
       }
 
       .name {
-        max-width: 200px;
+        // max-width: 200px;
         position: relative;
-        box-shadow: 0 -10px #d9ecff inset;
-        line-height: 18px;
+        // box-shadow: 0 -10px #d9ecff inset;
+        line-height: 1.5;
         color: $blue;
+        word-break: break-all;
       }
     }
     .customer-count {
@@ -276,7 +296,7 @@ export default {
   }
   .content-container {
     position: absolute;
-    left: 270px;
+    left: 250px;
     right: 0;
     bottom: 0;
     top: 0;

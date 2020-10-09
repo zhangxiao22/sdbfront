@@ -7,7 +7,9 @@
              class="reg-form">
       <el-form-item label="事件名称："
                     prop="name">
-        <el-input v-model="baseInfo.name" />
+        <el-input v-model="baseInfo.name"
+                  show-word-limit
+                  maxlength="50" />
       </el-form-item>
       <el-form-item label="事件类型："
                     prop="category">
@@ -109,8 +111,10 @@
       <el-form-item label="事件描述："
                     prop="desc">
         <el-input v-model="baseInfo.desc"
-                  :autosize="{ minRows: 5, maxRows: 10}"
+                  :autosize="{ minRows: 8, maxRows: 16}"
                   placeholder="请输入内容"
+                  maxlength="500"
+                  show-word-limit
                   type="textarea" />
       </el-form-item>
       <!-- {{ targetOpt }} -->
@@ -166,7 +170,6 @@ export default {
         date: [
           { required: true, message: '请选择起止日期', trigger: 'change' }
         ]
-
       },
       // 类型
       categoryOpt: [],
@@ -243,7 +246,9 @@ export default {
         // 起止日期
         this.changePicker()
         // 目标
-        // todo
+        //  targetSelect: '',
+        // targetValue: ''
+        // this.$parent.baseInfoDetail.targetCount = this.baseInfo.target.forEach
         // 对照组
         this.$parent.baseInfoDetail.trial = this.baseInfo.trial
         // 百分比

@@ -85,8 +85,13 @@
   min-height: 0;
 }
 
-//tooltip
+// tooltip
 .el-tooltip__popper{
-  max-width:50%;
+  max-width: 50%;
  }
 
+
+// input 
+.el-input__inner[maxlength] {
+   padding-right: 45px;
+}

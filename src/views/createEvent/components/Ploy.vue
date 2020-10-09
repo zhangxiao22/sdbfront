@@ -50,7 +50,7 @@
                               }]"
                               class="shun-label">
                   <div slot="label">
-                    <Info content="同一客群下所有策略分发范围总和为100%" />
+                    <Info content="同一客群下所有策略分发范围总和需为100%" />
                     分发范围：
                   </div>
                   <el-input-number v-model="ployItem.percent"
