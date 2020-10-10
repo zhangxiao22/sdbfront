@@ -30,7 +30,7 @@
                     class="item"
                     size="mini"
                     type="warning">
-              {{ baseInfoDetail.targetCount }}个目标
+              {{ baseInfoDetail.targetCount }} 个目标
             </el-tag>
             <!-- 对照组 && 抽样方式 -->
             <div v-show="baseInfoDetail.trial"
@@ -46,12 +46,18 @@
           </div>
           <div slot="description"
                class="group step-detail">
-            <div v-show="stepDesc.customerCount"
-                 class="customer-count">
-              <svg-icon style="margin-right:5px;"
-                        icon-class="group" />
-              {{ stepDesc.customerCount | formatMoney }}
-            </div>
+            <el-tag v-show="groupDetail.peopleNum"
+                    class="item"
+                    size="mini"
+                    type="warning">
+              {{ groupDetail.peopleNum | formatMoney }} 人
+            </el-tag>
+            <el-tag v-show="groupDetail.peopleNum"
+                    class="item"
+                    size="mini"
+                    type="warning">
+              {{ groupDetail.groupNum }} 个客群
+            </el-tag>
           </div>
         </el-step>
         <el-step title="策略配置"
@@ -123,7 +129,7 @@ export default {
         // 结束日期
         endDate: '',
         // 目标数量
-        targetCount: 12,
+        targetCount: 0,
         // 是否试点
         trial: false,
         // 试点比例
@@ -132,8 +138,8 @@ export default {
         sampleValue: ''
       },
       groupDetail: {
-        peopleNum: '',
-        groupNum: ''
+        peopleNum: 0,
+        groupNum: 6
       },
       mainLoading: false,
       component: [
@@ -154,12 +160,12 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepDesc: {
-        name: '',
-        type: '',
-        time: [],
-        customerCount: ''
-      },
+      // stepDesc: {
+      //   name: '',
+      //   type: '',
+      //   time: [],
+      //   customerCount: ''
+      // },
       stepActive: 0
     }
   },
@@ -182,6 +188,11 @@ export default {
     next() {
       const ref = this.component[this.stepActive].ref
       this.$refs[ref].validateAndNext().then(() => {
+        this.$message({
+          message: '保存成功',
+          type: 'success',
+          duration: '3000'
+        })
         this.stepActive++
         this.mainLoading = false
       }).catch(err => {
@@ -268,7 +279,7 @@ export default {
       color: #666;
       font-size: 12px;
     }
-    .register {
+    .step-detail {
       display: flex;
       flex-flow: column;
       align-items: flex-start;
@@ -288,10 +299,6 @@ export default {
         color: $blue;
         word-break: break-all;
       }
-    }
-    .customer-count {
-      display: flex;
-      align-items: center;
     }
   }
   .content-container {

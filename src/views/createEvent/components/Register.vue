@@ -37,7 +37,7 @@
                     label="目标设置："
                     prop="target"
                     :rules="{
-                      required: true
+                      required: true, message: '请选择目标'
                     }">
         <div v-for="(targetItem,i) of baseInfo.target"
              :key="i"
@@ -46,24 +46,31 @@
                         :rules="{
                           required: true, message: '请选择目标名称', trigger: 'change'
                         }">
-            <el-select v-model="targetItem.targetSelect"
-                       placeholder="请选择目标名称"
-                       class="target-item-input"
-                       @change="selectTarget($event,targetItem)">
-              <el-option v-for="optItem of targetOpt"
-                         :key="optItem.value"
-                         :disabled="optItem.disabled"
-                         :label="optItem.label"
-                         :value="optItem.value" />
-            </el-select>
+            <el-tooltip :content="targetItem.targeLabel||'请选择目标名称'"
+                        placement="left">
+              <el-select v-model="targetItem.targetSelect"
+                         placeholder="请选择目标名称"
+                         class="target-item-input"
+                         @change="selectTarget($event,targetItem)">
+                <el-option v-for="optItem of targetOpt"
+                           :key="optItem.value"
+                           :disabled="optItem.disabled"
+                           :label="optItem.label"
+                           :value="optItem.value" />
+              </el-select>
+            </el-tooltip>
+
           </el-form-item>
-          <span class="compare">:</span>
+          <span class="compare">{{ targetItem.compare || ':' }}</span>
           <el-form-item :prop="'target.'+i+'.targetValue'"
                         :rules="{
                           required: true, message: '请输入目标值', trigger: 'change'
                         }">
             <el-input-number v-model="targetItem.targetValue"
                              :disabled="!targetItem.targetSelect"
+                             :min="targetItem.min"
+                             :max="targetItem.max"
+                             :precision="targetItem.precision"
                              controls-position="right"
                              placeholder="请输入目标值"
                              class="target-item-input number-input" />
@@ -95,8 +102,7 @@
                            :step="5"
                            :min="1"
                            :max="30"
-                           @blur="handlerControlBlur" />
-          %
+                           @blur="handlerControlBlur" />%
         </template>
       </el-form-item>
       <el-form-item v-show="baseInfo.trial"
@@ -174,34 +180,7 @@ export default {
       // 类型
       categoryOpt: [],
       // 目标
-      targetOpt: [
-        // {
-        //   label: 'AUM日均1',
-        //   value: '1',
-        //   compare: '大于',
-        //   unit: '元',
-        //   disabled: false
-        // },
-        // {
-        //   label: 'AUM日均2',
-        //   unit: '万元',
-        //   compare: '高于',
-        //   value: '2',
-        //   disabled: false
-        // }, {
-        //   label: '流失率',
-        //   compare: '小于',
-        //   unit: '%',
-        //   value: '3',
-        //   disabled: false
-        // }, {
-        //   label: '流失金额2',
-        //   compare: '低于',
-        //   unit: '美元',
-        //   value: '4',
-        //   disabled: false
-        // }
-      ],
+      targetOpt: [],
       // 抽样方式
       sampleOpt: []
     }
@@ -222,7 +201,7 @@ export default {
       // 目标
       data.eventAchieveBOList = this.baseInfo.target.map(n => {
         return {
-          head: 'AUM',
+          head: n.targetSelect,
           value: n.targetValue
         }
       })
@@ -246,9 +225,9 @@ export default {
         // 起止日期
         this.changePicker()
         // 目标
-        //  targetSelect: '',
-        // targetValue: ''
-        // this.$parent.baseInfoDetail.targetCount = this.baseInfo.target.forEach
+        this.$parent.baseInfoDetail.targetCount = this.baseInfo.target.filter(n => {
+          return n.targetSelect
+        }).length
         // 对照组
         this.$parent.baseInfoDetail.trial = this.baseInfo.trial
         // 百分比
@@ -303,10 +282,22 @@ export default {
       getTargetList().then(res => {
         this.targetOpt = res.data.achieveTagBOList.map(n => {
           return {
+            // 目标名称
             label: n.name,
+            // 单位
             unit: n.unit.label,
+            // 目标值
             value: n.id,
-            disabled: false
+            // 是否可选
+            disabled: false,
+            // 目标值-小数点精度
+            precision: n.unit.value === 4 ? 2 : 0,
+            // 目标值-最小值
+            min: n.unit.value === 4 ? 0.01 : 1,
+            // 目标值-最大值
+            max: n.unit.value === 4 ? 100 : 'Infinity',
+            // 比较符号
+            compare: '≥'
           }
         })
       })
@@ -390,17 +381,20 @@ export default {
       })
     },
     selectTarget(val, item) {
-      // 清空输入
-      item.targetValue = ''
-      // 设置不可选项
-      this.resetTargetOpt()
-      // 显示单位
-      this.targetOpt.forEach((n, i) => {
+      this.targetOpt.find((n, i) => {
         if (n.value === val) {
-          item.unit = n.unit
-          item.compare = n.compare
+          // item.unit = n.unit
+          // item.targeLabel = n.label
+          // item.compare = '≥'
+          Object.assign(item, n, {
+            // 清空输入
+            targetValue: ''
+          })
+          return true
         }
       })
+      // 设置不可选项
+      this.resetTargetOpt()
     }
   }
 }
@@ -419,7 +413,7 @@ export default {
         display: flex;
         position: relative;
         .compare {
-          // width: 30px;
+          width: 10px;
           margin: 0 10px;
           color: #888;
           text-align: center;

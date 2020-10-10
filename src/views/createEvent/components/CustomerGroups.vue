@@ -17,7 +17,7 @@
             <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
             <div slot="tip"
                  class="el-upload__tip">
-              只能上传xls/xlsx/cvs文件
+              请上传xls/xlsx/csv文件
               <el-link type="primary"
                        @click="download">模版下载</el-link>
             </div>
@@ -30,11 +30,11 @@
           <el-form-item label="文件名称：">
             {{ fileName }}
           </el-form-item>
-          <el-form-item label="客户数量：">
-            {{ customerCount ? parseInt(customerCount).toLocaleString() : '' }}
-          </el-form-item>
           <el-form-item label="上传时间：">
             {{ updateTime }}
+          </el-form-item>
+          <el-form-item label="客户数量：">
+            {{ customerCount | formatMoney }}
           </el-form-item>
           <el-form-item>
             <div slot="label">
@@ -44,8 +44,9 @@
             <el-select v-model="paramValue"
                        style="max-width:800px;width:100%;"
                        multiple
+                       :multiple-limit="10"
                        filterable
-                       placeholder="可输入匹配项并搜索选择">
+                       placeholder="可输入搜索匹配项">
               <el-option v-for="item in paramOpt"
                          :key="item.value"
                          :label="item.label"
@@ -55,8 +56,11 @@
           </el-form-item>
           <div class="table-container">
             <el-table :data="tableData"
+                      size="medium"
                       style="width:100%;"
-                      class="table">
+                      class="whitelist-table"
+                      @cell-mouse-enter="handleMouseEnter"
+                      @cell-mouse-leave="handleMouseLeave">
               <el-table-column prop="name"
                                label="群组名称"
                                width="180" />
@@ -67,9 +71,10 @@
                 <div slot-scope="scope"
                      class="desc">
                   <template v-if="!scope.row.isEdit">
-                    <div v-show="scope.row._desc.length"
-                         style="margin-right:10px;">{{ scope.row._desc }}</div>
-                    <el-button size="mini"
+                    <pre v-show="scope.row.desc"
+                         style="margin-right:10px;">{{ scope.row.desc }}</pre>
+                    <el-button v-show="scope.row.isHover"
+                               size="mini"
                                class="button"
                                icon="el-icon-edit"
                                @click="scope.row.isEdit=true">编辑</el-button>
@@ -85,6 +90,11 @@
                                type="success"
                                icon="el-icon-check"
                                @click="scope.row.desc=scope.row._desc;scope.row.isEdit=false">确认</el-button>
+                    <el-button size="mini"
+                               class="button"
+                               icon="el-icon-close"
+                               style="margin-left:10px;"
+                               @click="scope.row.isEdit=false">取消</el-button>
                   </template>
 
                 </div>
@@ -120,7 +130,7 @@ export default {
       //
       activeName: '1',
       fileId: null,
-      accept: ['xls', 'xlsx', 'cvs'],
+      accept: ['xls', 'xlsx', 'csv'],
       file: '',
       // fileList: [],
       fileName: '',
@@ -138,30 +148,19 @@ export default {
     groupId() {
       return this.labelIndex - 1
     }
-
   },
   watch: {
-    // form: {
-    //   handler(newVal, oldVal) {
-    //     // console.log(newVal, '??')
-    //     const data = {
-    //       customerCount: 0
-    //     }
-    //     data.customerCount = newVal.customerCount
-    //     console.log(data)
-    //     this.$emit('renderSteps', data)
-    //   },
-    //   deep: true,
-    //   immediate: true
-    // }
+    customerCount() {
+      this.$parent.groupDetail.peopleNum = this.customerCount
+    },
+    tableData() {
+      this.$parent.groupDetail.groupNum = this.tableData.length
+    }
   },
   mounted() {
   },
   created() {
     this.getParamOpt()
-    // this.tableData = [{ 'name': '娱乐需求客户', 'count': 283 }, { 'name': '教育需求客户', 'count': 276 }, { 'name': '公积金客群', 'count': 68 }, { 'name': '理财投资需求客户', 'count': 271 }, { 'name': '生活服务需求客户', 'count': 75 }, { 'name': '村居分红客群', 'count': 418 }].map((n) => {
-    //   return Object.assign(n, { desc: '', _desc: '', isEdit: false })
-    // })
   },
   methods: {
     validateAndNext() {
@@ -228,7 +227,8 @@ export default {
             return Object.assign(n, {
               desc: '',
               _desc: '',
-              isEdit: false
+              isEdit: false,
+              isHover: false
             })
           })
           this.$parent.mainLoading = false
@@ -248,6 +248,14 @@ export default {
           }
         })
       })
+    },
+    handleMouseEnter(row, column, cell, event) {
+      // console.log(row)
+      row.isHover = true
+    },
+    handleMouseLeave(row, column, cell, event) {
+      // console.log(row)
+      row.isHover = false
     },
     handleEdit(index, row) {
 
@@ -283,12 +291,20 @@ export default {
       }
     }
   }
-  .table-container {
-    width: 100%;
-    margin: 20px 0;
-    .desc {
-      display: flex;
-      align-items: center;
+  .reg-form {
+    margin-top: 20px;
+    .table-container {
+      width: 100%;
+      margin: 20px 0;
+      .whitelist-table {
+        ::v-deep tr {
+          height: 52px;
+        }
+        .desc {
+          display: flex;
+          align-items: center;
+        }
+      }
     }
   }
 }
