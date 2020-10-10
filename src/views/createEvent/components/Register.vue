@@ -201,7 +201,7 @@ export default {
       // 目标
       data.eventAchieveBOList = this.baseInfo.target.map(n => {
         return {
-          head: n.targetSelect,
+          id: n.targetSelect,
           value: n.targetValue
         }
       })
@@ -242,10 +242,11 @@ export default {
   created() {
     this.eventCategoryList()
     this.sampleList()
-    this.targetList()
-    if (this.id) {
-      this.getDetail()
-    }
+    this.targetList().then(() => {
+      if (this.id) {
+        this.getDetail()
+      }
+    })
   },
   mounted() {
   },
@@ -257,7 +258,19 @@ export default {
         this.baseInfo.name = data.name
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
-        this.baseInfo.target = []
+        this.baseInfo.target = [{ id: 1, value: 1 }, { id: 2, value: 2 }].map(item => {
+          let obj = this.targetOpt.find(n => {
+            if (n.value === item.id) {
+              obj = n
+              return true
+            }
+          })
+          console.log(obj)
+          return Object.assign(obj, {
+            targetSelect: item.id,
+            targetValue: item.value
+          })
+        })
         this.resetTargetOpt()
         this.baseInfo.trial = data.trial
         this.baseInfo.sample = data.sample.value
@@ -279,26 +292,29 @@ export default {
     },
     // 获取目标
     targetList() {
-      getTargetList().then(res => {
-        this.targetOpt = res.data.achieveTagBOList.map(n => {
-          return {
-            // 目标名称
-            label: n.name,
-            // 单位
-            unit: n.unit.label,
-            // 目标值
-            value: n.id,
-            // 是否可选
-            disabled: false,
-            // 目标值-小数点精度
-            precision: n.unit.value === 4 ? 2 : 0,
-            // 目标值-最小值
-            min: n.unit.value === 4 ? 0.01 : 1,
-            // 目标值-最大值
-            max: n.unit.value === 4 ? 100 : 'Infinity',
-            // 比较符号
-            compare: '≥'
-          }
+      return new Promise(resolve => {
+        getTargetList().then(res => {
+          this.targetOpt = res.data.achieveTagBOList.map(n => {
+            return {
+              // 目标名称
+              label: n.name,
+              // 单位
+              unit: n.unit.label,
+              // 目标值
+              value: n.id,
+              // 是否可选
+              disabled: false,
+              // 目标值-小数点精度
+              precision: n.unit.value === 4 ? 2 : 0,
+              // 目标值-最小值
+              min: n.unit.value === 4 ? 0.01 : 1,
+              // 目标值-最大值
+              max: n.unit.value === 4 ? 100 : Infinity,
+              // 比较符号
+              compare: '≥'
+            }
+          })
+          resolve()
         })
       })
     },
@@ -383,9 +399,6 @@ export default {
     selectTarget(val, item) {
       this.targetOpt.find((n, i) => {
         if (n.value === val) {
-          // item.unit = n.unit
-          // item.targeLabel = n.label
-          // item.compare = '≥'
           Object.assign(item, n, {
             // 清空输入
             targetValue: ''
