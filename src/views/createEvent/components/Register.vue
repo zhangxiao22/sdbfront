@@ -46,7 +46,7 @@
                         :rules="{
                           required: true, message: '请选择目标名称', trigger: 'change'
                         }">
-            <el-tooltip :content="targetItem.targeLabel||'请选择目标名称'"
+            <el-tooltip :content="targetItem.label||'请选择目标名称'"
                         placement="left">
               <el-select v-model="targetItem.targetSelect"
                          placeholder="请选择目标名称"
