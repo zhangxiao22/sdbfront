@@ -79,6 +79,15 @@ export function getTargetList() {
 }
 
 /** ************************************************ 事件注册 ************************************************************/
+// 获取事件简介
+export function getEventDetail(data) {
+  return request({
+    url: '/event/detail',
+    method: 'post',
+    data
+  })
+}
+
 // 第1步
 // 保存事件详情
 export function saveEventBaseInfo(data) {

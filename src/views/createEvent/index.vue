@@ -108,7 +108,7 @@
 
 import { Register, CustomerGroups, Ploy, Preview } from './components'
 // import { mapGetters } from 'vuex'
-import { eventPublish } from '@/api/api'
+import { eventPublish, getEventDetail } from '@/api/api'
 
 export default {
   components: {
