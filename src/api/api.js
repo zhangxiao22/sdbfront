@@ -80,9 +80,9 @@ export function getTargetList() {
 
 /** ************************************************ 事件注册 ************************************************************/
 // 获取事件简介
-export function getEventDetail(data) {
+export function getEventInfo(data) {
   return request({
-    url: '/event/detail',
+    url: '/event/eventDetail',
     method: 'post',
     data
   })

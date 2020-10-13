@@ -108,7 +108,7 @@
 
 import { Register, CustomerGroups, Ploy, Preview } from './components'
 // import { mapGetters } from 'vuex'
-import { eventPublish, getEventDetail } from '@/api/api'
+import { eventPublish, getEventInfo } from '@/api/api'
 
 export default {
   components: {
@@ -175,6 +175,9 @@ export default {
     }
   },
   created() {
+    if (this.id) {
+      this.getStepDetail()
+    }
   },
   methods: {
     // handleClick(i) {
@@ -185,6 +188,18 @@ export default {
     //     // console.log('err')
     //   })
     // },
+    getStepDetail() {
+      getEventInfo({ id: this.id }).then(res => {
+        const data = res.data
+        this.baseInfoDetail.name = data.name
+        this.baseInfoDetail.categoryValue = data.category.label
+        this.baseInfoDetail.startDate = data.startDate
+        this.baseInfoDetail.endDate = data.endDate
+        this.baseInfoDetail.targetCount = data.eventAchieveBOList.length
+        this.baseInfoDetail.sampleValue = data.sample.label
+        this.baseInfoDetail.control = data.control * 100
+      })
+    },
     next() {
       const ref = this.component[this.stepActive].ref
       this.$refs[ref].validateAndNext().then(() => {
