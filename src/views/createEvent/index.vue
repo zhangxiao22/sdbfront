@@ -253,6 +253,7 @@ export default {
     }
     ::v-deep .el-step__description {
       padding-right: 0;
+      padding-bottom: 10px;
     }
     ::v-deep .el-step__description.is-success {
       color: initial;

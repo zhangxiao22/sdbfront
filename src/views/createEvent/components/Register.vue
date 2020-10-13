@@ -201,7 +201,7 @@ export default {
       // 目标
       data.eventAchieveBOList = this.baseInfo.target.map(n => {
         return {
-          id: n.targetSelect,
+          tagId: n.targetSelect,
           value: n.targetValue
         }
       })
@@ -258,16 +258,16 @@ export default {
         this.baseInfo.name = data.name
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
-        this.baseInfo.target = [{ id: 1, value: 1 }, { id: 2, value: 2 }].map(item => {
+        this.baseInfo.target = data.eventAchieveBOList.map(item => {
           let obj = this.targetOpt.find(n => {
-            if (n.value === item.id) {
+            if (n.value === item.tagId) {
               obj = n
               return true
             }
           })
           console.log(obj)
-          return Object.assign(obj, {
-            targetSelect: item.id,
+          return Object.assign({}, obj, {
+            targetSelect: item.tagId,
             targetValue: item.value
           })
         })
@@ -311,7 +311,7 @@ export default {
               // 目标值-最大值
               max: n.unit.value === 4 ? 100 : Infinity,
               // 比较符号
-              compare: '≥'
+              compare: n.relation.label
             }
           })
           resolve()
