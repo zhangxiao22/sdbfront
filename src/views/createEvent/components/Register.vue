@@ -29,6 +29,7 @@
                         :clearable="false"
                         type="daterange"
                         value-format="yyyy-MM-dd"
+                        :picker-options="pickerOptions"
                         range-separator="至"
                         start-placeholder="开始日期"
                         end-placeholder="结束日期" />
@@ -102,6 +103,7 @@
                            :step="5"
                            :min="1"
                            :max="30"
+                           :precision="0"
                            @blur="handlerControlBlur" />%
         </template>
       </el-form-item>
@@ -132,6 +134,7 @@
 <script>
 import Info from '@/components/Info'
 import { mapGetters } from 'vuex'
+import { parseTime } from '@/utils'
 import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList } from '@/api/api'
 
 export default {
@@ -177,6 +180,14 @@ export default {
           { required: true, message: '请选择起止日期', trigger: 'change' }
         ]
       },
+      // 时间选择范围
+      pickerOptions: {
+        disabledDate(time) {
+          const testStartTime = parseTime(new Date(), '{y}-{m}-{d}')
+          const dateTime = parseTime(time, '{y}-{m}-{d}')
+          return dateTime < testStartTime
+        }
+      },
       // 类型
       categoryOpt: [],
       // 目标
@@ -189,7 +200,6 @@ export default {
     id() {
       return +this.$route.query.id
     },
-
     // 获取数据
     getData() {
       const data = {}
@@ -199,7 +209,7 @@ export default {
       data.startDate = this.baseInfo.date[0]
       data.endDate = this.baseInfo.date[1]
       // 目标
-      data.eventAchieveBOList = this.baseInfo.target.map(n => {
+      data.eventAchieveList = this.baseInfo.target.map(n => {
         return {
           tagId: n.targetSelect,
           value: n.targetValue
@@ -208,7 +218,7 @@ export default {
       // 是否试点
       data.trial = this.baseInfo.trial
       // 比例
-      data.control = this.baseInfo.control / 100
+      data.control = this.baseInfo.control
       // 抽样方式
       data.sample = this.baseInfo.sample
       data.desc = this.baseInfo.desc
@@ -235,8 +245,8 @@ export default {
         // 抽样方式
         this.changeSample()
       },
-      deep: true
-      // immediate: true
+      deep: true,
+      immediate: false
     }
   },
   created() {
@@ -258,14 +268,14 @@ export default {
         this.baseInfo.name = data.name
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
-        this.baseInfo.target = data.eventAchieveBOList.map(item => {
+        this.baseInfo.target = data.eventAchieveList.map(item => {
           let obj = this.targetOpt.find(n => {
             if (n.value === item.tagId) {
               obj = n
               return true
             }
           })
-          console.log(obj)
+          // console.log(obj)
           return Object.assign({}, obj, {
             targetSelect: item.tagId,
             targetValue: item.value
@@ -274,7 +284,7 @@ export default {
         this.resetTargetOpt()
         this.baseInfo.trial = data.trial
         this.baseInfo.sample = data.sample.value
-        this.baseInfo.control = data.control * 100
+        this.baseInfo.control = data.control
         this.baseInfo.desc = data.desc
       })
     },
@@ -300,6 +310,8 @@ export default {
               label: n.name,
               // 单位
               unit: n.unit.label,
+              // 单位id
+              unitId: n.unit.value,
               // 目标值
               value: n.id,
               // 是否可选

@@ -79,6 +79,15 @@ export function getTargetList() {
 }
 
 /** ************************************************ 事件注册 ************************************************************/
+// 获取事件简介
+export function getEventInfo(params) {
+  return request({
+    url: '/event/abstract',
+    method: 'get',
+    params
+  })
+}
+
 // 第1步
 // 保存事件详情
 export function saveEventBaseInfo(data) {
@@ -142,6 +151,14 @@ export function saveGroup(data) {
   })
 }
 
+// 根据id获取客群信息
+export function getGroup(params) {
+  return request({
+    url: '/customer/getDetail',
+    method: 'get',
+    params
+  })
+}
 // 第3步
 // 获取事件的客群
 export function getGroupList(params) {

@@ -677,7 +677,7 @@ export default {
           if (res.code === 200) {
             this.group = res.data.customerInfoList.map((n, i) => {
               return {
-                gid: n.infoId,
+                gid: n.id,
                 name: n.name,
                 people: n.count,
                 desc: n.desc,

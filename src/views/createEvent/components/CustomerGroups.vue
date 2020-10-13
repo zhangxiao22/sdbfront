@@ -117,7 +117,7 @@
 import Info from '@/components/Info'
 import Group from './Group'
 import Sortable from 'sortablejs'
-import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount, saveGroup } from '@/api/api'
+import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount, saveGroup, getGroup } from '@/api/api'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -136,7 +136,8 @@ export default {
       fileName: '',
       customerCount: '',
       updateTime: '',
-      paramValue: '',
+      // 维度补充
+      paramValue: [],
       tableData: [],
       paramOpt: []
     }
@@ -161,8 +162,31 @@ export default {
   },
   created() {
     this.getParamOpt()
+    if (this.id) {
+      this.getDetail()
+    }
   },
   methods: {
+    // 获取详情
+    getDetail() {
+      getGroup({ baseId: this.id }).then(res => {
+        const base = res.data.abstractDetail
+        this.fileId = base.fileId
+        this.fileName = base.fileName
+        this.customerCount = base.recordNum
+        this.updateTime = base.uploadTime
+        this.paramValue = res.data.supplyDetailList.map(n => n.id)
+        this.tableData = res.data.infoDetailList.map(n => {
+          return Object.assign({}, n, {
+            // desc: '',
+            _desc: n.desc,
+            isEdit: false,
+            isHover: false
+          })
+        })
+      })
+    },
+
     validateAndNext() {
       const data = {
         baseId: this.id,
@@ -171,9 +195,10 @@ export default {
         supplyIdList: this.paramValue,
         groupSaveCriteriaList: this.tableData.map((n, i) => {
           return {
+            id: n.id,
             name: n.name,
             count: n.count,
-            dec: n.desc
+            desc: n.desc
           }
         })
       }
@@ -224,7 +249,7 @@ export default {
           this.customerCount = res.data.recordNum
           this.updateTime = res.data.uploadTime
           this.tableData = res.data.groupInfoWithCount.map((n) => {
-            return Object.assign(n, {
+            return Object.assign({}, n, {
               desc: '',
               _desc: '',
               isEdit: false,
