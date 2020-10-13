@@ -160,12 +160,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      // stepDesc: {
-      //   name: '',
-      //   type: '',
-      //   time: [],
-      //   customerCount: ''
-      // },
+
       stepActive: 0
     }
   },
