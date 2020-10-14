@@ -46,18 +46,34 @@
           </div>
           <div slot="description"
                class="group step-detail">
+            <!-- <div v-show="baseInfoDetail.trial"
+                 class="shun-sibling-box item">
+              <div class="value">总计 {{ groupDetail.peopleNum }} 人</div>
+              <div class="value">对照组 {{ groupDetail.comparePeopleNum }} 人</div>
+            </div> -->
             <el-tag v-show="groupDetail.peopleNum"
                     class="item"
                     size="mini"
                     type="warning">
-              {{ groupDetail.peopleNum | formatMoney }} 人
+              总计 {{ groupDetail.peopleNum | formatMoney }} 人
             </el-tag>
-            <el-tag v-show="groupDetail.peopleNum"
+            <el-tag v-show="groupDetail.comparePeopleNum"
+                    class="item"
+                    size="mini"
+                    type="warning">
+              对照组 {{ groupDetail.comparePeopleNum | formatMoney }} 人
+            </el-tag>
+            <div v-show="baseInfoDetail.trial"
+                 class="shun-sibling-box item">
+              <div class="value">{{ groupDetail.groupNum }} 个客群</div>
+              <div class="value">{{ groupDetail.realPeopleNum | formatMoney }} 人</div>
+            </div>
+            <!-- <el-tag v-show="groupDetail.peopleNum"
                     class="item"
                     size="mini"
                     type="warning">
               {{ groupDetail.groupNum }} 个客群
-            </el-tag>
+            </el-tag> -->
           </div>
         </el-step>
         <el-step title="策略配置"
@@ -138,8 +154,14 @@ export default {
         sampleValue: ''
       },
       groupDetail: {
+        // 总人数
         peopleNum: 0,
-        groupNum: 6
+        // 对照组人数
+        comparePeopleNum: 0,
+        // 实际人数
+        realPeopleNum: 0,
+        // 客群数
+        groupNum: 0
       },
       mainLoading: false,
       component: [
@@ -160,7 +182,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 2
+      stepActive: 0
     }
   },
   computed: {
@@ -185,6 +207,7 @@ export default {
     getStepDetail() {
       getEventInfo({ id: this.id }).then(res => {
         const baseInfo = res.data.eventBaseInfo
+        const customer = res.data.customer
         // console.log(baseInfo)
         this.baseInfoDetail.name = baseInfo.name
         this.baseInfoDetail.categoryValue = baseInfo.category.label
@@ -194,6 +217,11 @@ export default {
         this.baseInfoDetail.trial = baseInfo.trial
         this.baseInfoDetail.sampleValue = baseInfo.sample.label
         this.baseInfoDetail.control = baseInfo.control
+
+        this.groupDetail.peopleNum = customer.recordCount
+        this.groupDetail.comparePeopleNum = customer.recordCount - customer.filterCount
+        this.groupDetail.realPeopleNum = customer.filterCount
+        this.groupDetail.groupNum = customer.groupCount
       })
     },
     next() {
@@ -245,6 +273,9 @@ export default {
     // .el-step {
     //   cursor: pointer;
     // }
+    ::v-deep .el-step__title {
+      padding-bottom: 15px;
+    }
     ::v-deep .el-step__title.is-process,
     ::v-deep .el-step__head.is-process {
       color: $blue;

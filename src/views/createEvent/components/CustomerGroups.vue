@@ -36,6 +36,9 @@
           <el-form-item label="客户数量：">
             {{ customerCount | formatMoney }}
           </el-form-item>
+          <el-form-item label="对照组人数：">
+            {{ compareCount | formatMoney }}
+          </el-form-item>
           <el-form-item>
             <div slot="label">
               <Info content="维度不能超过10个" />
@@ -132,7 +135,12 @@ export default {
       file: '',
       // fileList: [],
       fileName: '',
+      // 总数
       customerCount: '',
+      // 对照组人数
+      compareCount: '',
+      // 实际人数
+      realPeopleNum: '',
       updateTime: '',
       // 维度补充
       paramValue: [],
@@ -149,11 +157,17 @@ export default {
     }
   },
   watch: {
-    customerCount() {
+    fileId() {
       this.$parent.groupDetail.peopleNum = this.customerCount
+      this.$parent.groupDetail.comparePeopleNum = this.compareCount
+      this.$parent.groupDetail.realPeopleNum = this.realPeopleNum
+      this.$parent.groupDetail.groupNum = this.tableData.length
+    },
+    customerCount() {
+
     },
     tableData() {
-      this.$parent.groupDetail.groupNum = this.tableData.length
+
     }
   },
   mounted() {
@@ -182,6 +196,11 @@ export default {
             isHover: false
           })
         })
+        this.realPeopleNum = 0
+        res.data.infoDetailList.forEach(item => {
+          this.realPeopleNum += item.count
+        })
+        this.compareCount = base.recordNum - this.realPeopleNum
       })
     },
 
