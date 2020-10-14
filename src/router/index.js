@@ -26,7 +26,7 @@ export const constantRoutes = [
         path: 'home',
         name: 'Home',
         component: () => import('@/views/home/index'),
-        meta: { title: '首页', icon: 'home', line: true }
+        meta: { title: '首页', icon: 'home', underline: true }
       },
       {
         path: 'createEvent',

@@ -160,7 +160,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: 2
     }
   },
   computed: {
@@ -191,6 +191,7 @@ export default {
         this.baseInfoDetail.startDate = baseInfo.startDate
         this.baseInfoDetail.endDate = baseInfo.endDate
         this.baseInfoDetail.targetCount = baseInfo.eventAchieveCount
+        this.baseInfoDetail.trial = baseInfo.trial
         this.baseInfoDetail.sampleValue = baseInfo.sample.label
         this.baseInfoDetail.control = baseInfo.control
       })

@@ -33,7 +33,10 @@
                            :key="ployItem.name"
                            :label="ployItem.title"
                            :name="ployItem.name">
-                <el-form-item required
+                <el-form-item :prop="'ployTabs.'+pi+'.title'"
+                              :rules="[{
+                                required: true, message: '请输入策略名称', trigger: 'blur'
+                              }]"
                               label="策略名称：">
                   <el-input v-model="ployItem.title"
                             style="width:300px"
@@ -699,6 +702,13 @@ export default {
       })
     },
     validateAndNext() {
+      console.log(this.$refs.form1)
+      this.$refs.form0.validate((valid) => {
+        console.log(valid)
+      })
+
+      if (this.id) return
+
       return new Promise((resolve, reject) => {
         // 客群
         const data = this.group.map((gn, gi) => {

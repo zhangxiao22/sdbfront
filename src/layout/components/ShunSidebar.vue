@@ -1,21 +1,17 @@
 <template>
   <div class="sidebar-container">
     <template v-for="(item,i) of menu">
-      <el-tooltip v-if="item.type === 'icon'"
-                  :key="i"
+      <el-tooltip :key="i"
                   class="item"
                   :content="item.title"
                   placement="right">
         <span class="svg-container"
-              :class="{'active':item.active}"
+              :class="{'active':item.active,'underline':item.underline}"
               @click="handleClick(item)">
           <svg-icon :icon-class="item.icon" />
         </span>
       </el-tooltip>
 
-      <div v-else
-           :key="i"
-           class="line" />
     </template>
 
   </div>
@@ -40,8 +36,6 @@ export default {
   watch: {
     $route: {
       handler(val, oldval) {
-        // console.log(val);//新路由信息
-        // console.log(oldval);//老路由信息
         this.menu.forEach((n, i) => {
           // console.log(val, n)
           if (n.type === 'icon') {
@@ -60,6 +54,7 @@ export default {
   },
   created() {
     this.getMenu()
+    // console.log(this.menu)
     // console.log('this.routes???', this.routes)
   },
   methods: {
@@ -76,13 +71,9 @@ export default {
                 title: m.meta.title,
                 name: m.name,
                 icon: m.meta.icon,
-                active: this.$route.name === m.name
+                active: this.$route.name === m.name,
+                underline: m.meta.underline
               })
-              if (m.meta.line) {
-                this.menu.push({
-                  type: 'line'
-                })
-              }
             }
           })
         }
@@ -91,6 +82,8 @@ export default {
       // console.log(this.menu)
     },
     handleClick(item) {
+      // console.log(i)
+      if (item.active) return
       this.$router.push(item.path)
     }
 
@@ -119,6 +112,19 @@ export default {
     cursor: pointer;
     color: #909399;
     font-size: 24px;
+    position: relative;
+    &.underline {
+      &:after {
+        content: "";
+        position: absolute;
+        width: 42px;
+        height: 1px;
+        background: #e0e2e5;
+        left: 50%;
+        bottom: -1px;
+        transform: translateX(-50%);
+      }
+    }
 
     &:hover {
       color: $blue;
@@ -131,15 +137,6 @@ export default {
       border: none;
       outline: none;
     }
-  }
-
-  .line {
-    /*margin-top: 8px;*/
-    /*margin-bottom: 8px;*/
-    width: 42px;
-    height: 1px;
-    background: #f0f2f5;
-    margin: 0 auto;
   }
 }
 </style>

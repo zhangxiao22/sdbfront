@@ -1,24 +1,20 @@
 <template>
   <div class="container">
-    <shun-table title="测试">
-      <template v-slot:filter>
-        <el-form :inline="true"
-                 :model="filterForm"
-                 class="filter-container">
-          123
-          <el-form-item class="filter-item-end">
-            <el-button type="primary"
-                       icon="el-icon-search">
-              搜索
-            </el-button>
-            <el-button icon="el-icon-refresh">
-              重置
-            </el-button>
-          </el-form-item>
-        </el-form>
-      </template>
-    </shun-table>
-
+    <el-form ref="form"
+             :model="mydata"
+             label-width="110px">
+      <div v-for="(item,i) of mydata.arr"
+           :key="i">
+        <el-form-item label="事件名称："
+                      :rules="[{
+                        required: true, message: '请输入事件名称', trigger: 'blur'
+                      }]"
+                      :prop="'arr.'+i+'.name'">
+          <el-input v-model="item.name" />
+        </el-form-item>
+      </div>
+    </el-form>
+    <el-button @click="ok">ok</el-button>
   </div>
 </template>
 
@@ -35,14 +31,23 @@ export default {
   components: {
     // Swiper,
     // SwiperSlide
-    ShunTable
+    // ShunTable
   },
   directives: {
     // swiper: directive
   },
   data() {
     return {
-      filterForm: {}
+      mydata: {
+        arr: [
+          {
+            name: ''
+          }, {
+            name: ''
+          }
+        ]
+      }
+
     }
   },
   watch: {},
@@ -50,7 +55,11 @@ export default {
 
   },
   methods: {
-
+    ok() {
+      this.$refs.form.validate((valid) => {
+        console.log(valid)
+      })
+    }
   }
 }
 </script>

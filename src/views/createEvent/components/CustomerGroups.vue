@@ -52,7 +52,6 @@
                          :label="item.label"
                          :value="item.value" />
             </el-select>
-
           </el-form-item>
           <div class="table-container">
             <el-table :data="tableData"
@@ -96,7 +95,6 @@
                                style="margin-left:10px;"
                                @click="scope.row.isEdit=false">取消</el-button>
                   </template>
-
                 </div>
               </el-table-column>
             </el-table>

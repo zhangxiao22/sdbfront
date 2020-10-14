@@ -2,16 +2,21 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="baseInfo"
-             :rules="rules"
              label-width="110px"
              class="reg-form">
       <el-form-item label="事件名称："
+                    :rules="[{
+                      required: true, message: '请输入事件名称', trigger: 'blur'
+                    }]"
                     prop="name">
         <el-input v-model="baseInfo.name"
                   show-word-limit
                   maxlength="50" />
       </el-form-item>
       <el-form-item label="事件类型："
+                    :rules="[{
+                      required: true, message: '请选择事件类型', trigger: 'change'
+                    }]"
                     prop="category">
         <el-select v-model="baseInfo.category"
                    style="width:100%"
@@ -23,6 +28,9 @@
         </el-select>
       </el-form-item>
       <el-form-item label="起止日期："
+                    :rules="[{
+                      required: true, message: '请选择起止日期', trigger: 'change'
+                    }]"
                     prop="date">
         <el-date-picker v-model="baseInfo.date"
                         style="width:100%"
@@ -169,17 +177,17 @@ export default {
         sample: 1,
         desc: ''
       },
-      rules: {
-        name: [
-          { required: true, message: '请输入事件名称', trigger: 'blur' }
-        ],
-        category: [
-          { required: true, message: '请选择事件类型', trigger: 'change' }
-        ],
-        date: [
-          { required: true, message: '请选择起止日期', trigger: 'change' }
-        ]
-      },
+      // rules: {
+      //   name: [
+      //     { required: true, message: '请输入事件名称', trigger: 'blur' }
+      //   ],
+      //   category: [
+      //     { required: true, message: '请选择事件类型', trigger: 'change' }
+      //   ],
+      //   date: [
+      //     { required: true, message: '请选择起止日期', trigger: 'change' }
+      //   ]
+      // },
       // 时间选择范围
       pickerOptions: {
         disabledDate(time) {
