@@ -1,9 +1,10 @@
 <template>
   <div class="container">
     <el-form ref="form"
-             :model="mydata"
+             :model="{arr}"
              label-width="110px">
-      <div v-for="(item,i) of mydata.arr"
+      <div v-for="(item,i) of arr"
+           v-show="i===0"
            :key="i">
         <el-form-item label="事件名称："
                       :rules="[{
@@ -12,8 +13,17 @@
                       :prop="'arr.'+i+'.name'">
           <el-input v-model="item.name" />
         </el-form-item>
+
+        <el-form-item label="测试数组"
+                      :rules="[{
+                        required: true, message: 'test', type: 'array'
+                      }]"
+                      :prop="'arr.'+i+'.testArr'">
+          123
+        </el-form-item>
       </div>
     </el-form>
+    <el-button @click="change">change</el-button>
     <el-button @click="ok">ok</el-button>
   </div>
 </template>
@@ -38,15 +48,15 @@ export default {
   },
   data() {
     return {
-      mydata: {
-        arr: [
-          {
-            name: ''
-          }, {
-            name: ''
-          }
-        ]
-      }
+      arr: [
+        {
+          name: '',
+          testArr: []
+        }, {
+          name: '',
+          testArr: []
+        }
+      ]
 
     }
   },
@@ -55,9 +65,15 @@ export default {
 
   },
   methods: {
+    validateTest(rule, value, callback) {
+      console.log(rule, '???', value)
+    },
+    change() {
+      this.arr[0].testArr = [{}]
+    },
     ok() {
-      this.$refs.form.validate((valid) => {
-        console.log(valid)
+      this.$refs.form.validate((valid, a) => {
+        console.log(valid, a)
       })
     }
   }

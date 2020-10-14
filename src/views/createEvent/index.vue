@@ -182,7 +182,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: 2
     }
   },
   computed: {

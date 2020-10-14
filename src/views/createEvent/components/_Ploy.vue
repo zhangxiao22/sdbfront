@@ -1,16 +1,16 @@
 <template>
   <div ref="ployRef"
        class="ploy-container">
-    <el-form ref="refCustomerForm"
-             :model="{group}"
-             label-width="110px">
-      <el-tabs v-model="groupName"
-               :before-leave="beforeHandleGroupTabClick">
-        <!-- {{ groupIndex }}{{ ployIndex }} -->
-        <el-tab-pane v-for="(groupItem,gi) of group"
-                     :key="gi"
-                     :label="groupItem.name"
-                     :name="gi+''">
+    <el-tabs v-model="groupName"
+             :before-leave="beforeHandleGroupTabClick">
+      <!-- {{ groupIndex }}{{ ployIndex }} -->
+      <el-tab-pane v-for="(groupItem,gi) of group"
+                   :key="gi"
+                   :label="groupItem.name"
+                   :name="gi+''">
+        <el-form :ref="'form'+gi"
+                 :model="group[gi]"
+                 label-width="110px">
           <div class="top">
             <div class="left">当前群组人数：<b>{{ animatedNumber }}</b></div>
             <div>
@@ -28,24 +28,26 @@
             <el-tabs v-model="groupItem.ployTabsValue"
                      type="card"
                      closable
-                     @tab-click="handleChangeTab"
-                     @tab-remove="handleRemoveTab($event,gi)">
+                     @tab-remove="removeTab($event,gi)">
               <el-tab-pane v-for="(ployItem,pi) of groupItem.ployTabs"
                            :key="ployItem.name"
                            :label="ployItem.title"
                            :name="ployItem.name">
-                <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.title'"
+                <el-form-item :prop="'ployTabs.'+pi+'.title'"
                               :rules="[{
                                 required: true, message: '请输入策略名称', trigger: 'blur'
-                              },{
-                                validator: validatePloyName, trigger: 'blur'
                               }]"
                               label="策略名称：">
                   <el-input v-model="ployItem.title"
                             style="width:300px"
                             placeholder="请输入策略名称" />
                 </el-form-item>
-                <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.percent'"
+                <!-- :rules="[{
+                required: true, message: '值不能为空', trigger: 'blur'
+                },{
+                validator: validatePass2, trigger: 'change'
+                }]" -->
+                <el-form-item :prop="'ployTabs.' + pi + '.percent'"
                               :rules="[{
                                 required: true, message: '值不能为空', trigger: 'blur'
                               }]"
@@ -61,19 +63,15 @@
                                    :min="0"
                                    :max="100"
                                    :step="10"
-                                   @blur="handlePercentBlur(ployItem)"
-                                   @change="handlePercentChange" />%
+                                   @change="handleChangePercent" />%
                   <el-alert :title="'当前客群总和'+groupItem.totalPercent+'%'"
                             style="display:inline;margin-left:10px;"
                             :closable="false"
                             :type="groupItem.totalPercent===100?'success':'error'" />
                   <!-- {{ groupItem.totalPercen }} -->
                 </el-form-item>
-                <el-form-item label="推荐产品："
-                              :prop="'group.' + gi + '.ployTabs.' + pi + '.product'"
-                              :rules="[{
-                                required: true, message: '请选择产品', type: 'array'
-                              }]">
+                <el-form-item required
+                              label="推荐产品：">
                   <el-button icon="el-icon-plus"
                              type="primary"
                              plain
@@ -130,11 +128,8 @@
                   <el-table-column prop="proportion"
                                    label="比例" />
                 </el-table> -->
-                <el-form-item label="推荐权益："
-                              :prop="'group.' + gi + '.ployTabs.' + pi + '.interest'"
-                              :rules="[{
-                                required: true, message: '请选择权益', type: 'array'
-                              }]">
+                <el-form-item required
+                              label="推荐权益：">
                   <el-button icon="el-icon-plus"
                              type="primary"
                              plain
@@ -158,11 +153,8 @@
                   </el-table>
                 </div>
                 <el-divider />
-                <el-form-item label="下发渠道："
-                              :prop="'group.' + gi + '.ployTabs.' + pi + '.channel'"
-                              :rules="[{
-                                required: true, message: '请选择下发渠道', type: 'array'
-                              }]">
+                <el-form-item required
+                              label="下发渠道：">
                   <el-dropdown trigger="click"
                                size="medium"
                                @command="handleCommandChannel($event,ployItem)">
@@ -377,10 +369,9 @@
             </el-tabs>
           </div>
           <!-- 策略end -->
-        </el-tab-pane>
-      </el-tabs>
-    </el-form>
-
+        </el-form>
+      </el-tab-pane>
+    </el-tabs>
     <!-- 产品 -->
     <ShunDrawer title="选择产品"
                 :show.sync="showProduct"
@@ -666,9 +657,7 @@ export default {
       return +this.groupName
     },
     ployIndex() {
-      return this.group[this.groupIndex].ployTabs.findIndex((n, i) => {
-        return n.name === this.group[this.groupIndex].ployTabsValue
-      })
+      return this.group[this.groupIndex].ployTabsValue > 0 ? this.group[this.groupIndex].ployTabsValue - 1 : null
     }
   },
   watch: {
@@ -685,14 +674,6 @@ export default {
   },
 
   methods: {
-    // 从字符串中获取gi pi, 如 group.0.ployTabs.0.title => [0,0]
-    getIndex(str) {
-      return str.split('.').filter((n, i) => {
-        if (i === 1 || i === 3) {
-          return true
-        }
-      })
-    },
     getCustomer() {
       return new Promise((resolve, reject) => {
         getGroupList({ baseId: this.id }).then(res => {
@@ -720,91 +701,75 @@ export default {
         })
       })
     },
-    validatePloyName(rule, value, callback) {
-      const gi = +this.getIndex(rule.field)[0]
-      const pi = +this.getIndex(rule.field)[1]
-      const isSame = this.group[gi].ployTabs.some((n, i) => {
-        if (i !== pi && n.title === value) {
-          return true
-        }
-      })
-      if (isSame) {
-        callback(new Error('该策略名已存在'))
-      } else {
-        callback()
-      }
-    },
-    // 切换策略
-    handleChangeTab() {
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
-    },
     validateAndNext() {
+      console.log(this.$refs.form1)
+      this.$refs.form0.validate((valid) => {
+        console.log(valid)
+      })
+
+      if (this.id) return
+
       return new Promise((resolve, reject) => {
-        this.$refs.refCustomerForm.validate((valid, errobj) => {
-          console.log(valid, errobj)
-          if (valid) {
-            // 客群
-            const data = this.group.map((gn, gi) => {
+        // 客群
+        const data = this.group.map((gn, gi) => {
+          return {
+            // 客群id
+            group_id: gn.gid,
+            // 策略
+            strategies: gn.ployTabs.map((pn, pi) => {
               return {
-                // 客群id
-                group_id: gn.gid,
-                // 策略
-                strategies: gn.ployTabs.map((pn, pi) => {
+                // 策略名称
+                name: pn.title,
+                // 分发范围
+                range: pn.percent / 100,
+                // 产品id
+                product_id: pn.productId,
+                // 权益id
+                material_id: pn.interest.length ? pn.interest[0].id : null,
+                // 渠道
+                push_channels: pn.channel.map((cn, ci) => {
                   return {
-                    // 策略名称
-                    name: pn.title,
-                    // 分发范围
-                    range: pn.percent / 100,
-                    // 产品id
-                    product_id: pn.productId,
-                    // 权益id
-                    material_id: pn.interest.length ? pn.interest[0].id : null,
-                    // 渠道
-                    push_channels: pn.channel.map((cn, ci) => {
+                    // 渠道类型 1:cem 2:短信 3:微信
+                    channel_id: cn.value,
+                    // 话术/模版id
+                    script_id: cn.model.length ? cn.model[0].id : null,
+                    // 推送类型 1:定时 2:规则
+                    push_type: cn.chooseType,
+                    // 定时型的值
+                    push_timer: cn.chooseType === 1 ? {
+                      start_date: cn.dateRange[0],
+                      end_date: cn.dateRange[1],
+                      interval: cn.timingDateValue.map((dateItem, date_i) => {
+                        return {
+                          type: dateItem[0],
+                          value: dateItem[1]
+                        }
+                      }),
+                      moment: cn.timingTimeValue
+                    } : undefined,
+                    // 规则型的值
+                    push_schedule: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
                       return {
-                        // 渠道类型 1:cem 2:短信 3:微信
-                        channel_id: cn.value,
-                        // 话术/模版id
-                        script_id: cn.model.length ? cn.model[0].id : null,
-                        // 推送类型 1:定时 2:规则
-                        push_type: cn.chooseType,
-                        // 定时型的值
-                        push_timer: cn.chooseType === 1 ? {
-                          start_date: cn.dateRange[0],
-                          end_date: cn.dateRange[1],
-                          interval: cn.timingDateValue.map((dateItem, date_i) => {
-                            return {
-                              type: dateItem[0],
-                              value: dateItem[1]
-                            }
-                          }),
-                          moment: cn.timingTimeValue
-                        } : undefined,
-                        // 规则型的值
-                        push_schedule: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
-                          return {
-                            delay: ruleItem.date,
-                            moment: ruleItem.time
-                          }
-                        }) : undefined
+                        delay: ruleItem.date,
+                        moment: ruleItem.time
                       }
-                    })
+                    }) : undefined
                   }
                 })
               }
             })
-            // console.log(data)
-            // reject()
-            const param = {
-              event_id: this.id,
-              data
-            }
-            savePloy(param).then(res => {
-              resolve()
-            }).catch(() => {
-              reject()
-            })
           }
+        })
+        // console.log(data)
+        // reject()
+        const param = {
+          event_id: this.id,
+          data
+        }
+        savePloy(param).then(res => {
+          resolve()
+        }).catch(() => {
+          reject()
         })
       })
     },
@@ -846,12 +811,8 @@ export default {
       this.group[gi].ployTabsValue = newTabName
       this.group[gi].totalPercent = this.getTotalPercent(gi)
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
-      // 校验策略名是否重复
-      this.$nextTick(() => {
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
-      })
     },
-    handleRemoveTab(targetName, gi) {
+    removeTab(targetName, gi) {
       this.$confirm('确认删除？')
         .then(() => {
           const tabs = this.group[gi].ployTabs
@@ -869,28 +830,19 @@ export default {
           this.group[gi].ployTabsValue = activeName
           this.group[gi].ployTabs = tabs.filter(tab => tab.name !== targetName)
           this.group[gi].totalPercent = this.getTotalPercent(gi)
-
-          // 校验策略名是否重复
-          this.$nextTick(() => {
-            this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
-          })
         })
         .catch(() => {
         })
     },
 
-    handlePercentChange() {
+    handleChangePercent() {
       let total = 0
       this.group[+this.groupName].ployTabs.forEach((n, i) => {
-        total += n.percent || 0
+        // console.log(n.percent)
+        total += n.percent
       })
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
-    },
-    handlePercentBlur(item) {
-      if (!item.percent) {
-        item.percent = 0
-      }
     },
     // 选择产品
     addProduct() {
@@ -905,8 +857,6 @@ export default {
         // this.group[this.groupIndex].ployTabs[this.ployIndex].product = PRODUCT(val[0])
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
         this.group[this.groupIndex].ployTabs[this.ployIndex].productId = val[0].id
-        // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -926,8 +876,6 @@ export default {
       if (val.length) {
         this.showInterest = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
-        // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
       } else {
         Message({
           message: '请选择至少一项',

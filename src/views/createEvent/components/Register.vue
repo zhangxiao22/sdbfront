@@ -177,17 +177,6 @@ export default {
         sample: 1,
         desc: ''
       },
-      // rules: {
-      //   name: [
-      //     { required: true, message: '请输入事件名称', trigger: 'blur' }
-      //   ],
-      //   category: [
-      //     { required: true, message: '请选择事件类型', trigger: 'change' }
-      //   ],
-      //   date: [
-      //     { required: true, message: '请选择起止日期', trigger: 'change' }
-      //   ]
-      // },
       // 时间选择范围
       pickerOptions: {
         disabledDate(time) {
