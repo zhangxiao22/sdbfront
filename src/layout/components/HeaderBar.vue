@@ -1,8 +1,10 @@
 <template>
   <div class="navbar">
     <div class="left-menu">
-      <img class="logo"
-           src="@/assets/logo.png">
+      <!-- <img class="logo"
+           src="@/assets/logo.png"> -->
+      <svg-icon class="logo"
+                icon-class="logo" />
       <div class="text">顺德农商银行大数据营销平台</div>
     </div>
     <div class="right-menu">
@@ -82,11 +84,13 @@ export default {
   .left-menu {
     display: flex;
     align-items: center;
-    padding: 0 14px;
+    padding-right: 14px;
 
     .logo {
-      width: 36px;
-      margin-right: 16px;
+      // width: 36px;
+      font-size: 24px;
+      width: 56px;
+      // margin-right: 16px;
     }
 
     .text {
