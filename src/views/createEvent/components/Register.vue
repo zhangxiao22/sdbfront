@@ -152,7 +152,7 @@ export default {
   },
   data() {
     return {
-      mainLoading: this.$parent.mainLoading,
+      // mainLoading: this.$parent.mainLoading,
       // parent: this.$parent,
       baseInfo: {
         name: '',
@@ -260,7 +260,9 @@ export default {
   methods: {
     // 获取详情
     getDetail() {
+      this.$parent.mainLoading = true
       getEventBaseInfo({ id: this.id }).then(res => {
+        this.$parent.mainLoading = false
         const data = res.data
         this.baseInfo.name = data.name
         this.baseInfo.category = data.category.value
@@ -283,6 +285,8 @@ export default {
         this.baseInfo.sample = data.sample.value
         this.baseInfo.control = data.control
         this.baseInfo.desc = data.desc
+      }).catch(() => {
+        this.$parent.mainLoading = false
       })
     },
     // 获取类型
@@ -358,7 +362,7 @@ export default {
       return new Promise((resolve, reject) => {
         this.$refs.regFormRef.validate((valid) => {
           if (valid) {
-            this.mainLoading = true
+            // this.mainLoading = true
             saveEventBaseInfo(this.getData).then(res => {
               if (res.code === 200) {
                 this.$router.replace({

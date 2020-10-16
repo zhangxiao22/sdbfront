@@ -168,6 +168,14 @@ export function getGroupList(params) {
     params
   })
 }
+// 保存策略
+export function savePloy(data) {
+  return request({
+    url: '/strategy/save',
+    method: 'post',
+    data
+  })
+}
 // 第4步
 export function getEventDetail(params) {
   return request({
@@ -178,7 +186,6 @@ export function getEventDetail(params) {
 }
 
 // 保存event
-
 export function eventPublish(params) {
   return request({
     url: '/clue/save',
@@ -186,14 +193,7 @@ export function eventPublish(params) {
     params
   })
 }
-// 保存策略
-export function savePloy(data) {
-  return request({
-    url: api2 + '/sub_group/strategy',
-    method: 'post',
-    data
-  })
-}
+
 /** ************************************************ 事件看板 ************************************************************/
 
 // 获取事件列表

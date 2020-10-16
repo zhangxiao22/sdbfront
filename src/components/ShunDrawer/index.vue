@@ -13,6 +13,7 @@
       </div>
       <div class="drawer-bottom">
         <el-button type="primary"
+                   style="width:200px"
                    @click="submit()">
           确 认
         </el-button>
@@ -92,6 +93,7 @@ export default {
     .drawer-bottom {
       margin-top: auto;
       padding: 20px;
+      text-align: center;
     }
   }
 }

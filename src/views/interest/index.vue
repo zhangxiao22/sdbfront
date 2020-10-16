@@ -7,6 +7,7 @@
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
+                multiple
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">

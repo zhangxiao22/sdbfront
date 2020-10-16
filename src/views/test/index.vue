@@ -21,10 +21,73 @@
                       :prop="'arr.'+i+'.testArr'">
           123
         </el-form-item>
+        <el-form-item label="测试radio"
+                      :rules="[{
+                        required: true, message: 'test', trigger: 'change'
+                      }]"
+                      :prop="'arr.'+i+'.radio'">
+          <el-radio-group v-model="item.radio"
+                          @change="handleChange">
+            <el-radio :label="3"
+                      border>备选项</el-radio>
+            <el-radio :label="6"
+                      border>备选项</el-radio>
+            <el-radio :label="9"
+                      border>备选项</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <template v-if="item.radio===3">
+          <el-form-item label="起止日期："
+                        :prop="'arr.' + i + '.date'"
+                        :rules="[{
+                          required: true, message: '请选择起止日期', trigger: 'change'
+                        }]">
+            <el-date-picker v-model="item.date"
+                            type="daterange"
+                            range-separator="至"
+                            value-format="yyyy-MM-dd"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
+          </el-form-item>
+        </template>
+        <template v-if="item.radio===6">
+          <el-form-item label="起止日期："
+                        :prop="'arr.' + i + '.time'"
+                        :rules="[{
+                          required: true, message: '请选择起止日期222', trigger: 'change'
+                        }]">
+            <el-time-select v-model="item.time"
+                            :picker-options="{
+                              start: '07:00',
+                              end: '20:00',
+                              step: '00:30',
+                            }"
+                            :clearable="false"
+                            :editable="false"
+                            format="HH:mm"
+                            value-format="HH:mm" />
+          </el-form-item>
+        </template>
+
       </div>
     </el-form>
     <el-button @click="change">change</el-button>
     <el-button @click="ok">ok</el-button>
+
+    <el-popover v-model="visible"
+                placement="top"
+                width="160">
+      <p>这是一段内容这是一段内容确定删除吗？</p>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini"
+                   type="text"
+                   @click="visible = false">取消</el-button>
+        <el-button type="primary"
+                   size="mini"
+                   @click="visible = false">确定</el-button>
+      </div>
+      <el-button slot="reference">删除</el-button>
+    </el-popover>
   </div>
 </template>
 
@@ -48,13 +111,20 @@ export default {
   },
   data() {
     return {
+      visible: false,
       arr: [
         {
-          name: '',
-          testArr: []
+          name: '2',
+          testArr: [1],
+          radio: 3,
+          date: [],
+          time: ''
         }, {
-          name: '',
-          testArr: []
+          name: '2',
+          testArr: [2],
+          radio: 3,
+          date: [],
+          time: ''
         }
       ]
 
@@ -65,6 +135,14 @@ export default {
 
   },
   methods: {
+    handleChange(val) {
+      console.log(val)
+      // if (val === 3) {
+      this.$refs.form.validateField(`arr.0.date`)
+      // } else {
+      this.$refs.form.validateField(`arr.0.time`)
+      // }
+    },
     validateTest(rule, value, callback) {
       console.log(rule, '???', value)
     },

@@ -63,8 +63,7 @@
                     type="warning">
               对照组 {{ groupDetail.comparePeopleNum | formatMoney }} 人
             </el-tag>
-            <div v-show="baseInfoDetail.trial"
-                 class="shun-sibling-box item">
+            <div class="shun-sibling-box item">
               <div class="value">{{ groupDetail.groupNum }} 个客群</div>
               <div class="value">{{ groupDetail.realPeopleNum | formatMoney }} 人</div>
             </div>
@@ -182,7 +181,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: 1
     }
   },
   computed: {
@@ -226,6 +225,7 @@ export default {
     },
     next() {
       const ref = this.component[this.stepActive].ref
+      this.mainLoading = true
       this.$refs[ref].validateAndNext().then(() => {
         this.$message({
           message: '保存成功',

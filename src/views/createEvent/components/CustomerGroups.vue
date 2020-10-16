@@ -72,32 +72,42 @@
               <el-table-column label="备注">
                 <div slot-scope="scope"
                      class="desc">
-                  <template v-if="!scope.row.isEdit">
-                    <pre v-show="scope.row.desc"
-                         style="margin-right:10px;">{{ scope.row.desc }}</pre>
-                    <el-button v-show="scope.row.isHover"
-                               size="mini"
-                               class="button"
-                               icon="el-icon-edit"
-                               @click="scope.row.isEdit=true">编辑</el-button>
-                  </template>
-                  <template v-else>
-                    <el-input v-model="scope.row._desc"
-                              type="textarea"
-                              style="margin-right:10px;"
-                              autosize
-                              placeholder="请输入内容" />
-                    <el-button size="mini"
-                               class="button"
-                               type="success"
-                               icon="el-icon-check"
-                               @click="scope.row.desc=scope.row._desc;scope.row.isEdit=false">确认</el-button>
-                    <el-button size="mini"
-                               class="button"
-                               icon="el-icon-close"
-                               style="margin-left:10px;"
-                               @click="scope.row.isEdit=false">取消</el-button>
-                  </template>
+                  <div style="margin-right:10px;">
+                    {{ scope.row.desc }}
+                    <el-popover v-model="scope.row.isEdit"
+                                placement="top"
+                                width="300">
+                      <el-input v-model="scope.row._desc"
+                                type="textarea"
+                                :rows="5"
+                                style="margin-bottom:10px;"
+                                placeholder="请输入内容" />
+                      <div style="text-align: right; margin: 0">
+                        <el-button size="mini"
+                                   type="text"
+                                   @click="scope.row.isEdit = false">取消</el-button>
+                        <el-button type="primary"
+                                   size="mini"
+                                   @click="scope.row.desc = scope.row._desc;scope.row.isEdit = false">确定</el-button>
+                      </div>
+                      <!-- <div v-show="scope.row.isHover"
+                           slot="reference"
+                           class="table-edit"
+                           @click="scope.row._desc = scope.row.desc">
+                        <i class="el-icon-edit" />
+                      </div> -->
+                      <el-button v-show="scope.row.isHover"
+                                 slot="reference"
+                                 icon="el-icon-edit"
+                                 class="table-edit"
+                                 size="mini"
+                                 circle
+                                 type="primary"
+                                 plain
+                                 @click="scope.row._desc = scope.row.desc" />
+                    </el-popover>
+                  </div>
+
                 </div>
               </el-table-column>
             </el-table>
@@ -128,6 +138,7 @@ export default {
   },
   data() {
     return {
+      visible: false,
       //
       activeName: '1',
       fileId: null,
@@ -181,7 +192,9 @@ export default {
   methods: {
     // 获取详情
     getDetail() {
+      this.$parent.mainLoading = true
       getGroup({ baseId: this.id }).then(res => {
+        this.$parent.mainLoading = false
         const base = res.data.abstractDetail
         this.fileId = base.fileId
         this.fileName = base.fileName
@@ -201,6 +214,8 @@ export default {
           this.realPeopleNum += item.count
         })
         this.compareCount = base.recordNum - this.realPeopleNum
+      }).catch(() => {
+        this.$parent.mainLoading = false
       })
     },
 
@@ -343,8 +358,15 @@ export default {
           height: 52px;
         }
         .desc {
-          display: flex;
-          align-items: center;
+          // display: flex;
+          // align-items: center;
+        }
+        .table-edit {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
+          cursor: pointer;
         }
       }
     }

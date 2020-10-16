@@ -3,7 +3,7 @@
        class="ploy-container">
     <el-form ref="refCustomerForm"
              :model="{group}"
-             label-width="110px">
+             label-width="120px">
       <el-tabs v-model="groupName"
                :before-leave="beforeHandleGroupTabClick">
         <!-- {{ groupIndex }}{{ ployIndex }} -->
@@ -14,59 +14,74 @@
           <div class="top">
             <div class="left">当前群组人数：<b>{{ animatedNumber }}</b></div>
             <div>
-              <el-button icon="el-icon-plus"
-                         type="primary"
-                         @click="addTab(gi)">
-                添加策略
-              </el-button>
+              <el-form-item style="margin-bottom:0;"
+                            :prop="'group.' + gi + '.ployTabs'"
+                            :rules="[{
+                              required: true, message: '请添加策略', type: 'array'
+                            }]">
+                <el-button icon="el-icon-plus"
+                           type="primary"
+                           @click="addTab">
+                  添加策略
+                </el-button>
+              </el-form-item>
             </div>
           </div>
           <div v-show="groupItem.desc"
                class="desc">{{ groupItem.desc }}</div>
           <!-- 策略 -->
           <div v-show="groupItem.ployTabs.length">
+            <!-- {{ groupItem.ployTabsValue }} -->
             <el-tabs v-model="groupItem.ployTabsValue"
                      type="card"
                      closable
                      @tab-click="handleChangeTab"
-                     @tab-remove="handleRemoveTab($event,gi)">
+                     @tab-remove="handleRemoveTab">
               <el-tab-pane v-for="(ployItem,pi) of groupItem.ployTabs"
                            :key="ployItem.name"
                            :label="ployItem.title"
                            :name="ployItem.name">
-                <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.title'"
+                <el-form-item label="策略名称："
+                              :prop="'group.' + gi + '.ployTabs.' + pi + '.title'"
                               :rules="[{
                                 required: true, message: '请输入策略名称', trigger: 'blur'
                               },{
                                 validator: validatePloyName, trigger: 'blur'
-                              }]"
-                              label="策略名称：">
+                              }]">
                   <el-input v-model="ployItem.title"
                             style="width:300px"
                             placeholder="请输入策略名称" />
                 </el-form-item>
                 <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.percent'"
                               :rules="[{
-                                required: true, message: '值不能为空', trigger: 'blur'
+                                validator: validatePercent
                               }]"
                               class="shun-label">
                   <div slot="label">
                     <Info content="同一客群下所有策略分发范围总和需为100%" />
                     分发范围：
                   </div>
-                  <el-input-number v-model="ployItem.percent"
-                                   controls-position="right"
-                                   style="margin-right:10px;"
-                                   :precision="2"
-                                   :min="0"
-                                   :max="100"
-                                   :step="10"
-                                   @blur="handlePercentBlur(ployItem)"
-                                   @change="handlePercentChange" />%
-                  <el-alert :title="'当前客群总和'+groupItem.totalPercent+'%'"
-                            style="display:inline;margin-left:10px;"
-                            :closable="false"
-                            :type="groupItem.totalPercent===100?'success':'error'" />
+                  <div style="display:flex;">
+                    <el-input-number v-model="ployItem.percent"
+                                     controls-position="right"
+                                     style="margin-right:10px;"
+                                     :precision="2"
+                                     :min="0"
+                                     :max="100"
+                                     :step="10"
+                                     @blur="handlePercentBlur(ployItem)"
+                                     @change="handlePercentChange" />%
+                    <el-form-item style="margin-left:10px;margin-bottom:0;"
+                                  :prop="'group.' + gi + '.totalPercent'"
+                                  :rules="[{
+                                    validator: validateTotalPercent
+                                  }]">
+                      <el-alert :title="'当前客群总和'+groupItem.totalPercent+'%'"
+                                style="display:inline"
+                                :closable="false"
+                                :type="groupItem.totalPercent===100?'success':'error'" />
+                    </el-form-item>
+                  </div>
                   <!-- {{ groupItem.totalPercen }} -->
                 </el-form-item>
                 <el-form-item label="推荐产品："
@@ -200,7 +215,7 @@
                       <span>{{ channelCardItem.label }}</span>
                     </span>
 
-                    <el-popconfirm title="确定删除改渠道吗？"
+                    <el-popconfirm title="确定删除该渠道吗？"
                                    @onConfirm="deleteChannel(ployItem,ci)">
                       <el-button slot="reference"
                                  class="channel-card-delete"
@@ -209,23 +224,33 @@
                       </el-button>
                     </el-popconfirm>
                   </div>
-                  <el-form-item required
-                                label="下发类型：">
-                    <el-radio v-for="item of channelCardItem.type"
-                              :key="item.id"
-                              v-model="channelCardItem.chooseType"
-                              style="margin-right:0;"
-                              :label="item.id"
-                              border>
-                      {{ item.name }}
-                      <i :class="item.icon" />
-                    </el-radio>
+                  <el-form-item label="下发类型："
+                                :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.chooseType'"
+                                :rules="[{
+                                  required: true, message: '请选择下发类型', trigger: 'change'
+                                }]"
+                                @click.native="caonima">
+                    <el-radio-group v-model="channelCardItem.chooseType">
+                      <el-radio v-for="item of channelCardItem.type"
+                                :key="item.id"
+                                style="margin-right:0;"
+                                :label="item.id"
+                                border
+                                @change="handleChannelTypeChange($event,ci)">
+                        {{ item.name }}
+                        <i :class="item.icon" />
+                      </el-radio>
+                    </el-radio-group>
+
                   </el-form-item>
                   <div>
                     <!-- 定时型 -->
                     <template v-if="channelCardItem.chooseType===1">
-                      <el-form-item required
-                                    label="起止日期：">
+                      <el-form-item label="起止日期："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.dateRange'"
+                                    :rules="[{
+                                      required: true, message: '请选择起止日期', trigger: 'change'
+                                    }]">
                         <el-date-picker v-model="channelCardItem.dateRange"
                                         type="daterange"
                                         range-separator="至"
@@ -234,28 +259,59 @@
                                         start-placeholder="开始日期"
                                         end-placeholder="结束日期" />
                       </el-form-item>
-                      <el-form-item required
-                                    label="推送时间：">
-                        <el-cascader v-model="channelCardItem.timingDateValue"
-                                     style="width:190px;"
-                                     :props="{ expandTrigger: 'hover',multiple: true,checkStrictly: false }"
-                                     collapse-tags
-                                     :options="timingOpt" />
-                        <el-time-picker v-model="channelCardItem.timingTimeValue"
-                                        style="width:150px;margin-left:10px;"
-                                        :picker-options="{
-                                          selectableRange: '07:00:00 - 20:00:00'
-                                        }"
-                                        :clearable="false"
-                                        format="HH:mm"
-                                        value-format="HH:mm" />
+                      <el-form-item label="推送时间："
+                                    required>
+                        <div style="display:flex">
+                          <el-form-item style="margin-bottom:0;margin-right:10px;">
+                            <el-select v-model="channelCardItem.timingDateType"
+                                       style="width:80px;"
+                                       @change="channelCardItem.timingDateValue = []">
+                              <el-option v-for="item of timingOpt"
+                                         :key="item.value"
+                                         :label="item.label"
+                                         :value="item.value" />
+                            </el-select>
+                          </el-form-item>
+                          <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.timingDateValue'"
+                                        :rules="[{
+                                          required: true, message: '请选择推送时间', trigger: 'change'
+                                        }]"
+                                        style="margin-bottom:0;margin-right:10px;">
+                            <el-select v-model="channelCardItem.timingDateValue"
+                                       multiple
+                                       clearable
+                                       collapse-tags>
+                              <el-option v-for="item of timingOpt.find(n => channelCardItem.timingDateType === n.value).children"
+                                         :key="item.value"
+                                         :label="item.label"
+                                         :value="item.value" />
+                            </el-select>
+                          </el-form-item>
+                          <el-form-item style="margin-bottom:0;">
+                            <el-time-select v-model="channelCardItem.timingTimeValue"
+                                            style="width:150px;"
+                                            :picker-options="{
+                                              start: '07:00',
+                                              end: '20:00',
+                                              step: '00:30',
+                                            }"
+                                            :clearable="false"
+                                            :editable="false"
+                                            format="HH:mm"
+                                            value-format="HH:mm" />
+                          </el-form-item>
+                        </div>
                       </el-form-item>
+
                     </template>
                     <!-- 规则型 -->
                     <template v-if="channelCardItem.chooseType===2">
-                      <el-form-item required
-                                    class="rule-form"
-                                    label="推送时间：">
+                      <el-form-item class="rule-form"
+                                    label="推送时间："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.ruleValue'"
+                                    :rules="[{
+                                      required: true, message: '请选择推送时间'
+                                    }]">
                         <div v-for="(item,rule_i) of channelCardItem.ruleValue"
                              :key="rule_i"
                              class="rule-item">
@@ -265,12 +321,14 @@
                           <el-input-number v-model="item.date"
                                            style="margin-right:10px;"
                                            controls-position="right"
-                                           :min="0" />天
+                                           :min="0"
+                                           @blur="item.date=item.date||0" />天
                           <el-time-picker v-model="item.time"
                                           style="width:150px;margin-left:10px;"
                                           :clearable="false"
                                           format="HH:mm"
-                                          value-format="HH:mm" />
+                                          value-format="HH:mm"
+                                          @blur="handleTimeBlur($event,item)" />
                           <i v-if="channelCardItem.ruleValue.length > 1"
                              class="el-icon-delete delete"
                              @click="delRuleItem(channelCardItem,rule_i)" />
@@ -282,8 +340,11 @@
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
-                      <el-form-item required
-                                    label="推荐话术：">
+                      <el-form-item label="推荐话术："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
+                                    :rules="[{
+                                      required: true, message: '请选择话术', type: 'array'
+                                    }]">
                         <el-button icon="el-icon-plus"
                                    @click="addCRMWords(ci)">
                           选择话术
@@ -304,8 +365,11 @@
                     </template>
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
-                      <el-form-item required
-                                    label="短信模版：">
+                      <el-form-item label="短信模版："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
+                                    :rules="[{
+                                      required: true, message: '请选择模版', type: 'array'
+                                    }]">
                         <el-button icon="el-icon-plus"
                                    @click="addSmsWords(ci)">
                           选择模版
@@ -323,7 +387,7 @@
                                          label="短信分类" />
 
                       </el-table>
-                      <el-form-item :prop="'ployTabs.' + pi + '.channel.' + ci + '.test'"
+                      <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
                                       validator: testSelectValidator, trigger: 'change'
                                     }]">
@@ -347,8 +411,11 @@
                     </template>
                     <!-- 微信 -->
                     <template v-if="channelCardItem.value===3">
-                      <el-form-item required
-                                    label="微信模版：">
+                      <el-form-item label="微信模版："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
+                                    :rules="[{
+                                      required: true, message: '请选择模版', type: 'array'
+                                    }]">
                         <el-button icon="el-icon-plus"
                                    @click="addWeChatWords(ci)">
                           选择模版
@@ -431,45 +498,9 @@ import Word from '@/views/word/index'
 import Sms from '@/views/sms/index'
 import { isPhone } from '@/utils/validate'
 import { MessageBox, Message } from 'element-ui'
+import { parseTime } from '@/utils'
+
 // import { getWordList } from '@/api/api'
-const PRODUCT = ({ name, classify, riskLevel, returnBenchmark, purchaseAmount, startDate, endDate }) => {
-  return {
-    groupName: '组合A',
-    income: '3.065-3.385%',
-    list: [
-      {
-        productName: name,
-        productType: classify,
-        risklLevel: riskLevel,
-        rateOfReturn: returnBenchmark,
-        minimumPurchaseAmount: purchaseAmount,
-        begin_time: startDate,
-        end_time: endDate,
-        proportion: '50%'
-      },
-      {
-        productName: '顺盈3号',
-        productType: '开放式理财',
-        risklLevel: 'R2',
-        rateOfReturn: '2.8-3.2%',
-        minimumPurchaseAmount: '10000',
-        begin_time: 'XXXX',
-        end_time: 'XXXX',
-        proportion: '30%'
-      },
-      {
-        productName: '三年期定期',
-        productType: '存款',
-        risklLevel: '',
-        rateOfReturn: '4.13%',
-        minimumPurchaseAmount: '50',
-        begin_time: 'T',
-        end_time: 'T+3年',
-        proportion: '20%'
-      }
-    ]
-  }
-}
 const CHANNEL_OPT = [
   {
     value: 1,
@@ -479,6 +510,7 @@ const CHANNEL_OPT = [
     iconColor: '#409eff',
     // 1:定时型 2:规则
     chooseType: 1,
+    timingDateType: 1,
     timingDateValue: [],
     timingTimeValue: '07:00',
     dateRange: [],
@@ -499,7 +531,9 @@ const CHANNEL_OPT = [
     icon: 'sms',
     iconColor: '#FF9933',
     chooseType: 1,
-    // 定时型的值-规则 (每周几或每月几) (暂定多选)
+    // 定时型的值-规则 (每周几或每月)
+    timingDateType: 1,
+    // 定时型的值-规则 (周几或者几号) (多选)
     timingDateValue: [],
     // 定时型的值-时间
     timingTimeValue: '07:00',
@@ -529,6 +563,7 @@ const CHANNEL_OPT = [
     icon: 'wechat',
     iconColor: '#67c23a',
     chooseType: 1,
+    timingDateType: 1,
     timingDateValue: [],
     timingTimeValue: '07:00',
     dateRange: [],
@@ -553,6 +588,7 @@ export default {
     Product, Info, Interest, Word, ShunDrawer, Sms
   },
   data() {
+    const _this = this
     return {
       // 客群tab对应的值
       groupName: '0',
@@ -630,26 +666,15 @@ export default {
         //   // 累加数量
         //   ployTabIndex: 1
         // },
-        // {
-        //   gid: 1,
-        //   name: '群组1',
-        //   people: 1324123,
-        //   desc: '客群描述客群描述客群描述客群描述客群描述客群描述客群描述苏打粉',
-        //   totalPercent: 100,
-        //   ployTabs: [],
-        //   // v-model值
-        //   ployTabsValue: '0',
-        //   // 累加数量
-        //   ployTabIndex: 0
-        // }
       ],
 
       tempPloyItem: null,
       pickerOptions: {
         disabledDate(time) {
-          const testStartTime = 1600128000000 // 2020-09-15
-          const testEndTime = 1602720000000 // 2020-10-15
-          return time.getTime() > testEndTime || time.getTime() < testStartTime
+          // console.log(_this.$parent.baseInfoDetail.startDate, _this.$parent.baseInfoDetail.endDate)
+          const testStartTime = _this.$parent.baseInfoDetail.startDate // 2020-09-15
+          const testEndTime = _this.$parent.baseInfoDetail.endDate // 2020-10-15
+          return time > testEndTime || time < testStartTime
         }
       },
       channelIndex: null
@@ -687,12 +712,23 @@ export default {
   methods: {
     // 从字符串中获取gi pi, 如 group.0.ployTabs.0.title => [0,0]
     getIndex(str) {
-      return str.split('.').filter((n, i) => {
-        if (i === 1 || i === 3) {
-          return true
-        }
+      const arr = str.split('.')
+      return [+arr[1], +arr[3]]
+    },
+    /**
+     * arr [[0,0],[0,1],[1,1]]
+     */
+    sortIndex(arr) {
+      var newArray = arr.sort((a, b) => {
+        const aHas = isNaN(a[1])
+        const bHas = isNaN(b[1])
+        return (aHas - bHas) || (aHas === true && a[1] - b[1]) || 0
+      })
+      return newArray.sort(function (a, b) {
+        return a[0] - b[0]
       })
     },
+
     getCustomer() {
       return new Promise((resolve, reject) => {
         getGroupList({ baseId: this.id }).then(res => {
@@ -721,8 +757,8 @@ export default {
       })
     },
     validatePloyName(rule, value, callback) {
-      const gi = +this.getIndex(rule.field)[0]
-      const pi = +this.getIndex(rule.field)[1]
+      const gi = this.getIndex(rule.field)[0]
+      const pi = this.getIndex(rule.field)[1]
       const isSame = this.group[gi].ployTabs.some((n, i) => {
         if (i !== pi && n.title === value) {
           return true
@@ -740,53 +776,65 @@ export default {
     },
     validateAndNext() {
       return new Promise((resolve, reject) => {
-        this.$refs.refCustomerForm.validate((valid, errobj) => {
-          console.log(valid, errobj)
+        this.$refs.refCustomerForm.validate((valid, field) => {
+          // console.log(valid, field)
           if (valid) {
             // 客群
             const data = this.group.map((gn, gi) => {
               return {
                 // 客群id
-                group_id: gn.gid,
+                customerInfoId: gn.gid,
                 // 策略
-                strategies: gn.ployTabs.map((pn, pi) => {
+                strategyDetailList: gn.ployTabs.map((pn, pi) => {
                   return {
+                    // 策略id
+                    abstractId: undefined,
                     // 策略名称
                     name: pn.title,
                     // 分发范围
-                    range: pn.percent / 100,
+                    range: pn.percent,
                     // 产品id
-                    product_id: pn.productId,
+                    productIdList: pn.product.map(n => n.id),
                     // 权益id
-                    material_id: pn.interest.length ? pn.interest[0].id : null,
+                    couponIdList: pn.interest.map(n => n.id),
                     // 渠道
-                    push_channels: pn.channel.map((cn, ci) => {
+                    strategyInfoList: pn.channel.map((cn, ci) => {
                       return {
-                        // 渠道类型 1:cem 2:短信 3:微信
-                        channel_id: cn.value,
-                        // 话术/模版id
-                        script_id: cn.model.length ? cn.model[0].id : null,
-                        // 推送类型 1:定时 2:规则
-                        push_type: cn.chooseType,
-                        // 定时型的值
-                        push_timer: cn.chooseType === 1 ? {
-                          start_date: cn.dateRange[0],
-                          end_date: cn.dateRange[1],
-                          interval: cn.timingDateValue.map((dateItem, date_i) => {
-                            return {
-                              type: dateItem[0],
-                              value: dateItem[1]
-                            }
-                          }),
-                          moment: cn.timingTimeValue
-                        } : undefined,
-                        // 规则型的值
-                        push_schedule: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
+                        // 渠道id
+                        infoId: undefined,
+                        // 渠道类型 1:crm 2:短信 3:微信
+                        channel: cn.value,
+                        // 话术id
+                        scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {
-                            delay: ruleItem.date,
-                            moment: ruleItem.time
+                            scriptId: n.id,
+                            scriptContent: 'xxx',
+                            scriptInstId: 22
                           }
-                        }) : undefined
+                        }) : undefined,
+                        // 模版id
+                        materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
+                        // 推送类型 1:定时 2:规则
+                        pushType: cn.chooseType,
+                        pushTimeInfo: {
+                          // 定时型的值
+                          schedulePushInfo: cn.chooseType === 1 ? {
+                            pushTimeId: undefined,
+                            startDate: cn.dateRange[0],
+                            endDate: cn.dateRange[1],
+                            intervalType: cn.timingDateType,
+                            interval: cn.timingDateValue,
+                            moment: cn.timingTimeValue
+                          } : undefined,
+                          // 规则型的值
+                          rulePushInfoList: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
+                            return {
+                              pushTimeId: undefined,
+                              delay: ruleItem.date,
+                              moment: ruleItem.time
+                            }
+                          }) : undefined
+                        }
                       }
                     })
                   }
@@ -796,14 +844,30 @@ export default {
             // console.log(data)
             // reject()
             const param = {
-              event_id: this.id,
-              data
+              baseId: this.id,
+              strategySaveCriteriaList: data
             }
             savePloy(param).then(res => {
               resolve()
             }).catch(() => {
               reject()
             })
+          } else {
+            // console.log(field)
+            let errList = Object.keys(field).map(key => this.getIndex(key))
+            errList = this.sortIndex(errList)
+            console.log(errList, '???')
+            const [gi, pi] = errList[0]
+            console.log(gi, pi)
+            this.groupName = gi + ''
+            this.$nextTick(() => {
+              // console.log(this.group[gi])
+              if (!isNaN(pi)) {
+                // console.log(this.group[gi].ployTabs[pi].name)
+                this.group[gi].ployTabsValue = this.group[gi].ployTabs[pi].name
+              }
+            })
+            reject()
           }
         })
       })
@@ -817,6 +881,22 @@ export default {
       const num = this.group[i].people.toFixed(0)
       gsap.to(this.$data, { duration: 0.5, tweenedNumber: num })
     },
+    validatePercent(rule, value, callback) {
+      // console.log(rule, value, callback)
+      if (value === 0) {
+        callback(new Error('分发范围需大于0%'))
+      } else {
+        callback()
+      }
+    },
+    validateTotalPercent(rule, value, callback) {
+      // console.log(value)
+      if (value !== 100) {
+        callback('分发范围总和需等于100%')
+      } else {
+        callback()
+      }
+    },
     getTotalPercent(gi) {
       let p = 0
       this.group[gi].ployTabs.forEach((n, i) => {
@@ -824,7 +904,8 @@ export default {
       })
       return p
     },
-    addTab(gi) {
+    addTab() {
+      const gi = this.groupIndex
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
       this.group[gi].ployTabs.forEach((n, i) => {
@@ -836,7 +917,6 @@ export default {
         percent,
         // 产品
         product: [],
-        productId: null,
         // 权益
         interest: [],
         // 渠道
@@ -846,12 +926,15 @@ export default {
       this.group[gi].ployTabsValue = newTabName
       this.group[gi].totalPercent = this.getTotalPercent(gi)
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
-      // 校验策略名是否重复
       this.$nextTick(() => {
+        // 校验策略是否为空
+        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+        // 校验策略名是否重复
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
       })
     },
-    handleRemoveTab(targetName, gi) {
+    handleRemoveTab(targetName) {
+      const gi = this.groupIndex
       this.$confirm('确认删除？')
         .then(() => {
           const tabs = this.group[gi].ployTabs
@@ -870,15 +953,35 @@ export default {
           this.group[gi].ployTabs = tabs.filter(tab => tab.name !== targetName)
           this.group[gi].totalPercent = this.getTotalPercent(gi)
 
-          // 校验策略名是否重复
           this.$nextTick(() => {
+            // 校验策略是否为空
+            this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+            // 校验策略名是否重复
             this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
           })
         })
         .catch(() => {
         })
     },
+    caonima() {
+      // this.channelIndex = 0
 
+      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+    },
+    // 选择推送类型
+    handleChannelTypeChange(val, ci) {
+      this.channelIndex = ci
+      // 校验
+      this.$nextTick(() => {
+        // 1 定时型 2 规则型
+        if (val === 1) {
+          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
+          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
+        } else if (val === 2) {
+          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+        }
+      })
+    },
     handlePercentChange() {
       let total = 0
       this.group[+this.groupName].ployTabs.forEach((n, i) => {
@@ -886,6 +989,8 @@ export default {
       })
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.totalPercent`)
     },
     handlePercentBlur(item) {
       if (!item.percent) {
@@ -904,7 +1009,7 @@ export default {
         this.showProduct = false
         // this.group[this.groupIndex].ployTabs[this.ployIndex].product = PRODUCT(val[0])
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
-        this.group[this.groupIndex].ployTabs[this.ployIndex].productId = val[0].id
+        // this.group[this.groupIndex].ployTabs[this.ployIndex].productIds = val.map(n => n.id)
         // 校验
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
       } else {
@@ -969,24 +1074,31 @@ export default {
           item.channel.push(JSON.parse(JSON.stringify(n)))
         }
       })
+      // 添加之后滚动到对应位置
       this.$nextTick(() => {
         const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item.channel.length - 1}`
         const top = document.querySelector(id).getBoundingClientRect().top
         document.querySelector('.content').scrollTop = top
       })
-
+      // 已选择的渠道禁止选择
       const tempArr = item.channel.map(n => n.value)
       item.channelOpt.forEach((n, i) => {
         n.disabled = tempArr.includes(n.value)
       })
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
     },
     // 删除渠道
     deleteChannel(ployItem, ci) {
+      // 删除该项
       ployItem.channel.splice(ci, 1)
+      // 重新渲染下拉选项
       const tempArr = ployItem.channel.map(n => n.value)
       ployItem.channelOpt.forEach((n, i) => {
         n.disabled = tempArr.includes(n.value)
       })
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
     },
     addRuleItem(item) {
       item.ruleValue.push({
@@ -1022,9 +1134,9 @@ export default {
       const val = this.$refs.wordRef.getVal()
       if (val.length) {
         this.showCRMWord = false
-        // console.log(this.groupIndex, this.ployIndex, this.channelIndex)
-        // console.log(this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex])
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
+        // 校验
+        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -1039,12 +1151,26 @@ export default {
       if (val.length) {
         this.showSms = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
+        // 校验
+        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
         Message({
           message: '请选择至少一项',
           type: 'error',
           duration: 5 * 1000
         })
+      }
+    },
+    // handlerTimingTimeBlur(vueComponent) {
+    //   console.log(vueComponent)
+    //   if (!vueComponent.value) {
+    //     // item.value = '07:00'
+    //     vueComponent.$emit('emitChange', '07:00')
+    //   }
+    // },
+    handleTimeBlur(vueComponent, item) {
+      if (!item.time) {
+        item.time = parseTime(new Date(), '{h}:{i}')
       }
     },
     // 精准内测
@@ -1059,6 +1185,8 @@ export default {
       })
       if (!b) {
         callback(new Error('请输入正确的手机号码'))
+      } else {
+        callback()
       }
     }
   }
@@ -1089,6 +1217,7 @@ export default {
   }
   .desc {
     @include shun-text;
+    word-break: break-all;
   }
   .shun-label ::v-deep .el-form-item__label {
     display: flex;

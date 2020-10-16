@@ -60,7 +60,7 @@ export default {
     // 是否多选
     multiple: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {

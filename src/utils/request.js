@@ -40,7 +40,7 @@ service.interceptors.response.use(
         // message: `${res.msg}：${res.subMsg}` || 'Error',
         message: `${res.msg}` || 'Error',
         type: 'error',
-        duration: 5 * 1000
+        duration: 10 * 1000
       })
       if (res.code === 401) {
         // to re-login
