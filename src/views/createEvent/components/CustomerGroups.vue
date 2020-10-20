@@ -23,39 +23,41 @@
             </div>
           </el-upload>
         </div>
-        <el-form v-show="fileId"
-                 ref="form"
-                 label-width="110px"
-                 class="reg-form">
-          <el-form-item label="文件名称：">
-            {{ fileName }}
-          </el-form-item>
-          <el-form-item label="上传时间：">
-            {{ updateTime }}
-          </el-form-item>
-          <el-form-item label="客户数量：">
-            {{ customerCount | formatMoney }}
-          </el-form-item>
-          <el-form-item label="对照组人数：">
-            {{ compareCount | formatMoney }}
-          </el-form-item>
-          <el-form-item>
-            <div slot="label">
-              <Info content="维度不能超过10个" />
-              维度补充：
-            </div>
-            <el-select v-model="paramValue"
-                       style="max-width:800px;width:100%;"
-                       multiple
-                       :multiple-limit="10"
-                       filterable
-                       placeholder="可输入搜索匹配项">
-              <el-option v-for="item in paramOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
+        <div v-show="fileId">
+          <el-form ref="form"
+                   label-width="110px"
+                   class="form">
+            <el-form-item label="文件名称：">
+              {{ fileName }}
+            </el-form-item>
+            <el-form-item label="上传时间：">
+              {{ updateTime }}
+            </el-form-item>
+            <el-form-item label="客户数量：">
+              {{ customerCount | formatMoney }}
+            </el-form-item>
+            <el-form-item label="对照组人数：">
+              {{ compareCount | formatMoney }}
+            </el-form-item>
+            <el-form-item>
+              <div slot="label">
+                <Info content="维度不能超过10个" />
+                维度补充：
+              </div>
+              <el-select v-model="paramValue"
+                         style="max-width:800px;width:100%;"
+                         multiple
+                         :multiple-limit="10"
+                         filterable
+                         placeholder="可输入搜索匹配项">
+                <el-option v-for="item in paramOpt"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+          </el-form>
+
           <div class="table-container">
             <el-table :data="tableData"
                       size="medium"
@@ -72,47 +74,35 @@
               <el-table-column label="备注">
                 <div slot-scope="scope"
                      class="desc">
-                  <div style="margin-right:10px;">
-                    {{ scope.row.desc }}
-                    <el-popover v-model="scope.row.isEdit"
-                                placement="top"
-                                width="300">
-                      <el-input v-model="scope.row._desc"
-                                type="textarea"
-                                :rows="5"
-                                style="margin-bottom:10px;"
-                                placeholder="请输入内容" />
-                      <div style="text-align: right; margin: 0">
-                        <el-button size="mini"
-                                   type="text"
-                                   @click="scope.row.isEdit = false">取消</el-button>
-                        <el-button type="primary"
-                                   size="mini"
-                                   @click="scope.row.desc = scope.row._desc;scope.row.isEdit = false">确定</el-button>
-                      </div>
-                      <!-- <div v-show="scope.row.isHover"
-                           slot="reference"
-                           class="table-edit"
-                           @click="scope.row._desc = scope.row.desc">
-                        <i class="el-icon-edit" />
-                      </div> -->
-                      <el-button v-show="scope.row.isHover"
-                                 slot="reference"
-                                 icon="el-icon-edit"
-                                 class="table-edit"
+                  <span>{{ scope.row.desc }}</span>
+                  <el-popover v-model="scope.row.isEdit"
+                              placement="top"
+                              width="300">
+                    <el-input v-model="scope.row._desc"
+                              type="textarea"
+                              :rows="5"
+                              style="margin-bottom:10px;"
+                              placeholder="请输入内容" />
+                    <div style="text-align: right; margin: 0">
+                      <el-button size="mini"
+                                 type="text"
+                                 @click="scope.row.isEdit = false">取消</el-button>
+                      <el-button type="primary"
                                  size="mini"
-                                 circle
-                                 type="primary"
-                                 plain
-                                 @click="scope.row._desc = scope.row.desc" />
-                    </el-popover>
-                  </div>
-
+                                 @click="scope.row.desc = scope.row._desc;scope.row.isEdit = false">确定</el-button>
+                    </div>
+                    <div v-show="scope.row.isHover"
+                         slot="reference"
+                         class="table-edit touch-tap"
+                         @click="scope.row._desc = scope.row.desc">
+                      <i class="el-icon-edit" />
+                    </div>
+                  </el-popover>
                 </div>
               </el-table-column>
             </el-table>
           </div>
-        </el-form>
+        </div>
 
       </el-tab-pane>
       <!-- <el-tab-pane label="CRM导入"
@@ -138,9 +128,8 @@ export default {
   },
   data() {
     return {
-      visible: false,
-      //
       activeName: '1',
+      originFileId: null,
       fileId: null,
       accept: ['xls', 'xlsx', 'csv'],
       file: '',
@@ -185,17 +174,19 @@ export default {
   },
   created() {
     this.getParamOpt()
-    if (this.id) {
-      this.getDetail()
-    }
+    this.reset()
   },
   methods: {
+    reset() {
+      this.getDetail()
+    },
     // 获取详情
     getDetail() {
       this.$parent.mainLoading = true
       getGroup({ baseId: this.id }).then(res => {
         this.$parent.mainLoading = false
         const base = res.data.abstractDetail
+        this.originFileId = base.fileId
         this.fileId = base.fileId
         this.fileName = base.fileName
         this.customerCount = base.recordNum
@@ -220,33 +211,63 @@ export default {
     },
 
     validateAndNext() {
-      const data = {
-        baseId: this.id,
-        loadType: 1,
-        fileId: this.fileId,
-        supplyIdList: this.paramValue,
-        groupSaveCriteriaList: this.tableData.map((n, i) => {
-          return {
-            id: n.id,
-            name: n.name,
-            count: n.count,
-            desc: n.desc
-          }
+      const fn = () => {
+        const data = {
+          baseId: this.id,
+          loadType: 1,
+          fileId: this.fileId,
+          supplyIdList: this.paramValue,
+          groupSaveCriteriaList: this.tableData.map((n, i) => {
+            return {
+              id: n.id,
+              name: n.name,
+              count: n.count,
+              desc: n.desc
+            }
+          })
+        }
+        return new Promise((resolve, reject) => {
+          saveGroup(data).then(res => {
+            if (res.code === 200) {
+              resolve()
+            } else {
+              reject()
+            }
+          }).catch(() => {
+            reject()
+          })
         })
       }
-      // console.log(data)
       return new Promise((resolve, reject) => {
-        saveGroup(data).then(res => {
-          if (res.code === 200) {
-            resolve()
-          } else {
-            reject()
-          }
-        }).catch(() => {
+        if (!this.fileId) {
+          this.$message({
+            message: '请添加客群',
+            type: 'error',
+            duration: 5 * 1000
+          })
           reject()
-        })
+        } else if (this.originFileId && this.originFileId !== this.fileId) {
+          this.$confirm('客群变化可能导致策略变化，是否继续？')
+            .then(() => {
+              fn().then(() => {
+                resolve()
+              }).catch(() => {
+                reject()
+              })
+            })
+            .catch(() => {
+              reject()
+            })
+        } else {
+          fn().then(() => {
+            resolve()
+          }).catch(() => {
+            reject()
+          })
+        }
       })
     },
+
     download() {
       window.open('/assets/template.xlsx', '_blank')
     },
@@ -348,24 +369,27 @@ export default {
       }
     }
   }
-  .reg-form {
-    margin-top: 20px;
-    .table-container {
-      width: 100%;
-      margin: 20px 0;
-      .whitelist-table {
-        ::v-deep tr {
-          height: 52px;
-        }
-        .desc {
-          // display: flex;
-          // align-items: center;
-        }
-        .table-edit {
-          position: absolute;
-          left: 50%;
-          top: 50%;
-          transform: translate(-50%, -50%);
+  .form {
+    width: 600px;
+    margin: 20px auto 0;
+  }
+  .table-container {
+    width: 100%;
+    margin: 20px 0;
+    .whitelist-table {
+      ::v-deep tr {
+        height: 52px;
+      }
+      .desc {
+        // display: flex;
+        // align-items: center;
+      }
+      .table-edit {
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 10px;
+        i {
+          color: $blue;
           cursor: pointer;
         }
       }

@@ -63,7 +63,8 @@
                     type="warning">
               对照组 {{ groupDetail.comparePeopleNum | formatMoney }} 人
             </el-tag>
-            <div class="shun-sibling-box item">
+            <div v-show="groupDetail.groupNum"
+                 class="shun-sibling-box item">
               <div class="value">{{ groupDetail.groupNum }} 个客群</div>
               <div class="value">{{ groupDetail.realPeopleNum | formatMoney }} 人</div>
             </div>
@@ -76,7 +77,7 @@
           </div>
         </el-step>
         <el-step title="策略配置"
-                 description="策略配置描述">
+                 description="策略配置描述...">
           <div slot="icon">
             <svg-icon icon-class="_bulb" />
           </div>
@@ -95,26 +96,38 @@
         <component :is="component[stepActive].type"
                    :ref="component[stepActive].ref" />
       </div>
-      <div class="bottom-container">
-        <!-- <el-button icon="el-icon-document"
-                   @click="save">保存</el-button> -->
-        <el-button :disabled="stepActive===0"
-                   icon="el-icon-arrow-left"
-                   @click="prev">
-          上一步
-        </el-button>
-        <el-button :disabled="stepActive===component.length-1"
-                   type="primary"
-                   @click="next">
-          保存并进入下一步
-          <i class="el-icon-arrow-right el-icon--right" />
-        </el-button>
-        <el-button icon="el-icon-upload2"
-                   type="success"
-                   :disabled="stepActive!==3"
-                   @click="publish">提交审批</el-button>
+      <el-row class="bottom-container">
+        <el-col :span="8"
+                class="bottom-left">
+          <el-button icon="el-icon-refresh-left"
+                     @click="reset">重置</el-button>
+          <el-button icon="el-icon-document"
+                     @click="save">保存草稿</el-button>
+        </el-col>
+        <el-col :span="8"
+                class="bottom-middle">
+          <el-button :disabled="stepActive===0"
+                     style="width:150px;"
+                     icon="el-icon-arrow-left"
+                     @click="prev">
+            上一步
+          </el-button>
+          <el-button :disabled="stepActive===component.length-1"
+                     type="primary"
+                     @click="next">
+            保存并进入下一步
+            <i class="el-icon-arrow-right el-icon--right" />
+          </el-button>
+        </el-col>
+        <el-col :span="8"
+                class="bottom-right">
+          <el-button icon="el-icon-upload2"
+                     type="success"
+                     :disabled="stepActive!==3"
+                     @click="publish">提交审批</el-button>
+        </el-col>
         <!-- {{ baseInfoDetail }} -->
-      </div>
+      </el-row>
     </div>
   </div>
 </template>
@@ -124,7 +137,36 @@
 import { Register, CustomerGroups, Ploy, Preview } from './components'
 // import { mapGetters } from 'vuex'
 import { eventPublish, getEventInfo } from '@/api/api'
-
+const DEFAULT_DATA = {
+  baseInfoDetail: {
+    // 事件名称
+    name: '',
+    // 类型
+    categoryValue: '',
+    // 开始日期
+    startDate: '',
+    // 结束日期
+    endDate: '',
+    // 目标数量
+    targetCount: 0,
+    // 是否试点
+    trial: false,
+    // 试点比例
+    control: '',
+    // 试点抽样样式
+    sampleValue: ''
+  },
+  groupDetail: {
+    // 总人数
+    peopleNum: 0,
+    // 对照组人数
+    comparePeopleNum: 0,
+    // 实际人数
+    realPeopleNum: 0,
+    // 客群数
+    groupNum: 0
+  }
+}
 export default {
   components: {
     Register,
@@ -134,34 +176,8 @@ export default {
   },
   data() {
     return {
-      baseInfoDetail: {
-        // 事件名称
-        name: '',
-        // 类型
-        categoryValue: '',
-        // 开始日期
-        startDate: '',
-        // 结束日期
-        endDate: '',
-        // 目标数量
-        targetCount: 0,
-        // 是否试点
-        trial: false,
-        // 试点比例
-        control: '',
-        // 试点抽样样式
-        sampleValue: ''
-      },
-      groupDetail: {
-        // 总人数
-        peopleNum: 0,
-        // 对照组人数
-        comparePeopleNum: 0,
-        // 实际人数
-        realPeopleNum: 0,
-        // 客群数
-        groupNum: 0
-      },
+      baseInfoDetail: JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail)),
+      groupDetail: JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail)),
       mainLoading: false,
       component: [
         {
@@ -181,7 +197,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 1
+      stepActive: 2
     }
   },
   computed: {
@@ -195,14 +211,19 @@ export default {
     }
   },
   methods: {
-    // handleClick(i) {
-    //   const ref = this.component[this.stepActive].ref
-    //   this.$refs[ref].validateAndNext().then(() => {
-    //     this.stepActive = i
-    //   }).catch(() => {
-    //     // console.log('err')
-    //   })
-    // },
+    reset() {
+      const ref = this.component[this.stepActive].ref
+      this.$refs[ref].reset()
+      if (this.id) {
+        this.getStepDetail()
+      } else {
+        this.baseInfoDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail))
+        this.groupDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail))
+      }
+    },
+    save() {
+      this.$message('还没做')
+    },
     getStepDetail() {
       getEventInfo({ id: this.id }).then(res => {
         const baseInfo = res.data.eventBaseInfo
@@ -367,10 +388,20 @@ export default {
       height: 70px;
       border-top: 1px solid #f0f2f5;
       background: #fcfcfc;
+      padding: 0 20px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      padding: 0 20px;
+      .bottom-left {
+        display: flex;
+      }
+      .bottom-middle {
+        display: flex;
+        justify-content: center;
+      }
+      .bottom-right {
+        display: flex;
+        justify-content: flex-end;
+      }
     }
   }
 }

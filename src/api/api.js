@@ -160,14 +160,15 @@ export function getGroup(params) {
   })
 }
 // 第3步
-// 获取事件的客群
-export function getGroupList(params) {
+// 获取策略信息
+export function getPloyDetail(params) {
   return request({
-    url: '/customer/getInfoList',
+    url: '/strategy/query',
     method: 'get',
     params
   })
 }
+
 // 保存策略
 export function savePloy(data) {
   return request({

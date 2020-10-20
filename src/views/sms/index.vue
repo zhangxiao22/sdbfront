@@ -76,7 +76,7 @@ export default {
           notShowOverflowTooltip: true
         },
         {
-          prop: 'category',
+          prop: 'category.label',
           label: '短信分类'
           // sortable: true
         },
@@ -89,6 +89,11 @@ export default {
       ],
       tableData: [],
       selection: []
+    }
+  },
+  computed: {
+    parentRef() {
+      return this.$refs.table
     }
   },
   watch: {},
@@ -116,21 +121,17 @@ export default {
       }, this.searchForm)
       this.loading = true
       getSmsList(data).then(res => {
-        this.tableData = res.data.resultList.map((n) => {
-          return Object.assign(n, {
-            category: n.category.label
-          })
-        })
+        this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
-    },
-
-    getVal() {
-      return this.$refs.table.getVal()
     }
+
+    // getVal() {
+    //   return this.$refs.table.getVal()
+    // }
   }
 }
 </script>

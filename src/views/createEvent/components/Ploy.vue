@@ -92,8 +92,8 @@
                   <el-button icon="el-icon-plus"
                              type="primary"
                              plain
-                             @click="addProduct()">
-                    选择产品
+                             @click="addProduct(ployItem)">
+                    添加产品
                   </el-button>
                 </el-form-item>
                 <!-- {{ ployItem.product }} -->
@@ -103,9 +103,9 @@
                           style="width: 100%;margin-bottom:18px;">
                   <el-table-column prop="name"
                                    label="产品名称" />
-                  <el-table-column prop="classify"
+                  <el-table-column prop="classify.label"
                                    label="产品类型" />
-                  <el-table-column prop="riskLevel"
+                  <el-table-column prop="riskLevel.label"
                                    label="风险等级" />
                   <el-table-column prop="returnBenchmark"
                                    label="收益率/行业比较基准" />
@@ -115,6 +115,19 @@
                                    label="气息日" />
                   <el-table-column prop="endDate"
                                    label="到期日" />
+                  <el-table-column fixed="right"
+                                   label="操作"
+                                   width="100">
+                    <template slot-scope="scope">
+                      <el-popconfirm title="确定删除吗？"
+                                     @onConfirm="deleteProduct(ployItem,scope.row)">
+                        <el-button slot="reference"
+                                   type="text"
+                                   style="color:#f56c6c;"
+                                   size="small">删除</el-button>
+                      </el-popconfirm>
+                    </template>
+                  </el-table-column>
                 </el-table>
                 <!-- <el-table v-if="JSON.stringify(ployItem.product) !== '{}'"
                           :data="parseTable(ployItem.product)"
@@ -154,7 +167,7 @@
                              type="primary"
                              plain
                              @click="addInterest(ployItem)">
-                    选择权益
+                    添加权益
                   </el-button>
                 </el-form-item>
                 <div v-show="ployItem.interest.length"
@@ -167,12 +180,24 @@
                                      show-overflow-tooltip
                                      label="名称" />
                     <el-table-column prop="content"
-                                     show-overflow-tooltip
                                      :min-width="300"
                                      label="内容" />
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="100">
+                      <template slot-scope="scope">
+                        <el-popconfirm title="确定删除吗？"
+                                       @onConfirm="deleteInterest(ployItem,scope.row)">
+                          <el-button slot="reference"
+                                     type="text"
+                                     style="color:#f56c6c;"
+                                     size="small">删除</el-button>
+                        </el-popconfirm>
+                      </template>
+                    </el-table-column>
                   </el-table>
                 </div>
-                <el-divider />
+                <!-- <el-divider /> -->
                 <el-form-item label="下发渠道："
                               :prop="'group.' + gi + '.ployTabs.' + pi + '.channel'"
                               :rules="[{
@@ -203,7 +228,6 @@
                          :id="`channelRef-${gi}-${pi}-${ci}`"
                          :key="`${gi}-${pi}-${ci}`"
                          shadow="hover"
-                         style="margin-bottom:18px;"
                          class="channel-card">
                   <div slot="header"
                        class="clearfix">
@@ -228,8 +252,7 @@
                                 :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.chooseType'"
                                 :rules="[{
                                   required: true, message: '请选择下发类型', trigger: 'change'
-                                }]"
-                                @click.native="caonima">
+                                }]">
                     <el-radio-group v-model="channelCardItem.chooseType">
                       <el-radio v-for="item of channelCardItem.type"
                                 :key="item.id"
@@ -243,7 +266,7 @@
                     </el-radio-group>
 
                   </el-form-item>
-                  <div>
+                  <div class="card-body">
                     <!-- 定时型 -->
                     <template v-if="channelCardItem.chooseType===1">
                       <el-form-item label="起止日期："
@@ -279,7 +302,6 @@
                                         style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateValue"
                                        multiple
-                                       clearable
                                        collapse-tags>
                               <el-option v-for="item of timingOpt.find(n => channelCardItem.timingDateType === n.value).children"
                                          :key="item.value"
@@ -310,7 +332,7 @@
                                     label="推送时间："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.ruleValue'"
                                     :rules="[{
-                                      required: true, message: '请选择推送时间'
+                                      validator: validateRule
                                     }]">
                         <div v-for="(item,rule_i) of channelCardItem.ruleValue"
                              :key="rule_i"
@@ -346,21 +368,50 @@
                                       required: true, message: '请选择话术', type: 'array'
                                     }]">
                         <el-button icon="el-icon-plus"
-                                   @click="addCRMWords(ci)">
-                          选择话术
+                                   @click="addCRMWords(channelCardItem,ci)">
+                          添加话术
                         </el-button>
                       </el-form-item>
+                      <!-- {{ channelCardItem.model }} -->
                       <el-table v-show="channelCardItem.model.length"
                                 :data="channelCardItem.model"
                                 border
-                                style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content2"
-                                         :min-width="400"
-                                         label="话术内容" />
-                        <el-table-column prop="category"
+                                style="width: 100%;margin-bottom:18px;"
+                                @cell-mouse-enter="handleMouseEnter"
+                                @cell-mouse-leave="handleMouseLeave">
+                        <el-table-column label="话术内容"
+                                         :min-width="400">
+                          <div slot-scope="scope"
+                               class="table-desc">
+                            <span>{{ scope.row.content2 }}</span>
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="scope.row.content2 = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                              </div>
+                              <div v-show="scope.row.isHover"
+                                   slot="reference"
+                                   class="table-edit touch-tap"
+                                   @click="scope.row._content = scope.row.content2">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
+                        </el-table-column>
+                        <el-table-column prop="category.label"
                                          show-overflow-tooltip
                                          label="话术分类" />
-
                       </el-table>
                     </template>
                     <!-- 短信 -->
@@ -371,7 +422,7 @@
                                       required: true, message: '请选择模版', type: 'array'
                                     }]">
                         <el-button icon="el-icon-plus"
-                                   @click="addSmsWords(ci)">
+                                   @click="addSmsWords(channelCardItem,ci)">
                           选择模版
                         </el-button>
                       </el-form-item>
@@ -382,14 +433,13 @@
                         <el-table-column prop="content2"
                                          :min-width="400"
                                          label="短信内容" />
-                        <el-table-column prop="category"
+                        <el-table-column prop="category.label"
                                          show-overflow-tooltip
                                          label="短信分类" />
-
                       </el-table>
                       <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
-                                      validator: testSelectValidator, trigger: 'change'
+                                      validator: ValidatorTestSelect, trigger: 'change'
                                     }]">
                         <div slot="label">
                           <Info content="对当前策略进行测试" />
@@ -417,7 +467,7 @@
                                       required: true, message: '请选择模版', type: 'array'
                                     }]">
                         <el-button icon="el-icon-plus"
-                                   @click="addWeChatWords(ci)">
+                                   @click="addWeChatWords(channelCardItem,ci)">
                           选择模版
                         </el-button>
                       </el-form-item>
@@ -428,7 +478,7 @@
                         <el-table-column prop="content2"
                                          :min-width="400"
                                          label="短信内容" />
-                        <el-table-column prop="category"
+                        <el-table-column prop="category.label"
                                          show-overflow-tooltip
                                          label="短信分类" />
                       </el-table>
@@ -488,7 +538,7 @@
 </template>
 
 <script>
-import { savePloy, getGroupList } from '@/api/api'
+import { savePloy, getPloyDetail } from '@/api/api'
 import gsap from 'gsap'
 import Info from '@/components/Info'
 import ShunDrawer from '@/components/ShunDrawer'
@@ -602,6 +652,7 @@ export default {
       showCRMWord: false,
       // 短信侧边栏
       showSms: false,
+
       // 定时型 下拉选项
       timingOpt: [
         {
@@ -672,9 +723,10 @@ export default {
       pickerOptions: {
         disabledDate(time) {
           // console.log(_this.$parent.baseInfoDetail.startDate, _this.$parent.baseInfoDetail.endDate)
-          const testStartTime = _this.$parent.baseInfoDetail.startDate // 2020-09-15
-          const testEndTime = _this.$parent.baseInfoDetail.endDate // 2020-10-15
-          return time > testEndTime || time < testStartTime
+          const testStartTime = _this.$parent.baseInfoDetail.startDate
+          const testEndTime = _this.$parent.baseInfoDetail.endDate
+          const dateTime = parseTime(time, '{y}-{m}-{d}')
+          return dateTime > testEndTime || dateTime < testStartTime
         }
       },
       channelIndex: null
@@ -700,16 +752,18 @@ export default {
 
   },
   created() {
-    if (this.id) {
-      this.getCustomer().then(() => {
-        this.$nextTick(() => {
-          this.beforeHandleGroupTabClick(0)
-        })
-      })
-    }
+    this.reset()
   },
 
   methods: {
+    reset() {
+      this.ployDetail().then(() => {
+        this.$nextTick(() => {
+          this.beforeHandleGroupTabClick(0)
+          this.$refs['refCustomerForm'].clearValidate()
+        })
+      })
+    },
     // 从字符串中获取gi pi, 如 group.0.ployTabs.0.title => [0,0]
     getIndex(str) {
       const arr = str.split('.')
@@ -729,22 +783,82 @@ export default {
       })
     },
 
-    getCustomer() {
+    ployDetail() {
       return new Promise((resolve, reject) => {
-        getGroupList({ baseId: this.id }).then(res => {
+        getPloyDetail({ baseId: this.id }).then(res => {
           if (res.code === 200) {
-            this.group = res.data.customerInfoList.map((n, i) => {
+            this.group = res.data.strategyQueryVOList.map((n, i) => {
               return {
-                gid: n.id,
+                gid: n.customeInfoId,
                 name: n.name,
                 people: n.count,
                 desc: n.desc,
                 totalPercent: 100,
-                ployTabs: [],
+                ployTabs: n.strategyDetailVOList.map(n => {
+                  return {
+                    abstractId: n.abstractId,
+                    // 策略名称
+                    title: n.name,
+                    // 策略分发范围
+                    percent: n.range,
+                    // 策略tab id
+                    name: '1',
+                    // 产品
+                    product: n.productInfoList,
+                    // 权益
+                    interest: n.couponInfoList,
+                    channel: n.strategyInfoList.map(m => {
+                      return Object.assign({}, CHANNEL_OPT.find(x => {
+                        return x.value === m.channel.value
+                      }), {
+                        infoId: m.infoId,
+                        chooseType: m.pushType.value,
+                        model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
+                          return Object.assign({}, n, {
+                            _content: n.content2,
+                            isEdit: false,
+                            isHover: false
+                          })
+                        }) : m.meterialInfoList
+                      }, (() => {
+                        const obj = {}
+                        if (m.pushType.value === 1) {
+                          // 定时型
+                          obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+                          // 定时型的值-规则 (每周几或每月)
+                          obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
+                          // 定时型的值-规则 (周几或者几号) (多选)
+                          obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+                          // 定时型的值-时间
+                          obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
+                          // 定时型的值-起止时间
+                          obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+                        } else if (m.pushType.value === 2) {
+                          // 规则型
+                          // 规则型的值
+                          obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
+                            return {
+                              pushTimeId: r.pushTimeId,
+                              date: r.delay,
+                              time: r.moment
+                            }
+                          })
+                        }
+                        return obj
+                      })())
+                    }),
+                    channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
+                      return Object.assign({}, c, {
+                        // 已选择的渠道禁止选择
+                        disabled: n.strategyInfoList.some(x => x.channel.value === c.value)
+                      })
+                    })
+                  }
+                }),
                 // v-model值
-                ployTabsValue: '0',
+                ployTabsValue: '1',
                 // 累加数量
-                ployTabIndex: 0
+                ployTabIndex: n.strategyDetailVOList.length
               }
             })
             resolve()
@@ -755,6 +869,10 @@ export default {
           reject()
         })
       })
+    },
+    // 切换策略
+    handleChangeTab() {
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
     },
     validatePloyName(rule, value, callback) {
       const gi = this.getIndex(rule.field)[0]
@@ -770,10 +888,41 @@ export default {
         callback()
       }
     },
-    // 切换策略
-    handleChangeTab() {
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+    validateRule(rule, value, callback) {
+      let hasSame = false
+
+      for (let i = 0; i < value.length - 1; i++) {
+        for (let j = i + 1; j < value.length; j++) {
+          if (JSON.stringify(value[i]) === JSON.stringify(value[j])) {
+            hasSame = true
+            break
+          }
+        }
+      }
+      // console.log('hasSame', hasSame)
+      if (hasSame) {
+        callback(new Error('存在相同的推送时间'))
+      } else {
+        callback()
+      }
     },
+    validatePercent(rule, value, callback) {
+      // console.log(rule, value, callback)
+      if (value === 0) {
+        callback(new Error('分发范围需大于0%'))
+      } else {
+        callback()
+      }
+    },
+    validateTotalPercent(rule, value, callback) {
+      // console.log(value)
+      if (value !== 100) {
+        callback('分发范围总和需等于100%')
+      } else {
+        callback()
+      }
+    },
+
     validateAndNext() {
       return new Promise((resolve, reject) => {
         this.$refs.refCustomerForm.validate((valid, field) => {
@@ -788,7 +937,7 @@ export default {
                 strategyDetailList: gn.ployTabs.map((pn, pi) => {
                   return {
                     // 策略id
-                    abstractId: undefined,
+                    abstractId: pn.abstractId,
                     // 策略名称
                     name: pn.title,
                     // 分发范围
@@ -801,15 +950,15 @@ export default {
                     strategyInfoList: pn.channel.map((cn, ci) => {
                       return {
                         // 渠道id
-                        infoId: undefined,
+                        infoId: cn.infoId,
                         // 渠道类型 1:crm 2:短信 3:微信
                         channel: cn.value,
                         // 话术id
                         scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {
                             scriptId: n.id,
-                            scriptContent: 'xxx',
-                            scriptInstId: 22
+                            scriptContent: n.content2,
+                            scriptInstId: n.scriptInstId
                           }
                         }) : undefined,
                         // 模版id
@@ -819,7 +968,7 @@ export default {
                         pushTimeInfo: {
                           // 定时型的值
                           schedulePushInfo: cn.chooseType === 1 ? {
-                            pushTimeId: undefined,
+                            pushTimeId: cn.pushTimeId,
                             startDate: cn.dateRange[0],
                             endDate: cn.dateRange[1],
                             intervalType: cn.timingDateType,
@@ -829,7 +978,7 @@ export default {
                           // 规则型的值
                           rulePushInfoList: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
                             return {
-                              pushTimeId: undefined,
+                              pushTimeId: ruleItem.pushTimeId,
                               delay: ruleItem.date,
                               moment: ruleItem.time
                             }
@@ -856,9 +1005,9 @@ export default {
             // console.log(field)
             let errList = Object.keys(field).map(key => this.getIndex(key))
             errList = this.sortIndex(errList)
-            console.log(errList, '???')
+            // console.log(errList, '???')
             const [gi, pi] = errList[0]
-            console.log(gi, pi)
+            // console.log(gi, pi)
             this.groupName = gi + ''
             this.$nextTick(() => {
               // console.log(this.group[gi])
@@ -881,22 +1030,7 @@ export default {
       const num = this.group[i].people.toFixed(0)
       gsap.to(this.$data, { duration: 0.5, tweenedNumber: num })
     },
-    validatePercent(rule, value, callback) {
-      // console.log(rule, value, callback)
-      if (value === 0) {
-        callback(new Error('分发范围需大于0%'))
-      } else {
-        callback()
-      }
-    },
-    validateTotalPercent(rule, value, callback) {
-      // console.log(value)
-      if (value !== 100) {
-        callback('分发范围总和需等于100%')
-      } else {
-        callback()
-      }
-    },
+
     getTotalPercent(gi) {
       let p = 0
       this.group[gi].ployTabs.forEach((n, i) => {
@@ -963,11 +1097,6 @@ export default {
         .catch(() => {
         })
     },
-    caonima() {
-      // this.channelIndex = 0
-
-      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
-    },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
       this.channelIndex = ci
@@ -998,18 +1127,33 @@ export default {
       }
     },
     // 选择产品
-    addProduct() {
-      this.$refs.productRef && this.$refs.productRef.resetAll()
+    addProduct(item) {
+      // console.log(item.product)
+      // this.$refs.productRef && this.$refs.productRef.resetAll()
       this.showProduct = true
+      this.$nextTick(() => {
+        this.$refs.productRef.reset()
+        this.$refs.productRef.parentRef.setSelection(item.product)
+      })
+    },
+    // 删除产品
+    deleteProduct(item, row) {
+      // console.log(item.product, row)
+      item.product.find((n, i) => {
+        if (n.id === row.id) {
+          item.product.splice(i, 1)
+          return true
+        }
+      })
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
     },
     // 选择产品-确定
     submitProduct() {
-      const val = this.$refs.productRef.getVal()
+      const val = this.$refs.productRef.parentRef.getVal()
       if (val.length) {
         this.showProduct = false
-        // this.group[this.groupIndex].ployTabs[this.ployIndex].product = PRODUCT(val[0])
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
-        // this.group[this.groupIndex].ployTabs[this.ployIndex].productIds = val.map(n => n.id)
         // 校验
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
       } else {
@@ -1020,14 +1164,29 @@ export default {
         })
       }
     },
+
     // 选择权益
     addInterest(item) {
-      this.$refs.interestRef && this.$refs.interestRef.resetAll()
       this.showInterest = true
+      this.$nextTick(() => {
+        this.$refs.interestRef.reset()
+        this.$refs.interestRef.parentRef.setSelection(item.interest)
+      })
+    },
+    // 删除权益
+    deleteInterest(item, row) {
+      item.interest.find((n, i) => {
+        if (n.id === row.id) {
+          item.interest.splice(i, 1)
+          return true
+        }
+      })
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
     },
     // 选择权益-确定
     submitInterest() {
-      const val = this.$refs.interestRef.getVal()
+      const val = this.$refs.interestRef.parentRef.getVal()
       if (val.length) {
         this.showInterest = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
@@ -1081,9 +1240,8 @@ export default {
         document.querySelector('.content').scrollTop = top
       })
       // 已选择的渠道禁止选择
-      const tempArr = item.channel.map(n => n.value)
       item.channelOpt.forEach((n, i) => {
-        n.disabled = tempArr.includes(n.value)
+        n.disabled = item.channel.some(m => m.value === n.value)
       })
       // 校验
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
@@ -1093,9 +1251,8 @@ export default {
       // 删除该项
       ployItem.channel.splice(ci, 1)
       // 重新渲染下拉选项
-      const tempArr = ployItem.channel.map(n => n.value)
       ployItem.channelOpt.forEach((n, i) => {
-        n.disabled = tempArr.includes(n.value)
+        n.disabled = ployItem.channel.some(m => m.value === n.value)
       })
       // 校验
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
@@ -1110,31 +1267,56 @@ export default {
       item.ruleValue.splice(i, 1)
     },
 
+    handleMouseEnter(row, column, cell, event) {
+      // console.log(row)
+      row.isHover = true
+    },
+    handleMouseLeave(row, column, cell, event) {
+      // console.log(row)
+      row.isHover = false
+    },
     // crm选择话术
-    addCRMWords(ci) {
-      this.$refs.wordRef && this.$refs.wordRef.resetAll()
+    addCRMWords(item, ci) {
       this.showCRMWord = true
+      this.$nextTick(() => {
+        this.$refs.wordRef.reset()
+        this.$refs.wordRef.parentRef.setSelection([])
+      })
       this.channelIndex = ci
     },
 
     // 短信
-    addSmsWords(ci) {
-      this.$refs.smsRef && this.$refs.smsRef.resetAll()
+    addSmsWords(item, ci) {
       this.showSms = true
+      this.$nextTick(() => {
+        this.$refs.smsRef.reset()
+        this.$refs.smsRef.parentRef.setSelection(item.model)
+      })
       this.channelIndex = ci
     },
     // 微信
-    addWeChatWords(ci) {
-      this.$refs.smsRef && this.$refs.smsRef.resetAll()
+    addWeChatWords(item, ci) {
       this.showSms = true
+      this.$nextTick(() => {
+        this.$refs.smsRef.reset()
+        this.$refs.smsRef.parentRef.setSelection(item.model)
+      })
       this.channelIndex = ci
     },
     // 选择话术-确认
     submitWord() {
-      const val = this.$refs.wordRef.getVal()
+      const val = this.$refs.wordRef.parentRef.getVal()
       if (val.length) {
         this.showCRMWord = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model.push(
+          ...val.map(n => {
+            return Object.assign({}, n, {
+              _content: n.content2,
+              isEdit: false,
+              isHover: false
+            })
+          })
+        )
         // 校验
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
@@ -1147,7 +1329,7 @@ export default {
     },
     // 短信/微信-确认
     submitSms() {
-      const val = this.$refs.smsRef.getVal()
+      const val = this.$refs.smsRef.parentRef.getVal()
       if (val.length) {
         this.showSms = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
@@ -1161,13 +1343,7 @@ export default {
         })
       }
     },
-    // handlerTimingTimeBlur(vueComponent) {
-    //   console.log(vueComponent)
-    //   if (!vueComponent.value) {
-    //     // item.value = '07:00'
-    //     vueComponent.$emit('emitChange', '07:00')
-    //   }
-    // },
+
     handleTimeBlur(vueComponent, item) {
       if (!item.time) {
         item.time = parseTime(new Date(), '{h}:{i}')
@@ -1177,7 +1353,7 @@ export default {
     handleTestChange(val) {
       console.log(val)
     },
-    testSelectValidator(rule, value, callback) {
+    ValidatorTestSelect(rule, value, callback) {
       // console.log(rule, value, callback)
       const b = value.every((n, i) => {
         // console.log(isPhone(n))
@@ -1233,6 +1409,8 @@ export default {
     // display: flex;
   }
   .channel-card {
+    background: #fefdfc;
+    margin-bottom: 18px;
     .name-icon {
       margin-right: 10px;
       color: $blue;
@@ -1251,6 +1429,9 @@ export default {
       &:hover {
         opacity: 0.8;
       }
+    }
+    ::v-deep .el-card__body {
+      padding-bottom: 2px;
     }
     .rule-form {
       width: 470px;
@@ -1293,6 +1474,17 @@ export default {
       .add {
         width: 100%;
         border-style: dashed;
+      }
+    }
+    .table-desc {
+      .table-edit {
+        display: inline-block;
+        cursor: pointer;
+        margin-left: 10px;
+        i {
+          color: $blue;
+          cursor: pointer;
+        }
       }
     }
   }

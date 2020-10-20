@@ -61,6 +61,13 @@ export default {
     multiple: {
       type: Boolean,
       default: true
+    },
+    // 表格已选中项
+    selectedItems: {
+      type: Array,
+      default() {
+        return []
+      }
     }
   },
   data() {
@@ -74,19 +81,18 @@ export default {
       },
       searchForm: {},
       tableColumnList: [
-
         {
           prop: 'name',
           label: '产品名称',
           minWidth: 300
         },
         {
-          prop: 'classify',
+          prop: 'classify.label',
           label: '产品类型',
           minWidth: 100
         },
         {
-          prop: 'riskLevel',
+          prop: 'riskLevel.label',
           label: '风险等级',
           minWidth: 100
         },
@@ -116,6 +122,11 @@ export default {
       // selectedId: [1, 20]
     }
   },
+  computed: {
+    parentRef() {
+      return this.$refs.table
+    }
+  },
 
   watch: {},
   created() {
@@ -143,23 +154,20 @@ export default {
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getProductList(data).then(res => {
-        this.tableData = res.data.resultList.map((n) => {
-          return Object.assign(n, {
-            classify: n.classify.label,
-            riskLevel: n.riskLevel.label
-            // startDate: n.startDate.split(' ')[0],
-            // endDate: n.endDate.split(' ')[0]
-          })
-        })
+        this.tableData = res.data.resultList
+        // .map((n) => {
+        //   return Object.assign(n, {
+        //     classify: n.classify.label,
+        //     riskLevel: n.riskLevel.label
+        //     // startDate: n.startDate.split(' ')[0],
+        //     // endDate: n.endDate.split(' ')[0]
+        //   })
+        // })
         this.total = res.pagination.totalItemCount
         this.loading = false
-        // this.filterForm =
       }).catch(() => {
         this.loading = false
       })
-    },
-    getVal() {
-      return this.$refs.table.getVal()
     }
   }
 }

@@ -11,6 +11,7 @@
     <!-- 表格 -->
     <div v-loading="loading"
          class="table-container shun-card">
+
       <el-alert v-show="selection.length"
                 :title="`已选择 ${selection.length} 项`"
                 style="margin:10px 0;"
@@ -24,11 +25,10 @@
                 size="medium"
                 stripe
                 style="width: 100%"
-                :row-key="(row)=>{return row.id}"
                 @row-click="handleRowClick"
-                @select="handSelect"
+                @select="handleSelect"
                 @select-all="handleSelectAll"
-                @selection-change="handleSelectionChange">
+                @selection-change="selectionChange">
         <!-- index -->
         <el-table-column v-if="showIndex"
                          type="index"
@@ -36,7 +36,6 @@
         <!-- 选择框 -->
         <el-table-column v-if="showSelection"
                          type="selection"
-                         :reserve-selection="true"
                          fixed="left"
                          width="55" />
         <template v-for="(item,index) of tableColumnList">
@@ -50,7 +49,7 @@
               <slot v-if="item.slot"
                     :name="`${item.prop}Slot`"
                     :row="scope.row" />
-              <template v-else>{{ scope.row[item.prop] }}</template>
+              <template v-else>{{ translate(scope.row,item.prop) }}</template>
             </template>
           </el-table-column>
         </template>
@@ -127,15 +126,7 @@ export default {
       default() {
         return []
       }
-    },
-    // 表格已选中id
-    selectedId: {
-      type: Array,
-      default() {
-        return []
-      }
     }
-
   },
   data() {
     return {
@@ -148,15 +139,27 @@ export default {
     // }
   },
   watch: {
-
+    tableData() {
+      this.$nextTick(() => {
+        this.autoSelect(this.selection.map(n => n.id))
+      })
+    }
   },
   created() {
-    // console.log(123)
   },
   mounted() {
-    // console.log(223)
   },
   methods: {
+    translate(obj, paramPropStr) {
+      let val = obj
+      paramPropStr.split('.').forEach(n => {
+        val = val[n]
+      })
+      return val
+    },
+    setSelection(arr) {
+      this.selection = [...arr]
+    },
     indexMethod(index) {
       return index + (this.currentPage - 1) * this.pageSize + 1
     },
@@ -165,29 +168,55 @@ export default {
       // this.$refs.table.toggleRowSelection(row)
     },
 
-    handSelect(selection, row) {
-      // this.$refs.table.clearSelection()
-      // if (selection.length === 0) return
-      // this.$refs.table.toggleRowSelection(row, true)
-    },
-    handleSelectAll() {
-      if (!this.multiple) {
+    handleSelect(selection, row) {
+      const isSel = selection.some(n => {
+        return n.id === row.id
+      })
+      if (this.multiple) {
+        // 多选
+        if (isSel) {
+          this.selection.push(row)
+        } else {
+          this.selection.find((n, i) => {
+            if (n.id === row.id) {
+              this.selection.splice(i, 1)
+              return true
+            }
+          })
+        }
+      } else {
+        // 单选
         this.$refs.table.clearSelection()
+        this.$refs.table.toggleRowSelection(row, isSel)
+        this.selection = isSel ? [row] : []
+      }
+    },
+    handleSelectAll(selection) {
+      // console.log(selection)
+      if (this.multiple) {
+        this.selection.push(
+          ...selection.filter(n => {
+            return !this.selection.some(m => m.id === n.id)
+          })
+        )
+      } else {
+        this.$refs.table.clearSelection()
+        this.selection = []
       }
     },
 
-    handleSelectionChange(selection) {
-      this.selection = selection
-      if (this.multiple) {
-        this.selection = selection
-      } else {
-        if (selection.length > 1) {
-          this.$refs.table.clearSelection()
-          this.$refs.table.toggleRowSelection(selection.pop())
-        } else {
-          this.selection = selection
-        }
-      }
+    selectionChange(selection) {
+      // this.selection = selection
+      // if (this.multiple) {
+      //   this.selection = selection
+      // } else {
+      //   if (selection.length > 1) {
+      //     this.$refs.table.clearSelection()
+      //     this.$refs.table.toggleRowSelection(selection.pop())
+      //   } else {
+      //     this.selection = selection
+      //   }
+      // }
     },
     handleSizeChange(val) {
       this.$emit('update:pageSize', val)
@@ -200,10 +229,11 @@ export default {
     },
     handleClearSelection() {
       this.$refs.table.clearSelection()
+      this.selection = []
     },
-    select(id) {
+    autoSelect(ids) {
       this.tableData.forEach((n, i) => {
-        this.$refs.table.toggleRowSelection(n, n.id === id)
+        this.$refs.table.toggleRowSelection(n, ids.includes(n.id))
       })
     },
     resetSelection() {

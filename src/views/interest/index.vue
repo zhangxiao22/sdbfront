@@ -83,7 +83,7 @@ export default {
           minWidth: 300
         },
         {
-          prop: 'category',
+          prop: 'category.label',
           label: '权益分类',
           minWidth: 100
         },
@@ -100,6 +100,11 @@ export default {
       ],
       tableData: [],
       selection: []
+    }
+  },
+  computed: {
+    parentRef() {
+      return this.$refs.table
     }
   },
   watch: {},
@@ -128,23 +133,17 @@ export default {
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getInterestList(data).then(res => {
-        this.tableData = res.data.resultList.map((n) => {
-          return Object.assign(n, {
-            category: n.category.label
-            // validite_start_date: n.validite_start_date ? n.validite_start_date.split(' ')[0] : '',
-            // validite_end_date: n.validite_end_date ? n.validite_start_date.split(' ')[0] : ''
-          })
-        })
+        this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(err => {
         console.log(err)
         this.loading = false
       })
-    },
-    getVal() {
-      return this.$refs.table.getVal()
     }
+    // getVal() {
+    //   return this.$refs.table.getVal()
+    // }
   }
 }
 </script>

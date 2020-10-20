@@ -1,6 +1,4 @@
-/**
- * Created by PanJiaChen on 16/11/18.
- */
+export const MAX_NUMBER = 100000000000000
 
 /**
  * Parse the time to string

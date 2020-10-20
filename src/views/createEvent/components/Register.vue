@@ -43,11 +43,7 @@
                         end-placeholder="结束日期" />
       </el-form-item>
       <el-form-item class="target-form-item"
-                    label="目标设置："
-                    prop="target"
-                    :rules="{
-                      required: true, message: '请选择目标'
-                    }">
+                    label="目标设置：">
         <div v-for="(targetItem,i) of baseInfo.target"
              :key="i"
              class="target-item">
@@ -94,28 +90,36 @@
                    icon="el-icon-plus"
                    @click="addTarget" />
       </el-form-item>
-      <el-form-item>
+      <el-form-item prop="trial">
         <div slot="label">
           <Info content="不能超过30%" />
           对照组：
         </div>
-        <el-tooltip :content="baseInfo.trial?'已开启':'已关闭'"
-                    placement="top">
-          <el-switch v-model="baseInfo.trial" />
-        </el-tooltip>
-        <template v-if="baseInfo.trial">
-          <el-input-number v-model="baseInfo.control"
-                           :disabled="!baseInfo.trial"
-                           style="margin:0 5px 0 20px;"
-                           controls-position="right"
-                           :step="5"
-                           :min="1"
-                           :max="30"
-                           :precision="0"
-                           @blur="handlerControlBlur" />%
-        </template>
+        <div style="display:flex;">
+          <el-form-item style="margin-bottom:0;">
+            <el-tooltip :content="baseInfo.trial?'已开启':'已关闭'"
+                        placement="top">
+              <el-switch v-model="baseInfo.trial" />
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item v-show="baseInfo.trial"
+                        prop="control"
+                        style="margin-bottom:0;">
+            <el-input-number v-model="baseInfo.control"
+                             :disabled="!baseInfo.trial"
+                             style="margin:0 5px 0 20px;"
+                             controls-position="right"
+                             :step="5"
+                             :min="1"
+                             :max="30"
+                             :precision="0"
+                             @blur="handlerControlBlur" />%
+          </el-form-item>
+        </div>
+
       </el-form-item>
       <el-form-item v-show="baseInfo.trial"
+                    prop="sample"
                     label="抽样方式：">
         <el-radio-group v-model="baseInfo.sample">
           <el-radio v-for="(item,i) of sampleOpt"
@@ -142,9 +146,32 @@
 <script>
 import Info from '@/components/Info'
 import { mapGetters } from 'vuex'
-import { parseTime } from '@/utils'
+import { parseTime, MAX_NUMBER } from '@/utils'
 import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList } from '@/api/api'
 
+const DEFAULT_BASEINFO = {
+  name: '',
+  category: '',
+  // categoryValue: '',
+  target: [
+    {
+      targetSelect: '',
+      targetValue: ''
+      // compare: '',
+      // nuit: ''
+    }
+  ],
+  date: [],
+  // startDate: '',
+  // endDate: '',
+  // 是否试点
+  trial: false,
+  // 比例
+  control: 5,
+  // 抽样方式
+  sample: 1,
+  desc: ''
+}
 export default {
   name: 'Register',
   components: {
@@ -154,29 +181,7 @@ export default {
     return {
       // mainLoading: this.$parent.mainLoading,
       // parent: this.$parent,
-      baseInfo: {
-        name: '',
-        category: '',
-        // categoryValue: '',
-        target: [
-          {
-            targetSelect: '',
-            targetValue: ''
-            // compare: '',
-            // nuit: ''
-          }
-        ],
-        date: null,
-        // startDate: '',
-        // endDate: '',
-        // 是否试点
-        trial: false,
-        // 比例
-        control: 5,
-        // 抽样方式
-        sample: 1,
-        desc: ''
-      },
+      baseInfo: JSON.parse(JSON.stringify(DEFAULT_BASEINFO)),
       // 时间选择范围
       pickerOptions: {
         disabledDate(time) {
@@ -258,6 +263,20 @@ export default {
   mounted() {
   },
   methods: {
+    reset() {
+      if (this.id) {
+        this.getDetail()
+      } else {
+        this.baseInfo = JSON.parse(JSON.stringify(DEFAULT_BASEINFO))
+        // console.log(DEFAULT_BASEINFO.target)
+        // this.baseInfo.target = JSON.parse(JSON.stringify(DEFAULT_BASEINFO.target))
+        this.$nextTick(() => {
+          this.$refs['regFormRef'].clearValidate()
+          this.resetTargetOpt()
+        })
+        // this.$refs['regFormRef'].resetFields()
+      }
+    },
     // 获取详情
     getDetail() {
       this.$parent.mainLoading = true
@@ -322,7 +341,7 @@ export default {
               // 目标值-最小值
               min: n.unit.value === 4 ? 0.01 : 1,
               // 目标值-最大值
-              max: n.unit.value === 4 ? 100 : Infinity,
+              max: n.unit.value === 4 ? 100 : MAX_NUMBER,
               // 比较符号
               compare: n.relation.label
             }
@@ -378,6 +397,8 @@ export default {
             }).catch(() => {
               reject()
             })
+          } else {
+            reject()
           }
         })
       })
@@ -433,6 +454,7 @@ export default {
   padding: 50px 20px;
   .reg-form {
     width: 600px;
+    margin: 0 auto;
     .target-form-item {
       width: 600px;
       .target-item {

@@ -91,7 +91,7 @@ export default {
           notShowOverflowTooltip: true
         },
         {
-          prop: 'category',
+          prop: 'category.label',
           label: '话术分类'
           // sortable: true
         },
@@ -104,6 +104,11 @@ export default {
       ],
       tableData: [],
       selection: []
+    }
+  },
+  computed: {
+    parentRef() {
+      return this.$refs.table
     }
   },
   watch: {},
@@ -138,21 +143,17 @@ export default {
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getWordList(data).then(res => {
-        this.tableData = res.data.resultList.map((n) => {
-          return Object.assign(n, {
-            category: n.category.label
-          })
-        })
+        this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
-    },
-
-    getVal() {
-      return this.$refs.table.getVal()
     }
+
+    // getVal() {
+    //   return this.$refs.table.getVal()
+    // }
   }
 }
 </script>
