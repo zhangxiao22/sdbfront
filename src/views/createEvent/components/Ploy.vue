@@ -120,7 +120,7 @@
                                    width="100">
                     <template slot-scope="scope">
                       <el-popconfirm title="确定删除吗？"
-                                     @onConfirm="deleteProduct(ployItem,scope.row)">
+                                     @onConfirm="deleteProduct(ployItem,scope.$index)">
                         <el-button slot="reference"
                                    type="text"
                                    style="color:#f56c6c;"
@@ -187,7 +187,7 @@
                                      width="100">
                       <template slot-scope="scope">
                         <el-popconfirm title="确定删除吗？"
-                                       @onConfirm="deleteInterest(ployItem,scope.row)">
+                                       @onConfirm="deleteInterest(ployItem,scope.$index)">
                           <el-button slot="reference"
                                      type="text"
                                      style="color:#f56c6c;"
@@ -412,6 +412,18 @@
                         <el-table-column prop="category.label"
                                          show-overflow-tooltip
                                          label="话术分类" />
+                        <el-table-column label="操作"
+                                         width="100">
+                          <template slot-scope="scope">
+                            <el-popconfirm title="确定删除吗？"
+                                           @onConfirm="deleteWord(channelCardItem,ci,scope.$index)">
+                              <el-button slot="reference"
+                                         type="text"
+                                         style="color:#f56c6c;"
+                                         size="small">删除</el-button>
+                            </el-popconfirm>
+                          </template>
+                        </el-table-column>
                       </el-table>
                     </template>
                     <!-- 短信 -->
@@ -1137,14 +1149,9 @@ export default {
       })
     },
     // 删除产品
-    deleteProduct(item, row) {
+    deleteProduct(item, i) {
       // console.log(item.product, row)
-      item.product.find((n, i) => {
-        if (n.id === row.id) {
-          item.product.splice(i, 1)
-          return true
-        }
-      })
+      item.product.splice(i, 1)
       // 校验
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
     },
@@ -1174,13 +1181,8 @@ export default {
       })
     },
     // 删除权益
-    deleteInterest(item, row) {
-      item.interest.find((n, i) => {
-        if (n.id === row.id) {
-          item.interest.splice(i, 1)
-          return true
-        }
-      })
+    deleteInterest(item, i) {
+      item.interest.splice(i, 1)
       // 校验
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
     },
@@ -1302,6 +1304,14 @@ export default {
         this.$refs.smsRef.parentRef.setSelection(item.model)
       })
       this.channelIndex = ci
+    },
+    // 删除话术
+    deleteWord(item, ci, i) {
+      item.model.splice(i, 1)
+      this.channelIndex = ci
+
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
     },
     // 选择话术-确认
     submitWord() {

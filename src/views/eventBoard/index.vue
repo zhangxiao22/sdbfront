@@ -165,7 +165,8 @@
           <template slot-scope="scope">
             <div class="action-group">
               <div class="btn"
-                   style="color:#1890FF">复制</div>
+                   style="color:#1890FF"
+                   @click="edit(scope.row)">编辑</div>
               <div class="btn"
                    style="color:#F56C6C;">删除</div>
             </div>
@@ -347,6 +348,14 @@ export default {
         }
       })
     },
+    edit(row) {
+      this.$router.push({
+        path: '/createEvent', query: {
+          id: row.id
+        }
+      })
+    },
+
     handleSizeChange(val) {
       console.log(`每页 ${val} 条`)
     },

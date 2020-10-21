@@ -20,7 +20,7 @@
                         prop="name">
             <el-input v-model.trim="filterForm.name"
                       style="width:300px"
-                      placeholder="搜索事件名称"
+                      placeholder="请输入产品名称"
                       clearable
                       prefix-icon="el-icon-search"
                       @keyup.enter.native="search" />

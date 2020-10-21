@@ -20,7 +20,7 @@
                         prop="name">
             <el-input v-model="filterForm.name"
                       style="width:300px"
-                      placeholder="请输入权益内容"
+                      placeholder="请输入权益名称"
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
