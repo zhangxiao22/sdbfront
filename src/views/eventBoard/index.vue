@@ -250,6 +250,7 @@ export default {
           const total = {
             id: 'all',
             name: '全部',
+            count: 0,
             color: this.totalColor,
             children: []
           }
