@@ -169,6 +169,7 @@ export default {
           prop: 'name',
           label: '状态/名称/起止日期',
           minWidth: 300,
+          notShowOverflowTooltip: true,
           slot: true,
           filters: [],
           columnKey: 'status'
