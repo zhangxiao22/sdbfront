@@ -155,14 +155,6 @@ export default {
       this.loading = true
       getProductList(data).then(res => {
         this.tableData = res.data.resultList
-        // .map((n) => {
-        //   return Object.assign(n, {
-        //     classify: n.classify.label,
-        //     riskLevel: n.riskLevel.label
-        //     // startDate: n.startDate.split(' ')[0],
-        //     // endDate: n.endDate.split(' ')[0]
-        //   })
-        // })
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {

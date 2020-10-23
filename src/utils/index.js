@@ -1,4 +1,4 @@
-export const MAX_NUMBER = 100000000000000
+export const MAX_NUMBER = 1e14
 
 /**
  * Parse the time to string
@@ -112,5 +112,9 @@ export function param2Obj(url) {
     }
   })
   return obj
+}
+
+export function transformCol(color, opacity) {
+
 }
 

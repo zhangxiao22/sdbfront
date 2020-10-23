@@ -196,13 +196,28 @@ export function eventPublish(params) {
 }
 
 /** ************************************************ 事件看板 ************************************************************/
+// 获取创建者
+export function getEventOwner() {
+  return request({
+    url: '/event/getCreateUser',
+    method: 'get'
+  })
+}
 
 // 获取事件列表
-export function getEventList(params) {
+export function getEventList(data) {
   return request({
-    url: api2 + '/events',
-    method: 'get',
-    params
+    url: '/event/selectPage',
+    method: 'post',
+    data
+  })
+}
+
+// 获取事件状态
+export function getEventStatus() {
+  return request({
+    url: '/event/getEventStatus',
+    method: 'get'
   })
 }
 /** ************************************************ 事件汇总 ************************************************************/

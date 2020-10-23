@@ -1,351 +1,349 @@
 <template>
   <div class="container">
-    <div class="title-container">
-      <div class="title">事件看板</div>
-      <el-button class="button"
-                 type="primary">
-        新建营销事件
-      </el-button>
-    </div>
-    <div class="shun-filter-container-box shun-card">
-      <el-form :inline="true"
-               :model="filterForm"
-               class="shun-filter-container">
-        <el-form-item label="事件名称：">
-          <el-input v-model="filterForm.value3"
-                    style="width:300px"
-                    placeholder="搜索事件名称"
-                    clearable
-                    prefix-icon="el-icon-search" />
-        </el-form-item>
-        <el-form-item label="事件类型：">
-          <el-select v-model="filterForm.value1"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="item in options1"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="创建人：">
-          <el-select v-model="filterForm.value2"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="item in options2"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item>
+    <shun-table ref="table"
+                title="事件看板"
+                :loading="loading"
+                :show-selection="showSelection"
+                :page-size.sync="pageSize"
+                :current-page.sync="currentPage"
+                :total="total"
+                :tab-list="tabList"
+                :tab-value.sync="tabValue"
+                :multiple="multiple"
+                :table-data="tableData"
+                :table-column-list="tableColumnList"
+                @render="getList"
+                @filter-change="filterChange"
+                @tab-click="tabClick">
+      <template v-slot:filter>
+        <el-form ref="filterRef"
+                 :inline="true"
+                 :model="filterForm"
+                 class="filter-container">
+          <el-form-item label="事件名称："
+                        prop="name">
+            <el-input v-model="filterForm.name"
+                      style="width:300px"
+                      placeholder="搜索事件名称"
+                      clearable
+                      prefix-icon="el-icon-search" />
+          </el-form-item>
+          <el-form-item label="事件类型："
+                        prop="category">
+            <el-select v-model="filterForm.category"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in categoryOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="创建人："
+                        prop="userId">
+            <el-select v-model="filterForm.userId"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in ownerOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
 
-        <el-form-item label="起止日期：">
-          <el-date-picker v-model="filterForm.value4"
-                          type="daterange"
-                          range-separator="至"
-                          start-placeholder="开始日期"
-                          end-placeholder="结束日期" />
-        </el-form-item>
-        <el-form-item class="filter-item-end">
-          <el-button type="primary"
-                     icon="el-icon-search">
-            搜索
-          </el-button>
-          <el-button icon="el-icon-refresh">
-            重置
-          </el-button>
-        </el-form-item>
+          <el-form-item label="日期范围："
+                        prop="dateRange">
+            <el-date-picker v-model="filterForm.dateRange"
+                            value-format="yyyy-MM-dd"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
+          </el-form-item>
+          <el-form-item class="filter-item-end">
+            <el-button type="primary"
+                       icon="el-icon-search"
+                       @click="search">
+              搜索
+            </el-button>
+            <el-button icon="el-icon-refresh"
+                       @click="reset">
+              重置
+            </el-button>
+          </el-form-item>
 
-      </el-form>
-    </div>
-
-    <div class="table-container shun-card">
-      <el-tabs v-model="activeName">
-        <el-tab-pane v-for="item of tabList"
-                     :key="item.value">
-          <div slot="label"
-               class="tab-label">
-            {{ item.name }}
-            <div class="count"
-                 :style="{background:item.color}">{{ item.count }}</div>
+        </el-form>
+      </template>
+      <template v-slot:main-buttons>
+        <el-button class="button"
+                   type="primary"
+                   @click="createEvent">
+          新建营销事件
+        </el-button>
+      </template>
+      <template v-slot:nameSlot="scope">
+        <div class="name-group">
+          <div class="top">
+            <div class="status"
+                 :style="{color:getColor(scope.row.status.value), border:`1px solid ${getColor(scope.row.status.value)}`}">
+              {{ scope.row.status.label }}
+            </div>
+            <el-tooltip :content="scope.row.name"
+                        placement="top-start">
+              <div class="name elip bold"
+                   @click="eventDetail(scope.row.id)">
+                {{ scope.row.name }}
+              </div>
+            </el-tooltip>
           </div>
-        </el-tab-pane>
-      </el-tabs>
-
-      <el-table :data="tableData"
-                class="table"
-                size="medium"
-                stripe
-                style="width: 100%">
-        <el-table-column prop="id"
-                         label="事件ID"
-                         min-width="100px"
-                         sortable />
-        <el-table-column min-width="300px"
-                         label="状态/名称/起止日期"
-                         :filters="[{text: '状态1', value: '1'}, {text: '状态2', value: '2'}, {text: '状态3', value: '3'}, {text: '状态4', value: '4'}]">
-          <template slot-scope="scope">
-            <div class="name-group">
-              <div class="top">
-                <div class="status">进行中</div>
-                <el-tooltip :content="scope.row.name"
-                            placement="top-start">
-                  <div class="name elip bold"
-                       @click="eventDetail(scope.row.id)">
-                    {{ scope.row.name }}
-                  </div>
-                </el-tooltip>
-              </div>
-              <div class="bottom">
-                {{ scope.row.start_date }} - {{ scope.row.end_date }}
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="推送类型"
-                         min-width="150px">
-          <template slot-scope="scope">
-            <div class="td-group">
-              <div class="top bold">
-                规则型
-              </div>
-              <div class="bottom">
-                每天09:00
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="触达渠道"
-                         min-width="150px">
-          <template slot-scope="scope">
-            <div class="td-group">
-              <div class="top bold">
-                电话营销
-              </div>
-              <div class="bottom">
-                电销
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="最近一次（天）计划触达/目标完成率"
-                         sortable
-                         min-width="300px">
-          <template slot-scope="scope">
-            <div class="main-group">
-              <div class="left">
-                4,567<span class="unit">人次</span>
-              </div>
-              <div class="right">
-                <el-progress type="circle"
-                             style="margin-right:10px"
-                             :show-text="false"
-                             :stroke-width="3"
-                             :width="20"
-                             :percentage="33.3" />
-                <b>33.3%</b>
-              </div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name"
-                         sortable
-                         min-width="200px"
-                         label="整体目标完成率">
-          <template slot-scope="scope">
-            <div class="td-group">
-              <div class="top">策略组 7.00%</div>
-              <div class="bottom">对照组 0%</div>
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作"
-                         fixed="right"
-                         width="280px">
-          <template slot-scope="scope">
-            <div class="action-group">
-              <div class="btn"
-                   style="color:#1890FF"
-                   @click="edit(scope.row)">编辑</div>
-              <div class="btn"
-                   style="color:#F56C6C;">删除</div>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-
-      <el-pagination :current-page="currentPage"
-                     background
-                     style="margin-top:10px;text-align:right;"
-                     :page-sizes="[10, 20, 30]"
-                     :page-size="100"
-                     layout="total, sizes, prev, pager, next, jumper"
-                     :total="400"
-                     @size-change="handleSizeChange"
-                     @current-change="handleCurrentChange" />
-    </div>
+          <div class="bottom">
+            {{ scope.row.startDate }} 至 {{ scope.row.endDate }}
+          </div>
+        </div>
+      </template>
+      <template v-slot:operateSlot="scope">
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF"
+               @click="edit(scope.row)">编辑</div>
+          <div class="btn"
+               style="color:#F56C6C;">删除</div>
+        </div>
+      </template>
+    </shun-table>
   </div>
 </template>
 
 <script>
-import { getEventList } from '@/api/api'
+import ShunTable from '@/components/ShunTable/index'
+import { getEventList, getEventOwner, getEventCategory, getEventStatus } from '@/api/api'
+
 export default {
-  data() {
-    return {
-      options1: [
-        {
-          value: '1',
-          label: '事件类型1'
-        },
-        {
-          value: '2',
-          label: '事件类型2'
-        },
-        {
-          value: '3',
-          label: '事件类型3'
-        },
-        {
-          value: '4',
-          label: '事件类型4'
-        },
-        {
-          value: '5',
-          label: '事件类型5'
-        }
-      ],
-
-      options2: [
-        {
-          value: '1',
-          label: '创建人1'
-        },
-        {
-          value: '2',
-          label: '创建人2'
-        },
-        {
-          value: '3',
-          label: '创建人3'
-        },
-        {
-          value: '4',
-          label: '创建人4'
-        },
-        {
-          value: '5',
-          label: '创建人5'
-        }
-      ],
-
-      options3: [
-        {
-          value: '1',
-          label: '触达渠道1'
-        },
-        {
-          value: '2',
-          label: '触达渠道2'
-        },
-        {
-          value: '3',
-          label: '触达渠道3'
-        },
-        {
-          value: '4',
-          label: '触达渠道4'
-        },
-        {
-          value: '5',
-          label: '触达渠道5'
-        }
-      ],
-
-      filterForm: {
-        value1: '',
-        value2: '',
-        value3: '',
-        value4: []
-      },
-      activeName: '0',
-      tabList: [
-        {
-          name: '全部',
-          color: '#224191',
-          count: 100
-        },
-        {
-          name: '进行中',
-          count: 25,
-          color: '#67c23a'
-
-        },
-        {
-          name: '暂停中',
-          color: '#f90',
-          count: 25
-        }, {
-          name: '待审批',
-          color: '#1890FF',
-          count: 25
-        }, {
-          name: '已结束',
-          color: '#909399',
-          count: 25
-        }
-      ],
-      tableData: [
-        // {
-        //   id: '2222',
-        //   status: 1,
-        //   name: '少儿医疗保险精准营销计划',
-        //   start_time: '2020-03-03 00:00',
-        //   end_time: '2020-03-03 10:00',
-        //   push_type: '规则型',
-        //   push_name: '每天 09:00',
-        //   channel_type: '电话营销',
-        //   channel_name: '电话',
-        //   aaa: '4,768',
-        //   aaa_unit: '人',
-        //   percent: '0.33',
-        //   p_1: '0.7',
-        //   p_2: '0.66'
-        // },
-        // {
-        //   id: '3333',
-        //   name: '少儿医疗保险精准营销计划2',
-        //   start_time: '2020-03-03 00:00',
-        //   end_time: '2020-03-03 10:00'
-        // }, {
-        //   id: '4444',
-        //   name: '少儿医疗保险精准营销计划3',
-        //   start_time: '2020-03-03 00:00',
-        //   end_time: '2020-03-03 10:00'
-        // }, {
-        //   id: '5555',
-        //   name: '少儿医疗保险精准营销计划4',
-        //   start_time: '2020-03-03 00:00',
-        //   end_time: '2020-03-03 10:00'
-        // }
-      ],
-      currentPage: 1
+  name: 'Product',
+  components: {
+    ShunTable
+  },
+  props: {
+    showSelection: {
+      type: Boolean,
+      default: false
+    },
+    // 是否多选
+    multiple: {
+      type: Boolean,
+      default: true
+    },
+    // 表格已选中项
+    selectedItems: {
+      type: Array,
+      default() {
+        return []
+      }
     }
   },
+  data() {
+    return {
+      loading: false,
+      currentPage: 1,
+      pageSize: 10,
+      total: 0,
+      filterForm: {
+        name: '',
+        category: '',
+        userId: '',
+        dateRange: []
+      },
+      // 表格下拉filters值
+      // filters: [],
+      // tabFilters: [],
+      statusValue: [],
+      searchForm: {},
+      categoryOpt: [],
+      ownerOpt: [],
+      totalColor: '#224191',
+      colors: ['#ff9900', '#1890FF', '#67c23a', '#aaaaaa'],
+      tabList: [],
+      tabValue: '0',
+      tableColumnList: [
+        {
+          prop: 'name',
+          label: '状态/名称/起止日期',
+          minWidth: 300,
+          slot: true,
+          filters: [],
+          columnKey: 'status'
+        },
+        {
+          prop: 'category.label',
+          label: '事件类型'
+        },
+        {
+          prop: '',
+          label: '所属用例'
+        },
+        {
+          prop: 'modifyTime',
+          label: '更新时间',
+          minWidth: 150
+        },
+        {
+          prop: 'operate',
+          label: '操作',
+          minWidth: 300,
+          slot: true
+        }
+      ],
+      tableData: [],
+      selection: []
+    }
+  },
+  computed: {
+    parentRef() {
+      return this.$refs.table
+    }
+  },
+
   watch: {},
   created() {
-    this.getList()
+    this.eventCategoryList()
+    this.getOwner()
+    this.getStatus().then(res => {
+      // this.getList(1)
+      this.tabClick(0)
+    })
   },
   methods: {
-    getList() {
-      getEventList().then(res => {
-        this.tableData = res.data
+    resetAll() {
+      this.reset()
+      this.$refs.table.resetSelection()
+    },
+    reset() {
+      this.$refs.filterRef.resetFields()
+      this.$refs.table.clearFilter()
+      // this.filters = []
+      this.statusValue = []
+      this.tabClick(0)
+      // this.search()
+    },
+    // 获取类型
+    eventCategoryList() {
+      getEventCategory().then(res => {
+        this.categoryOpt = res.data.eventCategoryEnumList
       })
     },
-    eventDetail(id) {
-      this.$router.push({
-        path: '/eventDetail', query: {
-          id
+    // 获取创建人
+    getOwner() {
+      getEventOwner().then(res => {
+        this.ownerOpt = res.data.map(n => {
+          return {
+            value: n.id,
+            label: n.userName
+          }
+        })
+      })
+    },
+    // 获取状态
+    getStatus() {
+      return new Promise((resolve) => {
+        getEventStatus().then(res => {
+          const total = {
+            id: 'all',
+            name: '全部',
+            color: this.totalColor,
+            children: []
+          }
+          this.tabList = []
+          res.data.forEach((n, i) => {
+            total.children.push(...n.children)
+            this.tabList.push(Object.assign({}, n, {
+              color: this.colors[i],
+              count: 0
+            }))
+          })
+          this.tabList.unshift(total)
+          resolve()
+        })
+      })
+    },
+    tabClick(tabIndex) {
+      this.tabValue = tabIndex + ''
+      this.$refs.table.clearFilter()
+      this.statusValue = []
+      this.tableColumnList.find(n => {
+        if (n.prop === 'name') {
+          n.filters = this.tabList[+tabIndex].children.map(n => {
+            this.statusValue.push(n.value)
+            return {
+              text: n.label,
+              value: n.value
+            }
+          })
         }
+      })
+      this.search()
+    },
+    filterChange(filters) {
+      this.statusValue = filters.status.length
+        ? filters.status
+        : this.tabList[+this.tabValue].children.map(n => n.value)
+      this.search()
+    },
+    createEvent() {
+      this.$router.push({
+        path: '/createEvent'
+      })
+    },
+    getColor(subId) {
+      return this.tabList.find(n => {
+        return n.id !== 'all' && n.children.find(m => {
+          return m.value === subId
+        })
+      }).color
+    },
+    search() {
+      this.searchForm = {
+        name: this.filterForm.name,
+        userId: this.filterForm.userId || null,
+        category: this.filterForm.category || null,
+        startDate: this.filterForm.dateRange[0],
+        endDate: this.filterForm.dateRange[1]
+      }
+      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.getList(1)
+    },
+    getList(pageNo) {
+      this.currentPage = pageNo || this.currentPage
+      // console.log(this.statusValue)
+      const data = Object.assign({
+        pageNo: this.currentPage,
+        pageSize: this.pageSize,
+        status: this.statusValue
+      }, this.searchForm)
+
+      this.filterForm = {
+        name: this.searchForm.name,
+        userId: this.searchForm.userId,
+        category: this.searchForm.category,
+        dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []
+      }
+      // this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
+      this.loading = true
+      getEventList(data).then(res => {
+        this.tableData = res.data.resultList
+        this.total = res.pagination.totalItemCount
+        this.tabList.forEach(n => {
+          if (n.id === 'all') {
+            n.count = res.data.totalCount
+          }
+          res.data.count.forEach(m => {
+            if (n.id === m.id) {
+              n.count = m.totalCount
+            }
+          })
+        })
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
       })
     },
     edit(row) {
@@ -354,13 +352,6 @@ export default {
           id: row.id
         }
       })
-    },
-
-    handleSizeChange(val) {
-      console.log(`每页 ${val} 条`)
-    },
-    handleCurrentChange(val) {
-      console.log(`当前页: ${val}`)
     }
   }
 }
@@ -370,100 +361,27 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-
-  .title-container {
-    display: flex;
-    align-items: center;
-    margin-bottom: 16px;
-
-    .title {
-      font-size: 20px;
-      color: #303133;
-      font-weight: bold;
-    }
-
-    .button {
-      margin-left: 12px;
-    }
-  }
-}
-.table-container {
-  flex: 1;
-  padding: 6px 10px 10px;
-
-  ::v-deep .el-tabs__nav-wrap::after {
-    content: none;
-  }
-  .tab-label {
-    display: flex;
-    align-items: center;
-
-    .count {
-      height: 20px;
-      padding: 0 8px;
-      font-size: 10px;
-      color: #fff;
+  .name-group {
+    // padding-top: 5px;
+    .top {
       display: flex;
-      align-items: center;
-      border-radius: 2px;
-      margin-left: 5px;
-    }
-  }
-
-  .table {
-    .name-group {
-      // padding-top: 5px;
-      .top {
-        display: flex;
-        .status {
-          background: #f6ffed;
-          border: 1px solid #b7eb8f;
-          border-radius: 2px;
-          border-radius: 2px;
-          width: 52px;
-          height: 22px;
-          @include center-center;
-          color: #52c41a;
-          margin-right: 5px;
-          font-size: 12px;
-        }
-        .name {
-          flex: 1;
-          color: $blue;
-          cursor: pointer;
-        }
-      }
-    }
-    .main-group {
-      display: flex;
-      .left {
-        font-size: 20px;
-        .unit {
-          font-size: 12px;
-        }
-      }
-      .right {
-        margin-left: 40px;
-        font-size: 18px;
-        display: flex;
-        align-items: center;
-      }
-    }
-    .action-group {
-      display: flex;
-      flex-wrap: wrap;
-      .btn {
-        width: 40px;
-        height: 30px;
-        cursor: pointer;
+      .status {
+        background: #fff;
+        border: 1px solid #b7eb8f;
+        border-radius: 2px;
+        border-radius: 2px;
+        // width: 52px;
+        height: 22px;
         @include center-center;
-        margin-right: 10px;
-        &:hover {
-          opacity: 0.8;
-        }
+        padding: 0 4px;
+        // color: #52c41a;
+        margin-right: 5px;
+        font-size: 12px;
+      }
+      .name {
+        flex: 1;
+        color: $blue;
+        cursor: pointer;
       }
     }
   }

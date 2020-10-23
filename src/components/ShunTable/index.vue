@@ -3,6 +3,7 @@
     <!-- 表格名字 + 一个全局按钮（如新增） -->
     <div class="title-container">
       <div class="title">{{ title }}</div>
+      <slot name="main-buttons" />
     </div>
     <!-- 筛选条件 -->
     <div class="filter-container-box shun-card">
@@ -11,7 +12,6 @@
     <!-- 表格 -->
     <div v-loading="loading"
          class="table-container shun-card">
-
       <el-alert v-show="selection.length"
                 :title="`已选择 ${selection.length} 项`"
                 style="margin:10px 0;"
@@ -19,6 +19,19 @@
                 close-text="清空"
                 show-icon
                 @close="handleClearSelection" />
+      <!-- {{ tabValue }} -->
+      <el-tabs :value="tabValue"
+               @tab-click="handleTabClick">
+        <el-tab-pane v-for="item of tabList"
+                     :key="item.value">
+          <div slot="label"
+               class="tab-label">
+            {{ item.name }}
+            <div class="count"
+                 :style="{background:item.color}">{{ item.count }}</div>
+          </div>
+        </el-tab-pane>
+      </el-tabs>
       <el-table ref="table"
                 :data="tableData"
                 class="table"
@@ -28,7 +41,8 @@
                 @row-click="handleRowClick"
                 @select="handleSelect"
                 @select-all="handleSelectAll"
-                @selection-change="selectionChange">
+                @selection-change="selectionChange"
+                @filter-change="handleFilterChange">
         <!-- index -->
         <el-table-column v-if="showIndex"
                          type="index"
@@ -43,12 +57,15 @@
                            :show-overflow-tooltip="!item.notShowOverflowTooltip"
                            :sortable="item.sortable"
                            :prop="item.prop"
+                           :column-key="item.columnKey"
+                           :filters="item.filters"
                            :label="item.label"
                            :min-width="item.minWidth">
             <template slot-scope="scope">
               <slot v-if="item.slot"
                     :name="`${item.prop}Slot`"
                     :row="scope.row" />
+              <template v-if="item.slot">{{ item.filteredValue }}</template>
               <template v-else>{{ translate(scope.row,item.prop) }}</template>
             </template>
           </el-table-column>
@@ -113,6 +130,20 @@ export default {
       type: Boolean,
       default: false
     },
+    // 表格切换tab
+    tabList: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    // 表格切换tab选中值
+    tabValue: {
+      type: String,
+      default() {
+        return '0'
+      }
+    },
     // 表格展示数据
     tableData: {
       type: Array,
@@ -127,6 +158,7 @@ export default {
         return []
       }
     }
+
   },
   data() {
     return {
@@ -150,12 +182,24 @@ export default {
   mounted() {
   },
   methods: {
+    clearFilter() {
+      this.$refs.table.clearFilter()
+    },
     translate(obj, paramPropStr) {
       let val = obj
       paramPropStr.split('.').forEach(n => {
         val = val[n]
       })
       return val
+    },
+    // tab点击
+    handleTabClick(tab) {
+      this.$emit('update:tabValue', tab.index + '')
+      this.$emit('tab-click', tab.index)
+    },
+    // 改变filter
+    handleFilterChange(filters) {
+      this.$emit('filter-change', filters)
     },
     setSelection(arr) {
       this.selection = [...arr]
@@ -286,6 +330,26 @@ export default {
 .table-container {
   flex: 1;
   padding: 6px 16px 16px;
+
+  ::v-deep .el-tabs__nav-wrap::after {
+    content: none;
+  }
+  .tab-label {
+    display: flex;
+    align-items: center;
+
+    .count {
+      height: 20px;
+      padding: 0 8px;
+      font-size: 10px;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      border-radius: 2px;
+      margin-left: 5px;
+    }
+  }
+
   ::v-deep .el-alert.is-light .el-alert__closebtn {
     color: #f56c6c;
     line-height: 20px;
@@ -294,7 +358,7 @@ export default {
     ::v-deep .el-table__fixed-header-wrapper .el-checkbox {
       // display: none;
     }
-    .action-group {
+    ::v-deep .operate-btns {
       display: flex;
       flex-wrap: wrap;
       .btn {
