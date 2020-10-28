@@ -49,7 +49,7 @@
         <div class="name-group">
           <div class="status"
                :class="{effect:scope.row.effect}">
-            {{ scope.row.effect ? '进行中':'已下线' }}
+            {{ scope.row.effect ? '上线':'下线' }}
           </div>
           <el-tooltip :content="scope.row.name"
                       placement="top-start">
@@ -78,12 +78,27 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="edit(scope.row)">查看事件</div>
+               @click="handleView(scope.row)">查看事件</div>
           <div class="btn status"
                :class="{effect:scope.row.effect}"
-               @click="changeStatus(scope.row)">{{ scope.row.effect ? '下线':'上线' }}</div>
-          <div class="btn"
-               style="color:#F56C6C;">删除</div>
+               @click="handleChangeStatus(scope.row)">{{ scope.row.effect ? '下线':'上线' }}</div>
+
+          <el-popover v-model="scope.row.showDelet"
+                      placement="top"
+                      width="160">
+            <p>是否确认删除用例？</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini"
+                         type="text"
+                         @click="scope.row.showDelet = false">取消</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="handleDelete(scope.row)">确定</el-button>
+            </div>
+            <div slot="reference"
+                 class="btn"
+                 style="color:#f56c6c;">删除</div>
+          </el-popover>
         </div>
       </template>
     </shun-table>
@@ -92,7 +107,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getUseCaseList } from '@/api/api'
+import { getUseCaseList, delUseCase, changeStatusUseCase } from '@/api/api'
 
 export default {
   name: 'Product',
@@ -148,6 +163,11 @@ export default {
           width: 180
         },
         {
+          prop: 'description',
+          label: '描述',
+          minWidth: 200
+        },
+        {
           prop: 'operate',
           label: '操作',
           minWidth: 180,
@@ -192,28 +212,53 @@ export default {
       getUseCaseList(data).then(res => {
         this.tableData = res.data.resultList.map(n => {
           return Object.assign({}, n, {
-            caseTarget: n.achieveList.map(m => `${m.name} ${m.relation.label} ${m.value} ${m.unit.label}`)
+            showDelet: false
           })
         })
-        console.log(this.tableData)
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
     },
-    changeStatus(row) {
-
-    },
     createUseCase() {
       this.$router.push({
         path: '/createUseCase'
       })
     },
+    handleChangeStatus(row) {
+      const data = {
+        id: row.id,
+        effect: !row.effect
+      }
+      changeStatusUseCase(data).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '操作成功',
+            type: 'success',
+            duration: '3000'
+          })
+          this.resetAll()
+        }
+      })
+    },
 
-    edit(row) {
+    handleDelete(row) {
+      delUseCase({ id: row.id }).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '操作成功',
+            type: 'success',
+            duration: '3000'
+          })
+          this.resetAll()
+        }
+      })
+    },
+
+    handleView(row) {
       this.$router.push({
-        path: '/createUseCase', query: {
+        path: '/eventBoard', query: {
           id: row.id
         }
       })

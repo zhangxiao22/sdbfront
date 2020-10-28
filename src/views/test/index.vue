@@ -1,16 +1,27 @@
 <template>
   <div class="container">
-    {{ activeName }}
-    <el-tabs v-model="activeName"
-             @tab-click="handleClick">
-      <el-tab-pane label="用户管理">用户管理</el-tab-pane>
-      <el-tab-pane label="配置管理"
-                   name="second">配置管理</el-tab-pane>
-      <el-tab-pane label="角色管理"
-                   name="third">角色管理</el-tab-pane>
-      <el-tab-pane label="定时任务补偿"
-                   name="fourth">定时任务补偿</el-tab-pane>
-    </el-tabs>
+
+    <el-popover v-model="visible"
+                placement="top"
+                width="160">
+      <p>这是一段内容这是一段内容确定删除吗？</p>
+      <div style="text-align: right; margin: 0">
+        <el-button size="mini"
+                   type="text"
+                   @click="visible = false">取消</el-button>
+        <el-button type="primary"
+                   size="mini"
+                   @click="visible = false">确定</el-button>
+      </div>
+      <template slot="reference">
+        <el-switch v-model="value1"
+                   active-text="按月付费"
+                   inactive-text="按年付费"
+                   @change="handleChange" />
+      </template>
+
+    </el-popover>
+
   </div>
 </template>
 
@@ -34,59 +45,17 @@ export default {
   },
   data() {
     return {
-      activeName: 'second'
+      value1: false,
+      visible: false
     }
   },
   watch: {},
   mounted() {
-    this.overviewSwiper = new Swiper('.group-swiper-container', {
-      // loop: true,
-      // freeMode: true,
-      grabCursor: true,
-      // slidesPerView: 'auto',
-      // loop: true
-      // centeredSlides: true,
-      slidesPerView: 3,
-      spaceBetween: 20,
-      watchSlidesVisibility: true, // 防止不可点击
-      on: {
 
-      }
-    })
   },
   methods: {
-    handleClick(tab, event) {
-      console.log(tab, event)
-    },
-    click() {
-      this.arr = [
-        { name: 'a' },
-        { name: 'b' },
-        { name: 'c' },
-        { name: 'd' },
-        { name: 'e' },
-        { name: 'f' },
-        { name: 'g' }
-      ]
-    },
     handleChange(val) {
       console.log(val)
-      // if (val === 3) {
-      this.$refs.form.validateField(`arr.0.date`)
-      // } else {
-      this.$refs.form.validateField(`arr.0.time`)
-      // }
-    },
-    validateTest(rule, value, callback) {
-      console.log(rule, '???', value)
-    },
-    change() {
-      this.arr[0].testArr = [{}]
-    },
-    ok() {
-      this.$refs.form.validate((valid, a) => {
-        console.log(valid, a)
-      })
     }
   }
 }

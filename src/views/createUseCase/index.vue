@@ -88,12 +88,11 @@
 
 <script>
 import { MAX_NUMBER } from '@/utils'
-import { getTargetList } from '@/api/api'
+import { getTargetList, saveUseCase } from '@/api/api'
 
 export default {
   name: 'Register',
   components: {
-    // Info
   },
   data() {
     return {
@@ -120,13 +119,13 @@ export default {
       // data.id = this.id
       data.name = this.baseInfo.name
       // 目标
-      data.eventAchieveList = this.baseInfo.target.map(n => {
+      data.useCaseAchieveList = this.baseInfo.target.map(n => {
         return {
           tagId: n.targetSelect,
           value: n.targetValue
         }
       })
-      data.desc = this.baseInfo.desc
+      data.description = this.baseInfo.desc
       return data
     }
   },
@@ -159,8 +158,16 @@ export default {
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
-          // todo
-          console.log(this.getData)
+          saveUseCase(this.getData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.goBack()
+            }
+          })
         }
       })
     },
