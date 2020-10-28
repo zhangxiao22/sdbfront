@@ -88,7 +88,7 @@
 
 <script>
 import { MAX_NUMBER } from '@/utils'
-import { getTargetList } from '@/api/api'
+import { getTargetList, saveUseCase } from '@/api/api'
 
 export default {
   name: 'Register',
@@ -120,13 +120,13 @@ export default {
       // data.id = this.id
       data.name = this.baseInfo.name
       // 目标
-      data.eventAchieveList = this.baseInfo.target.map(n => {
+      data.useCaseAchieveList = this.baseInfo.target.map(n => {
         return {
           tagId: n.targetSelect,
           value: n.targetValue
         }
       })
-      data.desc = this.baseInfo.desc
+      data.description = this.baseInfo.desc
       return data
     }
   },
@@ -160,8 +160,12 @@ export default {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           // todo
+          saveUseCase(this.getData)
           console.log(this.getData)
+          this.$message('保存成功')
         }
+      }).catch(err => {
+        console.log(err)
       })
     },
 

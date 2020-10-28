@@ -246,9 +246,37 @@ export function getScatter() {
 }
 
 /** ************************************************ 用例 ************************************************************/
+// 获取用例
 export function getUseCaseList(data) {
   return request({
     url: '/event/getUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 删除用例
+export function delUseCase(data) {
+  return request({
+    url: '/event/delUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 切换上下线
+export function offlineUseCase(data) {
+  return request({
+    url: '/event/offlineUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 新建用例
+export function saveUseCase(data) {
+  return request({
+    url: '/event/saveUseCase',
     method: 'post',
     data
   })

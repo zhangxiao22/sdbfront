@@ -68,20 +68,23 @@
                :class="{effect:scope.row.effect}"
                @click="changeStatus(scope.row)">{{ scope.row.effect ? '下线':'上线' }}</div>
           <!-- <div class="btn"
-               style="color:#F56C6C;">删除</div> -->
-          <el-popover v-model="visible"
+               style="color:#F56C6C;"
+               @click="delBtn(scope.row)">删除</div> -->
+          <el-popover v-model="scope.row.deleted"
                       placement="top"
                       width="160">
             <p>是否确认删除用例</p>
             <div style="text-align: right; margin: 0">
               <el-button size="mini"
                          type="text"
-                         @click="visible = false">取消</el-button>
+                         @click="scope.row.deleted = false">取消</el-button>
               <el-button type="primary"
                          size="mini"
-                         @click="delUseCase(scope.row.id)">确定</el-button>
+                         @click="delBtn(scope.row)">确定</el-button>
             </div>
-            <el-button slot="reference">删除</el-button>
+            <div slot="reference"
+                 class="btn"
+                 style="color:#aaa;">删除</div>
           </el-popover>
         </div>
       </template>
@@ -91,7 +94,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getUseCaseList } from '@/api/api'
+import { getUseCaseList, delUseCase, offlineUseCase } from '@/api/api'
 
 export default {
   name: 'Product',
@@ -164,6 +167,7 @@ export default {
   watch: {},
   created() {
     this.getList(1)
+    console.log(this.tableData)
   },
   methods: {
     resetAll() {
@@ -189,7 +193,7 @@ export default {
       getUseCaseList(data).then(res => {
         this.tableData = res.data.resultList.map(n => {
           return Object.assign({}, n, {
-            caseTarget: n.achieveList.map(m => `${m.name} ${m.operator.label} ${m.value} ${m.unit.label}`).join(',')
+            caseTarget: n.achieveList.map(m => `${m.name} ${m.relation.label} ${m.value} ${m.unit.label}`).join(',')
           })
         })
         this.total = res.pagination.totalItemCount
@@ -199,15 +203,22 @@ export default {
       })
     },
     changeStatus(row) {
-
+      const data = {
+        id: row.id,
+        effect: !row.effect
+      }
+      offlineUseCase(data)
+      this.resetAll()
     },
     createUseCase() {
       this.$router.push({
         path: '/createUseCase'
       })
     },
-    delUseCase(id) {
-
+    delBtn(row) {
+      const data = { id: row.id }
+      delUseCase(data)
+      this.resetAll()
     },
 
     edit(row) {
