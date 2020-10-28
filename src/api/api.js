@@ -178,9 +178,10 @@ export function savePloy(data) {
   })
 }
 // 第4步
-export function getEventDetail(params) {
+// 获取预览信息
+export function getEventPreview(params) {
   return request({
-    url: api2 + '/event',
+    url: '/event/preview',
     method: 'get',
     params
   })

@@ -31,12 +31,12 @@
                class="desc">{{ groupItem.desc }}</div>
           <!-- 策略 -->
           <div v-show="groupItem.ployTabs.length">
-            <!-- {{ groupItem.ployTabsValue }} -->
             <el-tabs v-model="groupItem.ployTabsValue"
                      type="card"
                      closable
                      @tab-click="handleChangeTab"
                      @tab-remove="handleRemoveTab">
+              <!-- {{ groupItem.ployTabs.map(n => n.name) }} -->
               <el-tab-pane v-for="(ployItem,pi) of groupItem.ployTabs"
                            :key="ployItem.name"
                            :label="ployItem.title"
@@ -561,90 +561,10 @@ import Sms from '@/views/sms/index'
 import { isPhone } from '@/utils/validate'
 import { MessageBox, Message } from 'element-ui'
 import { parseTime } from '@/utils'
+import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 
 // import { getWordList } from '@/api/api'
-const CHANNEL_OPT = [
-  {
-    value: 1,
-    label: 'CRM',
-    disabled: false,
-    icon: 'phone',
-    iconColor: '#409eff',
-    // 1:定时型 2:规则
-    chooseType: 1,
-    timingDateType: 1,
-    timingDateValue: [],
-    timingTimeValue: '07:00',
-    dateRange: [],
-    ruleValue: [{
-      date: 0,
-      time: '00:00'
-    }],
-    type: [{
-      id: 1,
-      icon: 'el-icon-alarm-clock',
-      name: '定时型'
-    }],
-    model: []
-  }, {
-    value: 2,
-    label: '短信',
-    disabled: false,
-    icon: 'sms',
-    iconColor: '#FF9933',
-    chooseType: 1,
-    // 定时型的值-规则 (每周几或每月)
-    timingDateType: 1,
-    // 定时型的值-规则 (周几或者几号) (多选)
-    timingDateValue: [],
-    // 定时型的值-时间
-    timingTimeValue: '07:00',
-    // 定时型的值-起止时间
-    dateRange: [],
-    // 规则型的值
-    ruleValue: [{
-      date: 0,
-      time: '00:00'
-    }],
-    // 精准内测
-    test: [],
-    type: [{
-      id: 1,
-      name: '定时型',
-      icon: 'el-icon-alarm-clock'
-    }, {
-      id: 2,
-      name: '规则型',
-      icon: 'el-icon-tickets'
-    }],
-    model: []
-  }, {
-    value: 3,
-    label: '微信',
-    disabled: false,
-    icon: 'wechat',
-    iconColor: '#67c23a',
-    chooseType: 1,
-    timingDateType: 1,
-    timingDateValue: [],
-    timingTimeValue: '07:00',
-    dateRange: [],
-    ruleValue: [{
-      date: 0,
-      time: '00:00'
-    }],
-    type: [{
-      id: 1,
-      name: '定时型',
-      icon: 'el-icon-alarm-clock'
-    }, {
-      id: 2,
-      name: '规则型',
-      icon: 'el-icon-tickets'
-    }],
-    model: []
-  }
-]
+
 export default {
   components: {
     Product, Info, Interest, Word, ShunDrawer, Sms
@@ -666,41 +586,7 @@ export default {
       showSms: false,
 
       // 定时型 下拉选项
-      timingOpt: [
-        {
-          value: 1,
-          label: '每周',
-          children: [{
-            value: 1,
-            label: '星期一'
-          }, {
-            value: 2,
-            label: '星期二'
-          }, {
-            value: 3,
-            label: '星期三'
-          }, {
-            value: 4,
-            label: '星期四'
-          }, {
-            value: 5,
-            label: '星期五'
-          }, {
-            value: 6,
-            label: '星期六'
-          }, {
-            value: 7,
-            label: '星期日'
-          }]
-        },
-        {
-          value: 2,
-          label: '每月',
-          children: Array.apply(null, Array(31)).map((n, i) => {
-            return { value: i + 1, label: i + 1 + '号' }
-          })
-        }
-      ],
+      timingOpt: JSON.parse(JSON.stringify(TIMING_OPT)),
       group: [
         // {
         //   gid: 1,
@@ -806,7 +692,7 @@ export default {
                 people: n.count,
                 desc: n.desc,
                 totalPercent: 100,
-                ployTabs: n.strategyDetailVOList.map(n => {
+                ployTabs: n.strategyDetailVOList.map((n, i) => {
                   return {
                     abstractId: n.abstractId,
                     // 策略名称
@@ -814,7 +700,7 @@ export default {
                     // 策略分发范围
                     percent: n.range,
                     // 策略tab id
-                    name: '1',
+                    name: i + 1 + '',
                     // 产品
                     product: n.productInfoList,
                     // 权益
