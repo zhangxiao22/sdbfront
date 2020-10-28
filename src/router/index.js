@@ -29,6 +29,22 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'home', underline: true }
       },
       {
+        path: 'useCase',
+        name: 'UseCase',
+        component: () => import('@/views/useCase/index'),
+        meta: {
+          title: '用例库', icon: 'list'
+        }
+      },
+      {
+        path: 'createUseCase',
+        name: 'CreateUseCase',
+        component: () => import('@/views/createUseCase/index'),
+        meta: {
+          title: '创建用例', hide: true
+        }
+      },
+      {
         path: 'createEvent',
         name: 'CreateEvent',
         component: () => import('@/views/createEvent/index'),
@@ -85,34 +101,6 @@ export const asyncRoutes = [
         name: 'Test',
         component: () => import('@/views/test/index'),
         meta: { title: 'test', icon: 'list', roles: ['admin'] }
-      }
-    ]
-  },
-  {
-    path: '/',
-    component: Layout,
-    children: [
-      {
-        path: 'useCase',
-        name: 'useCase',
-        component: () => import('@/views/useCase/index'),
-        meta: {
-          title: '用例库', icon: 'list', roles: ['admin']
-        }
-      }
-    ]
-  },
-  {
-    path: '/',
-    component: Layout,
-    children: [
-      {
-        path: 'createUseCase',
-        name: 'createUseCase',
-        component: () => import('@/views/createUseCase/index'),
-        meta: {
-          title: '创建用例', hide: true, roles: ['admin']
-        }
       }
     ]
   },

@@ -333,7 +333,6 @@ export default {
         observer: true,
         observeParents: true
       })
-      window.swiper = this.mainSwiper
     },
     handleClickSwiperSlider(index) {
       this.groupActiveIndex = index

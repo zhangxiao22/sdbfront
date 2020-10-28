@@ -209,7 +209,6 @@ export default {
     this.eventCategoryList()
     this.getOwner()
     this.getStatus().then(res => {
-      // this.getList(1)
       this.tabClick(0)
     })
   },
@@ -346,6 +345,13 @@ export default {
         this.loading = false
       }).catch(() => {
         this.loading = false
+      })
+    },
+    eventDetail(id) {
+      this.$router.push({
+        path: '/eventDetail', query: {
+          id
+        }
       })
     },
     edit(row) {

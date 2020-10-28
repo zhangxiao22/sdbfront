@@ -60,6 +60,7 @@
                            :column-key="item.columnKey"
                            :filters="item.filters"
                            :label="item.label"
+                           :width="item.width"
                            :min-width="item.minWidth">
             <template slot-scope="scope">
               <slot v-if="item.slot"
@@ -362,7 +363,8 @@ export default {
       display: flex;
       flex-wrap: wrap;
       .btn {
-        width: 40px;
+        // width: 40px;
+        padding: 0 4px;
         height: 30px;
         cursor: pointer;
         @include center-center;
