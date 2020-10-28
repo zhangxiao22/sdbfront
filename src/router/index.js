@@ -88,6 +88,34 @@ export const asyncRoutes = [
       }
     ]
   },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'useCase',
+        name: 'useCase',
+        component: () => import('@/views/useCase/index'),
+        meta: {
+          title: '用例库', icon: 'list', roles: ['admin']
+        }
+      }
+    ]
+  },
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'createUseCase',
+        name: 'createUseCase',
+        component: () => import('@/views/createUseCase/index'),
+        meta: {
+          title: '创建用例', hide: true, roles: ['admin']
+        }
+      }
+    ]
+  },
 
   // 营销结果看板
   {

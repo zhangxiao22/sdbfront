@@ -243,3 +243,13 @@ export function getScatter() {
     method: 'get'
   })
 }
+
+/** ************************************************ 用例 ************************************************************/
+export function getUseCaseList(data) {
+  return request({
+    url: '/event/getUseCase',
+    method: 'post',
+    data
+  })
+}
+

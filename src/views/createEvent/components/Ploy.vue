@@ -9,8 +9,12 @@
         <!-- {{ groupIndex }}{{ ployIndex }} -->
         <el-tab-pane v-for="(groupItem,gi) of group"
                      :key="gi"
-                     :label="groupItem.name"
                      :name="gi+''">
+          <div slot="label"
+               class="tab-label">
+            {{ groupItem.name }}
+            <div class="count">{{ groupItem.people }}人</div>
+          </div>
           <div class="top">
             <div class="left">当前群组人数：<b>{{ animatedNumber }}</b></div>
             <div>
@@ -1408,6 +1412,22 @@ export default {
   .shun-label ::v-deep .el-form-item__label {
     display: flex;
     justify-content: flex-end;
+  }
+  .tab-label {
+    display: flex;
+    align-items: center;
+
+    .count {
+      height: 20px;
+      padding: 0 8px;
+      font-size: 10px;
+      color: #fff;
+      background: $blue;
+      display: flex;
+      align-items: center;
+      border-radius: 2px;
+      margin-left: 5px;
+    }
   }
   .ploy-card {
     // @include shun-text;

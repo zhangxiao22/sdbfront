@@ -25,6 +25,17 @@
                       prefix-icon="el-icon-search"
                       @keyup.enter.native="search" />
           </el-form-item>
+          <el-form-item label="产品类型："
+                        prop="category">
+            <el-select v-model="filterForm.category"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in categoryOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
 
           <el-form-item class="filter-item-end">
             <el-button type="primary"
@@ -80,6 +91,44 @@ export default {
         name: ''
       },
       searchForm: {},
+      commonColumnList: [
+        {
+          prop: 'name',
+          label: '产品名称',
+          minWidth: 300
+        },
+        {
+          prop: 'classify.label',
+          label: '产品类型',
+          minWidth: 100
+        },
+        {
+          prop: 'riskLevel.label',
+          label: '风险等级',
+          minWidth: 100
+        },
+        {
+          prop: 'returnBenchmark',
+          label: '收益率/行业比较基准',
+          minWidth: 160
+        },
+        {
+          prop: 'purchaseAmount',
+          label: '起购金额',
+          minWidth: 100
+        },
+        {
+          prop: 'startDate',
+          label: '起息日',
+          minWidth: 100
+        },
+        {
+          prop: 'endDate',
+          label: '到期日',
+          minWidth: 100
+        }
+      ],
+      selfColumnList: [],
       tableColumnList: [
         {
           prop: 'name',
