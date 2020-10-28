@@ -1,108 +1,31 @@
 <template>
   <div class="container">
-    <el-form ref="form"
-             :model="{arr}"
-             label-width="110px">
-      <div v-for="(item,i) of arr"
-           v-show="i===0"
-           :key="i">
-        <el-form-item label="事件名称："
-                      :rules="[{
-                        required: true, message: '请输入事件名称', trigger: 'blur'
-                      }]"
-                      :prop="'arr.'+i+'.name'">
-          <el-input v-model="item.name" />
-        </el-form-item>
-
-        <el-form-item label="测试数组"
-                      :rules="[{
-                        required: true, message: 'test', type: 'array'
-                      }]"
-                      :prop="'arr.'+i+'.testArr'">
-          123
-        </el-form-item>
-        <el-form-item label="测试radio"
-                      :rules="[{
-                        required: true, message: 'test', trigger: 'change'
-                      }]"
-                      :prop="'arr.'+i+'.radio'">
-          <el-radio-group v-model="item.radio"
-                          @change="handleChange">
-            <el-radio :label="3"
-                      border>备选项</el-radio>
-            <el-radio :label="6"
-                      border>备选项</el-radio>
-            <el-radio :label="9"
-                      border>备选项</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <template v-if="item.radio===3">
-          <el-form-item label="起止日期："
-                        :prop="'arr.' + i + '.date'"
-                        :rules="[{
-                          required: true, message: '请选择起止日期', trigger: 'change'
-                        }]">
-            <el-date-picker v-model="item.date"
-                            type="daterange"
-                            range-separator="至"
-                            value-format="yyyy-MM-dd"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期" />
-          </el-form-item>
-        </template>
-        <template v-if="item.radio===6">
-          <el-form-item label="起止日期："
-                        :prop="'arr.' + i + '.time'"
-                        :rules="[{
-                          required: true, message: '请选择起止日期222', trigger: 'change'
-                        }]">
-            <el-time-select v-model="item.time"
-                            :picker-options="{
-                              start: '07:00',
-                              end: '20:00',
-                              step: '00:30',
-                            }"
-                            :clearable="false"
-                            :editable="false"
-                            format="HH:mm"
-                            value-format="HH:mm" />
-          </el-form-item>
-        </template>
-
-      </div>
-    </el-form>
-    <el-button @click="change">change</el-button>
-    <el-button @click="ok">ok</el-button>
-
-    <el-popover v-model="visible"
-                placement="top"
-                width="160">
-      <p>这是一段内容这是一段内容确定删除吗？</p>
-      <div style="text-align: right; margin: 0">
-        <el-button size="mini"
-                   type="text"
-                   @click="visible = false">取消</el-button>
-        <el-button type="primary"
-                   size="mini"
-                   @click="visible = false">确定</el-button>
-      </div>
-      <el-button slot="reference">删除</el-button>
-    </el-popover>
+    {{ activeName }}
+    <el-tabs v-model="activeName"
+             @tab-click="handleClick">
+      <el-tab-pane label="用户管理">用户管理</el-tab-pane>
+      <el-tab-pane label="配置管理"
+                   name="second">配置管理</el-tab-pane>
+      <el-tab-pane label="角色管理"
+                   name="third">角色管理</el-tab-pane>
+      <el-tab-pane label="定时任务补偿"
+                   name="fourth">定时任务补偿</el-tab-pane>
+    </el-tabs>
   </div>
 </template>
 
 <script>
-// import Swiper from 'swiper'
+import Swiper from 'swiper'
 // import { Swiper, SwiperSlide, directive } from 'vue-awesome-swiper'
 // import 'swiper/css/swiper.css'
 // If you use Swiper 6.0.0 or higher
-// import 'swiper/swiper-bundle.css'
+import 'swiper/swiper-bundle.css'
 
 import ShunTable from '@/components/ShunTable/index'
 
 export default {
   components: {
-    // Swiper,
+    // Swiper
     // SwiperSlide
     // ShunTable
   },
@@ -111,30 +34,41 @@ export default {
   },
   data() {
     return {
-      visible: false,
-      arr: [
-        {
-          name: '2',
-          testArr: [1],
-          radio: 3,
-          date: [],
-          time: ''
-        }, {
-          name: '2',
-          testArr: [2],
-          radio: 3,
-          date: [],
-          time: ''
-        }
-      ]
-
+      activeName: 'second'
     }
   },
   watch: {},
   mounted() {
+    this.overviewSwiper = new Swiper('.group-swiper-container', {
+      // loop: true,
+      // freeMode: true,
+      grabCursor: true,
+      // slidesPerView: 'auto',
+      // loop: true
+      // centeredSlides: true,
+      slidesPerView: 3,
+      spaceBetween: 20,
+      watchSlidesVisibility: true, // 防止不可点击
+      on: {
 
+      }
+    })
   },
   methods: {
+    handleClick(tab, event) {
+      console.log(tab, event)
+    },
+    click() {
+      this.arr = [
+        { name: 'a' },
+        { name: 'b' },
+        { name: 'c' },
+        { name: 'd' },
+        { name: 'e' },
+        { name: 'f' },
+        { name: 'g' }
+      ]
+    },
     handleChange(val) {
       console.log(val)
       // if (val === 3) {
