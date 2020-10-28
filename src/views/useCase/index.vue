@@ -67,8 +67,22 @@
           <div class="btn status"
                :class="{effect:scope.row.effect}"
                @click="changeStatus(scope.row)">{{ scope.row.effect ? '下线':'上线' }}</div>
-          <div class="btn"
-               style="color:#F56C6C;">删除</div>
+          <!-- <div class="btn"
+               style="color:#F56C6C;">删除</div> -->
+          <el-popover v-model="visible"
+                      placement="top"
+                      width="160">
+            <p>是否确认删除用例</p>
+            <div style="text-align: right; margin: 0">
+              <el-button size="mini"
+                         type="text"
+                         @click="visible = false">取消</el-button>
+              <el-button type="primary"
+                         size="mini"
+                         @click="delUseCase(scope.row.id)">确定</el-button>
+            </div>
+            <el-button slot="reference">删除</el-button>
+          </el-popover>
         </div>
       </template>
     </shun-table>
@@ -191,6 +205,9 @@ export default {
       this.$router.push({
         path: '/createUseCase'
       })
+    },
+    delUseCase(id) {
+
     },
 
     edit(row) {
