@@ -46,11 +46,6 @@
           </div>
           <div slot="description"
                class="group step-detail">
-            <!-- <div v-show="baseInfoDetail.trial"
-                 class="shun-sibling-box item">
-              <div class="value">总计 {{ groupDetail.peopleNum }} 人</div>
-              <div class="value">对照组 {{ groupDetail.comparePeopleNum }} 人</div>
-            </div> -->
             <el-tag v-show="groupDetail.peopleNum"
                     class="item"
                     size="mini"
@@ -68,18 +63,20 @@
               <div class="value">{{ groupDetail.groupNum }} 个客群</div>
               <div class="value">{{ groupDetail.realPeopleNum | formatMoney }} 人</div>
             </div>
-            <!-- <el-tag v-show="groupDetail.peopleNum"
+          </div>
+        </el-step>
+        <el-step title="策略配置">
+          <div slot="icon">
+            <svg-icon icon-class="_bulb" />
+          </div>
+          <div slot="description"
+               class="group step-detail">
+            <el-tag v-show="groupDetail.peopleNum"
                     class="item"
                     size="mini"
                     type="warning">
-              {{ groupDetail.groupNum }} 个客群
-            </el-tag> -->
-          </div>
-        </el-step>
-        <el-step title="策略配置"
-                 description="策略配置描述...">
-          <div slot="icon">
-            <svg-icon icon-class="_bulb" />
+              {{ ployDetail.ployCount }} 个策略
+            </el-tag>
           </div>
         </el-step>
         <el-step title="发布预览"
@@ -165,6 +162,9 @@ const DEFAULT_DATA = {
     realPeopleNum: 0,
     // 客群数
     groupNum: 0
+  },
+  ployDetail: {
+    ployCount: 0
   }
 }
 export default {
@@ -178,6 +178,7 @@ export default {
     return {
       baseInfoDetail: JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail)),
       groupDetail: JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail)),
+      ployDetail: JSON.parse(JSON.stringify(DEFAULT_DATA.ployDetail)),
       mainLoading: false,
       component: [
         {
@@ -197,7 +198,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 3
+      stepActive: 0
     }
   },
   computed: {
@@ -219,6 +220,7 @@ export default {
       } else {
         this.baseInfoDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail))
         this.groupDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail))
+        this.ployDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.ployDetail))
       }
     },
     save() {
@@ -228,7 +230,9 @@ export default {
       getEventInfo({ id: this.id }).then(res => {
         const baseInfo = res.data.eventBaseInfo
         const customer = res.data.customer
+        const ploy = res.data.strategy
         // console.log(baseInfo)
+        // 基本信息
         this.baseInfoDetail.name = baseInfo.name
         this.baseInfoDetail.categoryValue = baseInfo.category.label
         this.baseInfoDetail.startDate = baseInfo.startDate
@@ -237,11 +241,13 @@ export default {
         this.baseInfoDetail.trial = baseInfo.trial
         this.baseInfoDetail.sampleValue = baseInfo.sample.label
         this.baseInfoDetail.control = baseInfo.control
-
+        // 客群
         this.groupDetail.peopleNum = customer.recordCount
         this.groupDetail.comparePeopleNum = customer.recordCount - customer.filterCount
         this.groupDetail.realPeopleNum = customer.filterCount
         this.groupDetail.groupNum = customer.groupCount
+        // 策略
+        this.ployDetail.ployCount = ploy.strategyCount
       })
     },
     next() {

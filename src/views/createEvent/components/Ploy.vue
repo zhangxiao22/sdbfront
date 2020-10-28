@@ -644,6 +644,13 @@ export default {
       return this.group[this.groupIndex].ployTabs.findIndex((n, i) => {
         return n.name === this.group[this.groupIndex].ployTabsValue
       })
+    },
+    ployCounts() {
+      let count = 0
+      this.group.forEach(n => {
+        count += n.ployTabs.length
+      })
+      return count
     }
   },
   watch: {
@@ -964,6 +971,9 @@ export default {
         // 校验策略名是否重复
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
       })
+
+      // 修改简介
+      this.$parent.ployDetail.ployCount = this.ployCounts
     },
     handleRemoveTab(targetName) {
       const gi = this.groupIndex
@@ -991,6 +1001,8 @@ export default {
             // 校验策略名是否重复
             this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
           })
+          // 修改简介
+          this.$parent.ployDetail.ployCount = this.ployCounts
         })
         .catch(() => {
         })
