@@ -1,6 +1,7 @@
 <template>
-  <div class="container">
-    <div class="title">新建用例</div>
+  <div class="container shun-card">
+    <el-page-header content="新建用例"
+                    @back="goBack" />
     <el-form ref="regFormRef"
              :model="baseInfo"
              label-width="110px"
@@ -14,36 +15,8 @@
                   show-word-limit
                   maxlength="50" />
       </el-form-item>
-      <el-form-item label="事件日期："
-                    :rules="[{
-                      required: true, message: '请选择起止日期', trigger: 'change'
-                    }]"
-                    prop="date">
-        <el-date-picker v-model="baseInfo.date"
-                        style="width:100%"
-                        :clearable="false"
-                        type="daterange"
-                        value-format="yyyy-MM-dd"
-                        :picker-options="pickerOptions"
-                        range-separator="至"
-                        start-placeholder="开始日期"
-                        end-placeholder="结束日期" />
-      </el-form-item>
-      <!-- <el-form-item label="事件类型："
-                    :rules="[{
-                      required: true, message: '请选择事件类型', trigger: 'change'
-                    }]"
-                    prop="category">
-        <el-select v-model="baseInfo.category"
-                   style="width:100%"
-                   placeholder="请选择事件类型">
-          <el-option v-for="item in categoryOpt"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-      </el-form-item> -->
       <el-form-item class="target-form-item"
+                    required
                     label="目标设置：">
         <div v-for="(targetItem,i) of baseInfo.target"
              :key="i"
@@ -90,20 +63,6 @@
                    icon="el-icon-plus"
                    @click="addTarget" />
       </el-form-item>
-      <!-- <el-form-item label="所属用例："
-                    :rules="[{
-                      required: true, message: '请选择所属用例', trigger: 'change'
-                    }]"
-                    prop="useCase">
-        <el-select v-model="baseInfo.category"
-                   style="width:100%"
-                   placeholder="请选择所属用例">
-          <el-option v-for="item in categoryOpt"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-      </el-form-item> -->
       <el-form-item label="用例描述："
                     prop="desc">
         <el-input v-model="baseInfo.desc"
@@ -114,56 +73,23 @@
                   type="textarea" />
       </el-form-item>
       <el-form-item>
-        <el-row class="bottom-container">
-          <el-col class="bottom-left">
-            <el-button icon="el-icon-refresh-left"
-                       @click="reset">返回</el-button>
-          </el-col>
-          <el-col class="bottom-middle">
-            <el-button icon="el-icon-refresh"
-                       @click="reset">重置</el-button>
-          </el-col>
-          <el-col class="bottom-right">
-            <el-button icon="el-icon-document"
-                       @click="save">保存</el-button>
-          </el-col>
-        </el-row>
+        <el-button icon="el-icon-document"
+                   type="primary"
+                   style="width:100px;"
+                   @click="save">保存</el-button>
+        <el-button icon="el-icon-refresh"
+                   style="width:100px;"
+                   @click="reset">重置</el-button>
       </el-form-item>
-      <!-- {{ targetOpt }} -->
-      <!-- {{ $parent.baseInfoDetail }} -->
+
     </el-form>
   </div>
 </template>
 
 <script>
-import Info from '@/components/Info'
-import { mapGetters } from 'vuex'
-import { parseTime, MAX_NUMBER } from '@/utils'
-import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList } from '@/api/api'
+import { MAX_NUMBER } from '@/utils'
+import { getTargetList } from '@/api/api'
 
-const DEFAULT_BASEINFO = {
-  name: '',
-  category: '',
-  // categoryValue: '',
-  target: [
-    {
-      targetSelect: '',
-      targetValue: ''
-      // compare: '',
-      // nuit: ''
-    }
-  ],
-  date: [],
-  // startDate: '',
-  // endDate: '',
-  // 是否试点
-  trial: false,
-  // 比例
-  control: 5,
-  // 抽样方式
-  sample: 1,
-  desc: ''
-}
 export default {
   name: 'Register',
   components: {
@@ -171,37 +97,28 @@ export default {
   },
   data() {
     return {
-      // mainLoading: this.$parent.mainLoading,
-      // parent: this.$parent,
-      baseInfo: JSON.parse(JSON.stringify(DEFAULT_BASEINFO)),
-      // 时间选择范围
-      pickerOptions: {
-        disabledDate(time) {
-          const testStartTime = parseTime(new Date(), '{y}-{m}-{d}')
-          const dateTime = parseTime(time, '{y}-{m}-{d}')
-          return dateTime < testStartTime
-        }
+      baseInfo: {
+        name: '',
+        target: [
+          {
+            targetSelect: '',
+            targetValue: ''
+          }
+        ],
+        desc: ''
       },
-      // 类型
-      categoryOpt: [],
-      // 目标
-      targetOpt: [],
-      // 抽样方式
-      sampleOpt: []
+      targetOpt: []
     }
   },
   computed: {
-    id() {
-      return +this.$route.query.id
-    },
+    // id() {
+    //   return this.$route.query.id
+    // },
     // 获取数据
     getData() {
       const data = {}
-      data.id = this.id
+      // data.id = this.id
       data.name = this.baseInfo.name
-      // data.category = this.baseInfo.category
-      data.startDate = this.baseInfo.date[0]
-      data.endDate = this.baseInfo.date[1]
       // 目标
       data.eventAchieveList = this.baseInfo.target.map(n => {
         return {
@@ -209,43 +126,14 @@ export default {
           value: n.targetValue
         }
       })
-      // 是否试点
-      // data.trial = this.baseInfo.trial
-      // 比例
-      // data.control = this.baseInfo.control
-      // 抽样方式
-      // data.sample = this.baseInfo.sample
       data.desc = this.baseInfo.desc
       return data
     }
   },
   watch: {
-    baseInfo: {
-      handler(newVal, oldVal) {
-        // 名称
-        this.$parent.baseInfoDetail.name = this.baseInfo.name
-        // 事件类型
-        // this.changeEventCategory()
-        // 起止日期
-        this.changePicker()
-        // 目标
-        this.$parent.baseInfoDetail.targetCount = this.baseInfo.target.filter(n => {
-          return n.targetSelect
-        }).length
-        // 对照组
-        // this.$parent.baseInfoDetail.trial = this.baseInfo.trial
-        // 百分比
-        // this.$parent.baseInfoDetail.control = this.baseInfo.control
-        // 抽样方式
-        // this.changeSample()
-      },
-      deep: true,
-      immediate: false
-    }
+
   },
   created() {
-    this.eventCategoryList()
-    // this.sampleList()
     this.targetList().then(() => {
       if (this.id) {
         this.getDetail()
@@ -255,63 +143,28 @@ export default {
   mounted() {
   },
   methods: {
+    goBack() {
+      this.$router.push('/useCase')
+    },
     reset() {
-      if (this.id) {
-        this.getDetail()
-      } else {
-        this.baseInfo = JSON.parse(JSON.stringify(DEFAULT_BASEINFO))
-        // console.log(DEFAULT_BASEINFO.target)
-        // this.baseInfo.target = JSON.parse(JSON.stringify(DEFAULT_BASEINFO.target))
-        this.$nextTick(() => {
-          this.$refs['regFormRef'].clearValidate()
-          this.resetTargetOpt()
-        })
-        // this.$refs['regFormRef'].resetFields()
-      }
-    },
-    // 获取详情
-    getDetail() {
-      this.$parent.mainLoading = true
-      getEventBaseInfo({ id: this.id }).then(res => {
-        this.$parent.mainLoading = false
-        const data = res.data
-        this.baseInfo.name = data.name
-        // this.baseInfo.category = data.category.value
-        this.baseInfo.date = [data.startDate, data.endDate]
-        this.baseInfo.target = data.eventAchieveList.map(item => {
-          let obj = this.targetOpt.find(n => {
-            if (n.value === item.tagId) {
-              obj = n
-              return true
-            }
-          })
-          // console.log(obj)
-          return Object.assign({}, obj, {
-            targetSelect: item.tagId,
-            targetValue: item.value
-          })
-        })
+      this.baseInfo.target = [{
+        targetSelect: '',
+        targetValue: ''
+      }]
+      this.$nextTick(() => {
+        this.$refs['regFormRef'].resetFields()
         this.resetTargetOpt()
-        // this.baseInfo.trial = data.trial
-        // this.baseInfo.sample = data.sample.value
-        // this.baseInfo.control = data.control
-        this.baseInfo.desc = data.desc
-      }).catch(() => {
-        this.$parent.mainLoading = false
       })
     },
-    // 获取类型
-    eventCategoryList() {
-      getEventCategory().then(res => {
-        this.categoryOpt = res.data.eventCategoryEnumList
+    save() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          // todo
+          console.log(this.getData)
+        }
       })
     },
-    // 获取抽样方式
-    // sampleList() {
-    //   getSampleList().then(res => {
-    //     this.sampleOpt = res.data.eventSampleEnumList
-    //   })
-    // },
+
     // 获取目标
     targetList() {
       return new Promise(resolve => {
@@ -342,12 +195,6 @@ export default {
         })
       })
     },
-    // 试点值为空时置为1
-    // handlerControlBlur() {
-    //   if (!this.baseInfo.control) {
-    //     this.baseInfo.control = 1
-    //   }
-    // },
 
     addTarget() {
       this.baseInfo.target.push({
@@ -368,60 +215,7 @@ export default {
         n.disabled = temp.includes(n.value)
       })
     },
-    // 下一步，供父组件调用
-    validateAndNext() {
-      return new Promise((resolve, reject) => {
-        this.$refs.regFormRef.validate((valid) => {
-          if (valid) {
-            // this.mainLoading = true
-            saveEventBaseInfo(this.getData).then(res => {
-              if (res.code === 200) {
-                this.$router.replace({
-                  path: '/createEvent',
-                  query: {
-                    id: res.data.id
-                  }
-                })
-                resolve()
-              } else {
-                reject()
-              }
-            }).catch(() => {
-              reject()
-            })
-          } else {
-            reject()
-          }
-        })
-      })
-    },
-    // 类型值
-    // changeEventCategory() {
-    //   this.categoryOpt.some((n, i) => {
-    //     if (n.value === this.baseInfo.category) {
-    //       this.$parent.baseInfoDetail.categoryValue = n.label
-    //       return true
-    //     }
-    //   })
-    // },
-    // 选择时间
-    changePicker() {
-      if (this.baseInfo.date) {
-        [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate] = this.baseInfo.date
-      } else {
-        this.$parent.baseInfoDetail.startDate = ''
-        this.$parent.baseInfoDetail.endDate = ''
-      }
-    },
-    // 选择抽样方式
-    // changeSample() {
-    //   this.sampleOpt.some((n, i) => {
-    //     if (n.value === this.baseInfo.sample) {
-    //       this.$parent.baseInfoDetail.sampleValue = n.label
-    //       return true
-    //     }
-    //   })
-    // },
+
     selectTarget(val, item) {
       this.targetOpt.find((n, i) => {
         if (n.value === val) {
@@ -443,38 +237,12 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  padding: 50px 20px;
-  .title {
-    font-size: 18px;
-    font-weight: bold;
-    margin-top: -30px;
-    margin-bottom: 38px;
-  }
+  padding: 16px;
+
   .reg-form {
     width: 600px;
-    margin: 0 auto;
-    .bottom-container {
-      position: absolute;
-      bottom: 0px;
-      left: 0;
-      right: 0;
-      height: 0px;
-      margin-top: -10px;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      .bottom-left {
-        display: flex;
-      }
-      .bottom-middle {
-        display: flex;
-        justify-content: center;
-      }
-      .bottom-right {
-        display: flex;
-        justify-content: flex-end;
-      }
-    }
+    margin: 20px auto;
+
     .target-form-item {
       width: 600px;
       .target-item {
