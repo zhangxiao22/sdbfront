@@ -59,6 +59,21 @@
           </el-tooltip>
         </div>
       </template>
+      <template v-slot:caseTargetSlot="scope">
+        <el-tooltip placement="top-start">
+          <div slot="content">
+            <div v-for="(item,i) of scope.row.achieveList"
+                 :key="i"
+                 style="margin:5px 0;">
+              {{ item.name }} {{ item.relation.label }} {{ item.value }} {{ item.unit.label }}
+            </div>
+          </div>
+          <div class="name-group">
+            {{ scope.row.achieveList.length }}个目标
+          </div>
+        </el-tooltip>
+
+      </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn"
@@ -116,14 +131,16 @@ export default {
         {
           prop: 'name',
           label: '状态/用例名称',
-          // minWidth: 300,
+          minWidth: 200,
           notShowOverflowTooltip: true,
           slot: true
         },
         {
           prop: 'caseTarget',
           label: '目标',
-          minWidth: 300
+          width: 100,
+          notShowOverflowTooltip: true,
+          slot: true
         },
         {
           prop: 'createTime',
@@ -175,9 +192,10 @@ export default {
       getUseCaseList(data).then(res => {
         this.tableData = res.data.resultList.map(n => {
           return Object.assign({}, n, {
-            caseTarget: n.achieveList.map(m => `${m.name} ${m.operator.label} ${m.value} ${m.unit.label}`).join(',')
+            caseTarget: n.achieveList.map(m => `${m.name} ${m.relation.label} ${m.value} ${m.unit.label}`)
           })
         })
+        console.log(this.tableData)
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
