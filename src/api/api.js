@@ -263,6 +263,13 @@ export function getUseCaseList(data) {
     data
   })
 }
+// 获取用例
+export function getUseCaseForEvent() {
+  return request({
+    url: '/event/getMyUseCase',
+    method: 'get'
+  })
+}
 
 // 删除用例
 export function delUseCase(data) {
