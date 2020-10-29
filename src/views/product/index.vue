@@ -56,7 +56,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getProductList } from '@/api/api'
+import { getProductList, getProductCategoryList } from '@/api/api'
 
 export default {
   name: 'Product',
@@ -88,8 +88,10 @@ export default {
       pageSize: 10,
       total: 0,
       filterForm: {
-        name: ''
+        name: '',
+        category: ''
       },
+      categoryOpt: [],
       searchForm: {},
       commonColumnList: [
         {
@@ -180,6 +182,8 @@ export default {
   watch: {},
   created() {
     this.getList(1)
+    this.productCategoryList()
+    window.vue = this
   },
   methods: {
     resetAll() {
@@ -194,6 +198,20 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
+    // 获取产品类型
+    productCategoryList() {
+      getProductCategoryList().then(res => {
+        this.categoryOpt = res.data
+      })
+    },
+    // getUseCaseList() {
+    //   const data = this.filterForm.category
+    //   getUserCaseListInterface(data).then(res => {
+    //     this.tableColumnList = res.data.resultList.map(n => {
+    //       return Object.assign(n, this.commonColumnList)
+    //     })
+    //   })
+    // },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       const data = Object.assign({

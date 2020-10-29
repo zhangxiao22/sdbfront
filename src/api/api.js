@@ -1,5 +1,6 @@
 import request from '@/utils/request'
 const api2 = process.env.VUE_APP_BASE_API_2
+const api3 = process.env.VUE_APP_BASE_API_3
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -15,6 +16,14 @@ export function getProductList(data) {
     url: '/resource/select',
     method: 'post',
     data
+  })
+}
+
+// 获取产品分类
+export function getProductCategoryList() {
+  return request({
+    url: api3 + '/resource/getProductCategoryList',
+    method: 'get'
   })
 }
 
