@@ -17,9 +17,9 @@
                     :rules="[{
                       required: true, message: '请选择所属用例', trigger: 'change'
                     }]"
-                    :disabled="id"
                     prop="useCaseId">
         <el-select v-model="baseInfo.useCaseId"
+                   :disabled="!!id&&baseInfo.statusValue!==1"
                    style="width:100%"
                    placeholder="请选择所属用例">
           <el-option v-for="item in useCaseOpt"
@@ -119,6 +119,8 @@ import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, g
 
 const DEFAULT_BASEINFO = {
   name: '',
+  useCaseId: '',
+  statusValue: '',
   category: '',
   // categoryValue: '',
   date: [],
@@ -214,6 +216,7 @@ export default {
     if (this.id) {
       this.getDetail()
     }
+    window.vue = this
   },
   mounted() {
   },
@@ -240,6 +243,7 @@ export default {
         const data = res.data
         this.baseInfo.name = data.name
         this.baseInfo.useCaseId = data.useCaseId
+        this.baseInfo.statusValue = data.status.value
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
 

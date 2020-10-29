@@ -12,10 +12,10 @@
             <!-- 事件名称 -->
             <div class="name item">{{ baseInfoDetail.name }}</div>
             <!-- 用例 -->
-            <el-tag v-show="baseInfoDetail.useCaseName"
-                    class="item"
-                    size="mini">{{ baseInfoDetail.useCaseName }}
-            </el-tag>
+            <div v-show="baseInfoDetail.useCaseName"
+                 class="item"
+                 size="mini">{{ baseInfoDetail.useCaseName }}
+            </div>
             <!-- 事件类型 -->
             <el-tag v-show="baseInfoDetail.categoryValue"
                     class="item"
@@ -203,7 +203,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 2
+      stepActive: 0
     }
   },
   computed: {
