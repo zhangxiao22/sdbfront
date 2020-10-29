@@ -13,7 +13,10 @@
           <div slot="label"
                class="tab-label">
             {{ groupItem.name }}
-            <div class="count">{{ groupItem.people }}人</div>
+            <el-tag size="mini"
+                    style="margin-left:5px;">
+              {{ groupItem.people }}
+            </el-tag>
           </div>
           <div class="top">
             <div class="left">当前群组人数：<b>{{ animatedNumber }}</b></div>
@@ -1314,18 +1317,6 @@ export default {
   .tab-label {
     display: flex;
     align-items: center;
-
-    .count {
-      height: 20px;
-      padding: 0 8px;
-      font-size: 10px;
-      color: #fff;
-      background: $blue;
-      display: flex;
-      align-items: center;
-      border-radius: 2px;
-      margin-left: 5px;
-    }
   }
   .ploy-card {
     // @include shun-text;

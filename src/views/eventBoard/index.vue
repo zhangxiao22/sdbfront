@@ -28,6 +28,17 @@
                       clearable
                       prefix-icon="el-icon-search" />
           </el-form-item>
+          <el-form-item label="所属用例："
+                        prop="category">
+            <el-select v-model="filterForm.useCaseId"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in useCaseOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="事件类型："
                         prop="category">
             <el-select v-model="filterForm.category"
@@ -116,7 +127,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getEventList, getEventOwner, getEventCategory, getEventStatus } from '@/api/api'
+import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent } from '@/api/api'
 
 export default {
   name: 'Product',
@@ -151,6 +162,7 @@ export default {
         name: '',
         category: '',
         userId: '',
+        useCaseId: +this.$route.query.id || '',
         dateRange: []
       },
       // 表格下拉filters值
@@ -158,6 +170,7 @@ export default {
       // tabFilters: [],
       statusValue: [],
       searchForm: {},
+      useCaseOpt: [],
       categoryOpt: [],
       ownerOpt: [],
       totalColor: '#224191',
@@ -179,7 +192,7 @@ export default {
           label: '事件类型'
         },
         {
-          prop: '',
+          prop: 'useCase.name',
           label: '所属用例'
         },
         {
@@ -190,7 +203,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
-          minWidth: 300,
+          minWidth: 150,
           slot: true
         }
       ],
@@ -202,12 +215,16 @@ export default {
     parentRef() {
       return this.$refs.table
     }
+    // useCaseId() {
+    //   return +this.$route.query.id
+    // }
   },
 
   watch: {},
   created() {
     this.eventCategoryList()
     this.getOwner()
+    this.useCase()
     this.getStatus().then(res => {
       this.tabClick(0)
     })
@@ -224,6 +241,17 @@ export default {
       this.statusValue = []
       this.tabClick(0)
       // this.search()
+    },
+    // 获取用例
+    useCase() {
+      getUseCaseForEvent().then(res => {
+        this.useCaseOpt = res.data.map(n => {
+          return {
+            label: n.name,
+            value: n.id
+          }
+        })
+      })
     },
     // 获取类型
     eventCategoryList() {
@@ -304,6 +332,7 @@ export default {
     search() {
       this.searchForm = {
         name: this.filterForm.name,
+        useCaseId: this.filterForm.useCaseId || null,
         userId: this.filterForm.userId || null,
         category: this.filterForm.category || null,
         startDate: this.filterForm.dateRange[0],
@@ -323,6 +352,7 @@ export default {
 
       this.filterForm = {
         name: this.searchForm.name,
+        useCaseId: this.filterForm.useCaseId,
         userId: this.searchForm.userId,
         category: this.searchForm.category,
         dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []

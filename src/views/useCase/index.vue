@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="用例管理"
+                title="用例库"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -49,7 +49,7 @@
         <div class="name-group">
           <div class="status"
                :class="{effect:scope.row.effect}">
-            {{ scope.row.effect ? '上线':'下线' }}
+            {{ scope.row.effect ? '已上线':'已下线' }}
           </div>
           <el-tooltip :content="scope.row.name"
                       placement="top-start">
@@ -78,27 +78,34 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleView(scope.row)">查看事件</div>
-          <div class="btn status"
-               :class="{effect:scope.row.effect}"
-               @click="handleChangeStatus(scope.row)">{{ scope.row.effect ? '下线':'上线' }}</div>
+               @click="handleView(scope.row)">查看已有事件</div>
 
-          <el-popover v-model="scope.row.showDelet"
-                      placement="top"
-                      width="160">
-            <p>是否确认删除用例？</p>
-            <div style="text-align: right; margin: 0">
-              <el-button size="mini"
-                         type="text"
-                         @click="scope.row.showDelet = false">取消</el-button>
-              <el-button type="primary"
-                         size="mini"
-                         @click="handleDelete(scope.row)">确定</el-button>
-            </div>
-            <div slot="reference"
-                 class="btn"
-                 style="color:#f56c6c;">删除</div>
-          </el-popover>
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link center-center">
+              ...
+            </span>
+            <el-dropdown-menu slot="dropdown"
+                              class="operate-drop">
+              <el-dropdown-item>
+                <div class="btn"
+                     @click="handleCraeteEvent(scope.row)">
+                  新建事件
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class="btn"
+                     :class="{effect:scope.row.effect}"
+                     @click="handleChangeStatus(scope.row)">
+                  {{ scope.row.effect ? '下线':'上线' }}
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.canDelete">
+                <div class="btn"
+                     style="color:#f56c6c;"
+                     @click="handleDelete(scope.row)">删除</div>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </template>
     </shun-table>
@@ -170,7 +177,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
-          minWidth: 180,
+          minWidth: 150,
           slot: true
         }
       ],
@@ -226,34 +233,45 @@ export default {
         path: '/createUseCase'
       })
     },
+    handleCraeteEvent(row) {
+
+    },
     handleChangeStatus(row) {
-      const data = {
-        id: row.id,
-        effect: !row.effect
-      }
-      changeStatusUseCase(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '操作成功',
-            type: 'success',
-            duration: '3000'
+      this.$confirm(`是否确认【${row.effect ? '下线' : '上线'}】用例（${row.name}）？`)
+        .then(_ => {
+          const data = {
+            id: row.id,
+            effect: !row.effect
+          }
+          changeStatusUseCase(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
           })
-          this.resetAll()
-        }
-      })
+        })
+        .catch(() => { })
     },
 
     handleDelete(row) {
-      delUseCase({ id: row.id }).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '操作成功',
-            type: 'success',
-            duration: '3000'
+      this.$confirm(`是否确认删除用例（${row.name}）？`)
+        .then(_ => {
+          delUseCase({ id: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
           })
-          this.resetAll()
-        }
-      })
+        })
+        .catch(() => { })
     },
 
     handleView(row) {
@@ -293,10 +311,11 @@ export default {
       flex: 1;
     }
   }
-  .operate-btns .status {
-    color: #52c41a;
-    &.effect {
-      color: #f56c6c;
+  .operate-btns {
+    .el-dropdown-link {
+      font-size: 20px;
+      color: $blue;
+      cursor: pointer;
     }
   }
 }

@@ -11,6 +11,11 @@
                class="register step-detail">
             <!-- 事件名称 -->
             <div class="name item">{{ baseInfoDetail.name }}</div>
+            <!-- 用例 -->
+            <el-tag v-show="baseInfoDetail.useCaseName"
+                    class="item"
+                    size="mini">{{ baseInfoDetail.useCaseName }}
+            </el-tag>
             <!-- 事件类型 -->
             <el-tag v-show="baseInfoDetail.categoryValue"
                     class="item"
@@ -138,14 +143,14 @@ const DEFAULT_DATA = {
   baseInfoDetail: {
     // 事件名称
     name: '',
+    // 用例名称
+    useCaseName: '',
     // 类型
     categoryValue: '',
     // 开始日期
     startDate: '',
     // 结束日期
     endDate: '',
-    // 目标数量
-    targetCount: 0,
     // 是否试点
     trial: false,
     // 试点比例
@@ -198,7 +203,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: 2
     }
   },
   computed: {
@@ -237,7 +242,6 @@ export default {
         this.baseInfoDetail.categoryValue = baseInfo.category.label
         this.baseInfoDetail.startDate = baseInfo.startDate
         this.baseInfoDetail.endDate = baseInfo.endDate
-        this.baseInfoDetail.targetCount = baseInfo.eventAchieveCount
         this.baseInfoDetail.trial = baseInfo.trial
         this.baseInfoDetail.sampleValue = baseInfo.sample.label
         this.baseInfoDetail.control = baseInfo.control
