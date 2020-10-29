@@ -94,6 +94,12 @@
               </el-dropdown-item>
               <el-dropdown-item>
                 <div class="btn"
+                     @click="handleEditEvent(scope.row)">
+                  编辑
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class="btn"
                      :class="{effect:scope.row.effect}"
                      @click="handleChangeStatus(scope.row)">
                   {{ scope.row.effect ? '下线':'上线' }}
@@ -231,6 +237,12 @@ export default {
     createUseCase() {
       this.$router.push({
         path: '/createUseCase'
+      })
+    },
+    handleEditEvent(row) {
+      this.$router.push({
+        path: '/createUseCase',
+        query: { id: row.id }
       })
     },
     handleCraeteEvent(row) {
