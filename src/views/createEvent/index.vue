@@ -218,8 +218,6 @@ export default {
   created() {
     if (this.id) {
       this.getStepDetail()
-    } else if (this.useid) {
-      this.getUseCase()
     }
   },
   methods: {
@@ -228,8 +226,6 @@ export default {
       this.$refs[ref].reset()
       if (this.id) {
         this.getStepDetail()
-      } else if (this.useid) {
-        this.getUseCase()
       } else {
         this.baseInfoDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail))
         this.groupDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail))
@@ -239,11 +235,7 @@ export default {
     save() {
       this.$message('还没做')
     },
-    getUseCase() {
-      getUseCaseDetailById({ id: this.useid }).then(res => {
-        this.baseInfoDetail.useCaseName = res.data.name
-      })
-    },
+
     getStepDetail() {
       getEventInfo({ id: this.id }).then(res => {
         const baseInfo = res.data.eventBaseInfo

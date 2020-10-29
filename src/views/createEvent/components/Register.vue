@@ -167,7 +167,7 @@ export default {
       return +this.$route.query.id
     },
     useid() {
-      return +this.$route.query.useid
+      return +this.$route.query.useid || ''
     },
     // 获取数据
     getData() {
@@ -213,15 +213,14 @@ export default {
     }
   },
   created() {
-    this.useCase()
+    this.useCase().then(() => {
+      this.baseInfo.useCaseId = this.useid
+    })
     this.eventCategoryList()
     this.sampleList()
     if (this.id) {
       this.getDetail()
-    } else if (this.useid) {
-      this.getUseCase()
     }
-    window.vue = this
   },
   mounted() {
   },
@@ -229,24 +228,16 @@ export default {
     reset() {
       if (this.id) {
         this.getDetail()
-      } else if (this.useid) {
-        this.getUseCase()
       } else {
         this.baseInfo = JSON.parse(JSON.stringify(DEFAULT_BASEINFO))
         // console.log(DEFAULT_BASEINFO.target)
         // this.baseInfo.target = JSON.parse(JSON.stringify(DEFAULT_BASEINFO.target))
         this.$nextTick(() => {
           this.$refs['regFormRef'].clearValidate()
-          this.resetTargetOpt()
         })
         // this.$refs['regFormRef'].resetFields()
       }
-    },
-    // 获取用例
-    getUseCase() {
-      getUseCaseDetailById({ id: this.useid }).then(res => {
-        this.baseInfo.useCaseId = res.data.id
-      })
+      this.baseInfo.useCaseId = this.useid
     },
     // 获取详情
     getDetail() {
@@ -260,7 +251,6 @@ export default {
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
 
-        this.resetTargetOpt()
         this.baseInfo.trial = data.trial
         this.baseInfo.sample = data.sample.value
         this.baseInfo.control = data.control
@@ -271,12 +261,15 @@ export default {
     },
     // 获取用例
     useCase() {
-      getUseCaseForEvent().then(res => {
-        this.useCaseOpt = res.data.map(n => {
-          return {
-            label: n.name,
-            value: n.id
-          }
+      return new Promise((resolve, reject) => {
+        getUseCaseForEvent().then(res => {
+          this.useCaseOpt = res.data.map(n => {
+            return {
+              label: n.name,
+              value: n.id
+            }
+          })
+          resolve()
         })
       })
     },

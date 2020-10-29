@@ -33,7 +33,7 @@ export const constantRoutes = [
         name: 'UseCase',
         component: () => import('@/views/useCase/index'),
         meta: {
-          title: '用例库', icon: 'list'
+          title: '用例库', icon: 'useCase'
         }
       },
       {
@@ -54,7 +54,7 @@ export const constantRoutes = [
         path: 'eventBoard',
         name: 'EventBoard',
         component: () => import('@/views/eventBoard/index'),
-        meta: { title: '事件看板', icon: 'list' }
+        meta: { title: '事件看板', icon: 'eventList' }
       },
       {
         path: 'eventDetail',

@@ -13,7 +13,7 @@
                     prop="name">
         <el-input v-model="baseInfo.name"
                   show-word-limit
-                  :disabled="id"
+                  :disabled="!!id"
                   maxlength="50" />
       </el-form-item>
       <el-form-item class="target-form-item"
