@@ -269,7 +269,7 @@ export default {
     },
 
     download() {
-      window.open('/assets/template.xlsx', '_blank')
+      window.open('/static/template.xlsx', '_blank')
     },
     handleFileChange(file) {
       this.file = file.raw
