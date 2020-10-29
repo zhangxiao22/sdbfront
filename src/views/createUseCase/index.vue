@@ -1,6 +1,6 @@
 <template>
   <div class="container shun-card">
-    <el-page-header content="新建用例"
+    <el-page-header :content="id?'编辑用例':'新建用例'"
                     @back="goBack" />
     <el-form ref="regFormRef"
              :model="baseInfo"
@@ -13,6 +13,7 @@
                     prop="name">
         <el-input v-model="baseInfo.name"
                   show-word-limit
+                  :disabled="id"
                   maxlength="50" />
       </el-form-item>
       <el-form-item class="target-form-item"
@@ -88,7 +89,7 @@
 
 <script>
 import { MAX_NUMBER } from '@/utils'
-import { getTargetList, saveUseCase } from '@/api/api'
+import { getTargetList, saveUseCase, getUseCaseDetailById } from '@/api/api'
 
 export default {
   name: 'Register',
@@ -110,13 +111,13 @@ export default {
     }
   },
   computed: {
-    // id() {
-    //   return this.$route.query.id
-    // },
+    id() {
+      return this.$route.query.id
+    },
     // 获取数据
     getData() {
       const data = {}
-      // data.id = this.id
+      data.id = this.id
       data.name = this.baseInfo.name
       // 目标
       data.useCaseAchieveList = this.baseInfo.target.map(n => {
@@ -135,7 +136,7 @@ export default {
   created() {
     this.targetList().then(() => {
       if (this.id) {
-        this.getDetail()
+        this.getUseCaseById()
       }
     })
   },
@@ -153,6 +154,26 @@ export default {
       this.$nextTick(() => {
         this.$refs['regFormRef'].resetFields()
         this.resetTargetOpt()
+      })
+    },
+    getUseCaseById() {
+      getUseCaseDetailById({ id: this.id }).then(res => {
+        this.baseInfo.name = res.data.name
+        // 目标
+        this.baseInfo.target = res.data.achieveList.map(item => {
+          let obj = this.targetOpt.find(n => {
+            if (n.value === item.tagId) {
+              obj = n
+              return true
+            }
+          })
+          return Object.assign({}, obj, {
+            targetSelect: item.tagId,
+            targetValue: item.value
+          })
+        })
+        this.resetTargetOpt()
+        this.baseInfo.desc = res.data.description
       })
     },
     save() {

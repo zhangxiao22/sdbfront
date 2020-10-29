@@ -298,3 +298,12 @@ export function saveUseCase(data) {
   })
 }
 
+// 根据id获取用例
+export function getUseCaseDetailById(data) {
+  return request({
+    url: '/event/getUseCaseDetailById',
+    method: 'post',
+    data
+  })
+}
+

@@ -10,7 +10,8 @@
           <div slot="description"
                class="register step-detail">
             <!-- 事件名称 -->
-            <div class="name item">{{ baseInfoDetail.name }}</div>
+            <div v-show="baseInfoDetail.name"
+                 class="name item">{{ baseInfoDetail.name }}</div>
             <!-- 用例 -->
             <div v-show="baseInfoDetail.useCaseName"
                  class="item"
@@ -138,7 +139,7 @@
 
 import { Register, CustomerGroups, Ploy, Preview } from './components'
 // import { mapGetters } from 'vuex'
-import { eventPublish, getEventInfo } from '@/api/api'
+import { eventPublish, getEventInfo, getUseCaseDetailById } from '@/api/api'
 const DEFAULT_DATA = {
   baseInfoDetail: {
     // 事件名称
@@ -209,11 +210,16 @@ export default {
   computed: {
     id() {
       return +this.$route.query.id
+    },
+    useid() {
+      return +this.$route.query.useid
     }
   },
   created() {
     if (this.id) {
       this.getStepDetail()
+    } else if (this.useid) {
+      this.getUseCase()
     }
   },
   methods: {
@@ -222,6 +228,8 @@ export default {
       this.$refs[ref].reset()
       if (this.id) {
         this.getStepDetail()
+      } else if (this.useid) {
+        this.getUseCase()
       } else {
         this.baseInfoDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail))
         this.groupDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail))
@@ -230,6 +238,11 @@ export default {
     },
     save() {
       this.$message('还没做')
+    },
+    getUseCase() {
+      getUseCaseDetailById({ id: this.useid }).then(res => {
+        this.baseInfoDetail.useCaseName = res.data.name
+      })
     },
     getStepDetail() {
       getEventInfo({ id: this.id }).then(res => {
@@ -240,6 +253,7 @@ export default {
         // 基本信息
         this.baseInfoDetail.name = baseInfo.name
         this.baseInfoDetail.categoryValue = baseInfo.category.label
+        this.baseInfoDetail.useCaseName = baseInfo.useCaseName
         this.baseInfoDetail.startDate = baseInfo.startDate
         this.baseInfoDetail.endDate = baseInfo.endDate
         this.baseInfoDetail.trial = baseInfo.trial
@@ -359,8 +373,8 @@ export default {
       align-items: flex-start;
 
       .item {
-        margin-top: 10px;
-        &:first-child {
+        margin-bottom: 10px;
+        &:last-child {
           margin-top: 0;
         }
       }

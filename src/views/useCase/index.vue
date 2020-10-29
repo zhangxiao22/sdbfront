@@ -246,7 +246,11 @@ export default {
       })
     },
     handleCraeteEvent(row) {
-
+      this.$router.push({
+        path: '/createEvent', query: {
+          useid: row.id
+        }
+      })
     },
     handleChangeStatus(row) {
       this.$confirm(`是否确认【${row.effect ? '下线' : '上线'}】用例（${row.name}）？`)

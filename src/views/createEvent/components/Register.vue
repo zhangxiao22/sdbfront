@@ -115,7 +115,7 @@
 import Info from '@/components/Info'
 import { mapGetters } from 'vuex'
 import { parseTime, MAX_NUMBER } from '@/utils'
-import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList, getUseCaseForEvent } from '@/api/api'
+import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList, getUseCaseForEvent, getUseCaseDetailById } from '@/api/api'
 
 const DEFAULT_BASEINFO = {
   name: '',
@@ -166,6 +166,9 @@ export default {
     id() {
       return +this.$route.query.id
     },
+    useid() {
+      return +this.$route.query.useid
+    },
     // 获取数据
     getData() {
       const data = {}
@@ -215,6 +218,8 @@ export default {
     this.sampleList()
     if (this.id) {
       this.getDetail()
+    } else if (this.useid) {
+      this.getUseCase()
     }
     window.vue = this
   },
@@ -224,6 +229,8 @@ export default {
     reset() {
       if (this.id) {
         this.getDetail()
+      } else if (this.useid) {
+        this.getUseCase()
       } else {
         this.baseInfo = JSON.parse(JSON.stringify(DEFAULT_BASEINFO))
         // console.log(DEFAULT_BASEINFO.target)
@@ -234,6 +241,12 @@ export default {
         })
         // this.$refs['regFormRef'].resetFields()
       }
+    },
+    // 获取用例
+    getUseCase() {
+      getUseCaseDetailById({ id: this.useid }).then(res => {
+        this.baseInfo.useCaseId = res.data.id
+      })
     },
     // 获取详情
     getDetail() {
