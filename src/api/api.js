@@ -308,11 +308,11 @@ export function editUseCase(data) {
 }
 
 // 根据id获取用例
-export function getUseCaseDetailById(data) {
+export function getUseCaseDetailById(params) {
   return request({
     url: '/event/getUseCaseDetailById',
-    method: 'post',
-    data
+    method: 'get',
+    params
   })
 }
 
