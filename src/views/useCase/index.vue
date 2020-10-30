@@ -92,7 +92,7 @@
                   新建事件
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.canModify">
                 <div class="btn"
                      @click="handleEditEvent(scope.row)">
                   编辑
@@ -123,7 +123,7 @@ import ShunTable from '@/components/ShunTable/index'
 import { getUseCaseList, delUseCase, changeStatusUseCase } from '@/api/api'
 
 export default {
-  name: 'Product',
+  name: 'UseCase',
   components: {
     ShunTable
   },

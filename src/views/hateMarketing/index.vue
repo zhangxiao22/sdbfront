@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="事件看板"
+                title="厌恶营销名单"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -86,11 +86,37 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
+        <el-upload ref="uploadRef"
+                   class="upload"
+                   :http-request="uploadFile"
+                   :accept="accept.map(n => `.${n}`)"
+                   action="">
+          <el-button class="button"
+                     type="primary">
+            全量更新
+          </el-button>
+        </el-upload>
+        <el-upload ref="uploadRef"
+                   :http-request="uploadFile"
+                   :accept="accept.map(n => `.${n}`).join(',')"
+                   action="">
+          <el-button class="button"
+                     type="primary">
+            批量更新
+          </el-button>
+        </el-upload>
         <el-button class="button"
                    type="primary"
                    @click="createEvent">
-          新建营销事件
+          批量下载
         </el-button>
+        <el-button class="button"
+                   type="primary"
+                   @click="createEvent">
+          全部下载
+        </el-button>
+        <el-link type="primary"
+                 @click="download">模版下载</el-link>
       </template>
       <template v-slot:nameSlot="scope">
         <div class="name-group">
@@ -127,10 +153,10 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent } from '@/api/api'
+import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent, uploadFile } from '@/api/api'
 
 export default {
-  name: 'Product',
+  name: 'HateMarketing',
   components: {
     ShunTable
   },
@@ -165,6 +191,7 @@ export default {
         useCaseId: +this.$route.query.id || '',
         dateRange: []
       },
+      accept: ['xls', 'xlsx', 'csv'],
       // 表格下拉filters值
       // filters: [],
       // tabFilters: [],
@@ -274,25 +301,71 @@ export default {
     getStatus() {
       return new Promise((resolve) => {
         getEventStatus().then(res => {
-          const total = {
-            id: 'all',
-            name: '全部',
-            count: 0,
-            color: this.totalColor,
-            children: []
-          }
+          // const total = {
+          //   id: 'all',
+          //   name: '全部',
+          //   count: 0,
+          //   color: this.totalColor,
+          //   children: []
+          // }
           this.tabList = []
           res.data.forEach((n, i) => {
-            total.children.push(...n.children)
+            // total.children.push(...n.children)
             this.tabList.push(Object.assign({}, n, {
               color: this.colors[i],
               count: 0
             }))
           })
-          this.tabList.unshift(total)
+          // this.tabList.unshift(total)
           resolve()
         })
       })
+    },
+    resetFile() {
+      this.file = ''
+      this.$refs.uploadRef.clearFiles()
+    },
+    uploadFile() {
+      const index = this.file.name.lastIndexOf('.')
+      const suffix = this.file.name.substr(index + 1)
+      // console.log(suffix)
+      if (!this.accept.includes(suffix)) {
+        this.$message({
+          message: '请上传正确的文件格式',
+          type: 'error',
+          duration: '5000'
+        })
+        this.resetFile()
+        return
+      } else {
+        const formData = new FormData()
+        formData.append('file', this.file)
+        formData.append('baseId', this.id)
+        this.$parent.mainLoading = true
+        uploadFile(formData).then(res => {
+          // console.log(res)
+          this.fileId = res.data.fileId
+          this.fileName = res.data.fileName
+          this.customerCount = res.data.recordNum
+          this.updateTime = res.data.uploadTime
+          this.tableData = res.data.groupInfoWithCount.map((n) => {
+            return Object.assign({}, n, {
+              desc: '',
+              _desc: '',
+              isEdit: false,
+              isHover: false
+            })
+          })
+          this.$parent.mainLoading = false
+        }).catch(() => {
+          this.resetFile()
+          this.$parent.mainLoading = false
+        })
+      }
+    },
+    // 下载模版
+    download() {
+      window.open('/static/template.xlsx', '_blank')
     },
     tabClick(tabIndex) {
       this.tabValue = tabIndex + ''
@@ -324,7 +397,8 @@ export default {
     },
     getColor(subId) {
       return this.tabList.find(n => {
-        return n.id !== 'all' && n.children.find(m => {
+        return n.children.find(m => {
+          //  return n.id !== 'all' && n.children.find(m => {
           return m.value === subId
         })
       }).color
@@ -360,16 +434,12 @@ export default {
       // this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getEventList(data).then(res => {
-        this.tableData = res.data.resultList.map(n => {
-          return Object.assign({}, n.eventBaseInfo, {
-            useCase: n.useCase
-          })
-        })
+        this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
         this.tabList.forEach(n => {
-          if (n.id === 'all') {
-            n.count = res.data.totalCount
-          }
+          // if (n.id === 'all') {
+          //   n.count = res.data.totalCount
+          // }
           res.data.count.forEach(m => {
             if (n.id === m.id) {
               n.count = m.totalCount
@@ -403,6 +473,10 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  .upload {
+    width: 50px;
+    margin: 0 auto;
+  }
   .name-group {
     // padding-top: 5px;
     .top {

@@ -89,10 +89,10 @@
 
 <script>
 import { MAX_NUMBER } from '@/utils'
-import { getTargetList, saveUseCase, getUseCaseDetailById } from '@/api/api'
+import { getTargetList, saveUseCase, getUseCaseDetailById, editUseCase } from '@/api/api'
 
 export default {
-  name: 'Register',
+  name: 'CreateUseCase',
   components: {
   },
   data() {
@@ -179,16 +179,29 @@ export default {
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
-          saveUseCase(this.getData).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.goBack()
-            }
-          })
+          if (this.id) {
+            editUseCase(this.getData).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.goBack()
+              }
+            })
+          } else {
+            saveUseCase(this.getData).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.goBack()
+              }
+            })
+          }
         }
       })
     },
