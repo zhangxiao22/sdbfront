@@ -298,6 +298,15 @@ export function saveUseCase(data) {
   })
 }
 
+// 修改用例
+export function editUseCase(data) {
+  return request({
+    url: '/event/changeUseCase',
+    method: 'post',
+    data
+  })
+}
+
 // 根据id获取用例
 export function getUseCaseDetailById(data) {
   return request({
