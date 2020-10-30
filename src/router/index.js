@@ -118,6 +118,19 @@ export const asyncRoutes = [
       }
     ]
   },
+  // 设置
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'config',
+        name: 'Config',
+        component: () => import('@/views/config/index'),
+        meta: { title: '系统配置', icon: 'config', roles: ['boss'] }
+      }
+    ]
+  },
 
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
