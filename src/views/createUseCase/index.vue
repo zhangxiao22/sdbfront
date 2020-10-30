@@ -179,29 +179,22 @@ export default {
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
+          let ajax
           if (this.id) {
-            editUseCase(this.getData).then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.goBack()
-              }
-            })
+            ajax = editUseCase
           } else {
-            saveUseCase(this.getData).then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.goBack()
-              }
-            })
+            ajax = saveUseCase
           }
+          ajax(this.getData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.goBack()
+            }
+          })
         }
       })
     },

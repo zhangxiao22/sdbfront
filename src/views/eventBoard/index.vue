@@ -360,11 +360,13 @@ export default {
       // this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getEventList(data).then(res => {
-        this.tableData = res.data.resultList.map(n => {
-          return Object.assign({}, n.eventBaseInfo, {
-            useCase: n.useCase
+        this.tableData = res.data.resultList
+          .map(n => {
+            return Object.assign({}, n.eventBaseInfo, {
+              group: n.customerInfoVOList,
+              useCase: n.useCase
+            })
           })
-        })
         this.total = res.pagination.totalItemCount
         this.tabList.forEach(n => {
           if (n.id === 'all') {
