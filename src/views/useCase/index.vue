@@ -86,7 +86,7 @@
             </span>
             <el-dropdown-menu slot="dropdown"
                               class="operate-drop">
-              <el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.effect">
                 <div class="btn"
                      @click="handleCraeteEvent(scope.row)">
                   新建事件
@@ -171,8 +171,8 @@ export default {
           slot: true
         },
         {
-          prop: 'createTime',
-          label: '创建时间',
+          prop: 'modifyTime',
+          label: '修改时间',
           width: 180
         },
         {
