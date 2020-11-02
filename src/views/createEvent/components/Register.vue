@@ -214,7 +214,7 @@ export default {
   },
   created() {
     this.useCase().then(() => {
-      this.baseInfo.useCaseId = this.useid
+      this.useid && (this.baseInfo.useCaseId = this.useid)
     })
     this.eventCategoryList()
     this.sampleList()
