@@ -50,17 +50,6 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="创建人："
-                        prop="userId">
-            <el-select v-model="filterForm.userId"
-                       clearable
-                       placeholder="请选择">
-              <el-option v-for="item in ownerOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
 
           <el-form-item label="日期范围："
                         prop="dateRange">
@@ -89,7 +78,7 @@
         <el-upload ref="uploadRef"
                    class="upload"
                    :http-request="uploadFile"
-                   :accept="accept.map(n => `.${n}`)"
+                   :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
           <el-button class="button"
                      type="primary">
@@ -153,7 +142,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent, uploadFile } from '@/api/api'
+import { getEventList, getEventCategory, getEventStatus, getUseCaseForEvent, uploadFile } from '@/api/api'
 
 export default {
   name: 'HateMarketing',
@@ -163,7 +152,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     },
     // 是否多选
     multiple: {
@@ -187,7 +176,6 @@ export default {
       filterForm: {
         name: '',
         category: '',
-        userId: '',
         useCaseId: +this.$route.query.id || '',
         dateRange: []
       },
@@ -202,7 +190,19 @@ export default {
       ownerOpt: [],
       totalColor: '#224191',
       colors: ['#ff9900', '#1890FF', '#67c23a', '#aaaaaa'],
-      tabList: [],
+      tabList: [{
+        id: 'crm',
+        name: 'CRM',
+        count: 0,
+        color: '#ff9900',
+        children: []
+      }, {
+        id: 'sms',
+        name: '短信',
+        count: 0,
+        color: '#1890FF',
+        children: []
+      }],
       tabValue: '0',
       tableColumnList: [
         {
@@ -250,7 +250,6 @@ export default {
   watch: {},
   created() {
     this.eventCategoryList()
-    this.getOwner()
     this.useCase()
     this.getStatus().then(res => {
       this.tabClick(0)
@@ -286,41 +285,30 @@ export default {
         this.categoryOpt = res.data.eventCategoryEnumList
       })
     },
-    // 获取创建人
-    getOwner() {
-      getEventOwner().then(res => {
-        this.ownerOpt = res.data.map(n => {
-          return {
-            value: n.id,
-            label: n.userName
-          }
-        })
-      })
-    },
     // 获取状态
-    getStatus() {
-      return new Promise((resolve) => {
-        getEventStatus().then(res => {
-          // const total = {
-          //   id: 'all',
-          //   name: '全部',
-          //   count: 0,
-          //   color: this.totalColor,
-          //   children: []
-          // }
-          this.tabList = []
-          res.data.forEach((n, i) => {
-            // total.children.push(...n.children)
-            this.tabList.push(Object.assign({}, n, {
-              color: this.colors[i],
-              count: 0
-            }))
-          })
-          // this.tabList.unshift(total)
-          resolve()
-        })
-      })
-    },
+    // getStatus() {
+    //   return new Promise((resolve) => {
+    //     getEventStatus().then(res => {
+    //       // const total = {
+    //       //   id: 'all',
+    //       //   name: '全部',
+    //       //   count: 0,
+    //       //   color: this.totalColor,
+    //       //   children: []
+    //       // }
+    //       this.tabList = []
+    //       res.data.forEach((n, i) => {
+    //         // total.children.push(...n.children)
+    //         this.tabList.push(Object.assign({}, n, {
+    //           color: this.colors[i],
+    //           count: 0
+    //         }))
+    //       })
+    //       // this.tabList.unshift(total)
+    //       resolve()
+    //     })
+    //   })
+    // },
     resetFile() {
       this.file = ''
       this.$refs.uploadRef.clearFiles()
@@ -328,7 +316,7 @@ export default {
     uploadFile() {
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
-      // console.log(suffix)
+      console.log(suffix)
       if (!this.accept.includes(suffix)) {
         this.$message({
           message: '请上传正确的文件格式',
@@ -435,6 +423,12 @@ export default {
       this.loading = true
       getEventList(data).then(res => {
         this.tableData = res.data.resultList
+          .map(n => {
+            return Object.assign({}, n.eventBaseInfo, {
+              group: n.customerInfoVOList,
+              useCase: n.useCase
+            })
+          })
         this.total = res.pagination.totalItemCount
         this.tabList.forEach(n => {
           // if (n.id === 'all') {
@@ -473,10 +467,10 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  .upload {
-    width: 50px;
-    margin: 0 auto;
-  }
+  // .upload {
+  //   width: 50px;
+  //   margin: 0 auto;
+  // }
   .name-group {
     // padding-top: 5px;
     .top {
