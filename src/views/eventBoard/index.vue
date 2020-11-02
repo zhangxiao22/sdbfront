@@ -126,7 +126,7 @@
 </template>
 
 <script>
-import ShunTable from '@/components/ShunTable/index'
+import ShunTable from '@/components/ShunTable'
 import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent } from '@/api/api'
 
 export default {

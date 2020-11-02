@@ -1,17 +1,22 @@
 <template>
   <div class="shun-table-container">
     <!-- 表格名字 + 一个全局按钮（如新增） -->
-    <div class="title-container">
-      <div class="title">{{ title }}</div>
+    <div v-if="title || $slots['main-buttons']"
+         class="title-container">
+      <div v-if="title"
+           class="title">{{ title }}</div>
       <slot name="main-buttons" />
     </div>
     <!-- 筛选条件 -->
-    <div class="filter-container-box shun-card">
+    <div v-if="$slots.filter"
+         class="filter-container-box"
+         :class="{'shun-card card': isCard}">
       <slot name="filter" />
     </div>
     <!-- 表格 -->
     <div v-loading="loading"
-         class="table-container shun-card">
+         class="table-container"
+         :class="{'shun-card card': isCard}">
       <el-alert v-show="selection.length"
                 :title="`已选择 ${selection.length} 项`"
                 style="margin:10px 0;"
@@ -20,7 +25,8 @@
                 show-icon
                 @close="handleClearSelection" />
       <!-- {{ tabValue }} -->
-      <el-tabs :value="tabValue"
+      <el-tabs v-if="tabList.length"
+               :value="tabValue"
                @tab-click="handleTabClick">
         <el-tab-pane v-for="item of tabList"
                      :key="item.value">
@@ -74,7 +80,8 @@
       </el-table>
       <!-- {{ selection.map(n => n.id) }} -->
       <!-- {{ currentPage }}{{ pageSize }} -->
-      <el-pagination :current-page="currentPage"
+      <el-pagination v-if="showPagination"
+                     :current-page="currentPage"
                      background
                      style="margin-top:10px;text-align:right;"
                      :page-sizes="[5, 10, 20, 30]"
@@ -91,6 +98,16 @@
 export default {
   name: 'ShunTable',
   props: {
+    // 是否以卡片形式展示（默认是）
+    isCard: {
+      type: Boolean,
+      default: true
+    },
+    // 是否使用翻页
+    showPagination: {
+      type: Boolean,
+      default: true
+    },
     // 每页显示条数
     pageSize: {
       type: Number,
@@ -181,6 +198,7 @@ export default {
   created() {
   },
   mounted() {
+
   },
   methods: {
     clearFilter() {
@@ -308,18 +326,20 @@ export default {
       font-size: 18px;
       color: #303133;
       font-weight: bold;
+      margin-right: 12px;
     }
 
     .button {
-      margin-left: 12px;
+      margin-right: 12px;
     }
   }
   .filter-container-box {
     margin-bottom: 10px;
-    padding: 0 16px;
     overflow: hidden;
+    &.card {
+      padding: 20px 16px 0;
+    }
     ::v-deep .filter-container {
-      margin-top: 20px;
       margin-right: -20px;
       overflow-x: hidden;
       .filter-item-end {
@@ -330,7 +350,9 @@ export default {
 }
 .table-container {
   flex: 1;
-  padding: 6px 16px 16px;
+  &.card {
+    padding: 6px 16px 16px;
+  }
 
   ::v-deep .el-tabs__nav-wrap::after {
     content: none;

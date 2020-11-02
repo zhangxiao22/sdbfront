@@ -42,7 +42,7 @@
 </template>
 
 <script>
-import ShunTable from '@/components/ShunTable/index'
+import ShunTable from '@/components/ShunTable'
 import { getInterestList } from '@/api/api'
 export default {
   name: 'Product',
