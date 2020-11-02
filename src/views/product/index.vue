@@ -422,9 +422,6 @@ const SELF_COLUMN_LIST = [
   }
 ]
 
-import ShunTable from '@/components/ShunTable'
-import { getProductList, getProductCategoryList } from '@/api/api'
-
 export default {
   name: 'Product',
   components: {
