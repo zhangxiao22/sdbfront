@@ -26,7 +26,7 @@
                       prefix-icon="el-icon-search"
                       @keyup.enter.native="search" />
           </el-form-item>
-          <el-form-item label="产品类型："
+          <!-- <el-form-item label="产品类型："
                         prop="category">
             <el-select v-model="filterForm.category"
                        clearable
@@ -37,11 +37,33 @@
                          :label="item.label"
                          :value="item.value" />
             </el-select>
+          </el-form-item> -->
+          <el-form-item label="产品类型:"
+                        prop="useCase"
+                        class="block">
+            <el-cascader v-model="filterForm.category"
+                         :options="categoryOpt"
+                         clearable
+                         style="width:300px"
+                         @change="handleChange" />
           </el-form-item>
-          <el-form-item label="归属用例："
+          <!-- <el-form-item label="归属用例："
                         prop="useCase">
             <el-select v-model="filterForm.useCase"
                        clearable
+                       placeholder="请选择"
+                       @change="handleChangeCategory">
+              <el-option v-for="item in categoryOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item> -->
+          <el-form-item label="归属用例:"
+                        prop="useCase">
+            <el-select v-model="filterForm.useCase"
+                       clearable
+                       multiple
                        placeholder="请选择"
                        @change="handleChangeCategory">
               <el-option v-for="item in categoryOpt"
@@ -458,7 +480,7 @@ export default {
       },
       accept: ['xls', 'xlsx', 'csv'],
       categoryOpt: [
-        { label: '理财', value: 1 },
+        { label: '理财', value: 1, children: [{ label: '理财', value: 1 }] },
         { label: '2', value: 2 },
         { label: '3', value: 3 },
         { label: '4', value: 4 },
