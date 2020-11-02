@@ -116,7 +116,7 @@
 
 <script>
 import Info from '@/components/Info'
-import Group from './Group'
+// import Group from './Group'
 import Sortable from 'sortablejs'
 import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount, saveGroup, getGroup } from '@/api/api'
 import { getToken } from '@/utils/auth'

@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import ShunTable from '@/components/ShunTable/index'
+import ShunTable from '@/components/ShunTable'
 import { getWordList, getWordCategory } from '@/api/api'
 export default {
   name: 'Product',

@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import ShunTable from '@/components/ShunTable/index'
+import ShunTable from '@/components/ShunTable'
 import { getProductList, getProductCategoryList } from '@/api/api'
 
 export default {
@@ -182,8 +182,7 @@ export default {
   watch: {},
   created() {
     this.getList(1)
-    this.productCategoryList()
-    window.vue = this
+    // this.productCategoryList()
   },
   methods: {
     resetAll() {
