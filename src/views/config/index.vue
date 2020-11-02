@@ -1,10 +1,12 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="3"
+             value="0"
              type="border-card"
              style="height: 100%;">
-      <el-tab-pane label="防打扰">防打扰</el-tab-pane>
+      <el-tab-pane label="防打扰">
+        <NotDisturb />
+      </el-tab-pane>
       <el-tab-pane label="分配比例">分配比例</el-tab-pane>
       <el-tab-pane label="优先级">优先级</el-tab-pane>
       <el-tab-pane label="分配角色">
@@ -16,9 +18,11 @@
 
 <script>
 import Assign from './assign'
+import NotDisturb from './notDisturb'
 export default {
   components: {
-    Assign
+    Assign,
+    NotDisturb
   },
 
   data() {

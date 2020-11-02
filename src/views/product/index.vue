@@ -38,9 +38,10 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="归属用例："
+          <el-form-item label="产品用例："
                         prop="useCase">
             <el-select v-model="filterForm.useCase"
+                       multiple
                        clearable
                        placeholder="请选择"
                        @change="handleChangeCategory">
@@ -67,7 +68,7 @@
       <template v-slot:main-buttons>
         <el-upload ref="uploadRef"
                    class="upload"
-                   :http-request="uploadFile"
+                   :http-request="handleUploadFile"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
           <el-button class="button"
@@ -119,7 +120,7 @@ const COMMON_COLUMN_LIST = [
   },
   {
     prop: 'useCaseSearch',
-    label: '所属用例',
+    label: '产品用例',
     minWidth: 100,
     slot: true
   }
@@ -454,9 +455,9 @@ export default {
       filterForm: {
         name: '',
         category: '',
-        useCase: ''
+        useCase: []
       },
-      accept: ['xls', 'xlsx', 'csv'],
+      accept: ['xls', 'xlsx'],
       categoryOpt: [
         { label: '理财', value: 1 },
         { label: '2', value: 2 },
@@ -517,7 +518,7 @@ export default {
       }
     },
     // 上传产品
-    uploadFile() {
+    handleUploadFile() {
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
       console.log(suffix)
@@ -557,7 +558,7 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/template.xlsx', '_blank')
+      window.open('', '_blank')
     },
     // 获取产品类型
     productCategoryList() {
@@ -592,9 +593,5 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  .upload {
-    width: 1000px;
-    margin: 0 auto;
-  }
 }
 </style>
