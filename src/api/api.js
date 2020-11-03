@@ -13,7 +13,7 @@ export function getUserInfo(params) {
 // 获取产品列表
 export function getProductList(data) {
   return request({
-    url: '/resource/select',
+    url: '/resource/selectProduct',
     method: 'post',
     data
   })
@@ -22,7 +22,16 @@ export function getProductList(data) {
 // 获取产品分类
 export function getProductCategoryList() {
   return request({
-    url: api3 + '/resource/getProductCategoryList',
+    url: '/resource/getCategoryList',
+    method: 'get'
+  })
+}
+
+// 获取产品用例
+// 获取产品分类
+export function getAttributionUseCaseEnumList() {
+  return request({
+    url: '/resource/getAttributionUseCaseEnumList',
     method: 'get'
   })
 }

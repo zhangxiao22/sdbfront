@@ -39,34 +39,21 @@
             </el-select>
           </el-form-item> -->
           <el-form-item label="产品类型:"
-                        prop="useCase"
+                        prop="category"
                         class="block">
             <el-cascader v-model="filterForm.category"
                          :options="categoryOpt"
-                         clearable
-                         style="width:300px"
-                         @change="handleChange" />
+                         :props="{ checkStrictly: true }"
+                         clearable />
           </el-form-item>
-          <!-- <el-form-item label="归属用例："
+          <el-form-item label="产品用例："
                         prop="useCase">
-            <el-select v-model="filterForm.useCase"
-                       clearable
-                       placeholder="请选择"
-                       @change="handleChangeCategory">
-              <el-option v-for="item in categoryOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item> -->
-          <el-form-item label="归属用例:"
-                        prop="useCase">
-            <el-select v-model="filterForm.useCase"
-                       clearable
+            <el-select v-model="filterForm.attributionUseCaseList"
                        multiple
+                       clearable
                        placeholder="请选择"
                        @change="handleChangeCategory">
-              <el-option v-for="item in categoryOpt"
+              <el-option v-for="item in useCaseList"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value" />
@@ -89,7 +76,7 @@
       <template v-slot:main-buttons>
         <el-upload ref="uploadRef"
                    class="upload"
-                   :http-request="uploadFile"
+                   :http-request="handleUploadFile"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
           <el-button class="button"
@@ -100,18 +87,18 @@
         <el-link type="primary"
                  @click="download">模版下载</el-link>
       </template>
-      <template v-slot:useCaseSearchSlot="scope">
+      <template v-slot:attributionUseCaseListSlot="scope">
         <el-tooltip placement="top-start">
           <div slot="content">
-            <div v-for="(item,i) of scope.row.achieveList"
+            <div v-for="(item,i) of scope.row.attributionUseCaseList"
                  :key="i"
                  style="margin:5px 0;">
-              {{ item.name }} {{ item.riskLevel.label }}
+              {{ item.label }}
             </div>
           </div>
           <div class="name-group">
             <!-- {{ scope.row.achieveList.length }}个目标 -->
-            {{ scope.row }}个用例
+            {{ scope.row.attributionUseCaseList.length }}个用例
           </div>
         </el-tooltip>
 
@@ -122,7 +109,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { getProductList, getProductCategoryList, uploadFile } from '@/api/api'
+import { getProductList, getProductCategoryList, uploadFile, getAttributionUseCaseEnumList } from '@/api/api'
 const COMMON_COLUMN_LIST = [
   {
     prop: 'name',
@@ -130,18 +117,18 @@ const COMMON_COLUMN_LIST = [
     minWidth: 100
   },
   {
-    prop: 'classify.label',
+    prop: 'firstCategory.label',
     label: '产品一级分类',
     minWidth: 120
   },
   {
-    prop: 'classify.label',
+    prop: 'secondCategory.label',
     label: '产品二级分类',
     minWidth: 120
   },
   {
-    prop: 'useCaseSearch',
-    label: '所属用例',
+    prop: 'attributionUseCaseList',
+    label: '产品用例',
     minWidth: 100,
     slot: true
   }
@@ -475,21 +462,12 @@ export default {
       total: 0,
       filterForm: {
         name: '',
-        category: '',
-        useCase: ''
+        category: [],
+        attributionUseCaseList: []
       },
-      accept: ['xls', 'xlsx', 'csv'],
-      categoryOpt: [
-        { label: '理财', value: 1, children: [{ label: '理财', value: 1 }] },
-        { label: '2', value: 2 },
-        { label: '3', value: 3 },
-        { label: '4', value: 4 },
-        { label: '5', value: 5 },
-        { label: '6', value: 6 },
-        { label: '7', value: 7 },
-        { label: '8', value: 8 },
-        { label: '9', value: 9 }
-      ],
+      accept: ['xls', 'xlsx'],
+      categoryOpt: [],
+      useCaseList: [],
       searchForm: {},
       tableColumnList: COMMON_COLUMN_LIST,
       tableData: [],
@@ -505,9 +483,11 @@ export default {
 
   watch: {},
   created() {
-    // this.productCategoryList()
+    this.productCategoryList()
+    this.attributionUseCaseEnumList()
     this.getList(1)
-    // this.productCategoryList()
+    console.log(123)
+    console.log(this.tableData)
   },
   methods: {
     resetAll() {
@@ -519,17 +499,20 @@ export default {
       this.search()
     },
     search() {
-      this.searchForm = {
-        name: this.filterForm.name,
-        category: this.filterForm.category || null,
-        classify: this.filterForm.classify || null,
-        useCase: this.filterForm.useCase || null
-      }
-      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      // this.searchForm = {
+      //   name: this.filterForm.name,
+      //   firstCategory: this.filterForm.category[0] || null,
+      //   secondCategory: this.filterForm.category[1] || null,
+      //   attributionUseCaseList: this.filterForm.attributionUseCaseEnumList
+      // }
+      this.searchForm = Object.assign({}, JSON.parse(JSON.stringify(this.filterForm)), {
+        secondCategory: this.filterForm.category[1] || null,
+        firstCategory: this.filterForm.category[0] || null
+      })
       this.getList(1)
       if (this.filterForm.category) {
         SELF_COLUMN_LIST.find(n => {
-          if (n.type === this.filterForm.category) {
+          if (n.type === this.filterForm.category[0]) {
             this.tableColumnList = [...COMMON_COLUMN_LIST, ...n.columnList]
             return true
           }
@@ -539,7 +522,7 @@ export default {
       }
     },
     // 上传产品
-    uploadFile() {
+    handleUploadFile() {
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
       console.log(suffix)
@@ -579,12 +562,35 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/template.xlsx', '_blank')
+      window.open('', '_blank')
     },
     // 获取产品类型
     productCategoryList() {
+      // function setTreeData(data) {
+      //   for (var i = 0; i < data.length; i++) {
+      //     if (data[i].children.length < 1) {
+      //       data[i].children = undefined
+      //     } else {
+      //       setTreeData(data[i].child)
+      //     }
+      //   }
+      //   return data
+      // }
       getProductCategoryList().then(res => {
-        this.categoryOpt = res.data
+        this.categoryOpt = res.data.map((n) => {
+          return Object.assign({}, {
+            label: n.firstCategory.label,
+            value: n.firstCategory.value,
+            children: n.secondCategoryList
+          })
+        })
+      })
+    },
+
+    // 获取产品用例getAttributionUseCaseEnumList
+    attributionUseCaseEnumList() {
+      getAttributionUseCaseEnumList().then(res => {
+        this.useCaseList = res.data
       })
     },
     getList(pageNo) {
@@ -596,7 +602,13 @@ export default {
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getProductList(data).then(res => {
-        this.tableData = res.data.resultList
+        this.tableData = res.data.resultList.map((n) => {
+          if (n.attributionUseCaseList !== null) {
+            return Object.assign({}, n.extraField, n)
+          } else {
+            return Object.assign({}, Object.assign({}, n.extraField, n), { attributionUseCaseList: [] })
+          }
+        })
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
@@ -614,9 +626,5 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  .upload {
-    width: 1000px;
-    margin: 0 auto;
-  }
 }
 </style>
