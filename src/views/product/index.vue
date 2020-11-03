@@ -12,6 +12,21 @@
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
+      <template v-slot:main-buttons>
+        <el-upload ref="uploadRef"
+                   class="upload"
+                   :http-request="handleUploadFile"
+                   :accept="accept.map(n => `.${n}`).join(',')"
+                   action="">
+          <el-button class="button"
+                     icon="el-icon-upload"
+                     type="primary">
+            批量上传
+          </el-button>
+        </el-upload>
+        <el-link type="primary"
+                 @click="download">模版下载</el-link>
+      </template>
       <template v-slot:filter>
         <el-form ref="filterRef"
                  :inline="true"
@@ -26,34 +41,22 @@
                       prefix-icon="el-icon-search"
                       @keyup.enter.native="search" />
           </el-form-item>
-          <!-- <el-form-item label="产品类型："
-                        prop="category">
-            <el-select v-model="filterForm.category"
-                       clearable
-                       placeholder="请选择"
-                       @change="handleChangeCategory">
-              <el-option v-for="item in categoryOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="产品类型:"
-                        prop="category"
-                        class="block">
+                        prop="category">
             <el-cascader v-model="filterForm.category"
+                         style="width:300px;"
                          :options="categoryOpt"
-                         :props="{ checkStrictly: true }"
+                         :props="{ checkStrictly: true,expandTrigger: 'hover' }"
                          clearable />
           </el-form-item>
           <el-form-item label="产品用例："
-                        prop="useCase">
+                        prop="attributionUseCaseList">
             <el-select v-model="filterForm.attributionUseCaseList"
                        multiple
+                       style="width:600px;"
                        clearable
-                       placeholder="请选择"
-                       @change="handleChangeCategory">
-              <el-option v-for="item in useCaseList"
+                       placeholder="请选择">
+              <el-option v-for="item in useCaseListOpt"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value" />
@@ -73,35 +76,25 @@
           </el-form-item>
         </el-form>
       </template>
-      <template v-slot:main-buttons>
-        <el-upload ref="uploadRef"
-                   class="upload"
-                   :http-request="handleUploadFile"
-                   :accept="accept.map(n => `.${n}`).join(',')"
-                   action="">
-          <el-button class="button"
-                     type="primary">
-            产品上传
-          </el-button>
-        </el-upload>
-        <el-link type="primary"
-                 @click="download">模版下载</el-link>
-      </template>
-      <template v-slot:attributionUseCaseListSlot="scope">
-        <el-tooltip placement="top-start">
-          <div slot="content">
-            <div v-for="(item,i) of scope.row.attributionUseCaseList"
-                 :key="i"
-                 style="margin:5px 0;">
-              {{ item.label }}
-            </div>
-          </div>
-          <div class="name-group">
-            <!-- {{ scope.row.achieveList.length }}个目标 -->
-            {{ scope.row.attributionUseCaseList.length }}个用例
-          </div>
-        </el-tooltip>
 
+      <template v-slot:attributionUseCaseListSlot="scope">
+        <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+          <el-tooltip placement="top-start">
+            <div slot="content">
+              <div v-for="(item,i) of scope.row.attributionUseCaseList"
+                   :key="i"
+                   style="margin:5px 0;">
+                {{ item.label }}
+              </div>
+            </div>
+            <div>
+              {{ scope.row.attributionUseCaseList.length }}个用例
+            </div>
+          </el-tooltip>
+        </template>
+        <div v-else>
+          0个用例
+        </div>
       </template>
     </shun-table>
   </div>
@@ -114,7 +107,7 @@ const COMMON_COLUMN_LIST = [
   {
     prop: 'name',
     label: '产品名称',
-    minWidth: 100
+    minWidth: 200
   },
   {
     prop: 'firstCategory.label',
@@ -439,7 +432,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     },
     // 是否多选
     multiple: {
@@ -456,6 +449,7 @@ export default {
   },
   data() {
     return {
+      accept: ['xls', 'xlsx'],
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -465,9 +459,8 @@ export default {
         category: [],
         attributionUseCaseList: []
       },
-      accept: ['xls', 'xlsx'],
       categoryOpt: [],
-      useCaseList: [],
+      useCaseListOpt: [],
       searchForm: {},
       tableColumnList: COMMON_COLUMN_LIST,
       tableData: [],
@@ -480,14 +473,11 @@ export default {
       return this.$refs.table
     }
   },
-
   watch: {},
   created() {
     this.productCategoryList()
     this.attributionUseCaseEnumList()
-    this.getList(1)
-    console.log(123)
-    console.log(this.tableData)
+    this.search()
   },
   methods: {
     resetAll() {
@@ -499,18 +489,13 @@ export default {
       this.search()
     },
     search() {
-      // this.searchForm = {
-      //   name: this.filterForm.name,
-      //   firstCategory: this.filterForm.category[0] || null,
-      //   secondCategory: this.filterForm.category[1] || null,
-      //   attributionUseCaseList: this.filterForm.attributionUseCaseEnumList
-      // }
-      this.searchForm = Object.assign({}, JSON.parse(JSON.stringify(this.filterForm)), {
-        secondCategory: this.filterForm.category[1] || null,
-        firstCategory: this.filterForm.category[0] || null
-      })
+      this.searchForm = {
+        name: this.filterForm.name,
+        category: this.filterForm.category.slice(0),
+        attributionUseCaseList: this.filterForm.attributionUseCaseList.slice(0)
+      }
       this.getList(1)
-      if (this.filterForm.category) {
+      if (this.filterForm.category.length) {
         SELF_COLUMN_LIST.find(n => {
           if (n.type === this.filterForm.category[0]) {
             this.tableColumnList = [...COMMON_COLUMN_LIST, ...n.columnList]
@@ -566,16 +551,6 @@ export default {
     },
     // 获取产品类型
     productCategoryList() {
-      // function setTreeData(data) {
-      //   for (var i = 0; i < data.length; i++) {
-      //     if (data[i].children.length < 1) {
-      //       data[i].children = undefined
-      //     } else {
-      //       setTreeData(data[i].child)
-      //     }
-      //   }
-      //   return data
-      // }
       getProductCategoryList().then(res => {
         this.categoryOpt = res.data.map((n) => {
           return Object.assign({}, {
@@ -590,7 +565,7 @@ export default {
     // 获取产品用例getAttributionUseCaseEnumList
     attributionUseCaseEnumList() {
       getAttributionUseCaseEnumList().then(res => {
-        this.useCaseList = res.data
+        this.useCaseListOpt = res.data
       })
     },
     getList(pageNo) {
@@ -599,25 +574,23 @@ export default {
         pageNo: this.currentPage,
         pageSize: this.pageSize
       }, this.searchForm)
-      this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
+      this.filterForm = {
+        name: this.searchForm.name,
+        category: this.searchForm.category.slice(0),
+        attributionUseCaseList: this.searchForm.attributionUseCaseList.slice(0)
+      }
       this.loading = true
       getProductList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {
-          if (n.attributionUseCaseList !== null) {
-            return Object.assign({}, n.extraField, n)
-          } else {
-            return Object.assign({}, Object.assign({}, n.extraField, n), { attributionUseCaseList: [] })
-          }
+          return Object.assign({}, n, n.extraField)
         })
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
         this.loading = false
       })
-    },
-    handleChangeCategory(val) {
-
     }
+
   }
 }
 </script>

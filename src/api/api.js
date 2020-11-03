@@ -28,7 +28,6 @@ export function getProductCategoryList() {
 }
 
 // 获取产品用例
-// 获取产品分类
 export function getAttributionUseCaseEnumList() {
   return request({
     url: '/resource/getAttributionUseCaseEnumList',

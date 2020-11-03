@@ -114,7 +114,7 @@ export default {
   watch: {},
   created() {
     this.getType()
-    this.getList(1)
+    this.search()
   },
   methods: {
     resetAll() {

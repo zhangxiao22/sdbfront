@@ -98,7 +98,7 @@ export default {
   },
   watch: {},
   created() {
-    this.getList(1)
+    this.search()
   },
   methods: {
     resetAll() {
