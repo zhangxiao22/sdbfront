@@ -44,6 +44,7 @@
                 size="medium"
                 stripe
                 style="width: 100%"
+                :row-style="rowStyle"
                 @row-click="handleRowClick"
                 @select="handleSelect"
                 @select-all="handleSelectAll"
@@ -72,7 +73,7 @@
               <slot v-if="item.slot"
                     :name="`${item.prop}Slot`"
                     :row="scope.row" />
-              <template v-if="item.slot">{{ item.filteredValue }}</template>
+              <!-- <template v-if="item.slot">{{ item.filteredValue }}</template> -->
               <template v-else>{{ translate(scope.row,item.prop) }}</template>
             </template>
           </el-table-column>
@@ -102,6 +103,12 @@ export default {
     isCard: {
       type: Boolean,
       default: true
+    },
+    rowStyle: {
+      type: [Function, Object],
+      default() {
+        return {}
+      }
     },
     // 是否使用翻页
     showPagination: {

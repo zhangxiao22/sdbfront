@@ -103,7 +103,6 @@
                     添加产品
                   </el-button>
                 </el-form-item>
-                <!-- {{ ployItem.product }} -->
                 <el-table v-show="ployItem.product.length"
                           :data="ployItem.product"
                           border
@@ -113,8 +112,8 @@
                       <el-form label-position="left"
                                inline
                                class="demo-table-expand">
-                        <div v-for="item in tableColumnList"
-                             :key="item.id">
+                        <div v-for="(item,i) in getTableColumnListByType(scope.row.firstCategory.value)"
+                             :key="i">
                           <el-form-item :label="item.label">
                             <span>{{ scope.row[item.prop] }}</span>
                           </el-form-item>
@@ -122,14 +121,37 @@
                       </el-form>
                     </template>
                   </el-table-column>
-                  <el-table-column prop="name"
-                                   label="产品名称" />
-                  <el-table-column prop="firstCategory.label"
-                                   label="产品一级分类" />
-                  <el-table-column prop="secondCategory.label"
-                                   label="产品二级分类" />
-                  <el-table-column prop="attributionUseCaseList"
-                                   label="产品用例" />
+                  <template v-for="(item,i) of COMMON_COLUMN_LIST">
+                    <el-table-column v-if="item.prop === 'attributionUseCaseList'"
+                                     :key="i"
+                                     :prop="item.prop"
+                                     :label="item.label"
+                                     :min-width="item.minWidth">
+                      <template slot-scope="scope">
+                        <template>
+                          <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+                            <el-tooltip placement="top-start">
+                              <div slot="content">
+                                <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
+                                     :key="useItemIndex"
+                                     style="margin:5px 0;">
+                                  {{ useItem.label }}
+                                </div>
+                              </div>
+                              <div>
+                                {{ scope.row.attributionUseCaseList.length }}个用例
+                              </div>
+                            </el-tooltip>
+                          </template>
+                        </template>
+                      </template>
+                    </el-table-column>
+                    <el-table-column v-else
+                                     :key="i"
+                                     :prop="item.prop"
+                                     :label="item.label"
+                                     :min-width="item.minWidth" />
+                  </template>
                   <el-table-column fixed="right"
                                    label="操作"
                                    width="100">
@@ -144,35 +166,6 @@
                     </template>
                   </el-table-column>
                 </el-table>
-                <!-- <el-table v-if="JSON.stringify(ployItem.product) !== '{}'"
-                          :data="parseTable(ployItem.product)"
-                          :span-method="objectSpanMethod"
-                          border
-                          style="width: 100%;margin-bottom:18px;">
-                  <el-table-column prop="groupName"
-                                   label="组合" />
-                  <el-table-column prop="income"
-                                   min-width="100"
-                                   label="综合收益" />
-                  <el-table-column prop="productName"
-                                   min-width="120"
-                                   label="产品名称" />
-                  <el-table-column prop="productType"
-                                   label="产品类型" />
-                  <el-table-column prop="risklLevel"
-                                   label="风险等级" />
-                  <el-table-column prop="rateOfReturn"
-                                   min-width="150"
-                                   label="收益率/行业比较基准" />
-                  <el-table-column prop="minimumPurchaseAmount"
-                                   label="起购金额" />
-                  <el-table-column prop="begin_time"
-                                   label="起息日" />
-                  <el-table-column prop="end_time"
-                                   label="到期日" />
-                  <el-table-column prop="proportion"
-                                   label="比例" />
-                </el-table> -->
                 <el-form-item label="推荐权益："
                               :prop="'group.' + gi + '.ployTabs.' + pi + '.interest'"
                               :rules="[{
@@ -587,7 +580,8 @@ export default {
   data() {
     const _this = this
     return {
-      tableColumnList: SELF_COLUMN_LIST,
+      SELF_COLUMN_LIST,
+      COMMON_COLUMN_LIST,
       // 客群tab对应的值
       groupName: '0',
       // 人数初始值
@@ -702,6 +696,13 @@ export default {
         return a[0] - b[0]
       })
     },
+    // translate(obj, paramPropStr) {
+    //   let val = obj
+    //   paramPropStr.split('.').forEach(n => {
+    //     val = val[n]
+    //   })
+    //   return val
+    // },
 
     ployDetail() {
       return new Promise((resolve, reject) => {
@@ -1083,6 +1084,11 @@ export default {
           duration: 5 * 1000
         })
       }
+    },
+    getTableColumnListByType(type) {
+      return SELF_COLUMN_LIST.find(n => {
+        return n.type === type
+      }).columnList
     },
 
     // 选择权益

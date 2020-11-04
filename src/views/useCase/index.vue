@@ -9,6 +9,7 @@
                 :total="total"
                 :multiple="multiple"
                 :table-data="tableData"
+                :row-style="rowStyle"
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:filter>
@@ -202,6 +203,11 @@ export default {
     this.search()
   },
   methods: {
+    rowStyle({ row, index }) {
+      return !row.effect && {
+        background: '#f4f4f4'
+      }
+    },
     resetAll() {
       this.reset()
       this.$refs.table.resetSelection()
