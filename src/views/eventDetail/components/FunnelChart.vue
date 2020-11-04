@@ -35,10 +35,10 @@ export default {
       console.log(document.getElementById(this.id))
       const { DataView } = DataSet
       const dv = new DataView().source([
-        { action: '线索下发', pv: 50000 },
-        { action: '线索执行', pv: 35000 },
-        { action: '触达客户', pv: 25000 },
-        { action: '转化客户', pv: 15000 }
+        { action: '线索下发', pv: 100000 },
+        { action: '线索执行', pv: 90000 },
+        { action: '触达客户', pv: 70000 },
+        { action: '转化客户', pv: 10000 }
       ])
       dv.transform({
         type: 'map',
@@ -52,7 +52,7 @@ export default {
         container: this.id,
         autoFit: true,
         height: this.height,
-        padding: [0, 120, 0]
+        padding: [0, 120, 0, 10]
       })
       chart.data(data)
       chart.axis(false)
@@ -75,8 +75,8 @@ export default {
         .interval()
         .adjust('symmetric')
         .position('action*percent')
-        .shape('funnel')
-        .color('action', ['#6e95f2', '#87d7ae', '#61708f', '#ecbe45'])
+        .shape('pyramid')
+        .color('action', ['#6e95f2', '#87d7ae', '#FF9933', '#FFCC66'])
         .label(
           'action*percent',
           (action, percent) => {
@@ -126,7 +126,9 @@ export default {
             content: `${obj.action}：${obj.pv}`, // 显示的文本内容
             style: {
               stroke: null,
-              fill: '#fff',
+              fill: '#000',
+              // shadowColor: '#000',
+              shadowBlur: 10,
               textAlign: 'center'
             }
           })

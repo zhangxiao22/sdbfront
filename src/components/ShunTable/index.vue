@@ -330,6 +330,7 @@ export default {
     }
 
     .button {
+      margin-left: 0;
       margin-right: 12px;
     }
   }

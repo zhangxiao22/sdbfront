@@ -15,6 +15,15 @@
                 @render="getList"
                 @filter-change="filterChange"
                 @tab-click="tabClick">
+      <template v-slot:main-buttons>
+        <el-button class="button"
+                   type="primary"
+                   icon="el-icon-plus"
+                   plain
+                   @click="createEvent">
+          新建营销事件
+        </el-button>
+      </template>
       <template v-slot:filter>
         <el-form ref="filterRef"
                  :inline="true"
@@ -83,13 +92,6 @@
           </el-form-item>
 
         </el-form>
-      </template>
-      <template v-slot:main-buttons>
-        <el-button class="button"
-                   type="primary"
-                   @click="createEvent">
-          新建营销事件
-        </el-button>
       </template>
       <template v-slot:nameSlot="scope">
         <div class="name-group">
