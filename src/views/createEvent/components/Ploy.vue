@@ -108,20 +108,28 @@
                           :data="ployItem.product"
                           border
                           style="width: 100%;margin-bottom:18px;">
+                  <el-table-column type="expand">
+                    <template slot-scope="scope">
+                      <el-form label-position="left"
+                               inline
+                               class="demo-table-expand">
+                        <div v-for="item in tableColumnList"
+                             :key="item.id">
+                          <el-form-item :label="item.label">
+                            <span>{{ scope.row[item.prop] }}</span>
+                          </el-form-item>
+                        </div>
+                      </el-form>
+                    </template>
+                  </el-table-column>
                   <el-table-column prop="name"
                                    label="产品名称" />
-                  <el-table-column prop="classify.label"
-                                   label="产品类型" />
-                  <el-table-column prop="riskLevel.label"
-                                   label="风险等级" />
-                  <el-table-column prop="returnBenchmark"
-                                   label="收益率/行业比较基准" />
-                  <el-table-column prop="purchaseAmount"
-                                   label="起购金额" />
-                  <el-table-column prop="startDate"
-                                   label="气息日" />
-                  <el-table-column prop="endDate"
-                                   label="到期日" />
+                  <el-table-column prop="firstCategory.label"
+                                   label="产品一级分类" />
+                  <el-table-column prop="secondCategory.label"
+                                   label="产品二级分类" />
+                  <el-table-column prop="attributionUseCaseList"
+                                   label="产品用例" />
                   <el-table-column fixed="right"
                                    label="操作"
                                    width="100">
@@ -567,7 +575,7 @@ import Word from '@/views/word/index'
 import Sms from '@/views/sms/index'
 import { isPhone } from '@/utils/validate'
 import { MessageBox, Message } from 'element-ui'
-import { parseTime } from '@/utils'
+import { parseTime, SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 
 // import { getWordList } from '@/api/api'
@@ -579,6 +587,7 @@ export default {
   data() {
     const _this = this
     return {
+      tableColumnList: SELF_COLUMN_LIST,
       // 客群tab对应的值
       groupName: '0',
       // 人数初始值
@@ -591,7 +600,6 @@ export default {
       showCRMWord: false,
       // 短信侧边栏
       showSms: false,
-
       // 定时型 下拉选项
       timingOpt: JSON.parse(JSON.stringify(TIMING_OPT)),
       group: [
