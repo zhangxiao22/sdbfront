@@ -4,7 +4,7 @@
                     @back="goBack" />
     <el-form ref="regFormRef"
              :model="baseInfo"
-             label-width="110px"
+             label-width="220px"
              class="reg-form">
       <el-form-item label="用例名称："
                     :rules="[{
@@ -64,6 +64,28 @@
                    icon="el-icon-plus"
                    @click="addTarget" />
       </el-form-item>
+      <el-form-item required
+                    label="每周线索分配上限（CRM）："
+                    prop="assignUpper_crm">
+        <el-input-number v-model="baseInfo.assignUpper_crm"
+                         style="width:200px;"
+                         controls-position="right"
+                         :min="0"
+                         :max="MAX_NUMBER"
+                         :step="1000"
+                         @blur="handleBlurCRM" />
+      </el-form-item>
+      <el-form-item required
+                    label="每周线索分配上限（短信）："
+                    prop="assignUpper_sms">
+        <el-input-number v-model="baseInfo.assignUpper_sms"
+                         style="width:200px;"
+                         controls-position="right"
+                         :min="0"
+                         :max="MAX_NUMBER"
+                         :step="1000"
+                         @blur="handleBlurSMS" />
+      </el-form-item>
       <el-form-item label="用例描述："
                     prop="desc">
         <el-input v-model="baseInfo.desc"
@@ -97,6 +119,7 @@ export default {
   },
   data() {
     return {
+      MAX_NUMBER,
       baseInfo: {
         name: '',
         target: [
@@ -105,6 +128,8 @@ export default {
             targetValue: ''
           }
         ],
+        assignUpper_crm: 0,
+        assignUpper_sms: 0,
         desc: ''
       },
       targetOpt: []
@@ -155,6 +180,16 @@ export default {
         this.$refs['regFormRef'].resetFields()
         this.resetTargetOpt()
       })
+    },
+    handleBlurCRM() {
+      if (!this.baseInfo.assignUpper_crm) {
+        this.baseInfo.assignUpper_crm = 0
+      }
+    },
+    handleBlurSMS() {
+      if (!this.baseInfo.assignUpper_sms) {
+        this.baseInfo.assignUpper_sms = 0
+      }
     },
     getUseCaseById() {
       getUseCaseDetailById({ id: this.id }).then(res => {

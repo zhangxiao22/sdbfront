@@ -7,6 +7,7 @@
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
+                :stripe="false"
                 :multiple="multiple"
                 :table-data="tableData"
                 :row-style="rowStyle"
@@ -69,7 +70,7 @@
               {{ item.name }} {{ item.relation.label }} {{ item.value }} {{ item.unit.label }}
             </div>
           </div>
-          <div class="name-group">
+          <div class="hover-text">
             {{ scope.row.achieveList.length }}个目标
           </div>
         </el-tooltip>
