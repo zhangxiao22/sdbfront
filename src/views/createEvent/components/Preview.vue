@@ -67,10 +67,12 @@
               <el-table :data="item.product"
                         class="preview-table"
                         size="mini"
-                        style="width: 100%">
+                        style="width: 100%"
+                        @expand-change="handleExpandChange">
                 <el-table-column type="expand">
                   <template slot-scope="scope">
                     <el-form label-position="left"
+                             size="mini"
                              inline
                              class="demo-table-expand">
                       <div v-for="(selfItem,selfItemIndex) in getTableColumnListByType(scope.row.firstCategory.value)"
@@ -291,7 +293,7 @@ export default {
     })
   },
   mounted() {
-
+    // this.mainSwiper.update()
   },
   methods: {
     getDetail() {
@@ -344,6 +346,11 @@ export default {
           })
           resolve()
         })
+      })
+    },
+    handleExpandChange() {
+      this.$nextTick(() => {
+        this.mainSwiper.update()
       })
     },
     getTableColumnListByType(type) {
@@ -654,9 +661,24 @@ export default {
           ::v-deep th.is-leaf,
           ::v-deep td {
             border: none;
-            text-align: center !important;
+            text-align: center;
             color: #444;
             background: #fbfcfd;
+            &.el-table__expanded-cell {
+              padding: 10px 50px;
+              text-align: left;
+              &:hover {
+                background: #fbfcfd !important;
+              }
+              .el-form-item {
+                margin: 0;
+                font-weight: normal;
+                .el-form-item__label {
+                  font-size: 12px;
+                  font-weight: 300;
+                }
+              }
+            }
           }
           ::v-deep th.is-leaf {
             font-weight: 300;
