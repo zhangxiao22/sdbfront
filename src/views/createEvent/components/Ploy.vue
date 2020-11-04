@@ -114,7 +114,7 @@
                                class="demo-table-expand">
                         <div v-for="(item,i) in getTableColumnListByType(scope.row.firstCategory.value)"
                              :key="i">
-                          <el-form-item :label="item.label">
+                          <el-form-item :label="item.label+'：'">
                             <span>{{ scope.row[item.prop] }}</span>
                           </el-form-item>
                         </div>
@@ -130,7 +130,8 @@
                       <template slot-scope="scope">
                         <template>
                           <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
-                            <el-tooltip placement="top-start">
+                            <el-tooltip placement="top-start"
+                                        class="hover-text">
                               <div slot="content">
                                 <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
                                      :key="useItemIndex"
@@ -144,7 +145,7 @@
                             </el-tooltip>
                           </template>
                           <div v-else>
-                            0个用例
+                            无
                           </div>
                         </template>
                       </template>
@@ -1332,6 +1333,24 @@ export default {
   .shun-label ::v-deep .el-form-item__label {
     display: flex;
     justify-content: flex-end;
+  }
+  ::v-deep th.is-leaf,
+  ::v-deep td {
+    &.el-table__expanded-cell {
+      padding: 10px 50px;
+      text-align: left;
+      .el-form-item {
+        margin: 0;
+        font-weight: normal;
+        .el-form-item__label {
+          font-size: 12px;
+          color: #909399;
+        }
+        .el-form-item__content {
+          font-size: 12px;
+        }
+      }
+    }
   }
   .tab-label {
     display: flex;

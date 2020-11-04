@@ -99,7 +99,8 @@
 
       <template v-slot:attributionUseCaseListSlot="scope">
         <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
-          <el-tooltip placement="top-start">
+          <el-tooltip placement="top-start"
+                      class="hover-text">
             <div slot="content">
               <div v-for="(item,i) of scope.row.attributionUseCaseList"
                    :key="i"
@@ -113,7 +114,7 @@
           </el-tooltip>
         </template>
         <div v-else>
-          0个用例
+          无
         </div>
       </template>
     </shun-table>
