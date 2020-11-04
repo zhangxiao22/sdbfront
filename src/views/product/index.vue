@@ -14,18 +14,38 @@
                 @render="getList">
       <template v-slot:main-buttons>
         <el-upload ref="uploadRef"
-                   class="upload"
+                   :disabled="uploading"
+                   :on-change="handleFileChange"
+                   :show-file-list="false"
+                   class="upload button"
                    :http-request="handleUploadFile"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
-          <el-button class="button"
-                     icon="el-icon-upload"
-                     type="primary">
+          <el-button :loading="uploading"
+                     :disabled="uploading"
+                     icon="el-icon-upload2"
+                     type="primary"
+                     plain>
             批量上传
           </el-button>
         </el-upload>
+        <el-button class="button"
+                   icon="el-icon-download"
+                   type="success"
+                   plain
+                   @click.native="download">
+          批量下载
+        </el-button>
+        <el-button class="button"
+                   icon="el-icon-download"
+                   type="success"
+                   plain
+                   @click.native="download($event,true)">
+          全部下载
+        </el-button>
         <el-link type="primary"
-                 @click="download">模版下载</el-link>
+                 class="button"
+                 @click="downloadModel">模版下载</el-link>
       </template>
       <template v-slot:filter>
         <el-form ref="filterRef"
@@ -130,7 +150,9 @@ export default {
   },
   data() {
     return {
+      uploading: false,
       accept: ['xls', 'xlsx'],
+      file: '',
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -187,11 +209,17 @@ export default {
         this.tableColumnList = COMMON_COLUMN_LIST
       }
     },
+    handleFileChange(file) {
+      this.file = file.raw
+    },
+    resetFile() {
+      this.file = ''
+      this.$refs.uploadRef.clearFiles()
+    },
     // 上传产品
     handleUploadFile() {
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
-      console.log(suffix)
       if (!this.accept.includes(suffix)) {
         this.$message({
           message: '请上传正确的文件格式',
@@ -203,32 +231,37 @@ export default {
       } else {
         const formData = new FormData()
         formData.append('file', this.file)
-        formData.append('baseId', this.id)
-        this.$parent.mainLoading = true
+        this.uploading = true
         uploadFile(formData).then(res => {
+          this.uploading = false
+          this.resetAll()
           // console.log(res)
-          this.fileId = res.data.fileId
-          this.fileName = res.data.fileName
-          this.customerCount = res.data.recordNum
-          this.updateTime = res.data.uploadTime
-          this.tableData = res.data.groupInfoWithCount.map((n) => {
-            return Object.assign({}, n, {
-              desc: '',
-              _desc: '',
-              isEdit: false,
-              isHover: false
-            })
-          })
-          this.$parent.mainLoading = false
         }).catch(() => {
+          this.uploading = false
           this.resetFile()
-          this.$parent.mainLoading = false
         })
       }
     },
     // 下载模版
-    download() {
+    downloadModel() {
       window.open('', '_blank')
+    },
+
+    download(e, isAll) {
+      const data = {}
+      if (!isAll) {
+        if (this.selection.length) {
+          // todo
+          data.id = this.selection
+        } else {
+          return this.$message({
+            message: '请选择产品',
+            type: 'warning',
+            duration: '5000'
+          })
+        }
+      }
+      // todo 调接口
     },
     // 获取产品类型
     productCategoryList() {
