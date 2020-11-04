@@ -70,7 +70,7 @@
               {{ item.name }} {{ item.relation.label }} {{ item.value }} {{ item.unit.label }}
             </div>
           </div>
-          <div class="name-group">
+          <div class="hover-text">
             {{ scope.row.achieveList.length }}个目标
           </div>
         </el-tooltip>
