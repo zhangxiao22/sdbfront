@@ -311,7 +311,9 @@ export default {
                 return {
                   ployName: m.name,
                   range: m.range,
-                  product: m.productInfoList,
+                  product: m.productInfoList.map((product) => {
+                    return Object.assign({}, product, product.extraField)
+                  }),
                   interest: m.couponInfoList,
                   channels: m.strategyInfoList.map(x => {
                     const item = CHANNEL_OPT.find(item => item.value === x.channel.value)
