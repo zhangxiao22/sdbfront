@@ -728,7 +728,9 @@ export default {
                     // 策略tab id
                     name: i + 1 + '',
                     // 产品
-                    product: n.productInfoList,
+                    product: n.productInfoList.map((product) => {
+                      return Object.assign({}, product, product.extraField)
+                    }),
                     // 权益
                     interest: n.couponInfoList,
                     channel: n.strategyInfoList.map(m => {
