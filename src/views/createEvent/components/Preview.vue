@@ -68,22 +68,54 @@
                         class="preview-table"
                         size="mini"
                         style="width: 100%">
-                <el-table-column prop="name"
-                                 min-width="120"
-                                 label="产品名称" />
-                <el-table-column prop="class_name"
-                                 label="产品类型" />
-                <el-table-column prop="risk_name"
-                                 label="风险等级" />
-                <el-table-column prop="return_benchmark"
-                                 min-width="150"
-                                 label="收益率/行业比较基准" />
-                <el-table-column prop="purchase_amount"
-                                 label="起购金额" />
-                <el-table-column prop="startDate"
-                                 label="起息日" />
-                <el-table-column prop="endDate"
-                                 label="到期日" />
+                <el-table-column type="expand">
+                  <template slot-scope="scope">
+                    <el-form label-position="left"
+                             inline
+                             class="demo-table-expand">
+                      <div v-for="(selfItem,selfItemIndex) in getTableColumnListByType(scope.row.firstCategory.value)"
+                           :key="selfItemIndex">
+                        <el-form-item :label="selfItem.label">
+                          <span>{{ scope.row[selfItem.prop] }}</span>
+                        </el-form-item>
+                      </div>
+                    </el-form>
+                  </template>
+                </el-table-column>
+                <template v-for="(commonItem,commonItemIndex) of COMMON_COLUMN_LIST">
+                  <el-table-column v-if="commonItem.prop === 'attributionUseCaseList'"
+                                   :key="commonItemIndex"
+                                   :prop="commonItem.prop"
+                                   :label="commonItem.label"
+                                   :min-width="commonItem.minWidth">
+                    <template slot-scope="scope">
+                      <template>
+                        <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+                          <el-tooltip placement="top-start">
+                            <div slot="content">
+                              <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
+                                   :key="useItemIndex"
+                                   style="margin:5px 0;">
+                                {{ useItem.label }}
+                              </div>
+                            </div>
+                            <div>
+                              {{ scope.row.attributionUseCaseList.length }}个用例
+                            </div>
+                          </el-tooltip>
+                        </template>
+                        <div v-else>
+                          0个用例
+                        </div>
+                      </template>
+                    </template>
+                  </el-table-column>
+                  <el-table-column v-else
+                                   :key="commonItemIndex"
+                                   :prop="commonItem.prop"
+                                   :label="commonItem.label"
+                                   :min-width="commonItem.minWidth" />
+                </template>
               </el-table>
             </div>
             <!-- 权益 -->
@@ -221,6 +253,7 @@ import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
 import { getEventPreview } from '@/api/api'
 import { CHANNEL_OPT, TIMING_OPT } from '../constant'
+import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 
 export default {
   name: 'Preview',
@@ -233,6 +266,8 @@ export default {
   },
   data() {
     return {
+      SELF_COLUMN_LIST,
+      COMMON_COLUMN_LIST,
       groupActiveIndex: 0,
       groupSwiper: {},
       mainSwiper: {},
@@ -308,6 +343,11 @@ export default {
           resolve()
         })
       })
+    },
+    getTableColumnListByType(type) {
+      return SELF_COLUMN_LIST.find(n => {
+        return n.type === type
+      }).columnList
     },
     renderSwiper() {
       // 客群

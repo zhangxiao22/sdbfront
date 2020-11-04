@@ -143,6 +143,9 @@
                               </div>
                             </el-tooltip>
                           </template>
+                          <div v-else>
+                            0个用例
+                          </div>
                         </template>
                       </template>
                     </el-table-column>
