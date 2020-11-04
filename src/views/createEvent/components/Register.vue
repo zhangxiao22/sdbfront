@@ -114,7 +114,7 @@
 <script>
 import Info from '@/components/Info'
 import { mapGetters } from 'vuex'
-import { parseTime, MAX_NUMBER } from '@/utils'
+import { parseTime } from '@/utils'
 import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList, getUseCaseForEvent, getUseCaseDetailById } from '@/api/api'
 
 const DEFAULT_BASEINFO = {

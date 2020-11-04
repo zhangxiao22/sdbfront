@@ -42,7 +42,7 @@
                 :data="tableData"
                 class="table"
                 size="medium"
-                stripe
+                :stripe="stripe"
                 style="width: 100%"
                 :row-style="rowStyle"
                 @row-click="handleRowClick"
@@ -104,6 +104,12 @@ export default {
       type: Boolean,
       default: true
     },
+    // 是否显示斑马条纹
+    stripe: {
+      type: Boolean,
+      default: true
+    },
+    // 行样式
     rowStyle: {
       type: [Function, Object],
       default() {

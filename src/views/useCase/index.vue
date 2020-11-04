@@ -7,6 +7,7 @@
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
+                :stripe="false"
                 :multiple="multiple"
                 :table-data="tableData"
                 :row-style="rowStyle"
