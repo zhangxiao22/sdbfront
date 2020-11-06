@@ -13,6 +13,7 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
+
         <el-upload ref="uploadRef"
                    :disabled="uploading"
                    :on-change="handleFileChange"
@@ -43,6 +44,7 @@
                    @click.native="download($event,true)">
           全部下载
         </el-button>
+
         <el-link type="primary"
                  class="button"
                  @click="downloadModel">模版下载</el-link>
@@ -52,6 +54,13 @@
                  :inline="true"
                  :model="filterForm"
                  class="filter-container">
+          <el-alert v-show="searchForm.name !== '' || searchForm.attributionUseCaseList.length >0 || searchForm.category.length"
+                    :title="`已搜索，可对搜索结果全部下载`"
+                    style="margin:10px 0;"
+                    type="success"
+                    close-text="清空"
+                    show-icon
+                    @close="reset" />
           <el-form-item label="产品名称："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
@@ -61,6 +70,7 @@
                       prefix-icon="el-icon-search"
                       @keyup.enter.native="search" />
           </el-form-item>
+          {{ searchForm }}search
           <el-form-item label="产品类型:"
                         prop="category">
             <el-cascader v-model="filterForm.category"
@@ -96,7 +106,6 @@
           </el-form-item>
         </el-form>
       </template>
-
       <template v-slot:attributionUseCaseListSlot="scope">
         <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
           <el-tooltip placement="top-start"
@@ -124,7 +133,7 @@
 <script>
 import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
-import { getProductList, getProductCategoryList, uploadFile, getAttributionUseCaseEnumList } from '@/api/api'
+import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList } from '@/api/api'
 
 export default {
   name: 'Product',
@@ -233,10 +242,29 @@ export default {
         const formData = new FormData()
         formData.append('file', this.file)
         this.uploading = true
-        uploadFile(formData).then(res => {
+        uploadProductFile(formData).then(res => {
           this.uploading = false
           this.resetAll()
+          this.notification = res.data
           // console.log(res)
+        }).then(() => {
+          if (this.notification.length > 0) {
+            this.$notify({
+              title: '提示',
+              message: (this.notification).join('<br/>'),
+              dangerouslyUseHTMLString: true,
+              type: 'warning',
+              duration: 0
+            })
+          } else {
+            this.$notify({
+              title: '提示',
+              message: '上传成功',
+              type: 'success',
+              showClose: false,
+              duration: 3000
+            })
+          }
         }).catch(() => {
           this.uploading = false
           this.resetFile()
@@ -249,20 +277,23 @@ export default {
     },
 
     download(e, isAll) {
-      const data = {}
+      this.selection = this.$refs.table.getVal()
       if (!isAll) {
         if (this.selection.length) {
-          // todo
-          data.id = this.selection
+          const batchUrl = process.env.VUE_APP_BASE_API + '/resource/downloadProductBatch?idList=' + this.selection.map(n => n.id).join(',')
+          window.open(batchUrl, '_self')
         } else {
           return this.$message({
             message: '请选择产品',
             type: 'warning',
-            duration: '5000'
+            duration: '3000'
           })
         }
+      } else {
+        // todo 调接口
+        const fullUrl = process.env.VUE_APP_BASE_API + '/resource/downloadProductAll?category=' + this.searchForm.category.join(',') + '&attributionUseCaseList=' + this.searchForm.attributionUseCaseList + '&name=' + this.searchForm.name
+        window.open(fullUrl, '_self')
       }
-      // todo 调接口
     },
     // 获取产品类型
     productCategoryList() {

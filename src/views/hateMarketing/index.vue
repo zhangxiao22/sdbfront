@@ -76,32 +76,49 @@
       </template>
       <template v-slot:main-buttons>
         <el-upload ref="uploadRef"
-                   class="upload"
-                   :http-request="uploadFile"
+                   :disabled="uploading"
+                   :on-change="handleFileChange"
+                   class="upload button"
+                   :http-request="handleUploadFile"
+                   :show-file-list="false"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
-          <el-button class="button"
-                     type="primary">
+          <el-button :loading="uploading"
+                     :disabled="uploading"
+                     icon="el-icon-upload2"
+                     type="primary"
+                     plain>
             全量更新
           </el-button>
         </el-upload>
         <el-upload ref="uploadRef"
-                   :http-request="uploadFile"
+                   :disabled="uploading"
+                   :on-change="handleFileChange"
+                   class="upload button"
+                   :http-request="handleUploadFile"
+                   :show-file-list="false"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
-          <el-button class="button"
-                     type="primary">
+          <el-button :loading="uploading"
+                     :disabled="uploading"
+                     icon="el-icon-upload2"
+                     type="primary"
+                     plain>
             批量更新
           </el-button>
         </el-upload>
         <el-button class="button"
-                   type="primary"
-                   @click="createEvent">
+                   icon="el-icon-download"
+                   type="success"
+                   plain
+                   @click="download">
           批量下载
         </el-button>
         <el-button class="button"
-                   type="primary"
-                   @click="createEvent">
+                   icon="el-icon-download"
+                   type="success"
+                   plain
+                   @click="download">
           全部下载
         </el-button>
         <el-link type="primary"
@@ -169,6 +186,7 @@ export default {
   },
   data() {
     return {
+      uploading: false,
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -251,9 +269,9 @@ export default {
   created() {
     this.eventCategoryList()
     this.useCase()
-    this.getStatus().then(res => {
-      this.tabClick(0)
-    })
+    // this.getStatus().then(res => {
+    //   this.tabClick(0)
+    // })
   },
   methods: {
     resetAll() {
@@ -313,10 +331,12 @@ export default {
       this.file = ''
       this.$refs.uploadRef.clearFiles()
     },
-    uploadFile() {
+    handleFileChange(file) {
+      this.file = file.raw
+    },
+    handleUploadFile() {
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
-      console.log(suffix)
       if (!this.accept.includes(suffix)) {
         this.$message({
           message: '请上传正确的文件格式',
@@ -328,26 +348,33 @@ export default {
       } else {
         const formData = new FormData()
         formData.append('file', this.file)
-        formData.append('baseId', this.id)
-        this.$parent.mainLoading = true
+        this.uploading = true
         uploadFile(formData).then(res => {
+          this.uploading = false
+          this.resetAll()
+          this.notification = res.data
           // console.log(res)
-          this.fileId = res.data.fileId
-          this.fileName = res.data.fileName
-          this.customerCount = res.data.recordNum
-          this.updateTime = res.data.uploadTime
-          this.tableData = res.data.groupInfoWithCount.map((n) => {
-            return Object.assign({}, n, {
-              desc: '',
-              _desc: '',
-              isEdit: false,
-              isHover: false
+        }).then(() => {
+          if (this.notification.length > 0) {
+            this.$notify({
+              title: '提示',
+              message: (this.notification).join('<br/>'),
+              dangerouslyUseHTMLString: true,
+              type: 'warning',
+              duration: 0
             })
-          })
-          this.$parent.mainLoading = false
+          } else {
+            this.$notify({
+              title: '提示',
+              message: '上传成功',
+              type: 'success',
+              showClose: false,
+              duration: 3000
+            })
+          }
         }).catch(() => {
+          this.uploading = false
           this.resetFile()
-          this.$parent.mainLoading = false
         })
       }
     },
@@ -355,33 +382,31 @@ export default {
     download() {
       window.open('/static/template.xlsx', '_blank')
     },
+    // tabClick(tabIndex) {
+    //   this.tabValue = tabIndex + ''
+    //   this.$refs.table.clearFilter()
+    //   this.statusValue = []
+    //   this.tableColumnList.find(n => {
+    //     if (n.prop === 'name') {
+    //       n.filters = this.tabList[+tabIndex].children.map(n => {
+    //         this.statusValue.push(n.value)
+    //         return {
+    //           text: n.label,
+    //           value: n.value
+    //         }
+    //       })
+    //     }
+    //   })
+    //   this.search()
+    // },
     tabClick(tabIndex) {
-      this.tabValue = tabIndex + ''
-      this.$refs.table.clearFilter()
-      this.statusValue = []
-      this.tableColumnList.find(n => {
-        if (n.prop === 'name') {
-          n.filters = this.tabList[+tabIndex].children.map(n => {
-            this.statusValue.push(n.value)
-            return {
-              text: n.label,
-              value: n.value
-            }
-          })
-        }
-      })
-      this.search()
+
     },
     filterChange(filters) {
       this.statusValue = filters.status.length
         ? filters.status
         : this.tabList[+this.tabValue].children.map(n => n.value)
       this.search()
-    },
-    createEvent() {
-      this.$router.push({
-        path: '/createEvent'
-      })
     },
     getColor(subId) {
       return this.tabList.find(n => {
@@ -449,13 +474,6 @@ export default {
       this.$router.push({
         path: '/eventDetail', query: {
           id
-        }
-      })
-    },
-    edit(row) {
-      this.$router.push({
-        path: '/createEvent', query: {
-          id: row.id
         }
       })
     }

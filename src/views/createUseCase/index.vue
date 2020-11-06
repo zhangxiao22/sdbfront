@@ -151,6 +151,8 @@ export default {
           value: n.targetValue
         }
       })
+      data.crmWeekClueLimit = this.baseInfo.assignUpper_crm
+      data.smsWeekClueLimit = this.baseInfo.assignUpper_sms
       data.description = this.baseInfo.desc
       return data
     }
@@ -194,6 +196,8 @@ export default {
     getUseCaseById() {
       getUseCaseDetailById({ id: this.id }).then(res => {
         this.baseInfo.name = res.data.name
+        this.baseInfo.assignUpper_crm = res.data.crmWeekClueLimit
+        this.baseInfo.assignUpper_sms = res.data.smsWeekClueLimit
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
           let obj = this.targetOpt.find(n => {

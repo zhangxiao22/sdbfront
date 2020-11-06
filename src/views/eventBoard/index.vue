@@ -116,10 +116,27 @@
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn"
-               style="color:#1890FF"
-               @click="edit(scope.row)">编辑</div>
-          <div class="btn"
-               style="color:#F56C6C;">删除</div>
+               style="color:#1890FF;"
+               @click="handleDownload(scope.row)">下载客群名单</div>
+          <el-dropdown trigger="click">
+            <span class="el-dropdown-link center-center">
+              ...
+            </span>
+            <el-dropdown-menu slot="dropdown"
+                              class="operate-drop">
+              <el-dropdown-item>
+                <div class="btn"
+                     style="color:#1890FF"
+                     @click="edit(scope.row)">
+                  编辑
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class="btn"
+                     style="color:#f56c6c;">删除</div>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </div>
       </template>
     </shun-table>
@@ -391,6 +408,10 @@ export default {
         }
       })
     },
+    // 下载客群名单
+    handleDownload(row) {
+      window.open(process.env.VUE_APP_BASE_API + '/event/customerDownload?baseId=' + row.id, '_self')
+    },
     edit(row) {
       this.$router.push({
         path: '/createEvent', query: {
@@ -428,6 +449,13 @@ export default {
         color: $blue;
         cursor: pointer;
       }
+    }
+  }
+  .operate-btns {
+    .el-dropdown-link {
+      font-size: 20px;
+      color: $blue;
+      cursor: pointer;
     }
   }
 }

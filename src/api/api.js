@@ -35,6 +35,15 @@ export function getAttributionUseCaseEnumList() {
   })
 }
 
+// 上传产品
+export function uploadProductFile(data) {
+  return request({
+    url: '/resource/uploadProduct',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 话术 ************************************************************/
 // 获取话术列表
 export function getWordList(data) {
@@ -238,6 +247,7 @@ export function getEventStatus() {
     method: 'get'
   })
 }
+
 /** ************************************************ 事件汇总 ************************************************************/
 // 饼图
 export function getPie() {

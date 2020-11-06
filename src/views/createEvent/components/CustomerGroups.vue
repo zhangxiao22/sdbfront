@@ -269,7 +269,7 @@ export default {
     },
 
     download() {
-      window.open('/static/template.xlsx', '_blank')
+      window.open('/static/template.xlsx', '_self')
     },
     handleFileChange(file) {
       this.file = file.raw
@@ -310,6 +310,15 @@ export default {
             })
           })
           this.$parent.mainLoading = false
+          this.abc = '上传成功'
+        }).then(() => {
+          this.$notify({
+            title: '提示',
+            message: this.abc,
+            dangerouslyUseHTMLString: true,
+            // type: 'success',
+            duration: 0
+          })
         }).catch(() => {
           this.resetFile()
           this.$parent.mainLoading = false
