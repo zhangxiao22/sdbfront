@@ -34,16 +34,21 @@
                    icon="el-icon-download"
                    type="success"
                    plain
-                   @click.native="download">
+                   @click.native="downloadSome">
           批量下载
         </el-button>
-        <el-button class="button"
-                   icon="el-icon-download"
-                   type="success"
-                   plain
-                   @click.native="download($event,true)">
-          全部下载
-        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    content="全部下载当前搜素结果"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-download"
+                     type="success"
+                     plain
+                     @click.native="downloadAll">
+            全部下载
+          </el-button>
+        </el-tooltip>
 
         <el-link type="primary"
                  class="button"
@@ -54,13 +59,6 @@
                  :inline="true"
                  :model="filterForm"
                  class="filter-container">
-          <el-alert v-show="searchForm.name !== '' || searchForm.attributionUseCaseList.length >0 || searchForm.category.length"
-                    :title="`已搜索，可对搜索结果全部下载`"
-                    style="margin:10px 0;"
-                    type="success"
-                    close-text="清空"
-                    show-icon
-                    @close="reset" />
           <el-form-item label="产品名称："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
@@ -70,7 +68,6 @@
                       prefix-icon="el-icon-search"
                       @keyup.enter.native="search" />
           </el-form-item>
-          {{ searchForm }}search
           <el-form-item label="产品类型:"
                         prop="category">
             <el-cascader v-model="filterForm.category"
@@ -135,6 +132,7 @@ import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList } from '@/api/api'
 
+import qs from 'qs'
 export default {
   name: 'Product',
   components: {
@@ -244,11 +242,7 @@ export default {
         this.uploading = true
         uploadProductFile(formData).then(res => {
           this.uploading = false
-          this.resetAll()
-          this.notification = res.data
-          // console.log(res)
-        }).then(() => {
-          if (this.notification.length > 0) {
+          if (res.data.length) {
             this.$notify({
               title: '提示',
               message: (this.notification).join('<br/>'),
@@ -257,13 +251,12 @@ export default {
               duration: 0
             })
           } else {
-            this.$notify({
-              title: '提示',
+            this.$message({
               message: '上传成功',
               type: 'success',
-              showClose: false,
-              duration: 3000
+              duration: '3000'
             })
+            this.resetAll()
           }
         }).catch(() => {
           this.uploading = false
@@ -276,24 +269,30 @@ export default {
       window.open('', '_blank')
     },
 
-    download(e, isAll) {
-      this.selection = this.$refs.table.getVal()
-      if (!isAll) {
-        if (this.selection.length) {
-          const batchUrl = process.env.VUE_APP_BASE_API + '/resource/downloadProductBatch?idList=' + this.selection.map(n => n.id).join(',')
-          window.open(batchUrl, '_self')
-        } else {
-          return this.$message({
-            message: '请选择产品',
-            type: 'warning',
-            duration: '3000'
-          })
-        }
-      } else {
-        // todo 调接口
-        const fullUrl = process.env.VUE_APP_BASE_API + '/resource/downloadProductAll?category=' + this.searchForm.category.join(',') + '&attributionUseCaseList=' + this.searchForm.attributionUseCaseList + '&name=' + this.searchForm.name
-        window.open(fullUrl, '_self')
+    downloadSome() {
+      const data = {
+        idList: this.selection.map(n => n.id).join(',')
       }
+      this.selection = this.$refs.table.getVal()
+      if (this.selection.length) {
+        const url = process.env.VUE_APP_BASE_API + '/resource/downloadProductBatch?' + qs.stringify(data)
+        window.open(url, '_self')
+      } else {
+        return this.$message({
+          message: '请选择产品',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
+    },
+    downloadAll() {
+      const data = {
+        name: this.searchForm.name,
+        category: this.searchForm.category.join(','),
+        attributionUseCaseList: this.searchForm.attributionUseCaseList.join(',')
+      }
+      const url = process.env.VUE_APP_BASE_API + '/resource/downloadProductAll?' + qs.stringify(data)
+      window.open(url, '_self')
     },
     // 获取产品类型
     productCategoryList() {

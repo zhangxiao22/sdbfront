@@ -216,6 +216,7 @@ export default {
     }
   },
   created() {
+    console.log(123)
     if (this.id) {
       this.getStepDetail()
     }

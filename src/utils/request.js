@@ -61,8 +61,8 @@ service.interceptors.response.use(
         // })
         console.log('接口401?')
         store.dispatch('user/resetToken').then(() => {
+          router.replace('/start')
           // location.reload()
-          router.push('/start')
         })
       }
       return Promise.reject(new Error(res.message || 'Error'))

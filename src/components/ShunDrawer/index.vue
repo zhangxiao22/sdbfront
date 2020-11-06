@@ -29,7 +29,7 @@ export default {
     title: {
       type: String,
       default() {
-        return '选择'
+        return '请选择'
       }
     },
     show: {

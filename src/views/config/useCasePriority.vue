@@ -1,21 +1,27 @@
 <template>
   <div class="container">
-    {{ tableData }}
-    <!-- <div id="xx">
-      <div v-for="(item,i) of tableData"
-           :key="item.address">
-        {{ i }}{{ item.address }}
-      </div>
-    </div> -->
     <el-table id="use-case-table"
               :data="tableData"
+              size="medium"
               stripe
               :row-key="rowKey"
-              size="medium"
               style="width: 100%">
       <el-table-column type="index" />
-      <el-table-column prop="address"
-                       label="地址" />
+      <el-table-column prop="id"
+                       width="100"
+                       label="ID" />
+      <el-table-column prop="name"
+                       show-overflow-tooltip
+                       label="用例名称" />
+      <el-table-column prop="createTime"
+                       show-overflow-tooltip
+                       label="创建时间" />
+      <el-table-column prop="modifyTime"
+                       show-overflow-tooltip
+                       label="修改时间" />
+      <el-table-column prop="description"
+                       show-overflow-tooltip
+                       label="描述" />
     </el-table>
   </div>
 </template>
@@ -31,15 +37,7 @@ export default {
   data() {
     return {
       loading: false,
-      tableData: [{
-        address: '1111'
-      }, {
-        address: '2222'
-      }, {
-        address: '3333'
-      }, {
-        address: '4444'
-      }]
+      tableData: []
     }
   },
   computed: {
@@ -55,9 +53,6 @@ export default {
     const el = document.querySelector('#use-case-table tbody')
     var sortable = Sortable.create(el, {
       onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        console.log(newIndex, oldIndex)
-        // console.log(_this.tableData)
-        // console.log(newIndex, oldIndex)
         const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
         _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
       }
@@ -65,10 +60,12 @@ export default {
   },
   methods: {
     rowKey(row) {
-      return row.address
+      return row.id
     },
     getList() {
-
+      getUseCaseList({ pageNo: 1, pageSize: 1000 }).then(res => {
+        this.tableData = res.data.resultList
+      })
     }
   }
 }

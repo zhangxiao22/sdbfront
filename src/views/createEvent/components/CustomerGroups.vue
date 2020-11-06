@@ -120,6 +120,7 @@ import Info from '@/components/Info'
 import Sortable from 'sortablejs'
 import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount, saveGroup, getGroup } from '@/api/api'
 import { getToken } from '@/utils/auth'
+import { Notification } from 'element-ui'
 
 export default {
   name: 'CustomerGroups',
@@ -296,29 +297,35 @@ export default {
         formData.append('baseId', this.id)
         this.$parent.mainLoading = true
         uploadFile(formData).then(res => {
-          // console.log(res)
-          this.fileId = res.data.fileId
-          this.fileName = res.data.fileName
-          this.customerCount = res.data.recordNum
-          this.updateTime = res.data.uploadTime
-          this.tableData = res.data.groupInfoWithCount.map((n) => {
-            return Object.assign({}, n, {
-              desc: '',
-              _desc: '',
-              isEdit: false,
-              isHover: false
+          if (res.code === 200) {
+            this.fileId = res.data.fileId
+            this.fileName = res.data.fileName
+            this.customerCount = res.data.recordNum
+            this.updateTime = res.data.uploadTime
+            this.tableData = res.data.groupInfoWithCount.map((n) => {
+              return Object.assign({}, n, {
+                desc: '',
+                _desc: '',
+                isEdit: false,
+                isHover: false
+              })
             })
-          })
-          this.$parent.mainLoading = false
-          this.abc = '上传成功'
-        }).then(() => {
-          this.$notify({
-            title: '提示',
-            message: this.abc,
-            dangerouslyUseHTMLString: true,
-            // type: 'success',
-            duration: 0
-          })
+            this.$parent.mainLoading = false
+            this.$message({
+              message: '上传成功',
+              type: 'success',
+              duration: '3000'
+            })
+          } else {
+            Notification.closeAll()
+            this.$notify({
+              title: '警告',
+              message: res.msg,
+              // dangerouslyUseHTMLString: true,
+              type: 'warning',
+              duration: 0
+            })
+          }
         }).catch(() => {
           this.resetFile()
           this.$parent.mainLoading = false

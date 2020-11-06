@@ -27,6 +27,7 @@
       <!-- {{ tabValue }} -->
       <el-tabs v-if="tabList.length"
                :value="tabValue"
+               style="margin-left:20px;"
                @tab-click="handleTabClick">
         <el-tab-pane v-for="item of tabList"
                      :key="item.value">
@@ -84,7 +85,7 @@
       <el-pagination v-if="showPagination"
                      :current-page="currentPage"
                      background
-                     style="margin-top:10px;text-align:right;"
+                     style="padding:15px;text-align:right;"
                      :page-sizes="[5, 10, 20, 30]"
                      :page-size="pageSize"
                      layout="total, sizes, prev, pager, next, jumper"
@@ -365,7 +366,8 @@ export default {
 .table-container {
   flex: 1;
   &.card {
-    padding: 6px 16px 16px;
+    // padding: 6px 16px 16px;
+    padding-top: 6px;
   }
 
   ::v-deep .el-tabs__nav-wrap::after {
