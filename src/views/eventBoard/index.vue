@@ -410,7 +410,15 @@ export default {
     },
     // 下载客群名单
     handleDownload(row) {
-      window.open(process.env.VUE_APP_BASE_API + '/event/customerDownload?baseId=' + row.id, '_self')
+      if (row.group.length) {
+        window.open(process.env.VUE_APP_BASE_API + '/event/customerDownload?baseId=' + row.id, '_self')
+      } else {
+        return this.$message({
+          message: '客群为空',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
     },
     edit(row) {
       this.$router.push({

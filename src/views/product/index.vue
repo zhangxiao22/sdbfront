@@ -132,6 +132,7 @@ import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList } from '@/api/api'
 
+import { Notification } from 'element-ui'
 import qs from 'qs'
 export default {
   name: 'Product',
@@ -240,12 +241,13 @@ export default {
         const formData = new FormData()
         formData.append('file', this.file)
         this.uploading = true
+        Notification.closeAll()
         uploadProductFile(formData).then(res => {
           this.uploading = false
           if (res.data.length) {
             this.$notify({
               title: '提示',
-              message: (this.notification).join('<br/>'),
+              message: (res.data).join('<br/>'),
               dangerouslyUseHTMLString: true,
               type: 'warning',
               duration: 0
@@ -256,8 +258,8 @@ export default {
               type: 'success',
               duration: '3000'
             })
-            this.resetAll()
           }
+          this.resetAll()
         }).catch(() => {
           this.uploading = false
           this.resetFile()
@@ -286,13 +288,21 @@ export default {
       }
     },
     downloadAll() {
-      const data = {
-        name: this.searchForm.name,
-        category: this.searchForm.category.join(','),
-        attributionUseCaseList: this.searchForm.attributionUseCaseList.join(',')
+      if (this.tableData.length) {
+        const data = {
+          name: this.searchForm.name,
+          category: this.searchForm.category.join(','),
+          attributionUseCaseList: this.searchForm.attributionUseCaseList.join(',')
+        }
+        const url = process.env.VUE_APP_BASE_API + '/resource/downloadProductAll?' + qs.stringify(data)
+        window.open(url, '_self')
+      } else {
+        return this.$message({
+          message: '产品为空',
+          type: 'warning',
+          duration: '3000'
+        })
       }
-      const url = process.env.VUE_APP_BASE_API + '/resource/downloadProductAll?' + qs.stringify(data)
-      window.open(url, '_self')
     },
     // 获取产品类型
     productCategoryList() {
