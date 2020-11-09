@@ -1,4 +1,5 @@
 <template>
+  <!-- 分配比例 -->
   <div class="container">
     <el-form ref="formRef"
              :model="form"

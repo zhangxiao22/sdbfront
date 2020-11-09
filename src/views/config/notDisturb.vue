@@ -1,4 +1,5 @@
 <template>
+  <!-- 防打扰 -->
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"
