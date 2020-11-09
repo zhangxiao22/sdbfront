@@ -112,6 +112,7 @@
 </template>
 
 <script>
+import bus from '../bus'
 import Info from '@/components/Info'
 import { mapGetters } from 'vuex'
 import { parseTime } from '@/utils'
@@ -141,8 +142,7 @@ export default {
   },
   data() {
     return {
-      // mainLoading: this.$parent.mainLoading,
-      // parent: this.$parent,
+      baseInfoDetail: {},
       baseInfo: JSON.parse(JSON.stringify(DEFAULT_BASEINFO)),
       // 时间选择范围
       pickerOptions: {
@@ -193,20 +193,20 @@ export default {
     baseInfo: {
       handler(newVal, oldVal) {
         // 名称
-        this.$parent.baseInfoDetail.name = this.baseInfo.name
+        this.baseInfoDetail.name = this.baseInfo.name
         // 用例
         this.changeUseCase()
         // 事件类型
         this.changeEventCategory()
         // 起止日期
         this.changePicker()
-
         // 对照组
-        this.$parent.baseInfoDetail.trial = this.baseInfo.trial
+        this.baseInfoDetail.trial = this.baseInfo.trial
         // 百分比
-        this.$parent.baseInfoDetail.control = this.baseInfo.control
+        this.baseInfoDetail.control = this.baseInfo.control
         // 抽样方式
         this.changeSample()
+        bus.$emit('setBaseInfoDetail', this.baseInfoDetail)
       },
       deep: true,
       immediate: false
@@ -241,9 +241,9 @@ export default {
     },
     // 获取详情
     getDetail() {
-      this.$parent.mainLoading = true
+      this.mainLoading = true
       getEventBaseInfo({ id: this.id }).then(res => {
-        this.$parent.mainLoading = false
+        this.mainLoading = false
         const data = res.data
         this.baseInfo.name = data.name
         this.baseInfo.useCaseId = data.useCaseId
@@ -256,7 +256,7 @@ export default {
         this.baseInfo.control = data.control
         this.baseInfo.desc = data.desc
       }).catch(() => {
-        this.$parent.mainLoading = false
+        this.mainLoading = false
       })
     },
     // 获取用例
@@ -324,7 +324,7 @@ export default {
     changeUseCase() {
       this.useCaseOpt.some((n, i) => {
         if (n.value === this.baseInfo.useCaseId) {
-          this.$parent.baseInfoDetail.useCaseName = n.label
+          this.baseInfoDetail.useCaseName = n.label
           return true
         }
       })
@@ -333,7 +333,7 @@ export default {
     changeEventCategory() {
       this.categoryOpt.some((n, i) => {
         if (n.value === this.baseInfo.category) {
-          this.$parent.baseInfoDetail.categoryValue = n.label
+          this.baseInfoDetail.categoryValue = n.label
           return true
         }
       })
@@ -341,17 +341,17 @@ export default {
     // 选择时间
     changePicker() {
       if (this.baseInfo.date) {
-        [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate] = this.baseInfo.date
+        [this.baseInfoDetail.startDate, this.baseInfoDetail.endDate] = this.baseInfo.date
       } else {
-        this.$parent.baseInfoDetail.startDate = ''
-        this.$parent.baseInfoDetail.endDate = ''
+        this.baseInfoDetail.startDate = ''
+        this.baseInfoDetail.endDate = ''
       }
     },
     // 选择抽样方式
     changeSample() {
       this.sampleOpt.some((n, i) => {
         if (n.value === this.baseInfo.sample) {
-          this.$parent.baseInfoDetail.sampleValue = n.label
+          this.baseInfoDetail.sampleValue = n.label
           return true
         }
       })

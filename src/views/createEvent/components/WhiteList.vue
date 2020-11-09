@@ -1,135 +1,124 @@
 <template>
   <div class="container">
-    <el-tabs v-model="activeName">
-      <el-tab-pane label="白名单上传"
-                   name="1">
-        <div class="whitelist">
-          <el-upload ref="uploadRef"
-                     class="upload"
-                     drag
-                     :on-change="handleFileChange"
-                     :show-file-list="false"
-                     :http-request="uploadFile"
-                     :accept="accept.map(n => `.${n}`).join(',')"
-                     action="">
-            <svg-icon class="el-icon-upload"
-                      icon-class="upload-file" />
-            <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-            <div slot="tip"
-                 class="el-upload__tip">
-              请上传xls/xlsx/csv文件
-              <el-link type="primary"
-                       @click="download">模版下载</el-link>
-            </div>
-          </el-upload>
+    <div class="whitelist">
+      <el-upload ref="uploadRef"
+                 class="upload"
+                 drag
+                 :on-change="handleFileChange"
+                 :show-file-list="false"
+                 :http-request="uploadFile"
+                 :accept="accept.map(n => `.${n}`).join(',')"
+                 action="">
+        <svg-icon class="el-icon-upload"
+                  icon-class="upload-file" />
+        <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
+        <div slot="tip"
+             class="el-upload__tip">
+          请上传xls/xlsx/csv文件
+          <el-link type="primary"
+                   @click="download">模版下载</el-link>
         </div>
-        <div v-show="fileId">
-          <el-form ref="form"
-                   label-width="110px"
-                   class="form">
-            <el-form-item label="文件名称：">
-              {{ fileName }}
-            </el-form-item>
-            <el-form-item label="上传时间：">
-              {{ updateTime }}
-            </el-form-item>
-            <el-form-item label="客户数量：">
-              {{ customerCount | formatMoney }}
-            </el-form-item>
-            <el-form-item label="对照组人数：">
-              {{ compareCount | formatMoney }}
-            </el-form-item>
-            <el-form-item>
-              <div slot="label">
-                <Info content="维度不能超过10个" />
-                维度补充：
-              </div>
-              <el-select v-model="paramValue"
-                         style="max-width:800px;width:100%;"
-                         multiple
-                         :multiple-limit="10"
-                         filterable
-                         placeholder="可输入搜索匹配项">
-                <el-option v-for="item in paramOpt"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item>
-          </el-form>
-
-          <div class="table-container">
-            <el-table :data="tableData"
-                      size="medium"
-                      style="width:100%;"
-                      class="whitelist-table"
-                      @cell-mouse-enter="handleMouseEnter"
-                      @cell-mouse-leave="handleMouseLeave">
-              <el-table-column prop="name"
-                               label="群组名称"
-                               width="180" />
-              <el-table-column prop="count"
-                               label="人数"
-                               width="180" />
-              <el-table-column label="备注">
-                <div slot-scope="scope"
-                     class="desc">
-                  <span>{{ scope.row.desc }}</span>
-                  <el-popover v-model="scope.row.isEdit"
-                              placement="top"
-                              width="300">
-                    <el-input v-model="scope.row._desc"
-                              type="textarea"
-                              :rows="5"
-                              style="margin-bottom:10px;"
-                              placeholder="请输入内容" />
-                    <div style="text-align: right; margin: 0">
-                      <el-button size="mini"
-                                 type="text"
-                                 @click="scope.row.isEdit = false">取消</el-button>
-                      <el-button type="primary"
-                                 size="mini"
-                                 @click="scope.row.desc = scope.row._desc;scope.row.isEdit = false">确定</el-button>
-                    </div>
-                    <div v-show="scope.row.isHover"
-                         slot="reference"
-                         class="table-edit touch-tap"
-                         @click="scope.row._desc = scope.row.desc">
-                      <i class="el-icon-edit" />
-                    </div>
-                  </el-popover>
-                </div>
-              </el-table-column>
-            </el-table>
+      </el-upload>
+    </div>
+    <div v-show="fileId">
+      <el-form ref="form"
+               label-width="110px"
+               class="form">
+        <el-form-item label="文件名称：">
+          {{ fileName }}
+        </el-form-item>
+        <el-form-item label="上传时间：">
+          {{ updateTime }}
+        </el-form-item>
+        <el-form-item label="客户数量：">
+          {{ customerCount | formatMoney }}
+        </el-form-item>
+        <el-form-item label="对照组人数：">
+          {{ compareCount | formatMoney }}
+        </el-form-item>
+        <el-form-item>
+          <div slot="label">
+            <Info content="维度不能超过10个" />
+            维度补充：
           </div>
-        </div>
+          <el-select v-model="paramValue"
+                     style="max-width:800px;width:100%;"
+                     multiple
+                     :multiple-limit="10"
+                     filterable
+                     placeholder="可输入搜索匹配项">
+            <el-option v-for="item in paramOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+      </el-form>
 
-      </el-tab-pane>
-      <!-- <el-tab-pane label="CRM导入"
-                   name="second">CRM导入</el-tab-pane>
-      <el-tab-pane label="模型导入"
-                   name="third">模型导入</el-tab-pane> -->
-
-    </el-tabs>
+      <div class="table-container">
+        <el-table :data="tableData"
+                  size="medium"
+                  style="width:100%;"
+                  class="whitelist-table"
+                  @cell-mouse-enter="handleMouseEnter"
+                  @cell-mouse-leave="handleMouseLeave">
+          <el-table-column prop="name"
+                           label="群组名称"
+                           width="180" />
+          <el-table-column prop="count"
+                           label="人数"
+                           width="180" />
+          <el-table-column label="备注">
+            <div slot-scope="scope"
+                 class="desc">
+              <span>{{ scope.row.desc }}</span>
+              <el-popover v-model="scope.row.isEdit"
+                          placement="top"
+                          width="300">
+                <el-input v-model="scope.row._desc"
+                          type="textarea"
+                          :rows="5"
+                          style="margin-bottom:10px;"
+                          placeholder="请输入内容" />
+                <div style="text-align: right; margin: 0">
+                  <el-button size="mini"
+                             type="text"
+                             @click="scope.row.isEdit = false">取消</el-button>
+                  <el-button type="primary"
+                             size="mini"
+                             @click="scope.row.desc = scope.row._desc;scope.row.isEdit = false">确定</el-button>
+                </div>
+                <div v-show="scope.row.isHover"
+                     slot="reference"
+                     class="table-edit touch-tap"
+                     @click="scope.row._desc = scope.row.desc">
+                  <i class="el-icon-edit" />
+                </div>
+              </el-popover>
+            </div>
+          </el-table-column>
+        </el-table>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 import Info from '@/components/Info'
+import bus from '../bus'
 // import Group from './Group'
 import Sortable from 'sortablejs'
 import { getCustomerLabel, uploadFile, getLabelList, getPeopleCount, saveGroup, getGroup } from '@/api/api'
-import { getToken } from '@/utils/auth'
 import { Notification } from 'element-ui'
 
 export default {
-  name: 'CustomerGroups',
+  name: 'WhiteList',
   components: {
     Info
   },
   data() {
     return {
-      activeName: '1',
+      groupDetail: {},
       originFileId: null,
       fileId: null,
       accept: ['xls', 'xlsx', 'csv'],
@@ -152,17 +141,15 @@ export default {
   computed: {
     id() {
       return +this.$route.query.id
-    },
-    groupId() {
-      return this.labelIndex - 1
     }
   },
   watch: {
     fileId() {
-      this.$parent.groupDetail.peopleNum = this.customerCount
-      this.$parent.groupDetail.comparePeopleNum = this.compareCount
-      this.$parent.groupDetail.realPeopleNum = this.realPeopleNum
-      this.$parent.groupDetail.groupNum = this.tableData.length
+      this.groupDetail.peopleNum = this.customerCount
+      this.groupDetail.comparePeopleNum = this.compareCount
+      this.groupDetail.realPeopleNum = this.realPeopleNum
+      this.groupDetail.groupNum = this.tableData.length
+      bus.$emit('setGroupDetail', this.groupDetail)
     },
     customerCount() {
 
@@ -183,9 +170,9 @@ export default {
     },
     // 获取详情
     getDetail() {
-      this.$parent.mainLoading = true
+      this.mainLoading = true
       getGroup({ baseId: this.id }).then(res => {
-        this.$parent.mainLoading = false
+        this.mainLoading = false
         const base = res.data.abstractDetail
         this.originFileId = base.fileId
         this.fileId = base.fileId
@@ -205,9 +192,9 @@ export default {
         res.data.infoDetailList.forEach(item => {
           this.realPeopleNum += item.count
         })
-        this.compareCount = base.recordNum - this.realPeopleNum
+        this.compareCount = this.customerCount - this.realPeopleNum
       }).catch(() => {
-        this.$parent.mainLoading = false
+        this.mainLoading = false
       })
     },
 
@@ -295,12 +282,18 @@ export default {
         const formData = new FormData()
         formData.append('file', this.file)
         formData.append('baseId', this.id)
-        this.$parent.mainLoading = true
+        this.mainLoading = true
         uploadFile(formData).then(res => {
           if (res.code === 200) {
             this.fileId = res.data.fileId
             this.fileName = res.data.fileName
             this.customerCount = res.data.recordNum
+            this.realPeopleNum = 0
+            res.data.groupInfoWithCount.forEach(item => {
+              this.realPeopleNum += item.count
+            })
+            this.compareCount = this.customerCount - this.realPeopleNum
+
             this.updateTime = res.data.uploadTime
             this.tableData = res.data.groupInfoWithCount.map((n) => {
               return Object.assign({}, n, {
@@ -310,7 +303,7 @@ export default {
                 isHover: false
               })
             })
-            this.$parent.mainLoading = false
+            this.mainLoading = false
             this.$message({
               message: '上传成功',
               type: 'success',
@@ -328,7 +321,7 @@ export default {
           }
         }).catch(() => {
           this.resetFile()
-          this.$parent.mainLoading = false
+          this.mainLoading = false
         })
       }
     },
