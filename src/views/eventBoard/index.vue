@@ -127,13 +127,19 @@
               <el-dropdown-item>
                 <div class="btn"
                      style="color:#1890FF"
-                     @click="edit(scope.row)">
+                     @click="handleEdit(scope.row)">
                   编辑
                 </div>
               </el-dropdown-item>
               <el-dropdown-item>
                 <div class="btn"
-                     style="color:#f56c6c;">删除</div>
+                     style="color:#1890FF;"
+                     @click="handleCopy(scope.row)">复制</div>
+              </el-dropdown-item>
+              <el-dropdown-item>
+                <div class="btn"
+                     style="color:#f56c6c;"
+                     @click="handleDelete(scope.row)">删除</div>
               </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -420,12 +426,47 @@ export default {
         })
       }
     },
-    edit(row) {
+    handleEdit(row) {
       this.$router.push({
         path: '/createEvent', query: {
           id: row.id
         }
       })
+    },
+    handleCopy(row) {
+      this.$confirm(`确定复制事件（${row.name}）？`)
+        .then(_ => {
+          // delUseCase({ id: row.id }).then(res => {
+          //   if (res.code === 200) {
+          //     this.$message({
+          //       message: '操作成功',
+          //       type: 'success',
+          //       duration: '3000'
+          //     })
+          //     this.resetAll()
+          //   }
+          // })
+          this.resetAll()
+        })
+        .catch(() => { })
+      this.resetAll()
+    },
+    handleDelete(row) {
+      this.$confirm(`是否确认删除事件（${row.name}）？`)
+        .then(_ => {
+          // delUseCase({ id: row.id }).then(res => {
+          //   if (res.code === 200) {
+          //     this.$message({
+          //       message: '操作成功',
+          //       type: 'success',
+          //       duration: '3000'
+          //     })
+          //     this.resetAll()
+          //   }
+          // })
+          this.resetAll()
+        })
+        .catch(() => { })
     }
   }
 }

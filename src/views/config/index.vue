@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="3"
+             value="5"
              type="border-card"
              style="height: 100%;">
       <el-tab-pane label="防打扰">
@@ -19,6 +19,12 @@
       <el-tab-pane label="分配角色">
         <Assign />
       </el-tab-pane>
+      <el-tab-pane label="厌恶营销名单（CRM）">
+        <HateMarketingCRM />
+      </el-tab-pane>
+      <el-tab-pane label="黑名单（短信）">
+        <BlackListSMS />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -29,13 +35,17 @@ import NotDisturb from './notDisturb'
 import Distribute from './distribute'
 import UseCasePriority from './useCasePriority'
 import CluePriority from './cluePriority'
+import HateMarketingCRM from './hateMarketingCRM'
+import BlackListSMS from './blackListSMS'
 export default {
   components: {
     Assign,
     NotDisturb,
     Distribute,
     UseCasePriority,
-    CluePriority
+    CluePriority,
+    HateMarketingCRM,
+    BlackListSMS
   },
 
   data() {

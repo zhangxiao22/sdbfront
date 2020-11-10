@@ -43,6 +43,8 @@
       <template v-slot:main-buttons>
         <el-button class="button"
                    type="primary"
+                   icon="el-icon-plus"
+                   plain
                    @click="createUseCase">
           新建用例
         </el-button>
