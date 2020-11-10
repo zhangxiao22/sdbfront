@@ -137,7 +137,8 @@
 
 <script>
 
-import { Register, CustomerGroups, Ploy, Preview } from './components'
+import { Register, Customer, Ploy, Preview } from './components'
+import bus from './bus'
 // import { mapGetters } from 'vuex'
 import { eventPublish, getEventInfo, getUseCaseDetailById } from '@/api/api'
 const DEFAULT_DATA = {
@@ -176,7 +177,7 @@ const DEFAULT_DATA = {
 export default {
   components: {
     Register,
-    CustomerGroups,
+    Customer,
     Ploy,
     Preview
   },
@@ -192,7 +193,7 @@ export default {
           ref: 'regRef'
         },
         {
-          type: 'CustomerGroups',
+          type: 'Customer',
           ref: 'customerRef'
         },
         {
@@ -215,7 +216,13 @@ export default {
       return +this.$route.query.useid
     }
   },
+  mounted() {
+
+  },
   created() {
+    bus.$on('setBaseInfoDetail', this.setBaseInfoDetail)
+    bus.$on('setGroupDetail', this.setGroupDetail)
+    bus.$on('setPloyDetail', this.setPloyDetail)
     if (this.id) {
       this.getStepDetail()
     }
@@ -231,6 +238,15 @@ export default {
         this.groupDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail))
         this.ployDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.ployDetail))
       }
+    },
+    setBaseInfoDetail(data) {
+      this.baseInfoDetail = JSON.parse(JSON.stringify(data))
+    },
+    setGroupDetail(data) {
+      this.groupDetail = JSON.parse(JSON.stringify(data))
+    },
+    setPloyDetail(data) {
+      this.ployDetail = JSON.parse(JSON.stringify(data))
     },
     save() {
       this.$message('还没做')

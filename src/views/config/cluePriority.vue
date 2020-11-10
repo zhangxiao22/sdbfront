@@ -1,4 +1,5 @@
 <template>
+  <!-- 线索优先级 -->
   <div class="container">
     <shun-table ref="table"
                 :is-card="false"

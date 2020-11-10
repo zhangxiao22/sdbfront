@@ -1,4 +1,5 @@
 <template>
+  <!-- 用例优先级 -->
   <div class="container">
     <el-table id="use-case-table"
               :data="tableData"
@@ -75,5 +76,8 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  ::v-deep .el-table tr {
+    cursor: move;
+  }
 }
 </style>

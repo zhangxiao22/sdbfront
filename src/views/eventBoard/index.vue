@@ -420,7 +420,7 @@ export default {
         window.open(process.env.VUE_APP_BASE_API + '/event/customerDownload?baseId=' + row.id, '_self')
       } else {
         return this.$message({
-          message: '客群为空',
+          message: '客群名单不存在',
           type: 'warning',
           duration: '3000'
         })

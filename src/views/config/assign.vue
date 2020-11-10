@@ -1,4 +1,5 @@
 <template>
+  <!-- 分配角色 -->
   <div class="container">
     <shun-table ref="table"
                 :is-card="false"

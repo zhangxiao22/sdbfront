@@ -245,8 +245,8 @@ export default {
           this.uploading = false
           if (res.data.length) {
             this.$notify({
-              title: '提示',
-              message: (res.data).join('<br/>'),
+              title: '数据错误',
+              message: res.data.join('<br/>'),
               dangerouslyUseHTMLString: true,
               type: 'warning',
               duration: 0
@@ -297,7 +297,7 @@ export default {
         window.open(url, '_self')
       } else {
         return this.$message({
-          message: '产品为空',
+          message: '产品数据不存在',
           type: 'warning',
           duration: '3000'
         })
