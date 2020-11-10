@@ -13,7 +13,6 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-
         <el-upload ref="uploadRef"
                    :disabled="uploading"
                    :on-change="handleFileChange"
@@ -39,7 +38,7 @@
         </el-button>
         <el-tooltip class="item"
                     effect="dark"
-                    content="全部下载当前搜素结果"
+                    content="全部下载当前搜索结果"
                     placement="top">
           <el-button class="button"
                      icon="el-icon-download"

@@ -334,3 +334,39 @@ export function getUseCaseDetailById(params) {
   })
 }
 
+/** ************************************************ 厌恶营销名单/短信黑名单 ************************************************************/
+// 获取黑名单（CRM+SMS）
+export function getHateMarketingList(data) {
+  return request({
+    url: '/hateSale/select',
+    method: 'post',
+    data
+  })
+}
+
+// 新增用户
+export function addCustomerToBlackList(data) {
+  return request({
+    url: '/hateSale/insertBatch',
+    method: 'post',
+    data
+  })
+}
+
+// 增量导入
+export function batchUploadFile(data) {
+  return request({
+    url: '/hateSale/upload',
+    method: 'post',
+    data
+  })
+}
+
+// 删除客户
+export function deleteHateMarketingListById(params) {
+  return request({
+    url: '/hateSale/deleteById',
+    method: 'get',
+    params
+  })
+}

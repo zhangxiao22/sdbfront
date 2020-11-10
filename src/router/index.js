@@ -85,16 +85,7 @@ export const constantRoutes = [
         name: 'Sms',
         component: () => import('@/views/sms/index'),
         meta: { title: '短信库', icon: 'shortmessage' }
-      },
-      {
-        path: 'hateMarketing',
-        name: 'HateMarketing',
-        component: () => import('@/views/hateMarketing/index'),
-        meta: {
-          title: '厌恶营销名单', icon: 'list'
-        }
       }
-
     ]
   }
 ]
