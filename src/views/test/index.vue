@@ -1,28 +1,13 @@
 <template>
   <div class="container">
-    {{ tableData }}
-    <!-- <div id="xx">
-      <div v-for="(item,i) of tableData"
-           :key="item.address">
-        {{ i }}{{ item.address }}
-      </div>
-    </div> -->
-    <el-table id="use-case-table"
-              :data="tableData"
-              stripe
-              :row-key="rowKey"
-              size="medium"
-              style="width: 100%">
-      <el-table-column type="index" />
-      <el-table-column prop="address"
-                       label="地址" />
-    </el-table>
+    <div id="canvas"
+         style="width:300px;height:500px;"
+         class="chart" />
   </div>
 </template>
 
 <script>
-import { getUseCaseList } from '@/api/api'
-import Sortable from 'sortablejs'
+import { Funnel } from '@antv/g2plot'
 
 export default {
   components: {
@@ -51,17 +36,23 @@ export default {
     this.getList()
   },
   mounted() {
-    const _this = this
-    const el = document.querySelector('#use-case-table tbody')
-    var sortable = Sortable.create(el, {
-      onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        console.log(newIndex, oldIndex)
-        // console.log(_this.tableData)
-        // console.log(newIndex, oldIndex)
-        const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
-        _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
-      }
+    const data = [
+      { stage: '简历筛选', number: 253 },
+      { stage: '初试人数', number: 151 },
+      { stage: '复试人数', number: 113 },
+      { stage: '录取人数', number: 87 },
+      { stage: '入职人数', number: 59 }
+    ]
+
+    const funnelPlot = new Funnel('canvas', {
+      data: data,
+      xField: 'stage',
+      yField: 'number',
+      dynamicHeight: true,
+      legend: false
     })
+
+    funnelPlot.render()
   },
   methods: {
     rowKey(row) {
