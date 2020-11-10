@@ -83,11 +83,12 @@
                 :gutter="20">
           <el-col :span="12">
             <FunnelChart id="chart-main"
-                         :height="280" />
+                         :data="funnelData"
+                         style="height:280px" />
           </el-col>
           <el-col :span="12">
             <el-table :data="tableData2"
-                      :row-class-name="tableRowClassName"
+                      stripe
                       max-height="300"
                       border>
               <el-table-column prop="name"
@@ -114,11 +115,12 @@
                 class="funnel-chart">
           <el-col :span="12">
             <FunnelChart id="chart-sub"
-                         :height="280" />
+                         :data="funnelData"
+                         style="height:280px" />
           </el-col>
           <el-col :span="12">
             <el-table :data="tableData2.slice(0,4)"
-                      :row-class-name="tableRowClassName"
+                      stripe
                       max-height="300"
                       border>
               <el-table-column prop="name"
@@ -182,7 +184,7 @@
 </template>
 
 <script>
-import FunnelChart from './components/FunnelChart'
+import FunnelChart from '@/components/chart/FunnelChart'
 import ColumnChart from './components/ColumnChart'
 
 export default {
@@ -192,6 +194,13 @@ export default {
   },
   data() {
     return {
+      funnelData: [
+        { stage: '简历筛选', number: 253 },
+        { stage: '初试人数', number: 151 },
+        { stage: '复试人数', number: 113 },
+        { stage: '录取人数', number: 87 },
+        { stage: '入职人数', number: 59 }
+      ],
       funnelTitleOpt: [
         {
           value: '1',
@@ -455,15 +464,15 @@ export default {
       .funnel-chart {
         display: flex;
         align-items: center;
-        ::v-deep .el-table__header th {
-          background: #f5f7fa;
-        }
-        ::v-deep .el-table__row {
-          background: #fffaf2;
-        }
-        ::v-deep .el-table .color-row {
-          background: #f8fcf5;
-        }
+        // ::v-deep .el-table__header th {
+        //   background: #f5f7fa;
+        // }
+        // ::v-deep .el-table__row {
+        //   background: #fffaf2;
+        // }
+        // ::v-deep .el-table .color-row {
+        //   background: #f8fcf5;
+        // }
       }
     }
     .column-chart-container {

@@ -7,6 +7,7 @@
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
+                :is-card="false"
                 multiple
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
@@ -19,7 +20,7 @@
           <el-form-item label="客户号："
                         prop="customerAccount">
             <el-input v-model.trim="filterForm.customerAccount"
-                      style="width:300px"
+                      style="width:200px"
                       placeholder="请输入客户号"
                       clearable
                       @keyup.enter.native="search" />
@@ -27,7 +28,7 @@
           <el-form-item label="客户姓名："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
-                      style="width:300px"
+                      style="width:200px"
                       placeholder="请输入客户姓名"
                       clearable
                       @keyup.enter.native="search" />
@@ -55,6 +56,7 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
+        <UploadButton name="xxxx" />
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -66,7 +68,7 @@
                    :disabled="uploading"
                    :on-change="handleFileChange"
                    class="upload button"
-                   :http-request="file=>handleUploadFileAll(file,true)"
+                   :http-request="file=>handleUploadFileAll(file,1)"
                    :show-file-list="false"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
@@ -82,7 +84,7 @@
                    :disabled="uploading"
                    :on-change="handleFileChange"
                    class="upload button"
-                   :http-request="file=>handleUploadFileAll(file,false)"
+                   :http-request="file=>handleUploadFileAll(file,0)"
                    :show-file-list="false"
                    :accept="accept.map(n => `.${n}`).join(',')"
                    action="">
@@ -178,10 +180,12 @@ import ShunTable from '@/components/ShunTable'
 import { getHateMarketingList, addCustomerToBlackList, batchUploadFile, deleteHateMarketingListById } from '@/api/api'
 import { Notification } from 'element-ui'
 import qs from 'qs'
+import UploadButton from '@/components/UploadButton'
 export default {
   name: 'HateMarketingCRM',
   components: {
-    ShunTable
+    ShunTable,
+    UploadButton
   },
   props: {
     showSelection: {
@@ -203,6 +207,8 @@ export default {
   },
   data() {
     return {
+      accept: ['xls', 'xlsx', 'csv'],
+
       uploading: false,
       loading: false,
       currentPage: 1,
@@ -215,21 +221,20 @@ export default {
         name: '',
         dateRange: []
       },
+      searchForm: {
+      },
       addInfo: {
         add: [{
           customerAccount: '',
           name: ''
         }]
       },
-      accept: ['xls', 'xlsx', 'csv'],
-      searchForm: {
-      },
+
       tableColumnList: [
         {
           prop: 'customerAccount',
           label: '客户号',
-          minWidth: 150,
-          notShowOverflowTooltip: true
+          minWidth: 150
         },
         {
           prop: 'name',
@@ -238,8 +243,7 @@ export default {
         },
         {
           prop: 'createTime',
-          label: '加入日期',
-          notShowOverflowTooltip: true
+          label: '加入日期'
         },
         {
           prop: 'operate',
@@ -283,14 +287,11 @@ export default {
       this.search()
     },
     search() {
-      if (!this.filterForm.dateRange) {
-        this.filterForm.dateRange = []
-      }
       this.searchForm = {
         name: this.filterForm.name,
         customerAccount: this.filterForm.customerAccount,
-        startDate: this.filterForm.dateRange[0] || null,
-        endDate: this.filterForm.dateRange[1] || null
+        startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
+        endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
       }
       // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
@@ -358,11 +359,8 @@ export default {
         const formData = new FormData()
         formData.append('file', this.file)
         formData.append('category', this.category)
-        if (type) {
-          formData.append('updateType', 0)
-        } else {
-          formData.append('updateType', 1)
-        }
+        formData.append('updateType', type)
+
         this.uploading = true
         Notification.closeAll()
         batchUploadFile(formData).then(res => {
@@ -402,7 +400,7 @@ export default {
     },
     handleDelete(row) {
       this.$confirm(`是否确认删除客户（${row.name}）？`)
-        .then(_ => {
+        .then(() => {
           deleteHateMarketingListById({ hateSaleId: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({

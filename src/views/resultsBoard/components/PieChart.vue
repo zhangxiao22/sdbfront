@@ -31,12 +31,10 @@ export default {
   },
   watch: {
     data() {
-      // console.log(123)
       this.render()
     }
   },
   mounted() {
-    // this.render()
   },
   methods: {
     render() {

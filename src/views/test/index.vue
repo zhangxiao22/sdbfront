@@ -1,28 +1,19 @@
 <template>
   <div class="container">
-    {{ tableData }}
-    <!-- <div id="xx">
-      <div v-for="(item,i) of tableData"
-           :key="item.address">
-        {{ i }}{{ item.address }}
-      </div>
-    </div> -->
-    <el-table id="use-case-table"
-              :data="tableData"
-              stripe
-              :row-key="rowKey"
-              size="medium"
-              style="width: 100%">
-      <el-table-column type="index" />
-      <el-table-column prop="address"
-                       label="地址" />
-    </el-table>
+    <div class="block">
+      {{ value1 }} {{ typeof value1 }}
+      <span class="demonstration">默认</span>
+      <el-date-picker v-model="value1"
+                      type="daterange"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期" />
+    </div>
   </div>
 </template>
 
 <script>
-import { getUseCaseList } from '@/api/api'
-import Sortable from 'sortablejs'
+import { Funnel } from '@antv/g2plot'
 
 export default {
   components: {
@@ -30,6 +21,7 @@ export default {
 
   data() {
     return {
+      value1: '',
       loading: false,
       tableData: [{
         address: '1111'
@@ -48,28 +40,12 @@ export default {
 
   watch: {},
   created() {
-    this.getList()
   },
   mounted() {
-    const _this = this
-    const el = document.querySelector('#use-case-table tbody')
-    var sortable = Sortable.create(el, {
-      onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        console.log(newIndex, oldIndex)
-        // console.log(_this.tableData)
-        // console.log(newIndex, oldIndex)
-        const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
-        _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
-      }
-    })
+
   },
   methods: {
-    rowKey(row) {
-      return row.address
-    },
-    getList() {
 
-    }
   }
 }
 </script>

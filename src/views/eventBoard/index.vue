@@ -187,7 +187,7 @@ export default {
         category: '',
         userId: '',
         useCaseId: +this.$route.query.id || '',
-        dateRange: []
+        dateRange: ''
       },
       // 表格下拉filters值
       // filters: [],
@@ -359,8 +359,8 @@ export default {
         useCaseId: this.filterForm.useCaseId || null,
         userId: this.filterForm.userId || null,
         category: this.filterForm.category || null,
-        startDate: this.filterForm.dateRange[0],
-        endDate: this.filterForm.dateRange[1]
+        startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
+        endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
       }
       // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)

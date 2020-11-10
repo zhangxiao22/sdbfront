@@ -117,6 +117,19 @@ export const asyncRoutes = [
       }
     ]
   },
+  // 总看板
+  {
+    path: '/',
+    component: Layout,
+    children: [
+      {
+        path: 'totalBoard',
+        name: 'TotalBoard',
+        component: () => import('@/views/totalBoard/index'),
+        meta: { title: '线索发布总览', icon: 'list', roles: ['boss'] }
+      }
+    ]
+  },
   // 设置
   {
     path: '/',
