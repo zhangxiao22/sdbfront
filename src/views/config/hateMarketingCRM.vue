@@ -257,7 +257,7 @@ export default {
     },
     getData() {
       const data = {}
-      data.useCaseAchieveList = this.addInfo.add.map(n => {
+      data.newHateMarketingList = this.addInfo.add.map(n => {
         return {
           name: n.name,
           customerAccount: n.customerAccount,
@@ -321,7 +321,7 @@ export default {
     ensureAddList() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
-          addCustomerToBlackList(this.getData.useCaseAchieveList).then(res => {
+          addCustomerToBlackList(this.getData.newHateMarketingList).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
