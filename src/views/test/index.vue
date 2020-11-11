@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <UploadButton button-name="测试"
-                  :upload-method="aaaa"
+                  :upload-method="batchUploadFile"
                   :upload-params="uploadParams"
                   @afterUploadSuccess="afterUploadSuccess" />
   </div>
@@ -18,7 +18,7 @@ export default {
 
   data() {
     return {
-      aaa: batchUploadFile,
+      batchUploadFile,
       uploadParams: {
         category: 1,
         updateType: 1

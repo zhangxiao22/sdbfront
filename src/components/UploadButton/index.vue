@@ -4,7 +4,7 @@
                :disabled="uploading"
                :on-change="handleFileChange"
                class="upload"
-               :http-request="(file) => handleUploadFileAll(file)"
+               :http-request="handleUploadFileAll"
                :show-file-list="false"
                :accept="accept.map(n => `.${n}`).join(',')"
                action="">
