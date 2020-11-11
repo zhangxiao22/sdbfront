@@ -1,10 +1,13 @@
 <template>
   <div class="button-container">
-    <!-- <el-upload ref="uploadRef"
+    <el-upload ref="uploadRef"
                :disabled="uploading"
                :on-change="handleFileChange"
                class="upload button"
-               :http-request="file=>handleUploadFileAll(file,1)"
+               :upload-method="uploadMethod"
+               :name="name"
+               :is-all-upload="isAllUpload"
+               :http-request="handleUploadFileAll"
                :show-file-list="false"
                :accept="accept.map(n => `.${n}`).join(',')"
                action="">
@@ -13,23 +16,38 @@
                  icon="el-icon-upload2"
                  type="primary"
                  plain>
-        全量更新
-      </el-button> -->
-    <el-button>{{ name }}</el-button>
+        {{ name }}
+      </el-button>
+    </el-upload>
   </div>
 </template>
 
 <script>
+import { Notification } from 'element-ui'
+
 export default {
   props: {
+    uploadMethod: {
+      type: Function,
+      default: console.log('noData')
+    },
+    category: {
+      type: Number,
+      default: -1
+    },
     name: {
       type: String,
       default: ''
+    },
+    isAllUpload: {
+      type: Number,
+      default: -1
     }
   },
   data() {
     return {
-
+      uploading: false,
+      accept: ['xls', 'xlsx', 'csv']
     }
   },
   watch: {
@@ -37,7 +55,42 @@ export default {
   },
 
   methods: {
-
+    handleFileChange(file) {
+      this.file = file.raw
+    },
+    resetFile() {
+      this.file = ''
+      this.$refs.uploadRef.clearFiles()
+    },
+    handleUploadFileAll() {
+      const index = this.file.name.lastIndexOf('.')
+      const suffix = this.file.name.substr(index + 1)
+      if (!this.accept.includes(suffix)) {
+        this.$message({
+          message: '请上传正确的文件格式',
+          type: 'error',
+          duration: '5000'
+        })
+        this.resetFile()
+        return
+      } else {
+        const formData = new FormData()
+        formData.append('file', this.file)
+        if (this.category !== -1) {
+          formData.append('category', this.category)
+        }
+        if (this.isAllUpload !== -1) {
+          formData.append('updateType', this.isAllUpload)
+        }
+        this.uploading = true
+        Notification.closeAll()
+        this.setUploading(formData)
+      }
+    },
+    setUploading(formData) {
+      this.uploading = false
+      this.uploadMethod(formData)
+    }
   }
 }
 </script>
