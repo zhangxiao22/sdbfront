@@ -83,8 +83,8 @@
                 :gutter="20">
           <el-col :span="12">
             <FunnelChart id="chart-main"
-                         :data="funnelData"
-                         style="height:280px" />
+                         class="fchart"
+                         :data="funnelData" />
           </el-col>
           <el-col :span="12">
             <el-table :data="tableData2"
@@ -115,8 +115,8 @@
                 class="funnel-chart">
           <el-col :span="12">
             <FunnelChart id="chart-sub"
-                         :data="funnelData"
-                         style="height:280px" />
+                         class="fchart"
+                         :data="funnelData" />
           </el-col>
           <el-col :span="12">
             <el-table :data="tableData2.slice(0,4)"
@@ -195,11 +195,11 @@ export default {
   data() {
     return {
       funnelData: [
-        { stage: '简历筛选', number: 253 },
-        { stage: '初试人数', number: 151 },
-        { stage: '复试人数', number: 113 },
-        { stage: '录取人数', number: 87 },
-        { stage: '入职人数', number: 59 }
+        { label: '简历筛选', value: 253 },
+        { label: '初试人数', value: 151 },
+        { label: '复试人数', value: 113 },
+        { label: '录取人数', value: 87 },
+        { label: '入职人数', value: 59 }
       ],
       funnelTitleOpt: [
         {
@@ -464,6 +464,12 @@ export default {
       .funnel-chart {
         display: flex;
         align-items: center;
+
+        .fchart {
+          height: 280px;
+          // width: 100%;
+          // max-width: 600px;
+        }
         // ::v-deep .el-table__header th {
         //   background: #f5f7fa;
         // }

@@ -13,22 +13,10 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-        <el-upload ref="uploadRef"
-                   :disabled="uploading"
-                   :on-change="handleFileChange"
-                   :show-file-list="false"
-                   class="upload button"
-                   :http-request="handleUploadFile"
-                   :accept="accept.map(n => `.${n}`).join(',')"
-                   action="">
-          <el-button :loading="uploading"
-                     :disabled="uploading"
-                     icon="el-icon-upload2"
-                     type="primary"
-                     plain>
-            批量上传
-          </el-button>
-        </el-upload>
+        <UploadButton button-name="批量上传"
+                      class="button"
+                      :upload-method="uploadProductFile"
+                      @afterUploadSuccess="resetAll" />
         <el-button class="button"
                    icon="el-icon-download"
                    type="success"
@@ -130,13 +118,15 @@
 import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList } from '@/api/api'
+import UploadButton from '@/components/UploadButton'
 
 import { Notification } from 'element-ui'
 import qs from 'qs'
 export default {
   name: 'Product',
   components: {
-    ShunTable
+    ShunTable,
+    UploadButton
   },
   props: {
     showSelection: {
@@ -158,9 +148,9 @@ export default {
   },
   data() {
     return {
-      uploading: false,
-      accept: ['xls', 'xlsx'],
-      file: '',
+      // 批量上传
+      uploadProductFile,
+      // 全量上传
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -223,47 +213,6 @@ export default {
     resetFile() {
       this.file = ''
       this.$refs.uploadRef.clearFiles()
-    },
-    // 上传产品
-    handleUploadFile() {
-      const index = this.file.name.lastIndexOf('.')
-      const suffix = this.file.name.substr(index + 1)
-      if (!this.accept.includes(suffix)) {
-        this.$message({
-          message: '请上传正确的文件格式',
-          type: 'error',
-          duration: '5000'
-        })
-        this.resetFile()
-        return
-      } else {
-        const formData = new FormData()
-        formData.append('file', this.file)
-        this.uploading = true
-        Notification.closeAll()
-        uploadProductFile(formData).then(res => {
-          this.uploading = false
-          if (res.data.length) {
-            this.$notify({
-              title: '数据错误',
-              message: res.data.join('<br/>'),
-              dangerouslyUseHTMLString: true,
-              type: 'warning',
-              duration: 0
-            })
-          } else {
-            this.$message({
-              message: '上传成功',
-              type: 'success',
-              duration: '3000'
-            })
-          }
-          this.resetAll()
-        }).catch(() => {
-          this.uploading = false
-          this.resetFile()
-        })
-      }
     },
     // 下载模版
     downloadModel() {

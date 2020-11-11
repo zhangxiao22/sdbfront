@@ -3,8 +3,8 @@
     <el-upload ref="uploadRef"
                :disabled="uploading"
                :on-change="handleFileChange"
-               class="upload button"
-               :http-request="handleUploadFileAll"
+               class="upload"
+               :http-request="(file) => handleUploadFileAll(file)"
                :show-file-list="false"
                :accept="accept.map(n => `.${n}`).join(',')"
                action="">
@@ -13,7 +13,7 @@
                  icon="el-icon-upload2"
                  type="primary"
                  plain>
-        {{ name }}
+        {{ buttonName }}
       </el-button>
     </el-upload>
   </div>
@@ -21,30 +21,39 @@
 
 <script>
 import { Notification } from 'element-ui'
-
 export default {
   props: {
-    uploadMethod: {
-      type: Function,
-      default: console.log('noData')
+    // 上传文件格式
+    accept: {
+      type: Array,
+      default() {
+        return ['xls', 'xlsx', 'csv']
+      }
     },
-    category: {
-      type: Number,
-      default: -1
-    },
-    name: {
+    // 按钮名字
+    buttonName: {
       type: String,
       default: ''
     },
-    isAllUpload: {
-      type: Number,
-      default: -1
+    // 上传文件调用的接口
+    uploadMethod: {
+      type: Function,
+      default() {
+        return
+      }
+    },
+    // 上传文件传的参数
+    uploadParams: {
+      type: Object,
+      default() {
+        return {}
+      }
     }
   },
   data() {
     return {
-      uploading: false,
-      accept: ['xls', 'xlsx', 'csv']
+      // 按钮是否加载中
+      uploading: false
     }
   },
   watch: {
@@ -63,6 +72,7 @@ export default {
       const index = this.file.name.lastIndexOf('.')
       const suffix = this.file.name.substr(index + 1)
       if (!this.accept.includes(suffix)) {
+        // 文件格式不正确
         this.$message({
           message: '请上传正确的文件格式',
           type: 'error',
@@ -71,17 +81,39 @@ export default {
         this.resetFile()
         return
       } else {
+        // 文件格式正确 开始上传
         const formData = new FormData()
         formData.append('file', this.file)
-        if (this.category !== -1) {
-          formData.append('category', this.category)
-        }
-        if (this.isAllUpload !== -1) {
-          formData.append('updateType', this.isAllUpload)
+        for (const key in this.uploadParams) {
+          formData.append(key, this.uploadParams[key])
         }
         this.uploading = true
         Notification.closeAll()
-        this.setUploading(formData)
+        this.uploadMethod(formData).then(res => {
+          this.uploading = false
+          if (res.data.length) {
+            this.$notify({
+              title: '数据错误',
+              message: (res.data).join('<br/>'),
+              dangerouslyUseHTMLString: true,
+              type: 'warning',
+              duration: 0
+            })
+          } else {
+            this.$message({
+              message: '上传成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
+          // 上传成功后
+          this.$emit('afterUploadSuccess')
+        }).catch(() => {
+          // 上传失败
+          this.$emit('afterUploadFail')
+          this.uploading = false
+          this.resetFile()
+        })
       }
     },
     setUploading(formData) {
@@ -94,6 +126,4 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-.button-container {
-}
 </style>
