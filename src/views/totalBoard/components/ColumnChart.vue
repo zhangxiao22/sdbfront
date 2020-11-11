@@ -5,7 +5,7 @@
 
 <script>
 import { Column } from '@antv/g2plot'
-
+import { formatMoney } from '@/utils'
 export default {
   props: {
     data: {
@@ -51,7 +51,14 @@ export default {
         data: this.data,
         xField: 'label',
         yField: 'value',
+        yAxis: {
+          label: {
+            // 数值格式化为千分位
+            formatter: (v) => formatMoney(v)
+          }
+        },
         label: {
+          formatter: ({ value }) => formatMoney(value),
           // 可手动配置 label 数据标签位置
           position: 'middle',
           // 配置样式
@@ -64,10 +71,9 @@ export default {
           autoRotate: true
         },
         meta: {
-          value: {
-            alias: this.metaValue
-
-          },
+          // value: {
+          //   alias: this.metaValue
+          // },
           label: {
             formatter(val) {
               return val.slice(0, 5) + '...'
@@ -75,11 +81,11 @@ export default {
           }
         },
         tooltip: {
-          title: this.tooltipTitle,
+          showTitle: false,
           formatter: (datum) => {
             return {
               name: datum.label,
-              value: datum.value
+              value: formatMoney(datum.value) + '条'
             }
           }
         }

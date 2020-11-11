@@ -43,6 +43,7 @@
                 :data="tableData"
                 class="table"
                 size="medium"
+                :border="!isCard"
                 :stripe="stripe"
                 style="width: 100%"
                 :row-style="rowStyle"

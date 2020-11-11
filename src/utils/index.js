@@ -1,5 +1,8 @@
 export const MAX_NUMBER = 1e14
 
+export function formatMoney(val) {
+  return `${val}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
+}
 // 产品公共字段
 export const COMMON_COLUMN_LIST = [
   {

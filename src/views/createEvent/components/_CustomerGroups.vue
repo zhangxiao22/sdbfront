@@ -80,13 +80,13 @@
                            :name="item.name">
                 <el-form-item required
                               label="群组名称：">
-                  <el-input v-model="item.title"
+                  <el-input v-model.trim="item.title"
                             style="width:300px"
                             :disabled="!item.closable"
                             placeholder="请输入群组名称" />
                 </el-form-item>
                 <el-form-item label="群组描述：">
-                  <el-input v-model="item.desc"
+                  <el-input v-model.trim="item.desc"
                             style="width:300px"
                             type="textarea"
                             :disabled="!item.closable"

@@ -75,7 +75,7 @@
               <el-popover v-model="scope.row.isEdit"
                           placement="top"
                           width="300">
-                <el-input v-model="scope.row._desc"
+                <el-input v-model.trim="scope.row._desc"
                           type="textarea"
                           :rows="5"
                           style="margin-bottom:10px;"

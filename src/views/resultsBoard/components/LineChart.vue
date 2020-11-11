@@ -84,7 +84,7 @@ export default {
         .line()
         .position('month*temperature')
         .color('city')
-        .shape('smooth')
+      // .shape('smooth')
 
       chart
         .point()

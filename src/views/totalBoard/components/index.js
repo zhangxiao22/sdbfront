@@ -1,3 +1,5 @@
 export { default as FunnelChart } from './FunnelChart'
 export { default as PieChart } from './PieChart'
 export { default as ColumnChart } from './ColumnChart'
+export { default as LineChart } from './LineChart'
+export { default as LineChart2 } from './LineChart2'

@@ -31,7 +31,7 @@
                  class="filter-container">
           <el-form-item label="事件名称："
                         prop="name">
-            <el-input v-model="filterForm.name"
+            <el-input v-model.trim="filterForm.name"
                       style="width:300px"
                       placeholder="搜索事件名称"
                       clearable

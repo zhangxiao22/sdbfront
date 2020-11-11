@@ -131,7 +131,7 @@
                         required: true, message: '请输入客户号', trigger: 'blur'
                       }]"
                       prop="customerAccount">
-          <el-input v-model="addInfo.customerAccount"
+          <el-input v-model.trim="addInfo.customerAccount"
                     show-word-limit
                     maxlength="50" />
         </el-form-item>
@@ -140,7 +140,7 @@
                         required: true, message: '请输入客户名称', trigger: 'blur'
                       }]"
                       prop="name">
-          <el-input v-model="addInfo.name"
+          <el-input v-model.trim="addInfo.name"
                     show-word-limit
                     maxlength="50" />
         </el-form-item>
