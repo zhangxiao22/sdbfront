@@ -3,7 +3,7 @@
     <el-upload ref="uploadRef"
                :disabled="uploading"
                :on-change="handleFileChange"
-               class="upload button"
+               class="upload"
                :upload-method="uploadMethod"
                :name="name"
                :is-all-upload="isAllUpload"

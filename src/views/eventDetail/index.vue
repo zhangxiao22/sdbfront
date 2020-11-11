@@ -184,7 +184,7 @@
 </template>
 
 <script>
-import FunnelChart from '@/components/chart/FunnelChart'
+import FunnelChart from '../totalBoard/components/FunnelChart'
 import ColumnChart from './components/ColumnChart'
 
 export default {
