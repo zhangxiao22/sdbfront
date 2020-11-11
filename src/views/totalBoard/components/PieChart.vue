@@ -17,6 +17,10 @@ export default {
     id: {
       type: String,
       default: ''
+    },
+    unit: {
+      type: String,
+      default: ''
     }
 
   },

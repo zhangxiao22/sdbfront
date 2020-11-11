@@ -111,8 +111,7 @@
                   <svg-icon icon-class="chart-funnel" />销售漏斗
                 </div>
                 <FunnelChart id="funnel"
-                             :data="funnelData"
-                             :height="300" />
+                             :data="funnelData" />
                 <div class="chart-bottom">
                   <div style="margin-right:20px;">有效执行率：<b>67%</b></div>
                   <div>实际达成率：<b>67%</b></div>
@@ -125,7 +124,7 @@
                   <svg-icon icon-class="chart-pie" />渠道线索数
                 </div>
                 <PieChart id="channel-pie"
-                          style="width:500px;height:500px;"
+                          unit="条"
                           :data="channelPieData" />
               </div>
 
@@ -134,15 +133,57 @@
           <el-row>
             <el-col :span="24"
                     style="margin-top:15px;">
-              <div class="chart-title">
-                <div class="chart-item">
-                  <svg-icon icon-class="chart-funnel" />用例线索数
-                  <ColumnChart id="usecase-bar"
-                               meta-value="线索数量"
-                               tooltip-title="线索数"
-                               :data="usecaseBarData" />
+              <div class="chart-item">
+                <div class="chart-title">
+                  <svg-icon icon-class="chart-column" />用例线索数
                 </div>
+                <ColumnChart id="usecase-bar"
+                             meta-value="线索数量"
+                             tooltip-title="线索数"
+                             :data="usecaseBarData" />
               </div>
+            </el-col>
+          </el-row>
+          <el-row class="crm-line-container">
+            <el-col :span="24"
+                    class="chart-item line-chart">
+              <div class="chart-title">
+                <svg-icon icon-class="chart-line" />CRM执行率
+              </div>
+              <LineChart id="crm-line-1"
+                         :data="lineChartData" />
+            </el-col>
+            <el-col :span="24"
+                    class="chart-item line-chart">
+              <div class="chart-title">
+                <svg-icon icon-class="chart-line" />CRM联系成功率
+              </div>
+              <LineChart id="crm-line-2"
+                         :data="lineChartData" />
+            </el-col>
+            <el-col :span="24"
+                    class="chart-item line-chart">
+              <div class="chart-title">
+                <svg-icon icon-class="chart-line" />CRM有效执行率
+              </div>
+              <LineChart id="crm-line-3"
+                         :data="lineChartData" />
+            </el-col>
+            <el-col :span="24"
+                    class="chart-item line-chart">
+              <div class="chart-title">
+                <svg-icon icon-class="chart-line" />CRM成功购买率
+              </div>
+              <LineChart id="crm-line-4"
+                         :data="lineChartData" />
+            </el-col>
+            <el-col :span="24"
+                    class="chart-item line-chart">
+              <div class="chart-title">
+                <svg-icon icon-class="chart-line" />CRM成功购买率
+              </div>
+              <LineChart2 id="crm-line-5"
+                          :data="lineChartData5" />
             </el-col>
           </el-row>
         </div>
@@ -153,13 +194,15 @@
 </template>
 
 <script>
-import { FunnelChart, PieChart, ColumnChart } from '@/components/chart'
+import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2 } from './components'
 
 export default {
   components: {
     FunnelChart,
     PieChart,
-    ColumnChart
+    ColumnChart,
+    LineChart,
+    LineChart2
   },
   data() {
     return {
@@ -244,7 +287,181 @@ export default {
         { label: '用例在撒发阿迪舒服的撒发是6', value: 90328 }
       ].sort((a, b) => {
         return b.value - a.value
-      })
+      }),
+      // crm
+      lineChartData: [
+        {
+          label: '9月第一批',
+          value: 90
+        },
+        {
+          label: '9月第二批',
+          value: 80
+        },
+        {
+          label: '9月第三批',
+          value: 75
+        },
+        {
+          label: '10月第一批',
+          value: 40
+        },
+        {
+          label: '10月第二批',
+          value: 55
+        },
+        {
+          label: '10月第三批',
+          value: 20
+        },
+        {
+          label: '11月第一批',
+          value: 77
+        },
+        {
+          label: '11月第二批',
+          value: 99
+        },
+        {
+          label: '11月第三批',
+          value: 88
+        },
+        {
+          label: '12月第一批',
+          value: 20
+        },
+        {
+          label: '12月第二批',
+          value: 33
+        },
+        {
+          label: '12月第三批',
+          value: 40
+        }
+      ],
+      // crm5
+      lineChartData5: [
+        {
+          label: '9月第一批',
+          value: 90,
+          category: '执行组'
+        },
+        {
+          label: '9月第一批',
+          value: 80,
+          category: '对照组'
+        },
+        {
+          label: '9月第二批',
+          value: 80,
+          category: '执行组'
+        },
+        {
+          label: '9月第二批',
+          value: 60,
+          category: '对照组'
+        },
+        {
+          label: '9月第三批',
+          value: 75,
+          category: '执行组'
+        },
+        {
+          label: '9月第三批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '10月第一批',
+          value: 40,
+          category: '执行组'
+        },
+        {
+          label: '10月第一批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '10月第二批',
+          value: 55,
+          category: '执行组'
+        },
+        {
+          label: '10月第二批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '10月第三批',
+          value: 20,
+          category: '执行组'
+        },
+        {
+          label: '10月第三批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '11月第一批',
+          value: 77,
+          category: '执行组'
+        },
+        {
+          label: '11月第一批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '11月第二批',
+          value: 99,
+          category: '执行组'
+        },
+        {
+          label: '11月第二批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '11月第三批',
+          value: 88,
+          category: '执行组'
+        },
+        {
+          label: '11月第三批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '12月第一批',
+          value: 20,
+          category: '执行组'
+        },
+        {
+          label: '12月第一批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '12月第二批',
+          value: 33,
+          category: '执行组'
+        },
+        {
+          label: '12月第二批',
+          value: 55,
+          category: '对照组'
+        },
+        {
+          label: '12月第三批',
+          value: 40,
+          category: '执行组'
+        },
+        {
+          label: '12月第三批',
+          value: 55,
+          category: '对照组'
+        }
+      ]
     }
   },
   computed: {
@@ -252,7 +469,6 @@ export default {
   },
   watch: {},
   created() {
-
   },
   mounted() {
 
@@ -344,6 +560,13 @@ export default {
           z-index: -1;
         }
       }
+      .crm-line-container {
+        margin-top: 15px;
+        border-radius: 4px;
+        border: 1px solid #f0f0f0;
+        border-left: 4px solid rgb(64, 158, 255);
+        // rgb(255, 153, 51)
+      }
 
       .chart-item {
         border: 1px solid #f0f0f0;
@@ -353,14 +576,19 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
+        &.line-chart {
+          height: 300px;
+          border: none;
+        }
         .chart-title {
           margin-bottom: 20px;
           width: 100%;
           font-size: 14px;
-          color: #888;
+          color: $blue;
+          display: flex;
+          align-items: center;
           .svg-icon {
             margin-right: 5px;
-            color: #aaa;
           }
         }
         #funnel {
