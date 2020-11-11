@@ -56,7 +56,7 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <UploadButton name="xxxx" />
+        <!-- <UploadButton name="xxxx" /> -->
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -125,6 +125,7 @@
                :before-close="cancelAddList"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
+               label-width="110px"
                :model="addInfo">
         <el-form-item label="客户号："
                       :rules="[{
@@ -133,6 +134,7 @@
                       prop="customerAccount">
           <el-input v-model.trim="addInfo.customerAccount"
                     show-word-limit
+                    style="width:90%;"
                     maxlength="50" />
         </el-form-item>
         <el-form-item label="客户名称："
@@ -142,6 +144,7 @@
                       prop="name">
           <el-input v-model.trim="addInfo.name"
                     show-word-limit
+                    style="width:90%;"
                     maxlength="50" />
         </el-form-item>
       </el-form>
@@ -149,6 +152,7 @@
            class="dialog-footer">
         <el-button @click="cancelAddList">取 消</el-button>
         <el-button type="primary"
+                   :loading="buttonLoading"
                    @click="ensureAddList">确 定</el-button>
       </div>
     </el-dialog>
@@ -165,8 +169,8 @@ import qs from 'qs'
 export default {
   name: 'HateMarketingCRM',
   components: {
-    ShunTable,
-    UploadButton
+    ShunTable
+    // UploadButton
 
   },
   props: {
@@ -195,6 +199,7 @@ export default {
       pageSize: 10,
       category: 2,
       showDialog: false,
+      buttonLoading: false,
       total: 0,
       filterForm: {
         customerAccount: '',
@@ -269,16 +274,19 @@ export default {
       this.getList(1)
     },
     handleAddList() {
+      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.showDialog = true
     },
     cancelAddList() {
-      this.$refs['regFormRef'].resetFields()
+      // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
     ensureAddList() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
+          this.buttonLoading = true
           addCustomerToBlackList([this.getData]).then(res => {
+            this.buttonLoading = false
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -286,9 +294,10 @@ export default {
                 duration: '3000'
               })
               this.showDialog = false
-              this.$refs['regFormRef'].resetFields()
               this.resetAll()
             }
+          }).catch(() => {
+            this.buttonLoading = false
           })
         }
       })
