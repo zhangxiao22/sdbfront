@@ -17,7 +17,7 @@
                  class="filter-container">
           <el-form-item label="短信内容："
                         prop="content">
-            <el-input v-model="filterForm.content"
+            <el-input v-model.trim="filterForm.content"
                       style="width:300px"
                       placeholder="请输入短信内容"
                       clearable

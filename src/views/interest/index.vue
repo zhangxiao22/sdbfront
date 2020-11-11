@@ -18,7 +18,7 @@
                  class="filter-container">
           <el-form-item label="权益名称："
                         prop="name">
-            <el-input v-model="filterForm.name"
+            <el-input v-model.trim="filterForm.name"
                       style="width:300px"
                       placeholder="请输入权益名称"
                       clearable

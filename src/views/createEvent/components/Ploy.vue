@@ -55,7 +55,7 @@
                               },{
                                 validator: validatePloyName, trigger: 'blur'
                               }]">
-                  <el-input v-model="ployItem.title"
+                  <el-input v-model.trim="ployItem.title"
                             style="width:300px"
                             placeholder="请输入策略名称" />
                 </el-form-item>
@@ -399,7 +399,7 @@
                             <el-popover v-model="scope.row.isEdit"
                                         placement="top"
                                         width="300">
-                              <el-input v-model="scope.row._content"
+                              <el-input v-model.trim="scope.row._content"
                                         type="textarea"
                                         :rows="5"
                                         style="margin-bottom:10px;"

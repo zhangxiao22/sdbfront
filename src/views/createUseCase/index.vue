@@ -11,7 +11,7 @@
                       required: true, message: '请输入用例名称', trigger: 'blur'
                     }]"
                     prop="name">
-        <el-input v-model="baseInfo.name"
+        <el-input v-model.trim="baseInfo.name"
                   show-word-limit
                   :disabled="!!id"
                   maxlength="50" />
@@ -88,7 +88,7 @@
       </el-form-item>
       <el-form-item label="用例描述："
                     prop="desc">
-        <el-input v-model="baseInfo.desc"
+        <el-input v-model.trim="baseInfo.desc"
                   :autosize="{ minRows: 8, maxRows: 16}"
                   placeholder="请输入内容"
                   maxlength="500"
