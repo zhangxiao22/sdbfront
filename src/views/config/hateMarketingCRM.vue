@@ -28,7 +28,7 @@
           <el-form-item label="客户姓名："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
-                      style="width:200px"
+                      style="width:300px"
                       placeholder="请输入客户姓名"
                       clearable
                       @keyup.enter.native="search" />
@@ -56,7 +56,14 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <UploadButton name="xxxx" />
+        <UploadButton :upload-method="uploadMethod"
+                      :category="category"
+                      name="全量更新"
+                      :is-all-upload="0" />
+        <UploadButton :upload-method="uploadMethod"
+                      :category="category"
+                      name="批量更新"
+                      :is-all-upload="1" />
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -64,38 +71,6 @@
                    @click="handleAddList">
           新增名单
         </el-button>
-        <el-upload ref="uploadRef"
-                   :disabled="uploading"
-                   :on-change="handleFileChange"
-                   class="upload button"
-                   :http-request="file=>handleUploadFileAll(file,1)"
-                   :show-file-list="false"
-                   :accept="accept.map(n => `.${n}`).join(',')"
-                   action="">
-          <el-button :loading="uploading"
-                     :disabled="uploading"
-                     icon="el-icon-upload2"
-                     type="primary"
-                     plain>
-            全量更新
-          </el-button>
-        </el-upload>
-        <el-upload ref="uploadRef"
-                   :disabled="uploading"
-                   :on-change="handleFileChange"
-                   class="upload button"
-                   :http-request="file=>handleUploadFileAll(file,0)"
-                   :show-file-list="false"
-                   :accept="accept.map(n => `.${n}`).join(',')"
-                   action="">
-          <el-button :loading="uploading"
-                     :disabled="uploading"
-                     icon="el-icon-upload2"
-                     type="primary"
-                     plain>
-            批量更新
-          </el-button>
-        </el-upload>
         <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有名单"
@@ -125,44 +100,24 @@
                :before-close="cancelAddList"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
-               :model="addInfo"
-               label-width="220px"
-               class="reg-form">
-        <el-form-item class="target-form-item">
-          <div v-for="(addItem,i) of addInfo.add"
-               :key="i"
-               class="target-item">
-            <el-form-item :prop="'add.'+i+'.customerAccount'"
-                          label="客户号："
-                          :rules="{
-                            required: true, message: '请输入客户号', trigger: 'change'
-                          }">
-              <el-tooltip :content="'请输入客户号'"
-                          placement="left">
-                <el-input v-model="addItem.customerAccount"
-                          show-word-limit
-                          class="target-item-input"
-                          maxlength="50" />
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item :prop="'add.'+i+'.name'"
-                          label="客户姓名："
-                          :rules="{
-                            required: true, message: '请输入客户姓名', trigger: 'change'
-                          }">
-              <el-input v-model="addItem.name"
-                        class="target-item-input"
-                        show-word-limit
-                        maxlength="50" />
-            </el-form-item>
-            <i v-if="addInfo.add.length > 1"
-               class="el-icon-delete delete"
-               @click="delAddItem(i)" />
-          </div>
-          <el-button v-if="addInfo.add.length > 0"
-                     class="add"
-                     icon="el-icon-plus"
-                     @click="addNewItem" />
+               :model="addInfo">
+        <el-form-item label="客户号："
+                      :rules="[{
+                        required: true, message: '请输入客户号', trigger: 'blur'
+                      }]"
+                      prop="customerAccount">
+          <el-input v-model="addInfo.customerAccount"
+                    show-word-limit
+                    maxlength="50" />
+        </el-form-item>
+        <el-form-item label="客户名称："
+                      :rules="[{
+                        required: true, message: '请输入客户名称', trigger: 'blur'
+                      }]"
+                      prop="name">
+          <el-input v-model="addInfo.name"
+                    show-word-limit
+                    maxlength="50" />
         </el-form-item>
       </el-form>
       <div slot="footer"
@@ -178,14 +133,15 @@
 <script>
 import ShunTable from '@/components/ShunTable'
 import { getHateMarketingList, addCustomerToBlackList, batchUploadFile, deleteHateMarketingListById } from '@/api/api'
-import { Notification } from 'element-ui'
-import qs from 'qs'
 import UploadButton from '@/components/UploadButton'
+
+import qs from 'qs'
 export default {
   name: 'HateMarketingCRM',
   components: {
     ShunTable,
     UploadButton
+
   },
   props: {
     showSelection: {
@@ -207,11 +163,8 @@ export default {
   },
   data() {
     return {
-      accept: ['xls', 'xlsx', 'csv'],
-
-      uploading: false,
       loading: false,
-      currentPage: 1,
+      currentPage: 2,
       pageSize: 10,
       category: 1,
       showDialog: false,
@@ -221,15 +174,13 @@ export default {
         name: '',
         dateRange: []
       },
+      addInfo: {
+        customerAccount: '',
+        name: ''
+      },
+      accept: ['xls', 'xlsx', 'csv'],
       searchForm: {
       },
-      addInfo: {
-        add: [{
-          customerAccount: '',
-          name: ''
-        }]
-      },
-
       tableColumnList: [
         {
           prop: 'customerAccount',
@@ -261,19 +212,13 @@ export default {
     },
     getData() {
       const data = {}
-      data.useCaseAchieveList = this.addInfo.add.map(n => {
-        return {
-          name: n.name,
-          customerAccount: n.customerAccount,
-          category: this.category
-        }
-      })
+      data.name = this.addInfo.name
+      data.customerAccount = this.addInfo.customerAccount
+      data.category = this.category
       return data
     }
   },
-  watch: {
-
-  },
+  watch: {},
   created() {
     this.search()
   },
@@ -293,24 +238,7 @@ export default {
         startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
         endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
       }
-      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
-    },
-    addNewItem() {
-      this.addInfo.add.push({
-        customerAccount: '',
-        name: ''
-      })
-    },
-    delAddItem(i) {
-      this.addInfo.add.splice(i, 1)
-      this.resetAddOpt()
-    },
-    resetAddOpt() {
-      const temp = []
-      this.addInfo.add.forEach((n, i) => {
-        n.customerAccount && temp.push(n.customerAccount)
-      })
     },
     handleAddList() {
       this.showDialog = true
@@ -322,7 +250,7 @@ export default {
     ensureAddList() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
-          addCustomerToBlackList(this.getData.useCaseAchieveList).then(res => {
+          addCustomerToBlackList([this.getData]).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -337,55 +265,27 @@ export default {
         }
       })
     },
-    handleFileChange(file) {
-      this.file = file.raw
-    },
-    resetFile() {
-      this.file = ''
-      this.$refs.uploadRef.clearFiles()
-    },
-    handleUploadFileAll(file, type) {
-      const index = this.file.name.lastIndexOf('.')
-      const suffix = this.file.name.substr(index + 1)
-      if (!this.accept.includes(suffix)) {
-        this.$message({
-          message: '请上传正确的文件格式',
-          type: 'error',
-          duration: '5000'
-        })
+    uploadMethod(formData) {
+      batchUploadFile(formData).then(res => {
+        if (res.data.length) {
+          this.$notify({
+            title: '数据错误',
+            message: (res.data).join('<br/>'),
+            dangerouslyUseHTMLString: true,
+            type: 'warning',
+            duration: 0
+          })
+        } else {
+          this.$message({
+            message: '上传成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+        this.resetAll()
+      }).catch(() => {
         this.resetFile()
-        return
-      } else {
-        const formData = new FormData()
-        formData.append('file', this.file)
-        formData.append('category', this.category)
-        formData.append('updateType', type)
-
-        this.uploading = true
-        Notification.closeAll()
-        batchUploadFile(formData).then(res => {
-          this.uploading = false
-          if (res.data.length) {
-            this.$notify({
-              title: '提示',
-              message: (res.data).join('<br/>'),
-              dangerouslyUseHTMLString: true,
-              type: 'warning',
-              duration: 0
-            })
-          } else {
-            this.$message({
-              message: '上传成功',
-              type: 'success',
-              duration: '3000'
-            })
-          }
-          this.resetAll()
-        }).catch(() => {
-          this.uploading = false
-          this.resetFile()
-        })
-      }
+      })
     },
     // 下载模版
     download() {
@@ -447,34 +347,6 @@ export default {
 .container {
   .btn {
     cursor: pointer;
-  }
-  .target-form-item {
-    width: 600px;
-    .target-item {
-      // display: flex;
-      // position: relative;
-
-      .delete {
-        color: $red;
-        display: inline-block;
-        width: 20px;
-        cursor: pointer;
-        height: 32px;
-        margin-left: 10px;
-        font-size: 18px;
-        line-height: 32px;
-        position: absolute;
-        right: -30px;
-        top: 0;
-        &:hover {
-          opacity: 0.8;
-        }
-      }
-    }
-    .add {
-      width: 100%;
-      border-style: dashed;
-    }
   }
 }
 </style>
