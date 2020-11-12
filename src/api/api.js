@@ -370,3 +370,12 @@ export function deleteHateMarketingListById(params) {
     params
   })
 }
+
+/** ************************************************ 总看板 ************************************************************/
+export function totalStatistics(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/chart/mock',
+    method: 'get',
+    params
+  })
+}

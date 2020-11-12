@@ -25,7 +25,7 @@ export default {
   },
   data() {
     return {
-
+      color: ['#1890FF', '#FF3366']
     }
   },
   computed: {
@@ -87,14 +87,14 @@ export default {
         start: ['min', this.implementAverage],
         end: ['max', this.implementAverage],
         style: {
-          stroke: '#6495f9',
+          stroke: this.color[0],
           lineWidth: 1,
           lineDash: [3, 3]
         },
         text: {
           position: 'start',
           style: {
-            fill: '#6495f9',
+            fill: '#444',
             // fontSize: 15,
             fontWeight: 'normal'
           },
@@ -102,26 +102,26 @@ export default {
           offsetY: -5
         }
       })
-      // this.chart.annotation().line({
-      //   start: ['min', this.compareAverage],
-      //   end: ['max', this.compareAverage],
-      //   style: {
-      //     stroke: '#59d8a7',
-      //     lineWidth: 1,
-      //     lineDash: [3, 3]
-      //   },
-      //   text: {
-      //     position: 'start',
-      //     style: {
-      //       fill: '#444',
-      //       // fontSize: 15,
-      //       fontWeight: 'normal'
-      //     },
-      //     content: `对照组平均值 ${this.compareAverage}%`,
-      //     offsetY: -5,
-      //     offsetX: 500
-      //   }
-      // })
+      this.chart.annotation().line({
+        start: ['min', this.compareAverage],
+        end: ['max', this.compareAverage],
+        style: {
+          stroke: this.color[1],
+          lineWidth: 1,
+          lineDash: [3, 3]
+        },
+        text: {
+          position: 'end',
+          style: {
+            fill: '#444',
+            // fontSize: 15,
+            fontWeight: 'normal'
+          },
+          content: `对照组平均值 ${this.compareAverage}%`,
+          offsetY: -5,
+          offsetX: -120
+        }
+      })
 
       this.chart.axis('value', {
         label: {
@@ -134,11 +134,11 @@ export default {
       this.chart
         .line()
         .position('label*value')
-        .color('category')
+        .color('category', this.color)
       this.chart
         .point()
         .position('label*value')
-        .color('category')
+        .color('category', this.color)
         .shape('circle')
 
       this.chart.render()

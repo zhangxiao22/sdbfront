@@ -102,9 +102,9 @@
       </div>
       <div class="chart-container">
         <!-- 执行情况 -->
-        <div class="implement">
+        <div class="chart-block">
           <div class="block-title">执行情况</div>
-          <el-row :gutter="15">
+          <el-row :gutter="20">
             <el-col :span="12">
               <div class="chart-item funnel-chart">
                 <div class="chart-title">
@@ -132,19 +132,24 @@
           </el-row>
           <el-row>
             <el-col :span="24"
-                    style="margin-top:15px;">
-              <div class="chart-item">
+                    style="margin-top:20px;">
+              <div class="chart-item"
+                   style="height:600px;">
                 <div class="chart-title">
                   <svg-icon icon-class="chart-column" />用例线索数
                 </div>
-                <ColumnChart id="usecase-bar"
+                <BarChart id="usecase-bar"
+                          unit="条"
+                          :data="usecaseBarData" />
+                <!-- <ColumnChart id="usecase-bar"
                              meta-value="线索数量"
                              tooltip-title="线索数"
-                             :data="usecaseBarData" />
+                             :data="usecaseBarData" /> -->
               </div>
             </el-col>
           </el-row>
           <el-row class="crm-line-container">
+            <div class="sub-title">CRM</div>
             <el-col :span="24"
                     class="chart-item line-chart">
               <div class="chart-title">
@@ -186,6 +191,124 @@
                           :data="lineChartData5" />
             </el-col>
           </el-row>
+          <el-row class="crm-line-container"
+                  style="border-left-color:rgb(103, 194, 58);">
+            <div class="sub-title">短信</div>
+            <el-col :span="24"
+                    class="chart-item line-chart">
+              <div class="chart-title">
+                <svg-icon icon-class="chart-line" />短信实际达成率
+              </div>
+              <LineChart2 id="crm-line-6"
+                          :data="lineChartData5" />
+            </el-col>
+          </el-row>
+        </div>
+        <!-- 成效统计 -->
+        <div class="chart-block">
+          <div class="block-title">成效统计</div>
+          <el-row>
+            <el-col v-for="(item,i) of statistics"
+                    :key="i"
+                    :span="24"
+                    class="chart-item statistics">
+              <div class="chart-title">
+                <svg-icon :icon-class="item.chart_type===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
+                <el-radio-group v-if="item.chart_tabs.length > 1"
+                                v-model="item.checkVal"
+                                class="radio-box">
+                  <el-radio-button v-for="(radio,ri) of item.chart_tabs"
+                                   :key="ri"
+                                   :label="radio.value">
+                    {{ radio.label }}
+                  </el-radio-button>
+                </el-radio-group>
+              </div>
+              <template v-if="item.chart_type===1">
+                <BarChart :id="'statistics'+i"
+                          :unit="item.chart_unit"
+                          :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+              </template>
+              <template v-else>
+                <AreaChart :id="'statistics'+i"
+                           :unit="item.chart_unit"
+                           :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+              </template>
+            </el-col>
+          </el-row>
+        </div>
+        <!-- 排名情况 -->
+        <div class="chart-block">
+          <div class="block-title">排名情况</div>
+          <el-row>
+            <el-col :span="24">
+              <div class="chart-item rank">
+                <div class="chart-title">
+                  <svg-icon icon-class="chart-bar" />支行排名
+                  <el-select v-model="rankSelVal1"
+                             style="margin-left:20px;"
+                             placeholder="请选择">
+                    <el-option v-for="item in rankOpt"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </div>
+                <BarChart id="rank1"
+                          unit="万元"
+                          :data="rankChartData" />
+              </div>
+            </el-col>
+            <el-col :span="24"
+                    style="margin-top:20px;">
+              <div class="chart-item rank">
+                <div class="chart-title">
+                  <svg-icon icon-class="chart-bar" />
+                  网点排名（前10名）
+                  <el-select v-model="rankSelVal2"
+                             style="margin-left:20px;"
+                             placeholder="请选择">
+                    <el-option v-for="item in rankOpt"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </div>
+                <BarChart id="rank2"
+                          unit="万元"
+                          :data="rankChartData" />
+              </div>
+            </el-col>
+            <el-col :span="24"
+                    style="margin-top:20px;">
+              <div class="chart-item rank">
+                <div class="chart-title">
+                  <svg-icon icon-class="chart-bar" />
+                  员工排名（前10名）
+                  <el-select v-model="rankSelPostVal3"
+                             style="margin-left:20px;"
+                             placeholder="请选择">
+                    <el-option v-for="item in postOpt"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                  <el-select v-model="rankSelVal3"
+                             style="margin-left:20px;"
+                             placeholder="请选择">
+                    <el-option v-for="item in rankOpt"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </div>
+                <BarChart id="rank3"
+                          unit="万元"
+                          :data="rankChartData" />
+              </div>
+            </el-col>
+          </el-row>
+
         </div>
       </div>
     </div>
@@ -194,34 +317,37 @@
 </template>
 
 <script>
-import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2 } from './components'
+import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2, BarChart, AreaChart } from './components'
+import { totalStatistics } from '@/api/api'
 
 export default {
   components: {
     FunnelChart,
     PieChart,
-    ColumnChart,
+    // ColumnChart,
     LineChart,
-    LineChart2
+    LineChart2,
+    BarChart,
+    AreaChart
   },
   data() {
     return {
       filterForm: {},
       options: [{
         value: '选项1',
-        label: '黄金糕'
+        label: '选项1'
       }, {
         value: '选项2',
-        label: '双皮奶'
+        label: '选项2'
       }, {
         value: '选项3',
-        label: '蚵仔煎'
+        label: '选项3'
       }, {
         value: '选项4',
-        label: '龙须面'
+        label: '选项4'
       }, {
         value: '选项5',
-        label: '北京烤鸭'
+        label: '选项5'
       }],
       value: '',
       baseInfo: [{
@@ -251,11 +377,10 @@ export default {
       }],
       // 漏斗图数据
       funnelData: [
-        { label: '简历筛选', value: 253 },
-        { label: '初试人数', value: 151 },
-        { label: '复试人数', value: 113 },
-        { label: '录取人数', value: 87 },
-        { label: '入职人数', value: 59 }
+        { label: '线索数量', value: 10000 },
+        { label: '线索执行', value: 9000 },
+        { label: '联系成功', value: 7000 },
+        { label: '成功购买', value: 5500 }
       ],
       // 渠道线索数据
       channelPieData: [
@@ -398,7 +523,7 @@ export default {
         },
         {
           label: '10月第三批',
-          value: 55,
+          value: 35,
           category: '对照组'
         },
         {
@@ -408,7 +533,7 @@ export default {
         },
         {
           label: '11月第一批',
-          value: 55,
+          value: 45,
           category: '对照组'
         },
         {
@@ -418,7 +543,7 @@ export default {
         },
         {
           label: '11月第二批',
-          value: 55,
+          value: 65,
           category: '对照组'
         },
         {
@@ -458,10 +583,94 @@ export default {
         },
         {
           label: '12月第三批',
-          value: 55,
+          value: 85,
           category: '对照组'
         }
-      ]
+      ],
+      statistics: [],
+      rankOpt: [
+        {
+          label: 'AUM提升',
+          value: 1
+        },
+        {
+          label: 'LUM提升',
+          value: 2
+        },
+        {
+          label: '新开信用卡',
+          value: 3
+        },
+        {
+          label: '执行率',
+          value: 4
+        },
+        {
+          label: '执行率22',
+          value: 5
+        }
+      ],
+      rankChartData: [{
+        label: 'xx1',
+        value: 100
+      }, {
+        label: 'xx2',
+        value: 90
+      }, {
+        label: 'xx3',
+        value: 80
+      }, {
+        label: 'xx4',
+        value: 70
+      }, {
+        label: 'xx5',
+        value: 60
+      }, {
+        label: 'xx6',
+        value: 50
+      }, {
+        label: 'xx7',
+        value: 40
+      }, {
+        label: 'xx8',
+        value: 30
+      }, {
+        label: 'xx9',
+        value: 20
+      }, {
+        label: 'xx10',
+        value: 10
+      }],
+      postOpt: [{
+        label: '岗位1',
+        value: 1
+      }, {
+        label: '岗位2',
+        value: 2
+      }, {
+        label: '岗位3',
+        value: 3
+      }, {
+        label: '岗位4',
+        value: 4
+      }, {
+        label: '岗位5',
+        value: 5
+      }, {
+        label: '岗位6',
+        value: 6
+      }, {
+        label: '岗位7',
+        value: 7
+      }, {
+        label: '岗位8',
+        value: 8
+      }],
+      rankSelVal1: 1,
+      rankSelVal2: 1,
+      rankSelVal3: 1,
+      rankSelPostVal3: 1
+
     }
   },
   computed: {
@@ -469,12 +678,21 @@ export default {
   },
   watch: {},
   created() {
+    this.getStatistics()
   },
   mounted() {
 
   },
   methods: {
-
+    getStatistics() {
+      totalStatistics().then(res => {
+        this.statistics = res.data.map(n => {
+          return Object.assign({}, n, {
+            checkVal: n.chart_tabs[0].value
+          })
+        })
+      })
+    }
   }
 }
 </script>
@@ -495,40 +713,42 @@ export default {
 }
 
 .main-container {
-  padding: 20px 20px 0;
+  padding: 30px;
   .base-info {
     display: flex;
     flex-wrap: wrap;
     padding: 8px 0;
     background: #f4f9ff;
     border-radius: 10px;
-    font-size: 14px;
+    font-size: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
     // box-sizing: 0 2px 10px rgba(0, 0, 0, 0.1);
 
     .item {
       display: flex;
       align-items: center;
-      width: 33.3333%;
       justify-content: center;
-      margin: 8px 0;
+      width: 30%;
+      margin: 1% 1.5%;
       .main-icon {
-        font-size: 30px;
+        font-size: 34px;
         margin-right: 15px;
       }
       .text {
         display: flex;
         align-items: center;
         .label {
-          font-size: 14px;
+          font-size: 16px;
         }
         .value {
           display: flex;
           align-items: center;
-          font-size: 22px;
+          font-size: 24px;
           font-weight: bold;
           margin-left: 15px;
           .unit {
-            font-size: 14px;
+            font-size: 16px;
             margin-left: 15px;
           }
         }
@@ -537,16 +757,18 @@ export default {
   }
   .chart-container {
     // 执行情况
-    .implement {
+    .chart-block {
+      text-align: center;
       .block-title {
+        font-size: 22px;
         font-weight: bold;
         color: $blue;
-        padding-left: 5px;
-        margin: 20px 0;
+        padding-left: 10px;
+        margin: 25px 0 35px;
         display: inline-block;
         position: relative;
         z-index: 0;
-        letter-spacing: 5px;
+        letter-spacing: 10px;
         &::before {
           position: absolute;
           content: "";
@@ -561,11 +783,17 @@ export default {
         }
       }
       .crm-line-container {
-        margin-top: 15px;
+        margin-top: 20px;
         border-radius: 4px;
         border: 1px solid #f0f0f0;
         border-left: 4px solid rgb(64, 158, 255);
-        // rgb(255, 153, 51)
+        //
+        .sub-title {
+          font-size: 18px;
+          padding: 20px;
+          font-weight: bold;
+          text-align: left;
+        }
       }
 
       .chart-item {
@@ -579,16 +807,35 @@ export default {
         &.line-chart {
           height: 300px;
           border: none;
+          padding-top: 0;
+        }
+        &.statistics {
+          margin-bottom: 20px;
+          &:last-of-type {
+            margin-bottom: 0;
+          }
+        }
+        &.rank {
+          height: 600px;
         }
         .chart-title {
           margin-bottom: 20px;
           width: 100%;
-          font-size: 14px;
+          font-size: 16px;
           color: $blue;
+          opacity: 0.8;
           display: flex;
           align-items: center;
+          position: relative;
           .svg-icon {
             margin-right: 5px;
+          }
+          .radio-box {
+            // position: absolute;
+            // left: 50%;
+            // transform: translateX(-50%);
+            // top: 0;
+            margin-left: 20px;
           }
         }
         #funnel {
