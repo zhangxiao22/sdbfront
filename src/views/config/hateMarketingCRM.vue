@@ -33,7 +33,6 @@
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
-          {{ JSON.stringify(filterForm.dateRange) }}
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
@@ -248,12 +247,7 @@ export default {
       this.search()
     },
     search() {
-      this.searchForm = {
-        name: this.filterForm.name,
-        customerAccount: this.filterForm.customerAccount,
-        dateRange: this.filterForm.dateRange ? this.filterForm.dateRange.length ? this.filterForm.dateRange : null : null
-      }
-      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     handleAddList() {
@@ -318,11 +312,6 @@ export default {
         pageSize: this.pageSize,
         category: this.category
       }, this.searchForm)
-      // this.filterForm = {
-      //   name: this.searchForm.name,
-      //   customerAccount: this.searchForm.customerAccount,
-      //   dateRange: this.searchForm.dateRange || null
-      // }
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getHateMarketingList(data).then(res => {

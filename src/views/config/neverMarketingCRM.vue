@@ -233,18 +233,7 @@ export default {
       this.search()
     },
     search() {
-      // this.searchForm = {
-      //   name: this.filterForm.name,
-      //   customerAccount: this.filterForm.customerAccount,
-      //   startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
-      //   endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
-      // }
-      this.searchForm = {
-        name: this.filterForm.name,
-        customerAccount: this.filterForm.customerAccount,
-        dateRange: this.filterForm.dateRange ? (this.filterForm.dateRange.length ? this.filterForm.dateRange : null) : null
-      }
-      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     handleAddList() {
@@ -293,11 +282,6 @@ export default {
         pageSize: this.pageSize,
         category: this.category
       }, this.searchForm)
-      // this.filterForm = {
-      //   name: this.searchForm.name,
-      //   customerAccount: this.searchForm.customerAccount,
-      //   dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []
-      // }
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getHateMarketingList(data).then(res => {

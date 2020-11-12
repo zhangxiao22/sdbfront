@@ -70,7 +70,6 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          {{ filterForm.dateRange }}
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
@@ -360,8 +359,7 @@ export default {
         useCaseId: this.filterForm.useCaseId || null,
         userId: this.filterForm.userId || null,
         category: this.filterForm.category || null,
-        // dateRange: this.filterForm.dateRange
-        dateRange: this.filterForm.dateRange ? this.filterForm.dateRange.length ? this.filterForm.dateRange : null : null
+        dateRange: this.filterForm.dateRange
       }
       this.getList(1)
     },
@@ -374,14 +372,6 @@ export default {
         status: this.statusValue
       }, this.searchForm)
 
-      // this.filterForm = {
-      //   name: this.searchForm.name,
-      //   useCaseId: this.searchForm.useCaseId,
-      //   userId: this.searchForm.userId,
-      //   category: this.searchForm.category,
-      //   dateRange: this.searchForm.dateRange || null
-      //   // dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : null
-      // }
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getEventList(data).then(res => {
