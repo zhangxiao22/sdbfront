@@ -70,6 +70,7 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
+          {{ filterForm.dateRange }}
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
@@ -151,7 +152,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent } from '@/api/api'
+import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent, copyEvent, deleteEvent } from '@/api/api'
 
 export default {
   name: 'Product',
@@ -187,7 +188,7 @@ export default {
         category: '',
         userId: '',
         useCaseId: +this.$route.query.id || '',
-        dateRange: ''
+        dateRange: []
       },
       // 表格下拉filters值
       // filters: [],
@@ -359,10 +360,9 @@ export default {
         useCaseId: this.filterForm.useCaseId || null,
         userId: this.filterForm.userId || null,
         category: this.filterForm.category || null,
-        startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
-        endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
+        // dateRange: this.filterForm.dateRange
+        dateRange: this.filterForm.dateRange ? this.filterForm.dateRange.length ? this.filterForm.dateRange : null : null
       }
-      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     getList(pageNo) {
@@ -374,20 +374,21 @@ export default {
         status: this.statusValue
       }, this.searchForm)
 
-      this.filterForm = {
-        name: this.searchForm.name,
-        useCaseId: this.filterForm.useCaseId,
-        userId: this.searchForm.userId,
-        category: this.searchForm.category,
-        dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []
-      }
-      // this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
+      // this.filterForm = {
+      //   name: this.searchForm.name,
+      //   useCaseId: this.searchForm.useCaseId,
+      //   userId: this.searchForm.userId,
+      //   category: this.searchForm.category,
+      //   dateRange: this.searchForm.dateRange || null
+      //   // dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : null
+      // }
+      this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getEventList(data).then(res => {
         this.tableData = res.data.resultList
           .map(n => {
             return Object.assign({}, n.eventBaseInfo, {
-              group: n.customerInfoVOList,
+              group: n.customerInfoRespList,
               useCase: n.useCase
             })
           })
@@ -435,35 +436,33 @@ export default {
     },
     handleCopy(row) {
       this.$confirm(`确定复制事件（${row.name}）？`)
-        .then(_ => {
-          // delUseCase({ id: row.id }).then(res => {
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '操作成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.resetAll()
-          //   }
-          // })
-          this.resetAll()
+        .then(() => {
+          copyEvent({ baseId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
         })
         .catch(() => { })
-      this.resetAll()
     },
     handleDelete(row) {
       this.$confirm(`是否确认删除事件（${row.name}）？`)
         .then(_ => {
-          // delUseCase({ id: row.id }).then(res => {
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '操作成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.resetAll()
-          //   }
-          // })
+          deleteEvent({ baseId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
           this.resetAll()
         })
         .catch(() => { })

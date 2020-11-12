@@ -56,7 +56,6 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <!-- <UploadButton name="xxxx" /> -->
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -64,38 +63,16 @@
                    @click="handleAddList">
           新增名单
         </el-button>
-        <el-upload ref="uploadRef"
-                   :disabled="uploading"
-                   :on-change="handleFileChange"
-                   class="upload button"
-                   :http-request="file=>handleUploadFileAll(file,1)"
-                   :show-file-list="false"
-                   :accept="accept.map(n => `.${n}`).join(',')"
-                   action="">
-          <el-button :loading="uploading"
-                     :disabled="uploading"
-                     icon="el-icon-upload2"
-                     type="primary"
-                     plain>
-            全量更新
-          </el-button>
-        </el-upload>
-        <el-upload ref="uploadRef"
-                   :disabled="uploading"
-                   :on-change="handleFileChange"
-                   class="upload button"
-                   :http-request="file=>handleUploadFileAll(file,0)"
-                   :show-file-list="false"
-                   :accept="accept.map(n => `.${n}`).join(',')"
-                   action="">
-          <el-button :loading="uploading"
-                     :disabled="uploading"
-                     icon="el-icon-upload2"
-                     type="primary"
-                     plain>
-            批量更新
-          </el-button>
-        </el-upload>
+        <UploadButton :upload-method="batchUploadFile"
+                      class="button"
+                      button-name="全量更新"
+                      :upload-params="uploadParams[0]"
+                      @afterUploadSuccess="resetAll" />
+        <UploadButton :upload-method="batchUploadFile"
+                      class="button"
+                      button-name="批量更新"
+                      :upload-params="uploadParams[1]"
+                      @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有名单"
@@ -162,15 +139,14 @@
 <script>
 import ShunTable from '@/components/ShunTable'
 import { getHateMarketingList, addCustomerToBlackList, batchUploadFile, deleteHateMarketingListById } from '@/api/api'
-import { Notification } from 'element-ui'
 import UploadButton from '@/components/UploadButton'
+import { downloadFile } from '@/utils'
 
-import qs from 'qs'
 export default {
   name: 'HateMarketingCRM',
   components: {
-    ShunTable
-    // UploadButton
+    ShunTable,
+    UploadButton
 
   },
   props: {
@@ -193,11 +169,20 @@ export default {
   },
   data() {
     return {
-      uploading: false,
       loading: false,
       currentPage: 2,
       pageSize: 10,
+      batchUploadFile,
+      // category: 2短信黑名单
       category: 2,
+      // 全量更新 updateType:0 批量更新 updateType:1
+      uploadParams: [{
+        category: 2,
+        updateType: 0
+      }, {
+        category: 2,
+        updateType: 1
+      }],
       showDialog: false,
       buttonLoading: false,
       total: 0,
@@ -210,7 +195,6 @@ export default {
         customerAccount: '',
         name: ''
       },
-      accept: ['xls', 'xlsx', 'csv'],
       searchForm: {
       },
       tableColumnList: [
@@ -264,11 +248,16 @@ export default {
       this.search()
     },
     search() {
+      // this.searchForm = {
+      //   name: this.filterForm.name,
+      //   customerAccount: this.filterForm.customerAccount,
+      //   startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
+      //   endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
+      // }
       this.searchForm = {
         name: this.filterForm.name,
         customerAccount: this.filterForm.customerAccount,
-        startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
-        endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
+        dateRange: this.filterForm.dateRange ? (this.filterForm.dateRange.length ? this.filterForm.dateRange : null) : null
       }
       // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
@@ -302,55 +291,6 @@ export default {
         }
       })
     },
-    handleFileChange(file) {
-      this.file = file.raw
-    },
-    resetFile() {
-      this.file = ''
-      this.$refs.uploadRef.clearFiles()
-    },
-    handleUploadFileAll(file, type) {
-      const index = this.file.name.lastIndexOf('.')
-      const suffix = this.file.name.substr(index + 1)
-      if (!this.accept.includes(suffix)) {
-        this.$message({
-          message: '请上传正确的文件格式',
-          type: 'error',
-          duration: '5000'
-        })
-        this.resetFile()
-        return
-      } else {
-        const formData = new FormData()
-        formData.append('file', this.file)
-        formData.append('category', this.category)
-        formData.append('updateType', type)
-        this.uploading = true
-        Notification.closeAll()
-        batchUploadFile(formData).then(res => {
-          this.uploading = false
-          if (res.data.length) {
-            this.$notify({
-              title: '数据错误',
-              message: (res.data).join('<br/>'),
-              dangerouslyUseHTMLString: true,
-              type: 'warning',
-              duration: 0
-            })
-          } else {
-            this.$message({
-              message: '上传成功',
-              type: 'success',
-              duration: '3000'
-            })
-          }
-          this.resetAll()
-        }).catch(() => {
-          this.uploading = false
-          this.resetFile()
-        })
-      }
-    },
     // 下载模版
     download() {
       window.open('/static/template.xlsx', '_blank')
@@ -359,8 +299,7 @@ export default {
       const data = {
         category: this.category
       }
-      const url = process.env.VUE_APP_BASE_API + '/hateSale/downloadAll?' + qs.stringify(data)
-      window.open(url, '_self')
+      downloadFile('/hateSale/downloadAll', data)
     },
     handleDelete(row) {
       this.$confirm(`是否确认删除客户（${row.name}）？`)
@@ -385,12 +324,12 @@ export default {
         pageSize: this.pageSize,
         category: this.category
       }, this.searchForm)
-      this.filterForm = {
-        name: this.searchForm.name,
-        customerAccount: this.searchForm.customerAccount,
-        dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []
-      }
-      // this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
+      // this.filterForm = {
+      //   name: this.searchForm.name,
+      //   customerAccount: this.searchForm.customerAccount,
+      //   dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []
+      // }
+      this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getHateMarketingList(data).then(res => {
         this.tableData = res.data.resultList

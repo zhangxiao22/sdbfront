@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="厌恶营销名单"
+                title="不营销人员名单"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -33,7 +33,6 @@
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
-          {{ JSON.stringify(filterForm.dateRange) }}
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
@@ -66,11 +65,6 @@
         </el-button>
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
-                      button-name="全量更新"
-                      :upload-params="uploadParams[0]"
-                      @afterUploadSuccess="resetAll" />
-        <UploadButton :upload-method="batchUploadFile"
-                      class="button"
                       button-name="批量更新"
                       :upload-params="uploadParams[1]"
                       @afterUploadSuccess="resetAll" />
@@ -88,11 +82,7 @@
         </el-tooltip>
         <el-link type="primary"
                  @click="download">模版下载</el-link>
-      </template>
-      <template v-slot:operateSlot="scope">
-        <div class="btn"
-             style="color:#f56c6c;"
-             @click="handleDelete(scope.row)">删除</div>
+
       </template>
       <template v-slot:paramsSlot="props">
         <pre>{{ props.row.params }}</pre>
@@ -143,11 +133,11 @@ import UploadButton from '@/components/UploadButton'
 import { downloadFile } from '@/utils'
 
 export default {
-  name: 'HateMarketingCRM',
-
+  name: 'NeverMarketingCRM',
   components: {
     ShunTable,
     UploadButton
+
   },
   props: {
     showSelection: {
@@ -173,14 +163,14 @@ export default {
       currentPage: 2,
       pageSize: 10,
       batchUploadFile,
-      // category: 1厌恶人员名单
-      category: 1,
+      // category: 3 不营销人员名单
+      category: 3,
       // 全量更新 updateType:0 批量更新 updateType:1
       uploadParams: [{
-        category: 1,
+        category: 3,
         updateType: 0
       }, {
-        category: 1,
+        category: 3,
         updateType: 1
       }],
       total: 0,
@@ -201,7 +191,7 @@ export default {
         {
           prop: 'customerAccount',
           label: '客户号',
-          minWidth: 150
+          minWidth: 100
         },
         {
           prop: 'name',
@@ -211,11 +201,6 @@ export default {
         {
           prop: 'createTime',
           label: '加入日期'
-        },
-        {
-          prop: 'operate',
-          label: '操作',
-          slot: true
         }
       ],
       tableData: [],
@@ -248,10 +233,16 @@ export default {
       this.search()
     },
     search() {
+      // this.searchForm = {
+      //   name: this.filterForm.name,
+      //   customerAccount: this.filterForm.customerAccount,
+      //   startDate: this.filterForm.dateRange ? this.filterForm.dateRange[0] : null,
+      //   endDate: this.filterForm.dateRange ? this.filterForm.dateRange[1] : null
+      // }
       this.searchForm = {
         name: this.filterForm.name,
         customerAccount: this.filterForm.customerAccount,
-        dateRange: this.filterForm.dateRange ? this.filterForm.dateRange.length ? this.filterForm.dateRange : null : null
+        dateRange: this.filterForm.dateRange ? (this.filterForm.dateRange.length ? this.filterForm.dateRange : null) : null
       }
       // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
@@ -295,22 +286,6 @@ export default {
       }
       downloadFile('/hateSale/downloadAll', data)
     },
-    handleDelete(row) {
-      this.$confirm(`是否确认删除客户（${row.name}）？`)
-        .then(() => {
-          deleteHateMarketingListById({ hateSaleId: row.id }).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '操作成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.resetAll()
-            }
-          })
-        })
-        .catch(() => { })
-    },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
@@ -321,7 +296,7 @@ export default {
       // this.filterForm = {
       //   name: this.searchForm.name,
       //   customerAccount: this.searchForm.customerAccount,
-      //   dateRange: this.searchForm.dateRange || null
+      //   dateRange: this.searchForm.startDate && this.searchForm.endDate ? [this.searchForm.startDate, this.searchForm.endDate] : []
       // }
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true

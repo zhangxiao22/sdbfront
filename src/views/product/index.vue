@@ -116,11 +116,10 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
+import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST, downloadFile } from '@/utils'
 import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 
-import { Notification } from 'element-ui'
 import qs from 'qs'
 export default {
   name: 'Product',
@@ -225,8 +224,7 @@ export default {
       }
       this.selection = this.$refs.table.getVal()
       if (this.selection.length) {
-        const url = process.env.VUE_APP_BASE_API + '/resource/downloadProductBatch?' + qs.stringify(data)
-        window.open(url, '_self')
+        downloadFile('/resource/downloadProductBatch', data)
       } else {
         return this.$message({
           message: '请选择产品',
@@ -242,8 +240,7 @@ export default {
           category: this.searchForm.category.join(','),
           attributionUseCaseList: this.searchForm.attributionUseCaseList.join(',')
         }
-        const url = process.env.VUE_APP_BASE_API + '/resource/downloadProductAll?' + qs.stringify(data)
-        window.open(url, '_self')
+        downloadFile('/resource/downloadProductAll', data)
       } else {
         return this.$message({
           message: '产品数据不存在',

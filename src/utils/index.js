@@ -1,3 +1,5 @@
+import qs from 'qs'
+
 export const MAX_NUMBER = 1e14
 
 export function formatMoney(val) {
@@ -441,7 +443,8 @@ export function param2Obj(url) {
   return obj
 }
 
-export function transformCol(color, opacity) {
-
+export function downloadFile(url, params) {
+  const openUrl = process.env.VUE_APP_BASE_API + url + '?' + qs.stringify(params)
+  window.open(openUrl, '_self')
 }
 

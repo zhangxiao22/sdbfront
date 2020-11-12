@@ -22,6 +22,9 @@
       <el-tab-pane label="厌恶营销名单（CRM）">
         <HateMarketingCRM />
       </el-tab-pane>
+      <el-tab-pane label="不营销人员名单（CRM）">
+        <NeverMarketingCRM />
+      </el-tab-pane>
       <el-tab-pane label="黑名单（短信）">
         <BlackListSMS />
       </el-tab-pane>
@@ -36,6 +39,7 @@ import Distribute from './distribute'
 import UseCasePriority from './useCasePriority'
 import CluePriority from './cluePriority'
 import HateMarketingCRM from './hateMarketingCRM'
+import NeverMarketingCRM from './neverMarketingCRM'
 import BlackListSMS from './blackListSMS'
 export default {
   components: {
@@ -45,6 +49,7 @@ export default {
     UseCasePriority,
     CluePriority,
     HateMarketingCRM,
+    NeverMarketingCRM,
     BlackListSMS
   },
 

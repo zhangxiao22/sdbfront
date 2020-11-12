@@ -248,6 +248,24 @@ export function getEventStatus() {
   })
 }
 
+// 事件复制
+export function copyEvent(params) {
+  return request({
+    url: 'event/copyEvent',
+    method: 'get',
+    params
+  })
+}
+
+// 事件删除
+export function deleteEvent(params) {
+  return request({
+    url: 'event/delEvent',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 事件汇总 ************************************************************/
 // 饼图
 export function getPie() {
