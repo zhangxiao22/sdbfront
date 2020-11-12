@@ -76,7 +76,7 @@ export default {
           // },
           label: {
             formatter(val) {
-              return val.slice(0, 5) + '...'
+              return val.slice(0, 5) + '...' + '21'
             }
           }
         },

@@ -4,9 +4,7 @@
 </template>
 
 <script>
-// import DataSet from '@antv/data-set'
-// import { Chart } from '@antv/g2'
-import { Funnel } from '@antv/g2plot'
+import { Area } from '@antv/g2plot'
 export default {
   props: {
     id: {
@@ -22,6 +20,10 @@ export default {
       default() {
         return []
       }
+    },
+    unit: {
+      type: String,
+      default: ''
     }
     // xField: {
     //   type: String,
@@ -49,14 +51,29 @@ export default {
   },
   methods: {
     render() {
-      this.chart = new Funnel(this.id, {
+      this.chart = new Area(this.id, {
         data: this.data,
-        appendPadding: [0, 80],
-        autoFit: true,
         xField: 'label',
         yField: 'value',
-        dynamicHeight: true,
-        legend: false
+        yAxis: {
+          label: {
+            formatter: (v) => v + this.unit
+          }
+        },
+        tooltip: {
+          showTitle: false,
+          formatter: (datum) => {
+            return {
+              name: datum.label,
+              value: datum.value + this.unit
+            }
+          }
+        },
+        areaStyle: () => {
+          return {
+            fill: 'l(270) 0:#ffffff 0.5:#7ec2f3 1:#1890ff'
+          }
+        }
       })
       this.chart.render()
     }
