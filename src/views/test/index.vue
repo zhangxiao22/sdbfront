@@ -1,27 +1,36 @@
 <template>
   <div class="container">
-    <UploadButton button-name="测试"
-                  :upload-method="batchUploadFile"
-                  :upload-params="uploadParams"
-                  @afterUploadSuccess="afterUploadSuccess" />
+    {{ JSON.stringify(form) }}
+    <el-form ref="form"
+             :model="form"
+             label-width="80px">
+      <el-form-item label="活动名称"
+                    prop="value1">
+        <el-date-picker v-model="form.value1"
+                        type="daterange"
+                        clearable
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期" />
+      </el-form-item>
+
+    </el-form>
+
+    <el-button @click="reset">reset</el-button>
+    <el-button @click="form.value1=null">setUnll</el-button>
   </div>
 </template>
 
 <script>
-import UploadButton from '@/components/UploadButton'
-import { batchUploadFile } from '@/api/api'
 
 export default {
   components: {
-    UploadButton
   },
 
   data() {
     return {
-      batchUploadFile,
-      uploadParams: {
-        category: 1,
-        updateType: 1
+      form: {
+        value1: []
       }
     }
   },
@@ -36,8 +45,8 @@ export default {
 
   },
   methods: {
-    afterUploadSuccess() {
-      alert('ok')
+    reset() {
+      this.$refs['form'].resetFields()
     }
 
   }
