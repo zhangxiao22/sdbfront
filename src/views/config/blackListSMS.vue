@@ -66,12 +66,18 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="全量更新"
-                      :upload-params="uploadParams[0]"
+                      :upload-params="{
+                        category: 2,
+                        updateType: 0
+                      }"
                       @afterUploadSuccess="resetAll" />
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="批量更新"
-                      :upload-params="uploadParams[1]"
+                      :upload-params="{
+                        category: 2,
+                        updateType: 1
+                      }"
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
@@ -175,14 +181,6 @@ export default {
       batchUploadFile,
       // category: 2短信黑名单
       category: 2,
-      // 全量更新 updateType:0 批量更新 updateType:1
-      uploadParams: [{
-        category: 2,
-        updateType: 0
-      }, {
-        category: 2,
-        updateType: 1
-      }],
       showDialog: false,
       buttonLoading: false,
       total: 0,
