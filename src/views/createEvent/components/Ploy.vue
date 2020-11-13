@@ -475,7 +475,7 @@
                                    filterable
                                    allow-create
                                    default-first-option
-                                   placeholder="请选择电话号码/输入电话号码并按回车添加"
+                                   placeholder="请选择电话号码/输入电话号码并选择或按回车键创建"
                                    @change="handleTestChange" />
                         <el-button icon="el-icon-thumb"
                                    style="float:left;">

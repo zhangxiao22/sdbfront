@@ -6,7 +6,9 @@
         <WhiteList ref="whiteList" />
       </el-tab-pane>
       <el-tab-pane label="模型导入"
-                   name="2">模型导入</el-tab-pane>
+                   name="2">
+        <Group />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -14,15 +16,17 @@
 <script>
 import { } from '@/api/api'
 import WhiteList from './WhiteList'
+import Group from './Group'
 
 export default {
   name: 'Customer',
   components: {
-    WhiteList
+    WhiteList,
+    Group
   },
   data() {
     return {
-      activeName: '1'
+      activeName: '2'
     }
   },
   computed: {
