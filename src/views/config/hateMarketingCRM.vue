@@ -28,7 +28,7 @@
           <el-form-item label="客户姓名："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
-                      style="width:300px"
+                      style="width:200px"
                       placeholder="请输入客户姓名"
                       clearable
                       @keyup.enter.native="search" />
@@ -66,12 +66,18 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="全量更新"
-                      :upload-params="uploadParams[0]"
+                      :upload-params="{
+                        category: 1,
+                        updateType: 0
+                      }"
                       @afterUploadSuccess="resetAll" />
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="批量更新"
-                      :upload-params="uploadParams[1]"
+                      :upload-params="{
+                        category: 1,
+                        updateType: 1
+                      }"
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
@@ -174,14 +180,6 @@ export default {
       batchUploadFile,
       // category: 1厌恶人员名单
       category: 1,
-      // 全量更新 updateType:0 批量更新 updateType:1
-      uploadParams: [{
-        category: 1,
-        updateType: 0
-      }, {
-        category: 1,
-        updateType: 1
-      }],
       total: 0,
       showDialog: false,
       buttonLoading: false,

@@ -28,7 +28,7 @@
           <el-form-item label="客户姓名："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
-                      style="width:300px"
+                      style="width:200px"
                       placeholder="请输入客户姓名"
                       clearable
                       @keyup.enter.native="search" />
@@ -66,7 +66,10 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="批量更新"
-                      :upload-params="uploadParams[1]"
+                      :upload-params="{
+                        category: 3,
+                        updateType: 1
+                      }"
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
@@ -83,6 +86,11 @@
         <el-link type="primary"
                  @click="download">模版下载</el-link>
 
+      </template>
+      <template v-slot:operateSlot="scope">
+        <div class="btn"
+             style="color:#f56c6c;"
+             @click="handleDelete(scope.row)">删除</div>
       </template>
       <template v-slot:paramsSlot="props">
         <pre>{{ props.row.params }}</pre>
@@ -137,7 +145,6 @@ export default {
   components: {
     ShunTable,
     UploadButton
-
   },
   props: {
     showSelection: {
@@ -165,14 +172,6 @@ export default {
       batchUploadFile,
       // category: 3 不营销人员名单
       category: 3,
-      // 全量更新 updateType:0 批量更新 updateType:1
-      uploadParams: [{
-        category: 3,
-        updateType: 0
-      }, {
-        category: 3,
-        updateType: 1
-      }],
       total: 0,
       showDialog: false,
       buttonLoading: false,
@@ -191,7 +190,7 @@ export default {
         {
           prop: 'customerAccount',
           label: '客户号',
-          minWidth: 100
+          minWidth: 150
         },
         {
           prop: 'name',
@@ -201,6 +200,11 @@ export default {
         {
           prop: 'createTime',
           label: '加入日期'
+        },
+        {
+          prop: 'operate',
+          label: '操作',
+          slot: true
         }
       ],
       tableData: [],
@@ -274,6 +278,22 @@ export default {
         category: this.category
       }
       downloadFile('/hateSale/downloadAll', data)
+    },
+    handleDelete(row) {
+      this.$confirm(`是否确认删除客户（${row.name}）？`)
+        .then(() => {
+          deleteHateMarketingListById({ hateSaleId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
+        })
+        .catch(() => { })
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage

@@ -28,7 +28,7 @@
           <el-form-item label="客户姓名："
                         prop="name">
             <el-input v-model.trim="filterForm.name"
-                      style="width:300px"
+                      style="width:200px"
                       placeholder="请输入客户姓名"
                       clearable
                       @keyup.enter.native="search" />

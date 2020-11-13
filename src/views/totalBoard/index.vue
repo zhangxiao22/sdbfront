@@ -319,7 +319,8 @@
 <script>
 import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2, BarChart, AreaChart } from './components'
 import { totalStatistics } from '@/api/api'
-
+import { DATA } from './json'
+console.log(DATA)
 export default {
   components: {
     FunnelChart,
@@ -587,7 +588,11 @@ export default {
           category: '对照组'
         }
       ],
-      statistics: [],
+      statistics: DATA.map(n => {
+        return Object.assign({}, n, {
+          checkVal: n.chart_tabs[0].value
+        })
+      }),
       rankOpt: [
         {
           label: 'AUM提升',
@@ -678,7 +683,7 @@ export default {
   },
   watch: {},
   created() {
-    this.getStatistics()
+    // this.getStatistics()
   },
   mounted() {
 

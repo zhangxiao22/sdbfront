@@ -14,7 +14,7 @@
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div slot="tip"
              class="el-upload__tip">
-          请上传xls/xlsx/csv文件
+          请上传xls/xlsx文件
           <el-link type="primary"
                    @click="download">模版下载</el-link>
         </div>
@@ -121,7 +121,7 @@ export default {
       groupDetail: {},
       originFileId: null,
       fileId: null,
-      accept: ['xls', 'xlsx', 'csv'],
+      accept: ['xls', 'xlsx'],
       file: '',
       // fileList: [],
       fileName: '',
