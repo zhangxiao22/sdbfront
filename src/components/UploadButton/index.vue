@@ -27,7 +27,7 @@ export default {
     accept: {
       type: Array,
       default() {
-        return ['xls', 'xlsx', 'csv']
+        return ['xls', 'xlsx']
       }
     },
     // 按钮名字

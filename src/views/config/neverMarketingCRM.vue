@@ -66,7 +66,10 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="批量更新"
-                      :upload-params="uploadParams[1]"
+                      :upload-params="{
+                        category: 3,
+                        updateType: 1
+                      }"
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
@@ -137,7 +140,6 @@ export default {
   components: {
     ShunTable,
     UploadButton
-
   },
   props: {
     showSelection: {
@@ -165,14 +167,6 @@ export default {
       batchUploadFile,
       // category: 3 不营销人员名单
       category: 3,
-      // 全量更新 updateType:0 批量更新 updateType:1
-      uploadParams: [{
-        category: 3,
-        updateType: 0
-      }, {
-        category: 3,
-        updateType: 1
-      }],
       total: 0,
       showDialog: false,
       buttonLoading: false,
