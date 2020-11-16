@@ -24,6 +24,45 @@
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
+
+          <el-form-item label="权益用例："
+                        prop="attributionUseCaseList">
+            <el-select v-model="filterForm.attributionUseCaseList"
+                       multiple
+                       style="width:300px;"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in useCaseListOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="归属产品："
+                        prop="productFirstCategoryList">
+            <el-select v-model="filterForm.productFirstCategoryList"
+                       multiple
+                       style="width:300px;"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in productListOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="日期范围："
+                        prop="dateRange">
+            <el-date-picker v-model="filterForm.dateRange"
+                            value-format="yyyy-MM-dd"
+                            style="width:300px;"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
+          </el-form-item>
           <el-form-item class="filter-item-end">
             <el-button type="primary"
                        icon="el-icon-search"
@@ -37,17 +76,144 @@
           </el-form-item>
         </el-form>
       </template>
+      <template v-slot:main-buttons>
+        <UploadButton :upload-method="uploadInterestFile"
+                      class="button"
+                      button-name="批量上传"
+                      @afterUploadSuccess="resetAll" />
+        <!-- <el-button class="button"
+                   type="primary"
+                   icon="el-icon-plus"
+                   plain
+                   @click="handleAddList">
+          新增权益
+        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    content="全部下载所有权益"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-download"
+                     type="success"
+                     plain
+                     @click.native="downloadAll">
+            全部下载
+          </el-button>
+        </el-tooltip> -->
+        <el-link type="primary"
+                 @click="download">模版下载</el-link>
+
+      </template>
+      <template v-slot:attributionUseCaseListSlot="scope">
+        <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+          <el-tooltip placement="top-start"
+                      class="hover-text">
+            <div slot="content">
+              <div v-for="(item,i) of scope.row.attributionUseCaseList"
+                   :key="i"
+                   style="margin:5px 0;">
+                {{ item.label }}
+              </div>
+            </div>
+            <div>
+              {{ scope.row.attributionUseCaseList.length }}个用例
+            </div>
+          </el-tooltip>
+        </template>
+        <div v-else>
+          无
+        </div>
+      </template>
+      <template v-slot:productFirstCategoryListSlot="scope">
+        <template v-if="scope.row.productFirstCategoryList && scope.row.productFirstCategoryList.length">
+          <el-tooltip placement="top-start"
+                      class="hover-text">
+            <div slot="content">
+              <div v-for="(item,i) of scope.row.productFirstCategoryList"
+                   :key="i"
+                   style="margin:5px 0;">
+                {{ item.label }}
+              </div>
+            </div>
+            <div>
+              {{ scope.row.productFirstCategoryList.length }}个产品
+            </div>
+          </el-tooltip>
+        </template>
+        <div v-else>
+          无
+        </div>
+      </template>
     </shun-table>
+    <el-dialog title="新增权益"
+               :before-close="cancelAddList"
+               :visible.sync="showDialog">
+      <el-form ref="regFormRef"
+               label-width="110px"
+               :model="addInfo">
+        <el-form-item label="权益名称："
+                      :rules="[{
+                        required: true, message: '请输入权益名称', trigger: 'blur'
+                      }]"
+                      prop="name">
+          <el-input v-model.trim="addInfo.name"
+                    show-word-limit
+                    style="width:90%;"
+                    maxlength="50" />
+        </el-form-item>
+        <el-form-item label="权益内容："
+                      :rules="[{
+                        required: true, message: '请输入权益内容', trigger: 'blur'
+                      }]"
+                      prop="content">
+          <el-input v-model.trim="addInfo.content"
+                    show-word-limit
+                    style="width:90%;"
+                    maxlength="50" />
+        </el-form-item>
+        <el-form-item label="权益说明："
+                      prop="desc">
+          <el-input v-model.trim="addInfo.desc"
+                    show-word-limit
+                    style="width:90%;"
+                    maxlength="50" />
+        </el-form-item>
+        <el-form-item label="开始时间："
+                      prop="startDate">
+          <el-input v-model.trim="addInfo.startDate"
+                    show-word-limit
+                    style="width:90%;"
+                    maxlength="50" />
+        </el-form-item>
+        <el-form-item label="结束时间："
+                      prop="endDate">
+          <el-input v-model.trim="addInfo.endDate"
+                    show-word-limit
+                    style="width:90%;"
+                    maxlength="50" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="cancelAddList">取 消</el-button>
+        <el-button type="primary"
+                   :loading="buttonLoading"
+                   @click="ensureAddList">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getInterestList } from '@/api/api'
+import { getInterestList, uploadInterestFile, getAttributionUseCaseEnumList, getProductCategoryList } from '@/api/api'
+import UploadButton from '@/components/UploadButton'
+
 export default {
-  name: 'Product',
+  name: 'Interest',
   components: {
-    ShunTable
+    ShunTable,
+    UploadButton
   },
   props: {
     showSelection: {
@@ -57,12 +223,27 @@ export default {
   },
   data() {
     return {
+      uploadInterestFile,
+      showDialog: false,
+      buttonLoading: false,
       loading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
       filterForm: {
-        name: ''
+        name: '',
+        attributionUseCaseList: [],
+        productFirstCategoryList: [],
+        dateRange: []
+      },
+      useCaseListOpt: [],
+      productListOpt: [],
+      addInfo: {
+        name: '',
+        content: '',
+        desc: '',
+        startDate: '',
+        endDate: ''
       },
       searchForm: {},
       // typeOpt: [],
@@ -80,21 +261,28 @@ export default {
         {
           prop: 'description',
           label: '权益说明',
-          minWidth: 300
+          minWidth: 200
         },
         {
-          prop: 'category.label',
-          label: '权益分类',
+          prop: 'attributionUseCaseList',
+          label: '话术用例',
+          minWidth: 100,
+          slot: true
+        },
+        {
+          prop: 'productFirstCategoryList',
+          label: '归属产品',
+          minWidth: 100,
+          slot: true
+        },
+        {
+          prop: 'validateStartDate',
+          label: '生效时间',
           minWidth: 100
         },
         {
-          prop: 'validite_start_date',
-          label: '开始时间',
-          minWidth: 100
-        },
-        {
-          prop: 'validite_end_date',
-          label: '结束时间',
+          prop: 'validateEndDate',
+          label: '失效时间',
           minWidth: 100
         }
       ],
@@ -105,11 +293,22 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
+    },
+    getData() {
+      const data = {}
+      data.name = this.addInfo.name
+      data.content = this.addInfo.content
+      data.desc = this.addInfo.desc
+      data.startDate = this.addInfo.startDate
+      data.endDate = this.addInfo.endDate
+      return data
     }
   },
   watch: {},
   created() {
     this.search()
+    this.attributionUseCaseEnumList()
+    this.productCategoryList()
   },
   methods: {
     resetAll() {
@@ -124,6 +323,64 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
+    handleAddList() {
+      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.showDialog = true
+    },
+    cancelAddList() {
+      // this.$refs['regFormRef'].resetFields()
+      this.showDialog = false
+    },
+    ensureAddList() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          // addCustomerToBlackList([this.getData]).then(res => {
+          //   this.buttonLoading = false
+          //   if (res.code === 200) {
+          //     this.$message({
+          //       message: '保存成功',
+          //       type: 'success',
+          //       duration: '3000'
+          //     })
+          //     this.showDialog = false
+          //     this.resetAll()
+          //   }
+          // }).catch(() => {
+          //   this.buttonLoading = false
+          // })
+        }
+      })
+    },
+    // 下载模版
+    download() {
+      window.open('/static/template.xlsx', '_blank')
+    },
+    downloadAll() {
+      // const data = {
+      // }
+      // downloadFile('/hateSale/downloadAll', data)
+    },
+
+    // 获取权益用例
+    attributionUseCaseEnumList() {
+      getAttributionUseCaseEnumList().then(res => {
+        this.useCaseListOpt = res.data
+      })
+    },
+
+    // 获取产品类型
+    productCategoryList() {
+      getProductCategoryList().then(res => {
+        this.productListOpt = res.data.map((n) => {
+          return Object.assign({}, {
+            label: n.firstCategory.label,
+            value: n.firstCategory.value
+          })
+        })
+      })
+    },
+
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       const data = Object.assign({

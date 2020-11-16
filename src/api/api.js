@@ -61,11 +61,28 @@ export function getWordCategory() {
   })
 }
 
+// 批量上传话术
+export function uploadScriptFile(data) {
+  return request({
+    url: '/script/uploadScript',
+    method: 'post',
+    data
+  })
+}
 /** ************************************************ 权益 ************************************************************/
 // 获取权益库
 export function getInterestList(data) {
   return request({
-    url: '/material/equity/select',
+    url: '/interests/select',
+    method: 'post',
+    data
+  })
+}
+
+// 批量上传权益
+export function uploadInterestFile(data) {
+  return request({
+    url: '/interests/uploadInterests',
     method: 'post',
     data
   })
@@ -80,6 +97,17 @@ export function getSmsList(data) {
     data
   })
 }
+
+// 批量上传短信
+export function uploadSmsFile(data) {
+  return request({
+    url: '/script/uploadScript',
+    method: 'post',
+    data
+  })
+}
+
+/** ************************************************ 事件 ************************************************************/
 
 // 获取事件类型
 export function getEventCategory() {

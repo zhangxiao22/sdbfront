@@ -189,11 +189,12 @@ export default {
       this.search()
     },
     search() {
-      this.searchForm = {
-        name: this.filterForm.name,
-        category: this.filterForm.category.slice(0),
-        attributionUseCaseList: this.filterForm.attributionUseCaseList.slice(0)
-      }
+      // this.searchForm = {
+      //   name: this.filterForm.name,
+      //   category: this.filterForm.category.slice(0),
+      //   attributionUseCaseList: this.filterForm.attributionUseCaseList.slice(0)
+      // }
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
       if (this.filterForm.category.length) {
         SELF_COLUMN_LIST.find(n => {
@@ -274,11 +275,12 @@ export default {
         pageNo: this.currentPage,
         pageSize: this.pageSize
       }, this.searchForm)
-      this.filterForm = {
-        name: this.searchForm.name,
-        category: this.searchForm.category.slice(0),
-        attributionUseCaseList: this.searchForm.attributionUseCaseList.slice(0)
-      }
+      // this.filterForm = {
+      //   name: this.searchForm.name,
+      //   category: this.searchForm.category.slice(0),
+      //   attributionUseCaseList: this.searchForm.attributionUseCaseList.slice(0)
+      // }
+      this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getProductList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {
