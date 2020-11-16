@@ -1,14 +1,17 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="5"
+             value="1"
              type="border-card"
              style="height: 100%;">
       <el-tab-pane label="防打扰">
         <NotDisturb />
       </el-tab-pane>
-      <el-tab-pane label="分配比例">
-        <Distribute />
+      <el-tab-pane label="全局网点分配比例">
+        <GlobalOutletDistribute />
+      </el-tab-pane>
+      <el-tab-pane label="用例网点分配比例">
+        <UseCaseOutletDistribute />
       </el-tab-pane>
       <el-tab-pane label="用例优先级">
         <UseCasePriority />
@@ -35,7 +38,8 @@
 <script>
 import Assign from './assign'
 import NotDisturb from './notDisturb'
-import Distribute from './distribute'
+import GlobalOutletDistribute from './globalOutletDistribute'
+import UseCaseOutletDistribute from './usecaseOutletDistribute'
 import UseCasePriority from './useCasePriority'
 import CluePriority from './cluePriority'
 import HateMarketingCRM from './hateMarketingCRM'
@@ -45,7 +49,8 @@ export default {
   components: {
     Assign,
     NotDisturb,
-    Distribute,
+    GlobalOutletDistribute,
+    UseCaseOutletDistribute,
     UseCasePriority,
     CluePriority,
     HateMarketingCRM,

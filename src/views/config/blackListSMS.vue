@@ -149,7 +149,7 @@ import UploadButton from '@/components/UploadButton'
 import { downloadFile } from '@/utils'
 
 export default {
-  name: 'HateMarketingCRM',
+  name: 'BlackListSMS',
   components: {
     ShunTable,
     UploadButton

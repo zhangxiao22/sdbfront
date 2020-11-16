@@ -154,7 +154,7 @@ import ShunTable from '@/components/ShunTable'
 import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent, copyEvent, deleteEvent } from '@/api/api'
 
 export default {
-  name: 'Product',
+  name: 'EventBoard',
   components: {
     ShunTable
   },
@@ -408,7 +408,7 @@ export default {
     // 下载客群名单
     handleDownload(row) {
       if (row.group.length) {
-        window.open(process.env.VUE_APP_BASE_API + '/event/customerDownload?baseId=' + row.id, '_self')
+        window.open(process.env.VUE_APP_BASE_API + '/customer/customerDownload?baseId=' + row.id, '_self')
       } else {
         return this.$message({
           message: '客群名单不存在',

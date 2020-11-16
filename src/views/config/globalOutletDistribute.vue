@@ -1,7 +1,7 @@
 <template>
   <!-- 分配比例 -->
   <div class="container">
-    <el-form ref="formRef"
+    <el-form ref="regFormRef"
              :model="form"
              label-width="200px"
              class="main-form">
@@ -51,69 +51,11 @@
                    icon="el-icon-plus"
                    @click="addOutlet" />
       </el-form-item>
-      <el-form-item class="form-item">
-        <div slot="label">
-          <Info content="默认100%" />
-          用例网点分配比例：
-        </div>
-        <div v-for="(caseOutletItem,i) of form.useCaseOutlets"
-             :key="i"
-             class="block-item">
-          <el-form-item :prop="'useCaseOutlets.'+i+'.useCase'"
-                        :rules="[{required: true, message: '请选择用例', trigger: 'change'},
-                                 {validator: validateSame}]">
-            <el-select v-model="caseOutletItem.useCase"
-                       placeholder="请选择用例"
-                       class="item-input"
-                       @change="handleSelectUseCase($event,caseOutletItem)">
-              <el-option v-for="optItem of useCaseOpt"
-                         :key="optItem.value"
-                         :disabled="optItem.disabled"
-                         :label="optItem.label"
-                         :value="optItem.value" />
-            </el-select>
-          </el-form-item>
-          <el-form-item :prop="'useCaseOutlets.'+i+'.outlet'"
-                        style="margin-left:20px;"
-                        :rules="[{required: true, message: '请选择网点', trigger: 'change'},
-                                 {validator: validateSame}]">
-            <el-select v-model="caseOutletItem.outlet"
-                       placeholder="请选择网点"
-                       class="item-input"
-                       @change="handleSelectUseCaseOutlet($event,i)">
-              <el-option v-for="optItem of useCaseOutletOpt"
-                         :key="optItem.value"
-                         :disabled="optItem.disabled"
-                         :label="optItem.label"
-                         :value="optItem.value" />
-            </el-select>
-          </el-form-item>
-          <span class="compare">:</span>
-          <el-form-item :prop="'useCaseOutlets.'+i+'.value'"
-                        :rules="{
-                          required: true, message: '请输入分配比例', trigger: 'change'
-                        }">
-            <el-input-number v-model="caseOutletItem.value"
-                             :disabled="!caseOutletItem.useCase || !caseOutletItem.outlet"
-                             :min="0"
-                             :max="200"
-                             :step="10"
-                             controls-position="right"
-                             placeholder="请输入分配比例"
-                             class="item-input number-input" />
-            <div class="unit">%</div>
-          </el-form-item>
-          <i class="el-icon-delete delete"
-             @click="delUseCaseOutletItem(i)" />
-        </div>
-        <el-button class="add"
-                   icon="el-icon-plus"
-                   @click="addUseCaseOutlet" />
-      </el-form-item>
       <el-form-item>
         <el-button icon="el-icon-document"
                    type="primary"
                    style="width:100px;"
+                   :loading="buttonLoading"
                    @click="save">保存</el-button>
         <el-button icon="el-icon-refresh"
                    style="width:100px;"
@@ -124,7 +66,7 @@
 </template>
 
 <script>
-import { getUseCaseForEvent } from '@/api/api'
+import { getOutletsList } from '@/api/api'
 import Info from '@/components/Info'
 
 export default {
@@ -133,33 +75,16 @@ export default {
   },
   data() {
     return {
+      buttonLoading: false,
       form: {
-        outlets: [],
-        useCaseOutlets: []
+        outlets: [
+          {
+            item: '',
+            value: ''
+          }
+        ]
       },
       outletOpt: [{
-        value: '选项1',
-        label: '黄金糕',
-        disabled: false
-      }, {
-        value: '选项2',
-        label: '双皮奶',
-        disabled: false
-      }, {
-        value: '选项3',
-        label: '蚵仔煎',
-        disabled: false
-      }, {
-        value: '选项4',
-        label: '龙须面',
-        disabled: false
-      }, {
-        value: '选项5',
-        label: '北京烤鸭',
-        disabled: false
-      }],
-      useCaseOpt: [],
-      useCaseOutletOpt: [{
         value: '选项1',
         label: '黄金糕',
         disabled: false
@@ -186,7 +111,12 @@ export default {
     // 获取数据
     getData() {
       const data = {}
-
+      data.globalOutletList = this.form.outlets.map(n => {
+        return {
+          select: n.item,
+          value: n.value
+        }
+      })
       return data
     }
   },
@@ -194,35 +124,86 @@ export default {
 
   },
   created() {
-    this.useCaseList()
+    this.outletsList().then(() => {
+      if (this.id) {
+        this.getDetail()
+      }
+    })
   },
   mounted() {
   },
   methods: {
     reset() {
-
-    },
-    getDetail() {
-
-    },
-    save() {
-
-    },
-    // 获取目标
-    useCaseList() {
-      return new Promise((resolve, reject) => {
-        getUseCaseForEvent().then(res => {
-          this.useCaseOpt = res.data.map(n => {
-            return {
-              label: n.name,
-              value: n.id,
-              disabled: false
-            }
-          })
-          resolve()
-        })
+      this.form.outlets = [{
+        item: '',
+        value: 100
+      }]
+      this.$nextTick(() => {
+        this.$refs['regFormRef'].resetFields()
+        this.resetOutLet()
+        this.buttonLoading = false
       })
     },
+    getDetail() {
+      // getGlobalOutletDistribute({ id: this.id }).then(res => {
+      //   // 获取网点加分配比例值
+      //   this.form.outlets = res.data.achieveList.map(item => {
+      //     let obj = this.outletOpt.find(n => {
+      //       if (n.value === item.select) {
+      //         obj = n
+      //         return true
+      //       }
+      //     })
+      //     return Object.assign({}, obj, {
+      //       item: item.select,
+      //       value: item.value
+      //     })
+      //   })
+      //   this.resetOutLet()
+      // })
+    },
+    save() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          let ajax
+          if (this.id) {
+            // ajax = editUseCase
+          } else {
+            // ajax = saveUseCase
+          }
+          ajax(this.getData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          })
+        }
+      })
+    },
+
+    // 获取网点
+    outletsList() {
+      return new Promise(resolve => {
+        // getOutletsList().then(res => {
+        //   this.targetOpt = res.data.globalOutletList.map(n => {
+        //     return {
+        //       // 目标名称
+        //       label: n.name,
+        //       // 目标值
+        //       value: n.id,
+        //       // 是否可选
+        //       disabled: false
+        //     }
+        //   })
+        //   resolve()
+        // })
+      })
+    },
+
     addOutlet() {
       this.form.outlets.push({
         item: '',
@@ -252,44 +233,6 @@ export default {
       })
       // 设置不可选项
       this.resetOutLet()
-    },
-
-    // 用例网点
-    addUseCaseOutlet() {
-      this.form.useCaseOutlets.push({
-        useCase: '',
-        outlet: '',
-        value: 100
-      })
-    },
-    handleSelectUseCase(val, i) {
-      this.$refs.formRef.validateField(`useCaseOutlets.${i}.useCase`)
-    },
-    handleSelectUseCaseOutlet(val, i) { },
-    delUseCaseOutletItem(i) {
-      this.form.useCaseOutlets.splice(i, 1)
-    },
-    validateSame(rule, value, callback) {
-      let hasSame = false
-      const arr = this.form.useCaseOutlets
-      for (let i = 0; i < arr.length - 1; i++) {
-        for (let j = i + 1; j < arr.length; j++) {
-          if (
-            (arr[i].useCase && arr[j].useCase) &&
-            (arr[i].useCase === arr[j].useCase) &&
-            (arr[i].outlet && arr[j].outlet) &&
-            (arr[i].outlet === arr[j].outlet)
-          ) {
-            hasSame = true
-            break
-          }
-        }
-      }
-      if (hasSame) {
-        callback(new Error('存在相同的用例和网点组合'))
-      } else {
-        callback()
-      }
     }
 
   }

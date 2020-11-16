@@ -5,7 +5,7 @@
              :model="form"
              label-width="200px"
              class="reg-form">
-      <el-form-item prop="intervalDay"
+      <el-form-item prop="intervalDays"
                     label="防打扰间隔天数：">
         <el-input-number v-model="form.intervalDays"
                          controls-position="right"
@@ -14,7 +14,7 @@
                          :step="5" />
         <span class="unit">天</span>
       </el-form-item>
-      <el-form-item prop="intervalDay"
+      <el-form-item prop="lowerAge"
                     label="年龄下限：">
         <el-input-number v-model="form.lowerAge"
                          controls-position="right"
@@ -22,7 +22,7 @@
                          :max="200" />
         <span class="unit">岁</span>
       </el-form-item>
-      <el-form-item prop="intervalDay"
+      <el-form-item prop="upperAge"
                     label="年龄上限：">
         <el-input-number v-model="form.upperAge"
                          controls-position="right"
@@ -30,7 +30,7 @@
                          :max="200" />
         <span class="unit">岁</span>
       </el-form-item>
-      <el-form-item prop="intervalDay"
+      <el-form-item prop="hateIntervalDay"
                     label="厌恶营销防打扰间隔天数：">
         <el-input-number v-model="form.hateIntervalDay"
                          controls-position="right"
@@ -47,7 +47,7 @@
                          :max="100" />
         <span class="unit">次</span>
       </el-form-item>
-      <el-form-item prop="notOneself"
+      <el-form-item prop="notOneselfIntervalDays"
                     label="号码空号防打扰间隔天数：">
         <el-input-number v-model="form.notOneselfIntervalDays"
                          controls-position="right"
@@ -56,7 +56,7 @@
                          :step="5" />
         <span class="unit">天</span>
       </el-form-item>
-      <el-form-item prop="notOneself"
+      <el-form-item prop="smsIntervalDays"
                     label="短信黑名单持续天数：">
         <el-input-number v-model="form.smsIntervalDays"
                          controls-position="right"
@@ -69,6 +69,7 @@
         <el-button type="primary"
                    style="width:100px;"
                    icon="el-icon-document"
+                   :loading="buttonLoading"
                    @click="onSubmit">保存</el-button>
         <el-button icon="el-icon-refresh"
                    style="width:100px;"
@@ -88,6 +89,7 @@ export default {
   },
   data() {
     return {
+      buttonLoading: false,
       form: {
         intervalDays: null,
         lowerAge: null,
@@ -96,25 +98,57 @@ export default {
         notOneself: null,
         notOneselfIntervalDays: null,
         smsIntervalDays: null
-      },
-      marks: {
-        18: '18岁',
-        30: '30岁',
-        60: '60岁',
-        90: '90岁'
       }
+      // marks: {
+      //   18: '18岁',
+      //   30: '30岁',
+      //   60: '60岁',
+      //   90: '90岁'
+      // }
     }
   },
   computed: {
-
+    getData() {
+      const data = {}
+      data.intervalDays = this.form.intervalDays
+      data.lowerAge = this.form.lowerAge
+      data.upperAge = this.form.upperAge
+      data.hateIntervalDay = this.form.hateIntervalDay
+      data.notOneself = this.form.notOneself
+      data.notOneselfIntervalDays = this.form.notOneselfIntervalDays
+      data.smsIntervalDays = this.form.smsIntervalDays
+      return data
+    }
   },
 
   watch: {},
   created() {
   },
   methods: {
-    onSubmit() { },
-    reset() { }
+    onSubmit() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          // addCustomerToBlackList([this.getData]).then(res => {
+          //   this.buttonLoading = false
+          //   if (res.code === 200) {
+          //     this.$message({
+          //       message: '保存成功',
+          //       type: 'success',
+          //       duration: '3000'
+          //     })
+          //     this.resetAll()
+          //   }
+          // }).catch(() => {
+          //   this.buttonLoading = false
+          // })
+        }
+      })
+    },
+    reset() {
+      this.$refs['regFormRef'].resetFields()
+      this.buttonLoading = false
+    }
   }
 }
 </script>
