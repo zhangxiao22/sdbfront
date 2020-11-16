@@ -4,15 +4,15 @@
              :model="{condition}"
              label-position="top"
              class="reg-form">
-      <el-form-item required
-                    class="shun-label group-label">
+      <el-form-item class="shun-label group-label">
         <div slot="label">
-          <Info content="最多设置5个规则" />
-          分群规则：
+          <Info :content="`最多设置${maxLength}个规则`" />
+          {{ label }}：
         </div>
         <div v-for="(conditionItem,ci) of condition"
              :key="ci"
-             class="condition-item">
+             class="condition-item"
+             :class="{single:condition.length===1}">
           <!-- {{ ci }} {{ conditionItem.conditionSelect }} -->
           <el-form-item :prop="'condition.' + ci + '.conditionSelect'"
                         class="item"
@@ -28,27 +28,31 @@
                 <el-option v-for="optItem of tags"
                            :key="optItem.value"
                            :label="optItem.label"
-                           :value="optItem.value" />
+                           :value="optItem.value">
+                  <svg-icon class="type-icon"
+                            :icon-class="optItem.type" />
+                  {{ optItem.label }}
+                </el-option>
               </el-select>
             </el-tooltip>
           </el-form-item>
+          <!-- 比较符 -->
+          <el-form-item :prop="'condition.' + ci + '.compare'"
+                        class="item"
+                        :rules="[{
+                          required: true, message: '请选择比较方式', trigger:'change'
+                        }]">
+            <el-select v-model="conditionItem.compare"
+                       style="width:90px">
+              <el-option v-for="item in conditionItem.compareOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
           <!-------------------------- 数字型 -------------------------->
           <template v-if="conditionItem.type==='数值型'">
-            <!-- 比较符 -->
-            <el-form-item :prop="'condition.' + ci + '.compare'"
-                          class="item"
-                          style="margin-bottom:0"
-                          :rules="[{
-                            required: true, message: '请选择比较方式'
-                          }]">
-              <el-select v-model="conditionItem.compare"
-                         style="width:90px">
-                <el-option v-for="item in conditionItem.compareOpt"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item>
+
             <!-- 数字型-值 -->
             <div v-if="conditionItem.compare!==''"
                  class="item-box">
@@ -62,107 +66,163 @@
                   {{ conditionItem.conditionValue.leftSymbol }}</el-button>
                 <!-- 最小值 -->
                 <el-form-item :prop="'condition.' + ci + '.conditionValue.minVal'"
-                              class="item"
-                              style="margin-bottom:0"
+                              class="item mb-0"
                               :rules="[{
-                                validator: validateNumberMin,trigger: 'blur'
+                                validator: validateNumber,trigger: 'blur'
                               }]">
                   <el-input-number v-model="conditionItem.conditionValue.minVal"
                                    style="width:150px;"
+                                   class="item mb-0"
                                    :min="-MAX_NUMBER"
                                    :max="MAX_NUMBER"
                                    placeholder="负无穷"
                                    controls-position="right" />
+                  <b class="item mb-0">,</b>
+                  <!-- 最大值 -->
+                  <el-input-number v-model="conditionItem.conditionValue.maxVal"
+                                   style="width:150px;"
+                                   class="item mb-0"
+                                   :min="-MAX_NUMBER"
+                                   :max="MAX_NUMBER"
+                                   placeholder="正无穷"
+                                   controls-position="right" />
+                  <el-button @click="conditionItem.conditionValue.rightSymbol=conditionItem.conditionValue.rightSymbol===')'?']':')'">
+                    {{ conditionItem.conditionValue.rightSymbol }}</el-button>
                 </el-form-item>
-
-                <b class="item">,</b>
-                <!-- 最大值 -->
-                <el-input-number v-model="conditionItem.conditionValue.maxVal"
-                                 class="item"
-                                 style="width:150px;"
-                                 :min="-MAX_NUMBER"
-                                 :max="MAX_NUMBER"
-                                 placeholder="正无穷"
-                                 controls-position="right"
-                                 @change="chcekNumber(ci)"
-                                 @blur="chcekNumber(ci)" />
-                <el-button class="item"
-                           @click="conditionItem.conditionValue.rightSymbol=conditionItem.conditionValue.rightSymbol===')'?']':')'">
-                  {{ conditionItem.conditionValue.rightSymbol }}</el-button>
               </template>
               <template v-else>
                 <!-- 非区间 -->
                 <Info class="item"
                       content="请输入数字并选择或按回车键创建，可创建多个" />
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.arrVal'"
+                <el-form-item :prop="'condition.' + ci + '.conditionValue.numberArrVal'"
                               class="item"
                               :rules="[{
                                 required: true, message: '请输入值'
                               }]">
-                  <el-select v-model="conditionItem.conditionValue.arrVal"
+                  <el-select v-model="conditionItem.conditionValue.numberArrVal"
+                             class="long-text"
                              multiple
                              filterable
                              remote
                              allow-create
                              default-first-option
                              placeholder="请输入数字并创建条目"
-                             @change="handleChangeNumberInput" />
+                             @change="handleChangeNumberInput">
+                    <el-option v-for="item in numberOptions"
+                               :key="item.value"
+                               style="max-width:300px;"
+                               :title="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
                 </el-form-item>
               </template>
               <div class="unit item">{{ conditionItem.unit }}</div>
             </div>
           </template>
-          <!-- type:3 字符串型 -->
-          <!-- type:4 枚举型 -->
-          <template v-if="conditionItem.type==='枚举型'">
-            <el-select v-model="conditionItem.conditionValue"
-                       class="item"
-                       placeholder="请选择">
-              <el-option v-for="item of conditionItem.selectOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
+          <!-------------------------- 字符串型 -------------------------->
+          <template v-if="conditionItem.type==='字符串型'">
+            <div v-if="conditionItem.compare!==''"
+                 class="item-box">
+              <!-- 单个输入框 -->
+              <template v-if="conditionItem.compare===0">
+                <el-form-item :prop="'condition.' + ci + '.conditionValue.stringVal'"
+                              class="item"
+                              :rules="[{
+                                required: true, message: '请输入内容'
+                              }]">
+                  <el-input v-model="conditionItem.conditionValue.stringVal"
+                            placeholder="请输入内容" />
+                </el-form-item>
+              </template>
+              <template v-else>
+                <!-- 多个值 -->
+                <Info class="item"
+                      content="请输入内容并选择或按回车键创建，可创建多个" />
+                <el-form-item :prop="'condition.' + ci + '.conditionValue.stringArrVal'"
+                              class="item"
+                              :rules="[{
+                                required: true, message: '请输入内容'
+                              }]">
+                  <el-select v-model="conditionItem.conditionValue.stringArrVal"
+                             class="long-text"
+                             multiple
+                             filterable
+                             remote
+                             allow-create
+                             default-first-option
+                             placeholder="请输入内容并创建条目"
+                             @change="handleChangeStringInput">
+                    <el-option v-for="item in stringOptions"
+                               :key="item.value"
+                               style="max-width:500px;"
+                               :title="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
+                </el-form-item>
+              </template>
+            </div>
           </template>
-          <!-- type:5 日期型 -->
+
+          <!-------------------------- 枚举型 -------------------------->
+          <template v-if="conditionItem.type==='枚举型'">
+            <el-form-item :prop="'condition.' + ci + '.conditionValue.selectVal'"
+                          class="item"
+                          :rules="[{
+                            required: true, message: '请选择选项'
+                          }]">
+              <el-select v-model="conditionItem.conditionValue.selectVal"
+                         multiple
+                         placeholder="请选择">
+                <el-option v-for="item of conditionItem.selectOpt"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+
+          </template>
+          <!-------------------------- 日期型 -------------------------->
           <template v-if="conditionItem.type==='日期型'">
-            <el-select v-model="conditionItem.compare"
-                       class="item"
-                       style="width:90px">
-              <el-option label="包含于"
-                         value="1" />
-            </el-select>
-            <el-date-picker v-model="conditionItem.conditionValue.startDate"
-                            class="item"
-                            value-format="yyyy-MM-dd"
-                            type="date"
-                            placeholder="从前" />
-            <div class="item">至</div>
-            <el-date-picker v-model="conditionItem.conditionValue.endDate"
-                            value-format="yyyy-MM-dd"
-                            class="item"
-                            type="date"
-                            placeholder="现在" />
+            <el-form-item :prop="'condition.' + ci + '.conditionValue.startDate'"
+                          class="item"
+                          :rules="[{
+                            validator: validateDate
+                          }]">
+              <el-date-picker v-model="conditionItem.conditionValue.startDate"
+                              class="item mb-0"
+                              value-format="yyyy-MM-dd"
+                              type="date"
+                              placeholder="从前" />
+              <span class="item mb-0">至</span>
+              <el-date-picker v-model="conditionItem.conditionValue.endDate"
+                              value-format="yyyy-MM-dd"
+                              type="date"
+                              placeholder="未来" />
+            </el-form-item>
           </template>
           <!-- 删除按钮 -->
-          <i v-if="condition.length > 1"
+          <i v-if="condition.length > minLength"
              class="el-icon-delete delete item"
              @click="delconditionItem(ci)" />
-          <div v-if="ci!==condition.length-1"
+          <div v-if="ci !== condition.length - 1"
                class="and-or">
             <div class="text"
                  @click="andOr(ci)">{{ conditionItem.andOrText }}</div>
           </div>
         </div>
-        <el-button v-if="condition.length<=4"
+        <el-button v-if="condition.length < maxLength"
                    class="add"
                    icon="el-icon-plus"
                    @click="addItem">
           添加规则
         </el-button>
+        <el-button type="primary"
+                   plain
+                   @click="check">筛选</el-button>
       </el-form-item>
     </el-form>
-    <el-button @click="check">check</el-button>
   </div>
 </template>
 
@@ -176,13 +236,31 @@ export default {
     Info
   },
   props: {
-
+    condition: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    maxLength: {
+      type: Number,
+      default: 5
+    },
+    minLength: {
+      type: Number,
+      default: 1
+    },
+    label: {
+      type: String,
+      default: '分群规则'
+    }
   },
   data() {
     return {
+      numberOptions: [],
+      stringOptions: [],
       MAX_NUMBER,
       originData: [],
-      condition: [],
       rules: {},
       numberFlat: {}
     }
@@ -192,13 +270,16 @@ export default {
       return this.originData.map((n) => {
         return {
           label: n.name,
-          value: n.id
+          value: n.id,
+          type: n.type
         }
       })
     }
   },
   watch: {
-
+    // value() {
+    //   this.$emit('update:condition', this.value)
+    // }
   },
   created() {
     // this.tagsInit(0, 0)
@@ -206,36 +287,38 @@ export default {
   },
 
   methods: {
-    validateNumberMin(rule, value, callback) {
+    validateNumber(rule, value, callback) {
       const index = rule.field.split('.')[1]
-      this.numberFlat[index] = false
       if (this.condition[index].conditionValue.minVal === undefined && this.condition[index].conditionValue.maxVal === undefined) {
-        callback('请填写最小值或最大值')
+        callback('请填写区间的最小值或最大值')
       } else if (this.condition[index].conditionValue.minVal >= this.condition[index].conditionValue.maxVal) {
-        callback('最小值须小于最大值')
+        callback('区间的最小值必须小于最大值')
       } else {
         // this.$refs.form.clearValidate(`condition.${index}.conditionValue.minVal`)
         callback()
       }
     },
     chcekNumber(index) {
-      console.log(index)
       this.$refs.form.validateField(`condition.${index}.conditionValue.minVal`)
     },
-    // validateNumberMax(rule, value, callback) {
-    //   const index = rule.field.split('.')[1]
-    //   if (this.condition[index].conditionValue.minVal === undefined && this.condition[index].conditionValue.maxVal === undefined) {
-    //     callback('请填写最小值或最大值')
-    //   } else if (this.condition[index].conditionValue.minVal >= this.condition[index].conditionValue.maxVal) {
-    //     callback('最大值必须大于最小值')
-    //   } else {
-    //     this.$refs.form.clearValidate(`condition.${index}.conditionValue.minVal`)
-    //     callback()
-    //   }
-    // },
+    validateDate(rule, value, callback) {
+      const index = rule.field.split('.')[1]
+      if (!this.condition[index].conditionValue.startDate && !this.condition[index].conditionValue.endDate) {
+        callback('请选择开始时间或结束时间')
+      } else if (this.condition[index].conditionValue.startDate &&
+        this.condition[index].conditionValue.endDate &&
+        this.condition[index].conditionValue.startDate >= this.condition[index].conditionValue.endDate) {
+        callback('开始时间不能早于结束时间')
+      } else {
+        callback()
+      }
+    },
     check() {
       this.$refs.form.validate((valid) => {
         console.log(valid)
+        if (valid) {
+          this.$emit('check', this.condition)
+        }
       })
     },
     getRuleList() {
@@ -251,6 +334,20 @@ export default {
           val.splice(i, 1)
         }
       }
+      this.numberOptions = val.map(n => {
+        return {
+          value: n,
+          label: n
+        }
+      })
+    },
+    handleChangeStringInput(val) {
+      this.stringOptions = val.map(n => {
+        return {
+          value: n,
+          label: n
+        }
+      })
     },
 
     // 通过规则选中的值，返回一条规则应该展示的数据
@@ -267,12 +364,28 @@ export default {
         if (item.type === '数值型') {
           conditionValue = {
             // 非区间的值（数组）
-            arrVal: [],
+            numberArrVal: [],
             // 区间值 objs
             leftSymbol: '(',
             minVal: undefined,
             maxVal: undefined,
             rightSymbol: ')'
+          }
+        }
+        if (item.type === '字符串型') {
+          conditionValue = {
+            stringVal: ''
+          }
+        }
+        if (item.type === '枚举型') {
+          conditionValue = {
+            selectVal: []
+          }
+        }
+        if (item.type === '日期型') {
+          conditionValue = {
+            startDate: '',
+            endDate: ''
           }
         }
         // const conditionValue = item.type === '日期型' ? { startDate: '', endDate: '' } : null
@@ -286,7 +399,7 @@ export default {
           // 比较符号的选项
           compareOpt: item.relations,
           // 比较符号的值
-          compare: '',
+          compare: 0,
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
           // // 数字型-小数点精度
@@ -343,6 +456,7 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .group-container {
+  // min-width: 850px;
   .group-label ::v-deep .el-form-item__label {
     display: flex;
     justify-content: flex-start;
@@ -354,12 +468,20 @@ export default {
     display: flex;
     flex-wrap: wrap;
     align-items: flex-start;
+    transition: left 0.3s;
+    &.single {
+      left: 0;
+    }
     .item-box {
       max-width: 100%;
       display: flex;
+      align-items: flex-start;
     }
     .item {
       margin: 0 10px 18px 0;
+      &.mb-0 {
+        margin-bottom: 0;
+      }
       .unit {
         display: inline-block;
       }
