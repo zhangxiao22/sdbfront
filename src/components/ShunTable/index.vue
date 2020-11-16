@@ -270,13 +270,21 @@ export default {
       }
     },
     handleSelectAll(selection) {
-      // console.log(selection)
       if (this.multiple) {
-        this.selection.push(
-          ...selection.filter(n => {
-            return !this.selection.some(m => m.id === n.id)
-          })
-        )
+        if (selection.length) {
+          this.selection.push(
+            ...selection.filter(n => {
+              return !this.selection.some(m => m.id === n.id)
+            })
+          )
+        } else {
+          const ids = this.tableData.map(n => n.id)
+          for (let i = this.selection.length - 1; i >= 0; i--) {
+            if (ids.includes(this.selection[i].id)) {
+              this.selection.splice(i, 1)
+            }
+          }
+        }
       } else {
         this.$refs.table.clearSelection()
         this.selection = []
