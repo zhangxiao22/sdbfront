@@ -179,7 +179,7 @@ export function getLabelList(params) {
   })
 }
 
-// 获取分群规则
+// 获取规则标签
 export function getCustomerLabel(params) {
   return request({
     url: '/customer/queryTagsCandy',
