@@ -1,5 +1,5 @@
 <template>
-  <!-- 分配比例 -->
+  <!--  全局网点分配比例 -->
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"
@@ -167,11 +167,7 @@ export default {
         if (valid) {
           this.buttonLoading = true
           let ajax
-          if (this.id) {
-            // ajax = editUseCase
-          } else {
-            // ajax = saveUseCase
-          }
+
           ajax(this.getData).then(res => {
             if (res.code === 200) {
               this.$message({

@@ -154,7 +154,7 @@ input[type="number"] {
   }
 }
 
-.shun-label ::v-deep .el-form-item__label {
+.shun-label .el-form-item__label {
   display: flex;
   justify-content: flex-end;
 }
@@ -183,4 +183,15 @@ input[type="number"] {
 .hover-text {
   cursor: pointer;
   color: $blue;
+}
+
+.long-text .el-select__tags-text{
+    display: inline-block;
+    max-width: 156px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.long-text.el-select .el-tag__close.el-icon-close {
+  top: -7px;
 }

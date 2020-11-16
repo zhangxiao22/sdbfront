@@ -8,7 +8,7 @@
       <div class="text">顺德农商银行大数据营销平台</div>
     </div>
     <div class="right-menu">
-      <div class="message-container">
+      <!-- <div class="message-container">
         <el-badge :value="12"
                   hidden
                   class="icon">
@@ -17,7 +17,7 @@
           </span>
         </el-badge>
         <span class="message-text">未读信息</span>
-      </div>
+      </div> -->
 
       <el-dropdown trigger="click">
         <span class="el-dropdown-link">

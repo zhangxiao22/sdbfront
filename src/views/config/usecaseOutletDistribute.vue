@@ -1,5 +1,5 @@
 <template>
-  <!-- 分配比例 -->
+  <!-- 用例网点分配比例 -->
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"

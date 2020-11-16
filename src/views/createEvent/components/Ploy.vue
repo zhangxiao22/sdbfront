@@ -1330,10 +1330,6 @@ export default {
     @include shun-text;
     word-break: break-all;
   }
-  .shun-label ::v-deep .el-form-item__label {
-    display: flex;
-    justify-content: flex-end;
-  }
   ::v-deep th.is-leaf,
   ::v-deep td {
     &.el-table__expanded-cell {
