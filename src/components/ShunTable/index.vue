@@ -81,7 +81,7 @@
           </el-table-column>
         </template>
       </el-table>
-      {{ selection.map(n => n.id) }}
+      <!-- {{ selection.map(n => n.id) }} -->
       <!-- {{ currentPage }}{{ pageSize }} -->
       <el-pagination v-if="showPagination"
                      :current-page="currentPage"

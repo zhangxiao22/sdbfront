@@ -26,8 +26,7 @@ export default {
   },
   data() {
     return {
-      activeName: '2',
-      condition: []
+      activeName: '2'
     }
   },
   computed: {
@@ -50,6 +49,15 @@ export default {
     validateAndNext() {
       if (this.activeName === '1') {
         return this.$refs['whiteList'].validateAndNext()
+      } else if (this.activeName === '2') {
+        return this.$refs['rule'].validateAndNext()
+      }
+    },
+    reset() {
+      if (this.activeName === '1') {
+        return this.$refs['whiteList'].reset()
+      } else if (this.activeName === '2') {
+        return this.$refs['rule'].reset()
       }
     }
   }
