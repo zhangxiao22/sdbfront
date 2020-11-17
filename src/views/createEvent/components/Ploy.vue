@@ -395,7 +395,7 @@
                                          :min-width="400">
                           <div slot-scope="scope"
                                class="table-desc">
-                            <span>{{ scope.row.content2 }}</span>
+                            <span>{{ scope.row.content }}</span>
                             <el-popover v-model="scope.row.isEdit"
                                         placement="top"
                                         width="300">
@@ -410,12 +410,12 @@
                                            @click="scope.row.isEdit = false">取消</el-button>
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="scope.row.content2 = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                           @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
                               </div>
                               <div v-show="scope.row.isHover"
                                    slot="reference"
                                    class="table-edit touch-tap"
-                                   @click="scope.row._content = scope.row.content2">
+                                   @click="scope.row._content = scope.row.content">
                                 <i class="el-icon-edit" />
                               </div>
                             </el-popover>
@@ -454,7 +454,7 @@
                                 :data="channelCardItem.model"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content2"
+                        <el-table-column prop="content"
                                          :min-width="400"
                                          label="短信内容" />
                         <el-table-column prop="category.label"
@@ -499,7 +499,7 @@
                                 :data="channelCardItem.model"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content2"
+                        <el-table-column prop="content"
                                          :min-width="400"
                                          label="短信内容" />
                         <el-table-column prop="category.label"
@@ -742,7 +742,7 @@ export default {
                         chooseType: m.pushType.value,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
-                            _content: n.content2,
+                            _content: n.content,
                             isEdit: false,
                             isHover: false
                           })
@@ -884,7 +884,7 @@ export default {
                         scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {
                             scriptId: n.id,
-                            scriptContent: n.content2,
+                            scriptContent: n.content,
                             scriptInstId: n.scriptInstId
                           }
                         }) : undefined,
@@ -1246,7 +1246,7 @@ export default {
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model.push(
           ...val.map(n => {
             return Object.assign({}, n, {
-              _content: n.content2,
+              _content: n.content,
               isEdit: false,
               isHover: false
             })

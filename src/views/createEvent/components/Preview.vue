@@ -205,7 +205,7 @@
                                   class="preview-table"
                                   size="mini"
                                   style="width: 100%">
-                          <el-table-column prop="content2"
+                          <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="话术内容" />
                           <el-table-column prop="category.label"
@@ -220,7 +220,7 @@
                                   class="preview-table"
                                   size="mini"
                                   style="width: 100%">
-                          <el-table-column prop="content2"
+                          <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="短息内容" />
                           <el-table-column prop="category.label"

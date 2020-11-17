@@ -227,7 +227,7 @@ export default {
       typeOpt: [],
       tableColumnList: [
         {
-          prop: 'content2',
+          prop: 'content',
           label: '短信内容',
           minWidth: 300,
           notShowOverflowTooltip: true
