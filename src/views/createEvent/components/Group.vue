@@ -4,7 +4,9 @@
              :model="{condition}"
              label-position="top"
              class="reg-form">
-      <el-form-item class="shun-label group-label">
+      <el-form-item prop="condition"
+                    :rules="rules"
+                    class="shun-label group-label">
         <div slot="label">
           <Info :content="`最多设置${maxLength}个规则`" />
           {{ label }}：
@@ -220,7 +222,7 @@
         </el-button>
         <el-button type="primary"
                    plain
-                   @click="check">筛选</el-button>
+                   @click="check">筛选客户</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -244,7 +246,7 @@ export default {
     },
     maxLength: {
       type: Number,
-      default: 5
+      default: 100
     },
     minLength: {
       type: Number,
@@ -253,6 +255,10 @@ export default {
     label: {
       type: String,
       default: '分群规则'
+    },
+    required: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -261,7 +267,6 @@ export default {
       stringOptions: [],
       MAX_NUMBER,
       originData: [],
-      rules: {},
       numberFlat: {}
     }
   },
@@ -274,6 +279,11 @@ export default {
           type: n.type
         }
       })
+    },
+    rules() {
+      return [{
+        required: this.required, message: '请选择规则', type: 'array'
+      }]
     }
   },
   watch: {
@@ -313,9 +323,13 @@ export default {
         callback()
       }
     },
+    validate(cb) {
+      this.$refs.form.validate((valid) => {
+        cb(valid)
+      })
+    },
     check() {
       this.$refs.form.validate((valid) => {
-        console.log(valid)
         if (valid) {
           this.$emit('check', this.condition)
         }
@@ -434,9 +448,13 @@ export default {
     },
     addItem() {
       this.condition.push(this.resetOpt())
+      // 校验
+      this.$refs.form.clearValidate('condition')
     },
     delconditionItem(i) {
       this.condition.splice(i, 1)
+      // 校验
+      this.$refs.form.clearValidate('condition')
     },
     andOr(i) {
       this.condition[i].andOrText = this.condition[i].andOrText === '且' ? '或' : '且'

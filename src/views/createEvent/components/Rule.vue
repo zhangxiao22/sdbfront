@@ -1,15 +1,20 @@
 <template>
   <div class="container">
-    <Group :condition="totalCondition"
+    <Group ref="totalRuleRef"
+           :condition="totalCondition"
            :min-length="0"
            label="整体规则"
            @check="checkAll" />
 
     <el-form ref="form"
+             :model="{labelTabs}"
              label-width="100px"
              class="form">
-      <el-form-item required
-                    class="shun-label">
+      <el-form-item class="shun-label"
+                    prop="labelTabs"
+                    :rules="[{
+                      required: true, message: '请分客群', type: 'array'
+                    }]">
         <div slot="label">
           <Info content="客群先后顺序决定客群优先级（客群标签可拖拽排序）" />
           分群：
@@ -27,28 +32,32 @@
                type="card"
                @tab-remove="removeTab">
 
-        <el-tab-pane v-for="item of labelTabs"
+        <el-tab-pane v-for="(item, ti) of labelTabs"
                      :key="item.name"
                      :closable="item.closable"
                      :label="item.title"
                      :name="item.name">
-          <el-form-item required
-                        label="群组名称：">
+          <el-form-item :prop="'labelTabs.' + ti + '.title'"
+                        :rules="[{
+                          required: true, message: '请填写客群名称', trigger:'blur'
+                        }]"
+                        label="客群名称：">
             <el-input v-model.trim="item.title"
                       style="width:300px"
                       :disabled="!item.closable"
-                      placeholder="请输入群组名称" />
+                      placeholder="请输入客群名称" />
           </el-form-item>
-          <el-form-item label="群组描述：">
+          <el-form-item label="客群描述：">
             <el-input v-model.trim="item.desc"
                       style="width:300px"
                       type="textarea"
                       :disabled="!item.closable"
                       :autosize="{ minRows: 2, maxRows: 4}"
-                      placeholder="请输入群组描述" />
+                      placeholder="请输入客群描述" />
           </el-form-item>
           <Group v-if="item.closable"
-                 ref="groupRef"
+                 ref="groupRuleRef"
+                 required
                  :condition="item.condition" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
         </el-tab-pane>
@@ -75,8 +84,8 @@ export default {
     return {
       labelTabs: [
         //   {
-        //   title: '其他群组',
-        //   desc: '该群组为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
+        //   title: '其他客群',
+        //   desc: '该客群为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
         //   name: '1',
         //   closable: false,
         //   people: ''
@@ -103,6 +112,37 @@ export default {
   created() {
   },
   methods: {
+    reset() {
+      this.getDetail()
+    },
+    getDetail() {
+      // todo
+    },
+    validateAndNext() {
+      return new Promise((resolve, reject) => {
+        // 校验整体规则
+        this.$refs.totalRuleRef.validate((valid) => {
+          if (!valid) reject()
+        })
+        // 校验客群
+        this.$refs.form.validate((valid) => {
+          if (!valid) reject()
+        })
+        // 校验客群中的规则
+        let index = 0
+        let flaf = false
+        this.labelTabs.forEach((n, i) => {
+          this.$refs.groupRuleRef[i].validate((valid) => {
+            if (!valid && !flaf) {
+              index = i
+              flaf = true
+              this.labelIndex = i + 1 + ''
+              reject()
+            }
+          })
+        })
+      })
+    },
     // tab拖拽
     tabDrop() {
       const el = document.querySelector('#group-tabs .el-tabs__nav')
@@ -119,7 +159,7 @@ export default {
     addTab() {
       const newTabName = ++this.labelTabsCounts + ''
       this.labelTabs.push({
-        title: '新群组' + newTabName,
+        title: '新客群' + newTabName,
         desc: '',
         name: newTabName,
         closable: true,
@@ -128,6 +168,8 @@ export default {
         people: ''
       })
       this.labelIndex = newTabName
+      // 校验
+      this.$refs.form.validateField('labelTabs')
     },
     removeTab(targetName) {
       const tabs = this.labelTabs
@@ -145,9 +187,15 @@ export default {
 
       this.labelIndex = activeName
       this.labelTabs = tabs.filter(tab => tab.name !== targetName)
+
+      // 校验
+      this.$nextTick(() => {
+        this.$refs.form.validateField('labelTabs')
+      })
     },
     checkAll(val) {
       console.log(val)
+      console.log(JSON.stringify(val))
     }
   }
 }
