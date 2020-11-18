@@ -132,15 +132,6 @@ export function getTargetList() {
   })
 }
 
-// 获取用例优先级
-export function setUseCasePriority(data) {
-  return request({
-    url: '/event/setUseCasePriority',
-    method: 'post',
-    data
-  })
-}
-
 /** ************************************************ 事件注册 ************************************************************/
 // 获取事件简介
 export function getEventInfo(params) {
@@ -432,5 +423,59 @@ export function totalStatistics(params) {
     url: 'http://10.5.12.233:8848/chart/mock',
     method: 'get',
     params
+  })
+}
+
+/** ************************************************ 系统配置 ************************************************************/
+// 防打扰修改
+export function updateNoDisturb(data) {
+  return request({
+    url: '/config/updateNoDisturb',
+    method: 'post',
+    data
+  })
+}
+
+// 获取防打扰
+export function getNoDisturb() {
+  return request({
+    url: '/config/getNoDisturb',
+    method: 'get'
+  })
+}
+
+// 获取网点
+export function getOutletList(data) {
+  return request({
+    url: '/config/getOutletList',
+    method: 'get',
+    data
+  })
+}
+
+// 获取设置网点比例页面数据
+export function getOutletAllot(data) {
+  return request({
+    url: '/config/getOutletAllot',
+    method: 'post',
+    data
+  })
+}
+
+// 保存（用例）网点信息
+export function insertOutletAllotBatch(data) {
+  return request({
+    url: '/config/insertOutletAllotBatch',
+    method: 'post',
+    data
+  })
+}
+
+// 获取用例优先级
+export function setUseCasePriority(data) {
+  return request({
+    url: '/event/setUseCasePriority',
+    method: 'post',
+    data
   })
 }

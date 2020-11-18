@@ -313,11 +313,11 @@ export default {
   padding: 16px;
 
   .reg-form {
-    width: 600px;
+    width: 700px;
     margin: 20px auto;
 
     .target-form-item {
-      width: 600px;
+      width: 700px;
       .target-item {
         display: flex;
         position: relative;

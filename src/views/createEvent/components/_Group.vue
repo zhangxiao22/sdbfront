@@ -246,7 +246,7 @@ export default {
     },
     maxLength: {
       type: Number,
-      default: 5
+      default: 10
     },
     minLength: {
       type: Number,

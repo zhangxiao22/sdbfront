@@ -1,10 +1,18 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="5"
+             value="0"
              type="border-card"
              style="height: 100%;">
-      <el-tab-pane label="防打扰">
+      <el-tab-pane v-for="(item,i) of tabList"
+                   :key="i"
+                   v-loading="item.loading"
+                   :label="item.label">
+        <component :is="item.component"
+                   :loading.sync="item.loading" />
+      </el-tab-pane>
+      <!-- <el-tab-pane v-loading="true"
+                   label="防打扰">
         <NotDisturb />
       </el-tab-pane>
       <el-tab-pane label="全局网点分配比例">
@@ -30,7 +38,7 @@
       </el-tab-pane>
       <el-tab-pane label="黑名单（短信）">
         <BlackListSMS />
-      </el-tab-pane>
+      </el-tab-pane> -->
     </el-tabs>
   </div>
 </template>
@@ -45,6 +53,7 @@ import CluePriority from './cluePriority'
 import HateMarketingCRM from './hateMarketingCRM'
 import NeverMarketingCRM from './neverMarketingCRM'
 import BlackListSMS from './blackListSMS'
+
 export default {
   components: {
     Assign,
@@ -60,15 +69,17 @@ export default {
 
   data() {
     return {
-
+      tabList: [{
+        label: '防打扰',
+        component: 'NotDisturb',
+        loading: false
+      }]
     }
   },
   watch: {},
   mounted() {
-
   },
   methods: {
-
   }
 }
 </script>
