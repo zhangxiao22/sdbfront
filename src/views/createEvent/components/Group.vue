@@ -54,117 +54,28 @@
           </el-form-item>
           <!-------------------------- 数字型 -------------------------->
           <template v-if="conditionItem.type==='数值型'">
-
-            <!-- 数字型-值 -->
-            <div v-if="conditionItem.compare!==''"
-                 class="item-box">
-              <template v-if="conditionItem.compare===2">
-                <!-- 区间 -->
-                <Info class="item"
-                      content="请输入数字并设置开闭区间" />
-                <!-- ( -->
-                <el-button class="item"
-                           @click="conditionItem.conditionValue.leftSymbol=conditionItem.conditionValue.leftSymbol==='('?'[':'('">
-                  {{ conditionItem.conditionValue.leftSymbol }}</el-button>
-                <!-- 最小值 -->
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.minVal'"
-                              class="item mb-0"
-                              :rules="[{
-                                validator: validateNumber,trigger: 'blur'
-                              }]">
-                  <el-input-number v-model="conditionItem.conditionValue.minVal"
-                                   style="width:150px;"
-                                   class="item mb-0"
-                                   :min="-MAX_NUMBER"
-                                   :max="MAX_NUMBER"
-                                   placeholder="负无穷"
-                                   controls-position="right" />
-                  <b class="item mb-0">,</b>
-                  <!-- 最大值 -->
-                  <el-input-number v-model="conditionItem.conditionValue.maxVal"
-                                   style="width:150px;"
-                                   class="item mb-0"
-                                   :min="-MAX_NUMBER"
-                                   :max="MAX_NUMBER"
-                                   placeholder="正无穷"
-                                   controls-position="right" />
-                  <el-button @click="conditionItem.conditionValue.rightSymbol=conditionItem.conditionValue.rightSymbol===')'?']':')'">
-                    {{ conditionItem.conditionValue.rightSymbol }}</el-button>
-                </el-form-item>
-              </template>
-              <template v-else>
-                <!-- 非区间 -->
-                <Info class="item"
-                      content="请输入数字并选择或按回车键创建，可创建多个" />
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.numberArrVal'"
-                              class="item"
-                              :rules="[{
-                                required: true, message: '请输入值'
-                              }]">
-                  <el-select v-model="conditionItem.conditionValue.numberArrVal"
-                             class="long-text"
-                             multiple
-                             filterable
-                             remote
-                             allow-create
-                             default-first-option
-                             placeholder="请输入数字并创建条目"
-                             @change="handleChangeNumberInput">
-                    <el-option v-for="item in numberOptions"
-                               :key="item.value"
-                               style="max-width:300px;"
-                               :title="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
-              </template>
-              <div class="unit item">{{ conditionItem.unit }}</div>
-            </div>
+            <el-form-item :prop="'condition.' + ci + '.conditionValue.numberVal'"
+                          class="item"
+                          :rules="[{
+                            required: true, message: '请填写'
+                          }]">
+              <el-input-number v-model="conditionItem.conditionValue.numberVal"
+                               controls-position="right"
+                               :min="1"
+                               :max="10"
+                               @change="handleChangeNumberInput" />
+            </el-form-item>
           </template>
           <!-------------------------- 字符串型 -------------------------->
           <template v-if="conditionItem.type==='字符串型'">
-            <div v-if="conditionItem.compare!==''"
-                 class="item-box">
-              <!-- 单个输入框 -->
-              <template v-if="conditionItem.compare===0">
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.stringVal'"
-                              class="item"
-                              :rules="[{
-                                required: true, message: '请输入内容'
-                              }]">
-                  <el-input v-model="conditionItem.conditionValue.stringVal"
-                            placeholder="请输入内容" />
-                </el-form-item>
-              </template>
-              <template v-else>
-                <!-- 多个值 -->
-                <Info class="item"
-                      content="请输入内容并选择或按回车键创建，可创建多个" />
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.stringArrVal'"
-                              class="item"
-                              :rules="[{
-                                required: true, message: '请输入内容'
-                              }]">
-                  <el-select v-model="conditionItem.conditionValue.stringArrVal"
-                             class="long-text"
-                             multiple
-                             filterable
-                             remote
-                             allow-create
-                             default-first-option
-                             placeholder="请输入内容并创建条目"
-                             @change="handleChangeStringInput">
-                    <el-option v-for="item in stringOptions"
-                               :key="item.value"
-                               style="max-width:500px;"
-                               :title="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
-              </template>
-            </div>
+            <el-form-item :prop="'condition.' + ci + '.conditionValue.stringVal'"
+                          class="item"
+                          :rules="[{
+                            required: true, message: '请填写'
+                          }]">
+              <el-input v-model="conditionItem.conditionValue.stringVal"
+                        placeholder="请填写" />
+            </el-form-item>
           </template>
 
           <!-------------------------- 枚举型 -------------------------->
@@ -175,7 +86,6 @@
                             required: true, message: '请选择选项'
                           }]">
               <el-select v-model="conditionItem.conditionValue.selectVal"
-                         multiple
                          placeholder="请选择">
                 <el-option v-for="item of conditionItem.selectOpt"
                            :key="item.value"
@@ -187,21 +97,16 @@
           </template>
           <!-------------------------- 日期型 -------------------------->
           <template v-if="conditionItem.type==='日期型'">
-            <el-form-item :prop="'condition.' + ci + '.conditionValue.startDate'"
+            <el-form-item :prop="'condition.' + ci + '.conditionValue.dateVal'"
                           class="item"
                           :rules="[{
-                            validator: validateDate
+                            required: true, message: '请选择选项'
                           }]">
-              <el-date-picker v-model="conditionItem.conditionValue.startDate"
+              <el-date-picker v-model="conditionItem.conditionValue.dateVal"
                               class="item mb-0"
                               value-format="yyyy-MM-dd"
                               type="date"
-                              placeholder="从前" />
-              <span class="item mb-0">至</span>
-              <el-date-picker v-model="conditionItem.conditionValue.endDate"
-                              value-format="yyyy-MM-dd"
-                              type="date"
-                              placeholder="未来" />
+                              placeholder="请填写" />
             </el-form-item>
           </template>
           <!-- 删除按钮 -->
@@ -211,7 +116,7 @@
           <div v-if="ci !== condition.length - 1"
                class="and-or">
             <div class="text"
-                 @click="andOr(ci)">{{ conditionItem.andOrText }}</div>
+                 @click="andOr(ci)">{{ conditionItem.andOrText.label }}</div>
           </div>
         </div>
         <el-button v-if="condition.length < maxLength"
@@ -229,9 +134,8 @@
 </template>
 
 <script>
-import { getCustomerLabel } from '@/api/api'
+import { getCustomerLabel, getPeopleCount } from '@/api/api'
 import Info from '@/components/Info'
-import { DATA } from './json'
 import { MAX_NUMBER } from '@/utils'
 export default {
   components: {
@@ -267,10 +171,14 @@ export default {
       stringOptions: [],
       MAX_NUMBER,
       originData: [],
-      numberFlat: {}
+      numberFlat: {},
+      people: 0
     }
   },
   computed: {
+    id() {
+      return +this.$route.query.id
+    },
     tags() {
       return this.originData.map((n) => {
         return {
@@ -311,34 +219,39 @@ export default {
     chcekNumber(index) {
       this.$refs.form.validateField(`condition.${index}.conditionValue.minVal`)
     },
-    validateDate(rule, value, callback) {
-      const index = rule.field.split('.')[1]
-      if (!this.condition[index].conditionValue.startDate && !this.condition[index].conditionValue.endDate) {
-        callback('请选择开始时间或结束时间')
-      } else if (this.condition[index].conditionValue.startDate &&
-        this.condition[index].conditionValue.endDate &&
-        this.condition[index].conditionValue.startDate >= this.condition[index].conditionValue.endDate) {
-        callback('开始时间不能早于结束时间')
-      } else {
-        callback()
-      }
-    },
+    // validateDate(rule, value, callback) {
+    //   const index = rule.field.split('.')[1]
+    //   if (!this.condition[index].conditionValue.startDate && !this.condition[index].conditionValue.endDate) {
+    //     callback('请选择开始时间或结束时间')
+    //   } else if (this.condition[index].conditionValue.startDate &&
+    //     this.condition[index].conditionValue.endDate &&
+    //     this.condition[index].conditionValue.startDate >= this.condition[index].conditionValue.endDate) {
+    //     callback('开始时间不能早于结束时间')
+    //   } else {
+    //     callback()
+    //   }
+    // },
     validate(cb) {
       this.$refs.form.validate((valid) => {
         cb(valid)
       })
     },
     check() {
+      // this.$refs.form.validate((valid) => {
+      //   if (valid) {
+      //     this.$emit('check', this.condition)
+      //   }
+      // })
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$emit('check', this.condition)
+          this.$emit('check', this.transfer())
+          this.filter()
         }
       })
     },
     getRuleList() {
       getCustomerLabel().then(res => {
-        // this.originData = res.data
-        this.originData = DATA
+        this.originData = res.data
       })
     },
     // 数字型-非区间输入
@@ -368,7 +281,11 @@ export default {
     resetOpt(optValue) {
       if (!optValue) {
         return {
-          andOrText: '且'
+          // andOrText: '且'
+          andOrText: {
+            value: 1,
+            label: '且'
+          }
         }
       } else {
         const item = this.originData.find((n) => {
@@ -377,13 +294,7 @@ export default {
         let conditionValue
         if (item.type === '数值型') {
           conditionValue = {
-            // 非区间的值（数组）
-            numberArrVal: [],
-            // 区间值 objs
-            leftSymbol: '(',
-            minVal: undefined,
-            maxVal: undefined,
-            rightSymbol: ')'
+            numberVal: null
           }
         }
         if (item.type === '字符串型') {
@@ -393,16 +304,14 @@ export default {
         }
         if (item.type === '枚举型') {
           conditionValue = {
-            selectVal: []
+            selectVal: ''
           }
         }
         if (item.type === '日期型') {
           conditionValue = {
-            startDate: '',
-            endDate: ''
+            dateVal: ''
           }
         }
-        // const conditionValue = item.type === '日期型' ? { startDate: '', endDate: '' } : null
         const data = {
           // 规则选中选项的值
           conditionSelect: item.id,
@@ -416,21 +325,38 @@ export default {
           compare: 0,
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
-          // // 数字型-小数点精度
-          // precision: item.precision || 0,
-          // // 数字型-最小值
-          // min: item.min || 0,
-          // // 数字型-最大值
-          // max: item.max || undefined,
           // 数字型-单位
           unit: item.unit,
           // 规则的值
           conditionValue,
-          andOrText: '且'
+          // andOrText: '且'
+          andOrText: {
+            value: 1,
+            label: '且'
+          }
         }
         return data
       }
     },
+    transfer() {
+      const data = this.condition.map((n) => {
+        return {
+          tagId: n.conditionSelect,
+          // contentWithRelation: n.conditionSelect
+          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
+          combineRelation: n.andOrText.value
+        }
+      })
+      return data
+    },
+    // 筛选出的客户人数
+    filter() {
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transfer() }).then(res => {
+        this.people = res.data.count
+        console.log(this.people)
+      })
+    },
+
     tagsInit(gi, optValue) {
       /**
        * gi: 客群的index
@@ -457,7 +383,8 @@ export default {
       this.$refs.form.clearValidate('condition')
     },
     andOr(i) {
-      this.condition[i].andOrText = this.condition[i].andOrText === '且' ? '或' : '且'
+      // this.condition[i].andOrText = this.condition[i].andOrText === '且' ? '或' : '且'
+      this.condition[i].andOrText = this.condition[i].andOrText.label === '且' ? { value: 2, label: '或' } : { value: 1, label: '且' }
     },
     getVal() {
       return this.condition

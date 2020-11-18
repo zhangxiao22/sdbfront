@@ -20,8 +20,10 @@
     </shun-table>
     <el-dialog title="分配角色"
                :visible.sync="showDialog">
-      <el-form :model="form">
+      <el-form ref="regFormRef"
+               :model="form">
         <el-form-item label="选择角色："
+                      prop="rule"
                       label-width="110px">
           <el-select v-model="form.rule"
                      style="width:90%;"
@@ -136,6 +138,7 @@ export default {
       }]
     },
     edit(id) {
+      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.showDialog = true
     }
   }

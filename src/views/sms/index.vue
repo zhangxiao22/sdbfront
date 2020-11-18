@@ -239,7 +239,7 @@ export default {
         },
         {
           prop: 'attributionUseCaseList',
-          label: '话术用例',
+          label: '短信用例',
           slot: true
         },
         {

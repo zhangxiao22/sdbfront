@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { getUseCaseList } from '@/api/api'
+import { getUseCaseList, setUseCasePriority } from '@/api/api'
 import Sortable from 'sortablejs'
 
 export default {
@@ -52,11 +52,10 @@ export default {
   mounted() {
     const _this = this
     const el = document.querySelector('#use-case-table tbody')
-    var sortable = Sortable.create(el, {
+    Sortable.create(el, {
       onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        console.log(newIndex, oldIndex)
-        // const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
-        // _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
+        const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
+        _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
       }
     })
   },
@@ -65,20 +64,34 @@ export default {
       return row.id
     },
     getList() {
-      getUseCaseList({ pageNo: 1, pageSize: 1000 }).then(res => {
+      getUseCaseList({ pageNo: 1, pageSize: 1000, effect: true }).then(res => {
         this.tableData = res.data.resultList
+      })
+    },
+    saveData() {
+      const data = {}
+      data.priorityData = this.tableData
+      setUseCasePriority(data).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '修改成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
       })
     }
   }
 }
 </script>
-
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
 .container {
   ::v-deep .el-table tr {
     cursor: move;
+  }
+  ::v-deep .el-table tr.sortable-chosen.sortable-ghost td {
+    background: #ccffff;
   }
 }
 </style>

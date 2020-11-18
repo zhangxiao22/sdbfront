@@ -132,6 +132,15 @@ export function getTargetList() {
   })
 }
 
+// 获取用例优先级
+export function setUseCasePriority(data) {
+  return request({
+    url: '/event/setUseCasePriority',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件注册 ************************************************************/
 // 获取事件简介
 export function getEventInfo(params) {
