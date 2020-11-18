@@ -151,7 +151,6 @@ export default {
                 duration: '3000'
               })
             }
-          }).catch(() => {
           }).finally(() => {
             this.$emit('update:loading', false)
           })

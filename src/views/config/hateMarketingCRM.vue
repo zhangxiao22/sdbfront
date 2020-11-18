@@ -2,7 +2,6 @@
   <div class="container">
     <shun-table ref="table"
                 title="厌恶营销名单"
-                :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
@@ -170,11 +169,14 @@ export default {
       default() {
         return []
       }
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      loading: false,
       currentPage: 2,
       pageSize: 10,
       batchUploadFile,
@@ -310,14 +312,13 @@ export default {
         pageSize: this.pageSize,
         category: this.category
       }, this.searchForm)
+      this.$emit('update:loading', true)
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
-      this.loading = true
       getHateMarketingList(data).then(res => {
         this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
-        this.loading = false
-      }).catch(() => {
-        this.loading = false
+      }).finally(() => {
+        this.$emit('update:loading', false)
       })
     }
 

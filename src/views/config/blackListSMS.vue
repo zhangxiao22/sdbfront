@@ -2,7 +2,6 @@
   <div class="container">
     <shun-table ref="table"
                 title="短信黑名单"
-                :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
@@ -171,11 +170,14 @@ export default {
       default() {
         return []
       }
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
     return {
-      loading: false,
       currentPage: 2,
       pageSize: 10,
       batchUploadFile,
@@ -312,13 +314,12 @@ export default {
         category: this.category
       }, this.searchForm)
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
-      this.loading = true
+      this.$emit('update:loading', true)
       getHateMarketingList(data).then(res => {
         this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
-        this.loading = false
       }).catch(() => {
-        this.loading = false
+        this.$emit('update:loading', false)
       })
     }
 

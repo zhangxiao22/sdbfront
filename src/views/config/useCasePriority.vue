@@ -34,6 +34,12 @@ import Sortable from 'sortablejs'
 export default {
   components: {
   },
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   data() {
     return {
@@ -73,7 +79,7 @@ export default {
     saveData() {
       const data = {}
       data.priorityData = this.tableData
-      this.loading = true
+      this.$emit('update:loading', true)
       setUseCasePriority(data).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -82,10 +88,9 @@ export default {
             duration: '3000'
           })
         }
-      }).catch(() => {
       }).finally(() => {
         this.getList()
-        this.loading = false
+        this.$emit('update:loading', false)
       })
     }
   }

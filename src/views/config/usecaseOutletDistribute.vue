@@ -129,7 +129,6 @@ export default {
     this.useCaseList().then(() => {
       this.getDetail()
     })
-    console.log(this.getDetail())
   },
   mounted() {
   },
@@ -163,7 +162,6 @@ export default {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.$emit('update:loading', true)
-
           insertOutletAllotBatch(this.getData).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -172,7 +170,6 @@ export default {
                 duration: '3000'
               })
             }
-          }).catch(() => {
           }).finally(() => {
             this.$emit('update:loading', false)
           })
@@ -227,9 +224,11 @@ export default {
 
     handleSelectUseCase(val, i) {
       this.$refs.regFormRef.validateField(`useCaseOutlets.${i}.useCase`)
+      this.$refs['regFormRef'].clearValidate()
     },
     handleSelectUseCaseOutlet(val, i) {
       this.$refs.regFormRef.validateField(`useCaseOutlets.${i}.outlet`)
+      this.$refs['regFormRef'].clearValidate()
     },
 
     validateSame(rule, value, callback) {
