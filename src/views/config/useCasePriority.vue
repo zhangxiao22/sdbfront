@@ -83,9 +83,9 @@ export default {
             type: 'success',
             duration: '3000'
           })
-          this.loading = false
         }
       }).catch(() => {
+      }).finally(() => {
         this.getList()
         this.loading = false
       })
