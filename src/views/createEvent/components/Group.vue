@@ -201,10 +201,11 @@ export default {
   },
   created() {
     // this.tagsInit(0, 0)
-    this.getRuleList()
-    if (this.id) {
-      this.getDetail()
-    }
+    this.getRuleList().then(() => {
+      if (this.id) {
+        this.getDetail()
+      }
+    })
   },
 
   methods: {
@@ -253,8 +254,11 @@ export default {
       })
     },
     getRuleList() {
-      getCustomerLabel().then(res => {
-        this.originData = res.data
+      return new Promise((resolve, reject) => {
+        getCustomerLabel().then(res => {
+          this.originData = res.data
+          resolve()
+        })
       })
     },
     // 数字型-非区间输入

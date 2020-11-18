@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { getUseCaseForEvent } from '@/api/api'
+import { getUseCaseForEvent, getOutletList, insertOutletAllotBatch, getOutletAllot } from '@/api/api'
 import Info from '@/components/Info'
 
 export default {
@@ -99,40 +99,21 @@ export default {
         ]
       },
       useCaseOpt: [],
-      useCaseOutletOpt: [{
-        value: '选项1',
-        label: '黄金糕',
-        disabled: false
-      }, {
-        value: '选项2',
-        label: '双皮奶',
-        disabled: false
-      }, {
-        value: '选项3',
-        label: '蚵仔煎',
-        disabled: false
-      }, {
-        value: '选项4',
-        label: '龙须面',
-        disabled: false
-      }, {
-        value: '选项5',
-        label: '北京烤鸭',
-        disabled: false
-      }]
+      useCaseOutletOpt: []
     }
   },
   computed: {
     // 获取数据
     getData() {
       const data = {}
-      data.usecaseOutletList = this.form.useCaseOutlets.map(n => {
+      data.outletAllotList = this.form.useCaseOutlets.map(n => {
         return {
-          useCase: n.useCase,
-          outlet: n.outlet,
-          value: n.value
+          useCaseId: n.useCase,
+          outletId: n.outlet,
+          proportion: n.value
         }
       })
+      data.category = 1
       return data
     }
   },
@@ -140,18 +121,11 @@ export default {
 
   },
   created() {
-    // this.useCaseList().then(() => {
-    //   this.outletList().then(() => {
-    //     if (this.id) {
-    //       this.getDetail()
-    //     }
-    //   })
-    // })
+    this.outletsList()
     this.useCaseList().then(() => {
-      if (this.id) {
-        this.getDetail()
-      }
+      this.getDetail()
     })
+    console.log(this.getDetail())
   },
   mounted() {
   },
@@ -169,50 +143,34 @@ export default {
     },
 
     getDetail() {
-      // getGlobalOutletDistribute({ id: this.id }).then(res => {
-      //   // 获取网点加分配比例值
-      //   this.form.useCaseOutlets = res.data.usecaseOutletList.map(item => {
-      //     let obj = this.useCaseOpt.find(n => {
-      //       if (n.value === item.useCase) {
-      //         obj = n
-      //         return true
-      //       }
-      //     })
-      //     let obj = this.useCaseOutletOpt.find(n => {
-      //       if (n.value === item.outlet) {
-      //         obj = n
-      //         return true
-      //       }
-      //     })
-      //     return Object.assign({}, obj, {
-      //       useCase: item.useCase,
-      //       outlet: item.outlet,
-      //       value: item.value
-      //     })
-      //   })
-      // })
+      getOutletAllot({ category: 1 }).then(res => {
+        // 获取用例-网点-分配比例值
+        this.form.useCaseOutlets = res.data.map(item => {
+          return {
+            useCase: item.useCaseId,
+            outlet: item.outletId,
+            value: item.proportion
+          }
+        })
+      })
     },
 
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          console.log('success')
-          // let ajax
-          // if (this.id) {
-          //   ajax = editUseCase
-          // } else {
-          //   ajax = saveUseCase
-          // }
-          // ajax(this.getData).then(res => {
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //   }
-          // })
+          insertOutletAllotBatch(this.getData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          }).catch(() => {
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
@@ -231,21 +189,23 @@ export default {
         })
       })
     },
-    // // 获取用例网点
-    // useCaseOutletList() {
-    //   return new Promise((resolve, reject) => {
-    //     // getUseCaseForEvent().then(res => {
-    //     //   this.useCaseOutletOpt = res.data.map(n => {
-    //     //     return {
-    //     //       label: n.name,
-    //     //       value: n.id,
-    //     //       disabled: false
-    //     //     }
-    //     //   })
-    //     //   resolve()
-    //     // })
-    //   })
-    // },
+
+    // 获取用例网点
+    outletsList() {
+      return new Promise(resolve => {
+        // 全局网点 category:0
+        getOutletList().then(res => {
+          this.useCaseOutletOpt = res.data.map(n => {
+            return {
+              label: n.name,
+              value: n.id,
+              disabled: false
+            }
+          })
+          resolve()
+        })
+      })
+    },
 
     // 用例网点
     addUseCaseOutlet() {

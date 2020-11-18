@@ -66,7 +66,7 @@
 </template>
 
 <script>
-import { getOutletsList } from '@/api/api'
+import { getOutletAllot, insertOutletAllotBatch, getOutletList } from '@/api/api'
 import Info from '@/components/Info'
 
 export default {
@@ -80,43 +80,24 @@ export default {
         outlets: [
           {
             item: '',
-            value: ''
+            proportion: ''
           }
         ]
       },
-      outletOpt: [{
-        value: '选项1',
-        label: '黄金糕',
-        disabled: false
-      }, {
-        value: '选项2',
-        label: '双皮奶',
-        disabled: false
-      }, {
-        value: '选项3',
-        label: '蚵仔煎',
-        disabled: false
-      }, {
-        value: '选项4',
-        label: '龙须面',
-        disabled: false
-      }, {
-        value: '选项5',
-        label: '北京烤鸭',
-        disabled: false
-      }]
+      outletOpt: []
     }
   },
   computed: {
     // 获取数据
     getData() {
       const data = {}
-      data.globalOutletList = this.form.outlets.map(n => {
+      data.outletAllotList = this.form.outlets.map(n => {
         return {
-          select: n.item,
-          value: n.value
+          outletId: n.item,
+          proportion: n.value
         }
       })
+      data.category = 0
       return data
     }
   },
@@ -125,9 +106,7 @@ export default {
   },
   created() {
     this.outletsList().then(() => {
-      if (this.id) {
-        this.getDetail()
-      }
+      this.getDetail()
     })
   },
   mounted() {
@@ -145,30 +124,22 @@ export default {
       })
     },
     getDetail() {
-      // getGlobalOutletDistribute({ id: this.id }).then(res => {
-      //   // 获取网点加分配比例值
-      //   this.form.outlets = res.data.achieveList.map(item => {
-      //     let obj = this.outletOpt.find(n => {
-      //       if (n.value === item.select) {
-      //         obj = n
-      //         return true
-      //       }
-      //     })
-      //     return Object.assign({}, obj, {
-      //       item: item.select,
-      //       value: item.value
-      //     })
-      //   })
-      //   this.resetOutLet()
-      // })
+      getOutletAllot({ category: 0 }).then(res => {
+        // 获取网点加分配比例值
+        this.form.outlets = res.data.map(item => {
+          return {
+            item: item.outletId,
+            value: item.proportion
+          }
+        })
+        this.resetOutLet()
+      })
     },
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          let ajax
-
-          ajax(this.getData).then(res => {
+          insertOutletAllotBatch(this.getData).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -176,6 +147,9 @@ export default {
                 duration: '3000'
               })
             }
+          }).catch(() => {
+          }).finally(() => {
+            this.buttonLoading = false
           })
         }
       })
@@ -184,19 +158,17 @@ export default {
     // 获取网点
     outletsList() {
       return new Promise(resolve => {
-        // getOutletsList().then(res => {
-        //   this.targetOpt = res.data.globalOutletList.map(n => {
-        //     return {
-        //       // 目标名称
-        //       label: n.name,
-        //       // 目标值
-        //       value: n.id,
-        //       // 是否可选
-        //       disabled: false
-        //     }
-        //   })
-        //   resolve()
-        // })
+        // 全局网点 category:0
+        getOutletList().then(res => {
+          this.outletOpt = res.data.map(n => {
+            return {
+              label: n.name,
+              value: n.id,
+              disabled: false
+            }
+          })
+          resolve()
+        })
       })
     },
 
