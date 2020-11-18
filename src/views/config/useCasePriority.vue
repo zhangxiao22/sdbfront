@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { getUseCaseList } from '@/api/api'
+import { getUseCaseList, setUseCasePriority } from '@/api/api'
 import Sortable from 'sortablejs'
 
 export default {
@@ -56,6 +56,25 @@ export default {
       onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
         const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
         _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
+        const priorityData = []
+        for (let i = 0; i < _this.tableData.length; i++) {
+          priorityData[i] = {
+            priority: i,
+            id: _this.tableData[i].id
+          }
+        }
+        if (newIndex !== oldIndex) {
+          setUseCasePriority(priorityData).then(res => {
+            if (res.code === 200) {
+              _this.$message({
+                message: '修改成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          })
+          console.log(priorityData)
+        }
       }
     })
   },
@@ -64,7 +83,7 @@ export default {
       return row.id
     },
     getList() {
-      getUseCaseList({ pageNo: 1, pageSize: 1000 }).then(res => {
+      getUseCaseList({ pageNo: 1, pageSize: 1000, effect: true }).then(res => {
         this.tableData = res.data.resultList
       })
     }

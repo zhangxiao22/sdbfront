@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="1"
+             value="3"
              type="border-card"
              style="height: 100%;">
       <el-tab-pane label="防打扰">
