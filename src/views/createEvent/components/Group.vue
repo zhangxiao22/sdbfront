@@ -134,7 +134,7 @@
 </template>
 
 <script>
-import { getCustomerLabel, getPeopleCount } from '@/api/api'
+import { getCustomerLabel, getPeopleCount, getGroup } from '@/api/api'
 import Info from '@/components/Info'
 import { MAX_NUMBER } from '@/utils'
 export default {
@@ -202,6 +202,9 @@ export default {
   created() {
     // this.tagsInit(0, 0)
     this.getRuleList()
+    if (this.id) {
+      this.getDetail()
+    }
   },
 
   methods: {
@@ -348,6 +351,40 @@ export default {
         }
       })
       return data
+    },
+    // 获取规则信息
+    getDetail() {
+      getGroup({ baseId: this.id }).then(res => {
+        this.fullData = res.data.abstractDetail.tagList
+        this.condition = this.fullData.map((n) => {
+          return {
+            conditionSelect: n.tagId,
+            tagContentUnitVOList: n.tagContentUnitVOList,
+            andOrText: n.combineRelation
+          }
+        })
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.YEAR_INCOME') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { numberVal: n.content })
+          })
+        }
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.VIP_LEVEL') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { numberVal: n.content })
+          })
+        }
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.IS_MALE') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { selectVal: n.content })
+          })
+        }
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.VIP_LEVEL1') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { dateVal: n.content })
+          })
+        }
+      }).catch(() => {
+      })
     },
     // 筛选出的客户人数
     filter() {

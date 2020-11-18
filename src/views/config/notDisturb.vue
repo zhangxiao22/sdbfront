@@ -3,7 +3,7 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"
-             label-width="200px"
+             label-width="300px"
              class="reg-form">
       <el-form-item prop="intervalDays"
                     label="防打扰间隔天数：">
@@ -14,49 +14,52 @@
                          :step="5" />
         <span class="unit">天</span>
       </el-form-item>
-      <el-form-item prop="lowerAge"
+      <el-form-item prop="minAge"
                     label="年龄下限：">
-        <el-input-number v-model="form.lowerAge"
+        <el-input-number v-model="form.minAge"
                          controls-position="right"
                          :min="1"
                          :max="200" />
         <span class="unit">岁</span>
       </el-form-item>
-      <el-form-item prop="upperAge"
+      <el-form-item prop="maxAge"
+                    :rules="[{
+                      validator: validateNumber,trigger: 'blur'
+                    }]"
                     label="年龄上限：">
-        <el-input-number v-model="form.upperAge"
+        <el-input-number v-model="form.maxAge"
                          controls-position="right"
-                         :min="form.lowerAge"
+                         :min="form.minAge"
                          :max="200" />
         <span class="unit">岁</span>
       </el-form-item>
-      <el-form-item prop="hateIntervalDay"
+      <el-form-item prop="hateSaleIntervalDays"
                     label="厌恶营销防打扰间隔天数：">
-        <el-input-number v-model="form.hateIntervalDay"
+        <el-input-number v-model="form.hateSaleIntervalDays"
                          controls-position="right"
                          :min="1"
                          :max="1000"
                          :step="5" />
         <span class="unit">天</span>
       </el-form-item>
-      <el-form-item prop="notOneself"
+      <el-form-item prop="emptyNumbers"
                     label="勾选号码空号次数：">
-        <el-input-number v-model="form.notOneself"
+        <el-input-number v-model="form.emptyNumbers"
                          controls-position="right"
                          :min="1"
                          :max="100" />
         <span class="unit">次</span>
       </el-form-item>
-      <el-form-item prop="notOneselfIntervalDays"
+      <el-form-item prop="emptyNumbersIntervalDays"
                     label="号码空号防打扰间隔天数：">
-        <el-input-number v-model="form.notOneselfIntervalDays"
+        <el-input-number v-model="form.emptyNumbersIntervalDays"
                          controls-position="right"
                          :min="1"
                          :max="1000"
                          :step="5" />
         <span class="unit">天</span>
       </el-form-item>
-      <el-form-item prop="smsIntervalDays"
+      <!-- <el-form-item prop="smsIntervalDays"
                     label="短信黑名单持续天数：">
         <el-input-number v-model="form.smsIntervalDays"
                          controls-position="right"
@@ -64,6 +67,38 @@
                          :max="1000"
                          :step="5" />
         <span class="unit">天</span>
+      </el-form-item> -->
+      <el-form-item prop="adviserWeeklyDistribution"
+                    label="每周线索分配数量（理财顾问）：">
+        <el-input-number v-model="form.adviserWeeklyDistribution"
+                         controls-position="right"
+                         :min="1"
+                         :max="100" />
+        <span class="unit">条</span>
+      </el-form-item>
+      <el-form-item prop="personalWeeklyDistribution"
+                    label="每周线索分配数量（个人客户经理）：">
+        <el-input-number v-model="form.personalWeeklyDistribution"
+                         controls-position="right"
+                         :min="1"
+                         :max="100" />
+        <span class="unit">条</span>
+      </el-form-item>
+      <el-form-item prop="networkManagerWeeklyDistribution"
+                    label="每周线索分配数量(网点经理）：">
+        <el-input-number v-model="form.networkManagerWeeklyDistribution"
+                         controls-position="right"
+                         :min="1"
+                         :max="100" />
+        <span class="unit">条</span>
+      </el-form-item>
+      <el-form-item prop="networkClerkWeeklyDistribution"
+                    label="每周线索分配数量（网点柜员）：">
+        <el-input-number v-model="form.networkClerkWeeklyDistribution"
+                         controls-position="right"
+                         :min="1"
+                         :max="100" />
+        <span class="unit">条</span>
       </el-form-item>
       <el-form-item>
         <el-button type="primary"
@@ -79,7 +114,7 @@
   </div>
 </template>
 <script>
-import { } from '@/api/api'
+import { getNoDisturb, updateNoDisturb } from '@/api/api'
 
 export default {
   components: {
@@ -92,12 +127,15 @@ export default {
       buttonLoading: false,
       form: {
         intervalDays: null,
-        lowerAge: null,
-        upperAge: null,
-        hateIntervalDay: null,
-        notOneself: null,
-        notOneselfIntervalDays: null,
-        smsIntervalDays: null
+        minAge: null,
+        maxAge: 0,
+        hateSaleIntervalDays: null,
+        emptyNumbers: null,
+        emptyNumbersIntervalDays: null,
+        adviserWeeklyDistribution: null,
+        personalWeeklyDistribution: null,
+        networkManagerWeeklyDistribution: null,
+        networkClerkWeeklyDistribution: null
       }
       // marks: {
       //   18: '18岁',
@@ -109,41 +147,47 @@ export default {
   },
   computed: {
     getData() {
-      const data = {}
-      data.intervalDays = this.form.intervalDays
-      data.lowerAge = this.form.lowerAge
-      data.upperAge = this.form.upperAge
-      data.hateIntervalDay = this.form.hateIntervalDay
-      data.notOneself = this.form.notOneself
-      data.notOneselfIntervalDays = this.form.notOneselfIntervalDays
-      data.smsIntervalDays = this.form.smsIntervalDays
+      const data = JSON.parse(JSON.stringify(this.form))
       return data
     }
   },
 
   watch: {},
   created() {
+    this.getList()
   },
   methods: {
+    getList() {
+      getNoDisturb().then((res) => {
+        this.form = res.data
+      })
+    },
     onSubmit() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          // addCustomerToBlackList([this.getData]).then(res => {
-          //   this.buttonLoading = false
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.resetAll()
-          //   }
-          // }).catch(() => {
-          //   this.buttonLoading = false
-          // })
+          updateNoDisturb(this.getData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          }).catch(() => {
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
+    },
+    validateNumber(rule, value, callback) {
+      if (Number(value) < this.form.minAge) {
+        callback(new Error('年龄上限必须大于或等于年龄下限'))
+      } else {
+        callback()
+      }
     },
     reset() {
       this.$refs['regFormRef'].resetFields()

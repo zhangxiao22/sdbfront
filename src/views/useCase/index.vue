@@ -64,7 +64,17 @@
         </div>
       </template>
       <template v-slot:caseTargetSlot="scope">
-        <el-tooltip placement="top-start">
+        <template v-if="scope.row.achieveList && scope.row.achieveList.length">
+          <div v-for="(item,i) of scope.row.achieveList"
+               :key="i"
+               style="margin:5px 0;">
+            {{ item.name }} {{ item.relation.label }} {{ item.value }} {{ item.unit.label }}
+          </div>
+        </template>
+        <div v-else>
+          无
+        </div>
+        <!-- <el-tooltip placement="top-start">
           <div slot="content">
             <div v-for="(item,i) of scope.row.achieveList"
                  :key="i"
@@ -75,8 +85,7 @@
           <div class="hover-text">
             {{ scope.row.achieveList.length }}个目标
           </div>
-        </el-tooltip>
-
+        </el-tooltip> -->
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
@@ -163,14 +172,14 @@ export default {
         {
           prop: 'name',
           label: '状态/用例名称',
-          minWidth: 200,
+          minWidth: 100,
           notShowOverflowTooltip: true,
           slot: true
         },
         {
           prop: 'caseTarget',
           label: '目标',
-          width: 100,
+          minWidth: 200,
           notShowOverflowTooltip: true,
           slot: true
         },
