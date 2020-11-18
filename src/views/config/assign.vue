@@ -14,7 +14,10 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF"
-               @click="edit(scope.row)">修改角色</div>
+               @click="edit(scope.row)">修改岗位</div>
+          <div class="btn"
+               style="color:#1890FF"
+               @click="edit(scope.row)">修改人员</div>
         </div>
       </template>
     </shun-table>
@@ -82,12 +85,16 @@ export default {
       },
       tableColumnList: [
         {
+          prop: 'role',
+          label: '角色'
+        },
+        {
           prop: 'post',
           label: '岗位'
         },
         {
-          prop: 'role',
-          label: '角色'
+          prop: 'people',
+          label: '人员'
         },
         {
           prop: 'operate',
@@ -125,16 +132,20 @@ export default {
     getList() {
       this.tableData = [{
         post: '岗位1',
-        role: '普通员工'
+        role: '普通员工',
+        people: 6
       }, {
         post: '岗位2',
-        role: '管理员'
+        role: '管理员',
+        people: 6
       }, {
         post: '业务主管',
-        role: '审批员'
+        role: '审批员',
+        people: 6
       }, {
         post: '行长',
-        role: '超级管理员'
+        role: '超级管理员',
+        people: 6
       }]
     },
     edit(id) {
