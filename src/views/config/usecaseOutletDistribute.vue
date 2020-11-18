@@ -68,7 +68,6 @@
         <el-button icon="el-icon-document"
                    type="primary"
                    style="width:100px;"
-                   :loading="buttonLoading"
                    @click="save">保存</el-button>
         <el-button icon="el-icon-refresh"
                    style="width:100px;"
@@ -86,9 +85,14 @@ export default {
   components: {
     Info
   },
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
-      buttonLoading: false,
       form: {
         useCaseOutlets: [
           {
@@ -138,7 +142,7 @@ export default {
       }]
       this.$nextTick(() => {
         this.$refs['regFormRef'].resetFields()
-        this.buttonLoading = false
+        this.$emit('update:loading', false)
       })
     },
 
@@ -158,7 +162,8 @@ export default {
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
-          this.buttonLoading = true
+          this.$emit('update:loading', true)
+
           insertOutletAllotBatch(this.getData).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -169,7 +174,7 @@ export default {
             }
           }).catch(() => {
           }).finally(() => {
-            this.buttonLoading = false
+            this.$emit('update:loading', false)
           })
         }
       })
