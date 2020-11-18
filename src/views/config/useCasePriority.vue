@@ -3,6 +3,7 @@
   <div class="container">
     <el-table id="use-case-table"
               :data="tableData"
+              :loading="loading"
               size="medium"
               stripe
               :row-key="rowKey"
@@ -56,6 +57,9 @@ export default {
       onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
         const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
         _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
+        if (newIndex !== oldIndex) {
+          _this.saveData()
+        }
       }
     })
   },
@@ -71,6 +75,7 @@ export default {
     saveData() {
       const data = {}
       data.priorityData = this.tableData
+      this.loading = true
       setUseCasePriority(data).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -78,7 +83,11 @@ export default {
             type: 'success',
             duration: '3000'
           })
+          this.loading = false
         }
+      }).catch(() => {
+        this.getList()
+        this.loading = false
       })
     }
   }
