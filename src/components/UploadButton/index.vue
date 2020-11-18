@@ -90,7 +90,6 @@ export default {
         this.uploading = true
         Notification.closeAll()
         this.uploadMethod(formData).then(res => {
-          this.uploading = false
           if (res.data.length) {
             this.$notify({
               title: '数据错误',
@@ -111,8 +110,9 @@ export default {
         }).catch(() => {
           // 上传失败
           this.$emit('afterUploadFail')
-          this.uploading = false
           this.resetFile()
+        }).finally(() => {
+          this.uploading = false
         })
       }
     },

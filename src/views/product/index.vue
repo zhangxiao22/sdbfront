@@ -287,8 +287,10 @@ export default {
           return Object.assign({}, n, n.extraField)
         })
         this.total = res.pagination.totalItemCount
-        this.loading = false
+        // this.loading = false
       }).catch(() => {
+        // this.loading = false
+      }).finally(() => {
         this.loading = false
       })
     }

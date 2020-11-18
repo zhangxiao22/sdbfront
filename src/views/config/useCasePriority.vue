@@ -54,8 +54,9 @@ export default {
     const el = document.querySelector('#use-case-table tbody')
     var sortable = Sortable.create(el, {
       onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
-        _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
+        console.log(newIndex, oldIndex)
+        // const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
+        // _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
       }
     })
   },
