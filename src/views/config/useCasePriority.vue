@@ -3,7 +3,6 @@
   <div class="container">
     <el-table id="use-case-table"
               :data="tableData"
-              :loading="loading"
               size="medium"
               stripe
               :row-key="rowKey"
@@ -38,7 +37,6 @@ export default {
 
   data() {
     return {
-      loading: false,
       tableData: []
     }
   },
