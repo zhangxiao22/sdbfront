@@ -223,62 +223,31 @@ export default {
     },
 
     handleSelectUseCase(val, index) {
-      let hasSame = false
-      let errIndex
-      const arr = this.form.useCaseOutlets
-      for (let i = 0; i < arr.length - 1; i++) {
-        for (let j = i + 1; j < arr.length; j++) {
-          // console.log('index:', index, arr[index].useCase, arr[index].outlet)
-          console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
-          if (
-            (arr[i].useCase && arr[j].useCase) &&
-            (arr[i].useCase === arr[j].useCase) &&
-            (arr[i].outlet && arr[j].outlet) &&
-            (arr[i].outlet === arr[j].outlet)
-          ) {
-            errIndex = i
-            hasSame = true
-            break
-          }
-        }
-      }
-      if (hasSame) {
-        this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.useCase`)
-        this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.outlet`)
-      }
+      this.$refs.regFormRef.validate()
     },
     handleSelectUseCaseOutlet(val, i) {
-      // this.$refs.regFormRef.validateField(`useCaseOutlets.${i}.outlet`)
-      // this.$refs['regFormRef'].clearValidate()
+      this.$refs.regFormRef.validate()
     },
 
     validateSame(rule, value, callback) {
-      const index = rule.field.split('.')[1]
-      // console.log(index, value)
+      const index = +rule.field.split('.')[1]
       let hasSame = false
-      let errIndex
       const arr = this.form.useCaseOutlets
-      for (let i = 0; i < arr.length - 1; i++) {
-        for (let j = i + 1; j < arr.length; j++) {
-          // console.log('index:', index, arr[index].useCase, arr[index].outlet)
-          console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
-          if (
-            (arr[i].useCase && arr[j].useCase) &&
-            (arr[i].useCase === arr[j].useCase) &&
-            (arr[i].outlet && arr[j].outlet) &&
-            (arr[i].outlet === arr[j].outlet)
-          ) {
-            errIndex = i
-            hasSame = true
-            break
-          }
+      for (let i = 0; i < arr.length; i++) {
+        console.log('index:', index, arr[index].useCase, arr[index].outlet)
+        console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
+        if (
+          (i !== index) &&
+          (arr[i].useCase && arr[index].useCase) &&
+          (arr[i].useCase === arr[index].useCase) &&
+          (arr[i].outlet && arr[index].outlet) &&
+          (arr[i].outlet === arr[index].outlet)
+        ) {
+          hasSame = true
+          break
         }
       }
       if (hasSame) {
-        // if (index !== errIndex) {
-        // this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.useCase`)
-        // this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.outlet`)
-        // }
         callback(new Error('存在相同的用例和网点组合'))
       } else {
         // this.$refs['regFormRef'].clearValidate(`useCaseOutlets.${index}.useCase`)

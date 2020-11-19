@@ -93,7 +93,7 @@ export default {
           if (res.data.length) {
             this.$notify({
               title: '数据错误',
-              message: (res.data).join('<br/>'),
+              message: res.data.join('<br/>'),
               dangerouslyUseHTMLString: true,
               type: 'warning',
               duration: 0

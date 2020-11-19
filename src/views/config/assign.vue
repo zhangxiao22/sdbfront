@@ -10,14 +10,21 @@
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
+      <template v-slot:main-buttons>
+        <el-button class="button"
+                   type="primary"
+                   icon="el-icon-plus"
+                   plain>
+          新增岗位
+        </el-button>
+      </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn"
-               style="color:#1890FF"
-               @click="edit(scope.row)">修改岗位</div>
+               style="color:#1890FF;"
+               @click="edit(scope.row)">编辑</div>
           <div class="btn"
-               style="color:#1890FF"
-               @click="edit(scope.row)">修改人员</div>
+               style="color:#f56c6c;">删除</div>
         </div>
       </template>
     </shun-table>
@@ -25,6 +32,13 @@
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                :model="form">
+        <el-form-item label="角色名称："
+                      prop="name"
+                      label-width="110px">
+          <el-input v-model="form.name"
+                    style="width:90%;"
+                    placeholder="请输入名称" />
+        </el-form-item>
         <el-form-item label="选择角色："
                       prop="rule"
                       label-width="110px">
@@ -81,20 +95,21 @@ export default {
       loading: false,
       showDialog: false,
       form: {
+        name: '',
         rule: ''
       },
       tableColumnList: [
         {
-          prop: 'role',
-          label: '角色'
+          prop: 'post',
+          label: '岗位名称'
         },
         {
-          prop: 'post',
-          label: '岗位'
+          prop: 'role',
+          label: '权限'
         },
         {
           prop: 'people',
-          label: '人员'
+          label: '岗位人数'
         },
         {
           prop: 'operate',
