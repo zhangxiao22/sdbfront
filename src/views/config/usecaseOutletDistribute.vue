@@ -14,7 +14,7 @@
              :key="i"
              class="block-item">
           <el-form-item :prop="'useCaseOutlets.'+i+'.useCase'"
-                        :rules="[{required: true, message: '请选择用例', trigger: 'change'},
+                        :rules="[{required: true, message: '请选择用例'},
                                  {validator: validateSame}]">
             <el-select v-model="caseOutletItem.useCase"
                        placeholder="请选择用例"
@@ -222,34 +222,67 @@ export default {
       this.form.useCaseOutlets.splice(i, 1)
     },
 
-    handleSelectUseCase(val, i) {
-      this.$refs.regFormRef.validateField(`useCaseOutlets.${i}.useCase`)
-      this.$refs['regFormRef'].clearValidate()
-    },
-    handleSelectUseCaseOutlet(val, i) {
-      this.$refs.regFormRef.validateField(`useCaseOutlets.${i}.outlet`)
-      this.$refs['regFormRef'].clearValidate()
-    },
-
-    validateSame(rule, value, callback) {
+    handleSelectUseCase(val, index) {
       let hasSame = false
+      let errIndex
       const arr = this.form.useCaseOutlets
       for (let i = 0; i < arr.length - 1; i++) {
         for (let j = i + 1; j < arr.length; j++) {
+          // console.log('index:', index, arr[index].useCase, arr[index].outlet)
+          console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
           if (
             (arr[i].useCase && arr[j].useCase) &&
             (arr[i].useCase === arr[j].useCase) &&
             (arr[i].outlet && arr[j].outlet) &&
             (arr[i].outlet === arr[j].outlet)
           ) {
+            errIndex = i
             hasSame = true
             break
           }
         }
       }
       if (hasSame) {
+        this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.useCase`)
+        this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.outlet`)
+      }
+    },
+    handleSelectUseCaseOutlet(val, i) {
+      // this.$refs.regFormRef.validateField(`useCaseOutlets.${i}.outlet`)
+      // this.$refs['regFormRef'].clearValidate()
+    },
+
+    validateSame(rule, value, callback) {
+      const index = rule.field.split('.')[1]
+      // console.log(index, value)
+      let hasSame = false
+      let errIndex
+      const arr = this.form.useCaseOutlets
+      for (let i = 0; i < arr.length - 1; i++) {
+        for (let j = i + 1; j < arr.length; j++) {
+          // console.log('index:', index, arr[index].useCase, arr[index].outlet)
+          console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
+          if (
+            (arr[i].useCase && arr[j].useCase) &&
+            (arr[i].useCase === arr[j].useCase) &&
+            (arr[i].outlet && arr[j].outlet) &&
+            (arr[i].outlet === arr[j].outlet)
+          ) {
+            errIndex = i
+            hasSame = true
+            break
+          }
+        }
+      }
+      if (hasSame) {
+        // if (index !== errIndex) {
+        // this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.useCase`)
+        // this.$refs.regFormRef.validateField(`useCaseOutlets.${errIndex}.outlet`)
+        // }
         callback(new Error('存在相同的用例和网点组合'))
       } else {
+        // this.$refs['regFormRef'].clearValidate(`useCaseOutlets.${index}.useCase`)
+        // this.$refs['regFormRef'].clearValidate(`useCaseOutlets.${index}.outlet`)
         callback()
       }
     }
