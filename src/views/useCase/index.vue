@@ -110,6 +110,18 @@
                   编辑
                 </div>
               </el-dropdown-item>
+              <el-dropdown-item v-if="true">
+                <div class="btn"
+                     @click="editOwner(scope.row)">
+                  修改归属人
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="true">
+                <div class="btn"
+                     @click="editCRM(scope.row)">
+                  修改
+                </div>
+              </el-dropdown-item>
               <el-dropdown-item>
                 <div class="btn"
                      :class="{effect:scope.row.effect}"
@@ -127,12 +139,69 @@
         </div>
       </template>
     </shun-table>
+    <el-dialog title="修改归属人"
+               :visible.sync="showDialog">
+      <el-form ref="regFormRef"
+               :model="form">
+        <el-form-item label="选择："
+                      prop="priority"
+                      label-width="110px">
+          <el-select v-model="form.rule"
+                     style="width:90%;"
+                     placeholder="请选择">
+            <el-option v-for="item in ownerOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="showDialog = false">确 定</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="修改CRM"
+               :visible.sync="editDialog">
+      <el-form ref="formRef"
+               :model="form">
+        <el-form-item required
+                      label="每周线索分配上限（CRM）："
+                      prop="assignUpper_crm">
+          <el-input-number v-model="baseInfo.assignUpper_crm"
+                           style="width:200px;"
+                           controls-position="right"
+                           :min="0"
+                           :max="MAX_NUMBER"
+                           :step="1000" />
+        </el-form-item>
+        <el-form-item required
+                      label="每周线索分配上限（短信）："
+                      prop="assignUpper_sms">
+          <el-input-number v-model="baseInfo.assignUpper_sms"
+                           style="width:200px;"
+                           controls-position="right"
+                           :min="0"
+                           :max="MAX_NUMBER"
+                           :step="1000" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   @click="showDialog = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getUseCaseList, delUseCase, changeStatusUseCase } from '@/api/api'
+import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner } from '@/api/api'
+import { MAX_NUMBER } from '@/utils'
 
 export default {
   name: 'UseCase',
@@ -159,7 +228,19 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
+      editDialog: false,
       loading: false,
+      MAX_NUMBER,
+      ownerOpt: [],
+      baseInfo: {
+
+        assignUpper_crm: 0,
+        assignUpper_sms: 0
+      },
+      form: {
+        rule: []
+      },
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -212,6 +293,7 @@ export default {
   watch: {},
   created() {
     this.search()
+    this.getOwner()
   },
   methods: {
     rowStyle({ row, index }) {
@@ -230,6 +312,25 @@ export default {
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
+    },
+    // 获取创建人
+    getOwner() {
+      getEventOwner().then(res => {
+        this.ownerOpt = res.data.map(n => {
+          return {
+            value: n.id,
+            label: n.userName
+          }
+        })
+      })
+    },
+    editOwner(id) {
+      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.showDialog = true
+    },
+    editCRM(id) {
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
+      this.editDialog = true
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage

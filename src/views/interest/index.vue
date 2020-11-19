@@ -354,7 +354,8 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/template.xlsx', '_blank')
+      window.open('/static/权益库模板.xlsx', '_blank')
+      // window.open('http://10.5.14.149:8080/static/权益库模板.xlsx', '_blank')
     },
     downloadAll() {
       // const data = {

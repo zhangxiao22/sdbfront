@@ -216,7 +216,8 @@ export default {
     },
     // 下载模版
     downloadModel() {
-      window.open('', '_blank')
+      window.open('/static/产品库模板.xlsx', '_blank')
+      // window.open('http://10.5.14.149:8080/static/产品库模板.xlsx', '_blank')
     },
 
     downloadSome() {

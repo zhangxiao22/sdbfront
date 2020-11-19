@@ -2,6 +2,7 @@
   <div class="container">
     <shun-table ref="table"
                 title="短信黑名单"
+                :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
@@ -170,14 +171,11 @@ export default {
       default() {
         return []
       }
-    },
-    loading: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
     return {
+      loading: false,
       currentPage: 2,
       pageSize: 10,
       batchUploadFile,
@@ -282,7 +280,8 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/template.xlsx', '_blank')
+      window.open('/static/短信黑名单模板.xlsx', '_blank')
+      // window.open('http://10.5.14.149:8080/static/短信黑名单模板.xlsx', '_blank')
     },
     downloadAll() {
       const data = {
@@ -314,12 +313,12 @@ export default {
         category: this.category
       }, this.searchForm)
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
-      this.$emit('update:loading', true)
+      this.loading = true
       getHateMarketingList(data).then(res => {
         this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
-      }).catch(() => {
-        this.$emit('update:loading', false)
+      }).finally(() => {
+        this.loading = false
       })
     }
 
