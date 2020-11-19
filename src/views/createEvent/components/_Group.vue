@@ -52,158 +52,161 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <!-------------------------- 数字型 -------------------------->
-          <template v-if="conditionItem.type==='数值型'">
+          <template v-if="conditionItem.compare!=='有值'&&conditionItem.compare!=='没值'">
+            <!-------------------------- 数字型 -------------------------->
+            <template v-if="conditionItem.type==='数值型'">
 
-            <!-- 数字型-值 -->
-            <div v-if="conditionItem.compare!==''"
-                 class="item-box">
-              <template v-if="conditionItem.compare===2">
-                <!-- 区间 -->
-                <Info class="item"
-                      content="请输入数字并设置开闭区间" />
-                <!-- ( -->
-                <el-button class="item"
-                           @click="conditionItem.conditionValue.leftSymbol=conditionItem.conditionValue.leftSymbol==='('?'[':'('">
-                  {{ conditionItem.conditionValue.leftSymbol }}</el-button>
-                <!-- 最小值 -->
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.minVal'"
-                              class="item mb-0"
-                              :rules="[{
-                                validator: validateNumber,trigger: 'blur'
-                              }]">
-                  <el-input-number v-model="conditionItem.conditionValue.minVal"
-                                   style="width:150px;"
-                                   class="item mb-0"
-                                   :min="-MAX_NUMBER"
-                                   :max="MAX_NUMBER"
-                                   placeholder="负无穷"
-                                   controls-position="right" />
-                  <b class="item mb-0">,</b>
-                  <!-- 最大值 -->
-                  <el-input-number v-model="conditionItem.conditionValue.maxVal"
-                                   style="width:150px;"
-                                   class="item mb-0"
-                                   :min="-MAX_NUMBER"
-                                   :max="MAX_NUMBER"
-                                   placeholder="正无穷"
-                                   controls-position="right" />
-                  <el-button @click="conditionItem.conditionValue.rightSymbol=conditionItem.conditionValue.rightSymbol===')'?']':')'">
-                    {{ conditionItem.conditionValue.rightSymbol }}</el-button>
-                </el-form-item>
-              </template>
-              <template v-else>
-                <!-- 非区间 -->
-                <Info class="item"
-                      content="请输入数字并选择或按回车键创建，可创建多个" />
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.numberArrVal'"
-                              class="item"
-                              :rules="[{
-                                required: true, message: '请输入值'
-                              }]">
-                  <el-select v-model="conditionItem.conditionValue.numberArrVal"
-                             class="long-text"
-                             multiple
-                             filterable
-                             remote
-                             allow-create
-                             default-first-option
-                             placeholder="请输入数字并创建条目"
-                             @change="handleChangeNumberInput">
-                    <el-option v-for="item in numberOptions"
-                               :key="item.value"
-                               style="max-width:300px;"
-                               :title="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
-              </template>
-              <div class="unit item">{{ conditionItem.unit }}</div>
-            </div>
-          </template>
-          <!-------------------------- 字符串型 -------------------------->
-          <template v-if="conditionItem.type==='字符串型'">
-            <div v-if="conditionItem.compare!==''"
-                 class="item-box">
-              <!-- 单个输入框 -->
-              <template v-if="conditionItem.compare===0">
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.stringVal'"
-                              class="item"
-                              :rules="[{
-                                required: true, message: '请输入内容'
-                              }]">
-                  <el-input v-model="conditionItem.conditionValue.stringVal"
-                            placeholder="请输入内容" />
-                </el-form-item>
-              </template>
-              <template v-else>
-                <!-- 多个值 -->
-                <Info class="item"
-                      content="请输入内容并选择或按回车键创建，可创建多个" />
-                <el-form-item :prop="'condition.' + ci + '.conditionValue.stringArrVal'"
-                              class="item"
-                              :rules="[{
-                                required: true, message: '请输入内容'
-                              }]">
-                  <el-select v-model="conditionItem.conditionValue.stringArrVal"
-                             class="long-text"
-                             multiple
-                             filterable
-                             remote
-                             allow-create
-                             default-first-option
-                             placeholder="请输入内容并创建条目"
-                             @change="handleChangeStringInput">
-                    <el-option v-for="item in stringOptions"
-                               :key="item.value"
-                               style="max-width:500px;"
-                               :title="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </el-form-item>
-              </template>
-            </div>
+              <!-- 数字型-值 -->
+              <div v-if="conditionItem.compare!==''"
+                   class="item-box">
+                <template v-if="conditionItem.compare===2">
+                  <!-- 区间 -->
+                  <Info class="item"
+                        content="请输入数字并设置开闭区间" />
+                  <!-- ( -->
+                  <el-button class="item"
+                             @click="conditionItem.conditionValue.leftSymbol=conditionItem.conditionValue.leftSymbol==='('?'[':'('">
+                    {{ conditionItem.conditionValue.leftSymbol }}</el-button>
+                  <!-- 最小值 -->
+                  <el-form-item :prop="'condition.' + ci + '.conditionValue.minVal'"
+                                class="item mb-0"
+                                :rules="[{
+                                  validator: validateNumber,trigger: 'blur'
+                                }]">
+                    <el-input-number v-model="conditionItem.conditionValue.minVal"
+                                     style="width:150px;"
+                                     class="item mb-0"
+                                     :min="-MAX_NUMBER"
+                                     :max="MAX_NUMBER"
+                                     placeholder="负无穷"
+                                     controls-position="right" />
+                    <b class="item mb-0">,</b>
+                    <!-- 最大值 -->
+                    <el-input-number v-model="conditionItem.conditionValue.maxVal"
+                                     style="width:150px;"
+                                     class="item mb-0"
+                                     :min="-MAX_NUMBER"
+                                     :max="MAX_NUMBER"
+                                     placeholder="正无穷"
+                                     controls-position="right" />
+                    <el-button @click="conditionItem.conditionValue.rightSymbol=conditionItem.conditionValue.rightSymbol===')'?']':')'">
+                      {{ conditionItem.conditionValue.rightSymbol }}</el-button>
+                  </el-form-item>
+                </template>
+                <template v-else>
+                  <!-- 非区间 -->
+                  <Info class="item"
+                        content="请输入数字并选择或按回车键创建，可创建多个" />
+                  <el-form-item :prop="'condition.' + ci + '.conditionValue.numberArrVal'"
+                                class="item"
+                                :rules="[{
+                                  required: true, message: '请输入值'
+                                }]">
+                    <el-select v-model="conditionItem.conditionValue.numberArrVal"
+                               class="long-text"
+                               multiple
+                               filterable
+                               remote
+                               allow-create
+                               default-first-option
+                               placeholder="请输入数字并创建条目"
+                               @change="handleChangeNumberInput">
+                      <el-option v-for="item in numberOptions"
+                                 :key="item.value"
+                                 style="max-width:300px;"
+                                 :title="item.value"
+                                 :label="item.label"
+                                 :value="item.value" />
+                    </el-select>
+                  </el-form-item>
+                </template>
+                <div class="unit item">{{ conditionItem.unit }}</div>
+              </div>
+            </template>
+            <!-------------------------- 字符串型 -------------------------->
+            <template v-if="conditionItem.type==='字符串型'">
+              <div v-if="conditionItem.compare!==''"
+                   class="item-box">
+                <!-- 单个输入框 -->
+                <template v-if="conditionItem.compare===0">
+                  <el-form-item :prop="'condition.' + ci + '.conditionValue.stringVal'"
+                                class="item"
+                                :rules="[{
+                                  required: true, message: '请输入内容'
+                                }]">
+                    <el-input v-model="conditionItem.conditionValue.stringVal"
+                              placeholder="请输入内容" />
+                  </el-form-item>
+                </template>
+                <template v-else>
+                  <!-- 多个值 -->
+                  <Info class="item"
+                        content="请输入内容并选择或按回车键创建，可创建多个" />
+                  <el-form-item :prop="'condition.' + ci + '.conditionValue.stringArrVal'"
+                                class="item"
+                                :rules="[{
+                                  required: true, message: '请输入内容'
+                                }]">
+                    <el-select v-model="conditionItem.conditionValue.stringArrVal"
+                               class="long-text"
+                               multiple
+                               filterable
+                               remote
+                               allow-create
+                               default-first-option
+                               placeholder="请输入内容并创建条目"
+                               @change="handleChangeStringInput">
+                      <el-option v-for="item in stringOptions"
+                                 :key="item.value"
+                                 style="max-width:500px;"
+                                 :title="item.value"
+                                 :label="item.label"
+                                 :value="item.value" />
+                    </el-select>
+                  </el-form-item>
+                </template>
+              </div>
+            </template>
+
+            <!-------------------------- 枚举型 -------------------------->
+            <template v-if="conditionItem.type==='枚举型'">
+              <el-form-item :prop="'condition.' + ci + '.conditionValue.selectVal'"
+                            class="item"
+                            :rules="[{
+                              required: true, message: '请选择选项'
+                            }]">
+                <el-select v-model="conditionItem.conditionValue.selectVal"
+                           multiple
+                           placeholder="请选择">
+                  <el-option v-for="item of conditionItem.selectOpt"
+                             :key="item.value"
+                             :label="item.label"
+                             :value="item.value" />
+                </el-select>
+              </el-form-item>
+
+            </template>
+            <!-------------------------- 日期型 -------------------------->
+            <template v-if="conditionItem.type==='日期型'">
+              <el-form-item :prop="'condition.' + ci + '.conditionValue.startDate'"
+                            class="item"
+                            :rules="[{
+                              validator: validateDate
+                            }]">
+                <el-date-picker v-model="conditionItem.conditionValue.startDate"
+                                class="item mb-0"
+                                value-format="yyyy-MM-dd"
+                                type="date"
+                                placeholder="从前" />
+                <span class="item mb-0">至</span>
+                <el-date-picker v-model="conditionItem.conditionValue.endDate"
+                                value-format="yyyy-MM-dd"
+                                type="date"
+                                placeholder="未来" />
+              </el-form-item>
+            </template>
           </template>
 
-          <!-------------------------- 枚举型 -------------------------->
-          <template v-if="conditionItem.type==='枚举型'">
-            <el-form-item :prop="'condition.' + ci + '.conditionValue.selectVal'"
-                          class="item"
-                          :rules="[{
-                            required: true, message: '请选择选项'
-                          }]">
-              <el-select v-model="conditionItem.conditionValue.selectVal"
-                         multiple
-                         placeholder="请选择">
-                <el-option v-for="item of conditionItem.selectOpt"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item>
-
-          </template>
-          <!-------------------------- 日期型 -------------------------->
-          <template v-if="conditionItem.type==='日期型'">
-            <el-form-item :prop="'condition.' + ci + '.conditionValue.startDate'"
-                          class="item"
-                          :rules="[{
-                            validator: validateDate
-                          }]">
-              <el-date-picker v-model="conditionItem.conditionValue.startDate"
-                              class="item mb-0"
-                              value-format="yyyy-MM-dd"
-                              type="date"
-                              placeholder="从前" />
-              <span class="item mb-0">至</span>
-              <el-date-picker v-model="conditionItem.conditionValue.endDate"
-                              value-format="yyyy-MM-dd"
-                              type="date"
-                              placeholder="未来" />
-            </el-form-item>
-          </template>
           <!-- 删除按钮 -->
           <i v-if="condition.length > minLength"
              class="el-icon-delete delete item"

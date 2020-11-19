@@ -36,6 +36,7 @@ service.interceptors.response.use(
     const res = response.data
     // if the custom code is not 200, it is judged as an error.
     if (res.code !== 200) {
+      Message.closeAll()
       Message({
         // message: `${res.msg}：${res.subMsg}` || 'Error',
         message: `${res.msg}` || 'Error',
@@ -71,6 +72,7 @@ service.interceptors.response.use(
     }
   },
   error => {
+    Message.closeAll()
     Message({
       message: '网络错误，请稍后重试',
       type: 'error',
