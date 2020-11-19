@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="0"
+             value="2"
              type="border-card"
              style="height: 100%;">
       <el-tab-pane v-for="(item,i) of tabList"
