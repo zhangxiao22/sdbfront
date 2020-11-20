@@ -344,6 +344,24 @@ export function delUseCase(data) {
   })
 }
 
+// 用例创建人修改
+export function modifyUseCaseUser(data) {
+  return request({
+    url: '/event/modifyUseCaseUser',
+    method: 'post',
+    data
+  })
+}
+
+// 用例线索分发数修改
+export function setDistributeLimit(data) {
+  return request({
+    url: '/event/setDistributeLimit',
+    method: 'post',
+    data
+  })
+}
+
 // 切换上下线
 export function changeStatusUseCase(data) {
   return request({
@@ -479,3 +497,13 @@ export function setUseCasePriority(data) {
     data
   })
 }
+
+// 获取岗位
+export function postList(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/org/flatten',
+    method: 'get',
+    params
+  })
+}
+

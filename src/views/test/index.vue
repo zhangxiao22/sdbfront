@@ -1,32 +1,45 @@
 <template>
   <div class="container">
-    <tree-transfer :title="title"
-                   :button_text="[' ',' ']"
-                   :from_data="fromData"
-                   :to_data="toData"
+    <tree-transfer :title="[' ', ' ']"
+                   :button_text="['到右边','到左边']"
+                   :from_data="leftData"
+                   :to_data="rightData"
                    :default-props="{label:'label'}"
-                   :mode="mode"
                    height="100%"
                    filter
                    open-all
                    @addBtn="add"
                    @removeBtn="remove">
       <div slot="title-left"
-           class="left-select">
-        <el-select v-model="value"
-                   placeholder="请选择">
+           class="top-select">
+        <el-select v-model="leftPost"
+                   style="width:100%;"
+                   placeholder="请选择岗位">
           <el-option v-for="item in options"
                      :key="item.value"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
+        <span class="count">884</span>
       </div>
-      <span slot="title-right">222</span>
+      <div slot="title-right"
+           class="top-select">
+        <el-select v-model="leftPost"
+                   style="width:100%;"
+                   placeholder="请选择岗位">
+          <el-option v-for="item in options"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value" />
+        </el-select>
+        <span class="count">666</span>
+      </div>
     </tree-transfer>
   </div>
 </template>
 
 <script>
+import { postList } from '@/api/api'
 import treeTransfer from 'el-tree-transfer' // 引入
 export default {
   components: {
@@ -35,6 +48,7 @@ export default {
 
   data() {
     return {
+      // 岗位
       options: [{
         value: '选项1',
         label: '黄金糕'
@@ -51,10 +65,11 @@ export default {
         value: '选项5',
         label: '北京烤鸭'
       }],
-      value: '',
-      title: [' ', ' '],
-      mode: 'transfer', // transfer addressList
-      fromData: [
+      // 左边选的岗位
+      leftPost: '',
+      // 右边选的岗位
+      rightPost: '',
+      leftData: [
         {
           id: '1',
           pid: 0,
@@ -89,7 +104,7 @@ export default {
           ]
         }
       ],
-      toData: []
+      rightData: []
     }
   },
   computed: {
@@ -98,19 +113,14 @@ export default {
 
   watch: {},
   created() {
+    // postList().then(res => {
+    //   this.leftData = res.data
+    // })
   },
   mounted() {
 
   },
   methods: {
-    // 切换模式 现有树形穿梭框模式transfer 和通讯录模式addressList
-    changeMode() {
-      if (this.mode === 'transfer') {
-        this.mode = 'addressList'
-      } else {
-        this.mode = 'transfer'
-      }
-    },
     // 监听穿梭框组件添加
     add(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
@@ -135,6 +145,30 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  background: #fff;
+  padding: 40px;
+  ::v-deep .wl-transfer {
+    .transfer-left,
+    .transfer-right {
+      overflow: hidden;
+    }
+    .transfer-title {
+      // padding-right: 5px;
+      // background: #fff;
+      display: flex;
+      align-items: center;
+      .top-select {
+        flex: 1;
+        display: flex;
+        .count {
+          font-size: 14px;
+          margin-left: 10px;
+          color: #888;
+        }
+      }
+    }
+  }
+
   .left-select {
     display: inline-block;
   }
