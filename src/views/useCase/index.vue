@@ -13,7 +13,7 @@
                 :row-style="rowStyle"
                 :table-column-list="tableColumnList"
                 @render="getList">
-      <template v-slot:filter>
+      <!-- <template v-slot:filter>
         <el-form ref="filterRef"
                  :inline="true"
                  :model="filterForm"
@@ -39,7 +39,7 @@
             </el-button>
           </el-form-item>
         </el-form>
-      </template>
+      </template> -->
       <template v-slot:main-buttons>
         <el-button class="button"
                    type="primary"
@@ -110,7 +110,7 @@
                   编辑
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="true">
+              <el-dropdown-item v-if="false">
                 <div class="btn"
                      @click="editOwner(scope.row)">
                   修改归属人
@@ -118,8 +118,8 @@
               </el-dropdown-item>
               <el-dropdown-item v-if="true">
                 <div class="btn"
-                     @click="editCRM(scope.row)">
-                  修改
+                     @click="editClue(scope.row)">
+                  线索分配
                 </div>
               </el-dropdown-item>
               <el-dropdown-item>
@@ -140,13 +140,14 @@
       </template>
     </shun-table>
     <el-dialog title="修改归属人"
-               :visible.sync="showDialog">
+               :before-close="closeOwnerDialog"
+               :visible.sync="ownerDialog">
       <el-form ref="regFormRef"
                :model="form">
         <el-form-item label="选择："
-                      prop="priority"
+                      prop="ownerOpt"
                       label-width="110px">
-          <el-select v-model="form.rule"
+          <el-select v-model="form.ownerOpt"
                      style="width:90%;"
                      placeholder="请选择">
             <el-option v-for="item in ownerOpt"
@@ -158,41 +159,46 @@
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button @click="closeOwnerDialog">取 消</el-button>
         <el-button type="primary"
-                   @click="showDialog = false">确 定</el-button>
+                   :loading="buttonLoading"
+                   @click="ensureEditOwner()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="修改CRM"
-               :visible.sync="editDialog">
+    <el-dialog title="每周线索分配上限设置"
+               :before-close="closeClueDialog"
+               :visible.sync="clueDialog">
       <el-form ref="formRef"
-               :model="form">
+               label-width="220px"
+               :model="clueInfo">
         <el-form-item required
                       label="每周线索分配上限（CRM）："
                       prop="assignUpper_crm">
-          <el-input-number v-model="baseInfo.assignUpper_crm"
+          <el-input-number v-model="clueInfo.assignUpper_crm"
                            style="width:200px;"
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
-                           :step="1000" />
+                           :step="1000"
+                           @blur="handleBlurCRM" />
         </el-form-item>
         <el-form-item required
                       label="每周线索分配上限（短信）："
                       prop="assignUpper_sms">
-          <el-input-number v-model="baseInfo.assignUpper_sms"
+          <el-input-number v-model="clueInfo.assignUpper_sms"
                            style="width:200px;"
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
-                           :step="1000" />
+                           :step="1000"
+                           @blur="handleBlurSMS" />
         </el-form-item>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button @click="closeClueDialog">取 消</el-button>
         <el-button type="primary"
-                   @click="showDialog = false">确 定</el-button>
+                   @click="ensureEditClue()">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -200,7 +206,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner } from '@/api/api'
+import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner, modifyUseCaseUser, setDistributeLimit } from '@/api/api'
 import { MAX_NUMBER } from '@/utils'
 
 export default {
@@ -228,18 +234,25 @@ export default {
   },
   data() {
     return {
-      showDialog: false,
-      editDialog: false,
+      buttonLoading: false,
+      ownerDialog: false,
+      clueDialog: false,
       loading: false,
       MAX_NUMBER,
-      ownerOpt: [],
-      baseInfo: {
-
+      // 线索的数据(id,subBranchId)
+      clueData: {},
+      // 线索分配值
+      clueInfo: {
         assignUpper_crm: 0,
         assignUpper_sms: 0
       },
+      // 归属人选项
+      ownerOpt: [],
+      // 归属人的数据(id,subBranchId)
+      ownerData: {},
+      // 归属人所选值
       form: {
-        rule: []
+        ownerOpt: []
       },
       currentPage: 1,
       pageSize: 10,
@@ -252,14 +265,14 @@ export default {
         {
           prop: 'name',
           label: '状态/用例名称',
-          minWidth: 100,
+          minWidth: 200,
           notShowOverflowTooltip: true,
           slot: true
         },
         {
           prop: 'caseTarget',
           label: '目标',
-          minWidth: 200,
+          minWidth: 300,
           notShowOverflowTooltip: true,
           slot: true
         },
@@ -267,6 +280,21 @@ export default {
           prop: 'modifyTime',
           label: '修改时间',
           width: 180
+        },
+        {
+          prop: 'ownerId',
+          label: '归属人',
+          width: 100
+        },
+        {
+          prop: 'crmWeekClueLimit',
+          label: 'CRM每周线索分发数',
+          width: 100
+        },
+        {
+          prop: 'smsWeekClueLimit',
+          label: '短信每周线索分发数',
+          width: 100
         },
         {
           prop: 'description',
@@ -277,7 +305,8 @@ export default {
           prop: 'operate',
           label: '操作',
           minWidth: 150,
-          slot: true
+          slot: true,
+          fixed: 'right'
         }
       ],
       tableData: [],
@@ -287,10 +316,25 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
+    },
+    getOwnerData() {
+      const data = {}
+      data.userId = this.form.ownerOpt
+      data.id = this.ownerData.id
+      data.subBranchId = this.ownerData.subBranchId
+      return data
+    },
+    getClueData() {
+      const data = {}
+      data.crmWeekClueLimit = this.clueInfo.assignUpper_crm
+      data.smsWeekClueLimit = this.clueInfo.assignUpper_sms
+      data.id = this.clueData.id
+      return data
     }
   },
 
-  watch: {},
+  watch: {
+  },
   created() {
     this.search()
     this.getOwner()
@@ -306,12 +350,84 @@ export default {
       this.$refs.table.resetSelection()
     },
     reset() {
-      this.$refs.filterRef.resetFields()
+      // this.$refs.filterRef.resetFields()
       this.search()
     },
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
+    },
+    handleBlurCRM() {
+      if (!this.clueInfo.assignUpper_crm) {
+        this.clueInfo.assignUpper_crm = 0
+      }
+    },
+    handleBlurSMS() {
+      if (!this.clueInfo.assignUpper_sms) {
+        this.clueInfo.assignUpper_sms = 0
+      }
+    },
+    // 关闭对话框
+    closeOwnerDialog() {
+      this.ownerDialog = false
+    },
+    closeClueDialog() {
+      this.clueDialog = false
+    },
+
+    // 打开编辑用例归属人窗口
+    editOwner(row) {
+      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.ownerDialog = true
+      this.ownerData = row
+    },
+    // 编辑用例归属人
+    ensureEditOwner() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          modifyUseCaseUser(this.getOwnerData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+            this.ownerDialog = false
+            this.resetAll()
+          })
+        }
+      })
+    },
+    // 打开编辑线索分发窗口
+    editClue(row) {
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
+      this.clueDialog = true
+      this.clueData = row
+    },
+    // 编辑线索分发
+    ensureEditClue() {
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          setDistributeLimit(this.getClueData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+            this.clueDialog = false
+            this.resetAll()
+          })
+        }
+      })
     },
     // 获取创建人
     getOwner() {
@@ -324,14 +440,6 @@ export default {
         })
       })
     },
-    editOwner(id) {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-      this.showDialog = true
-    },
-    editCRM(id) {
-      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
-      this.editDialog = true
-    },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
@@ -343,7 +451,8 @@ export default {
       getUseCaseList(data).then(res => {
         this.tableData = res.data.resultList.map(n => {
           return Object.assign({}, n, {
-            showDelet: false
+            showDelet: false,
+            ownerId: '张芸琳'
           })
         })
         this.total = res.pagination.totalItemCount

@@ -70,6 +70,7 @@
                            :filters="item.filters"
                            :label="item.label"
                            :width="item.width"
+                           :fixed="item.fixed"
                            :min-width="item.minWidth">
             <template slot-scope="scope">
               <slot v-if="item.slot"
