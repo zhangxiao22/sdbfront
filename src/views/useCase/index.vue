@@ -434,7 +434,7 @@ export default {
       getEventOwner().then(res => {
         this.ownerOpt = res.data.map(n => {
           return {
-            value: n.id,
+            value: n.userId,
             label: n.userName
           }
         })
