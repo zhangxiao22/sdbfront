@@ -76,7 +76,7 @@ export default {
 
       },
       {
-        label: '分配角色',
+        label: '岗位管理',
         component: 'Assign',
         loading: false,
         roles: ['业务管理']

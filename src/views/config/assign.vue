@@ -1,5 +1,5 @@
 <template>
-  <!-- 分配角色 -->
+  <!-- 岗位管理 -->
   <div class="container">
     <shun-table ref="table"
                 :is-card="false"
@@ -105,7 +105,7 @@ export default {
         },
         {
           prop: 'role',
-          label: '权限'
+          label: '角色'
         },
         {
           prop: 'people',
