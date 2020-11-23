@@ -175,22 +175,25 @@
                       label="每周线索分配上限（CRM）："
                       prop="assignUpper_crm">
           <el-input-number v-model="clueInfo.assignUpper_crm"
-                           style="width:200px;"
+                           style="width:90%;"
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
+                           oninput="value=value.replace(/[^\d]/g,'')"
                            :step="1000"
+                           :precision="0"
                            @blur="handleBlurCRM" />
         </el-form-item>
         <el-form-item required
                       label="每周线索分配上限（短信）："
                       prop="assignUpper_sms">
           <el-input-number v-model="clueInfo.assignUpper_sms"
-                           style="width:200px;"
+                           style="width:90%;"
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
                            :step="1000"
+                           :precision="0"
                            @blur="handleBlurSMS" />
         </el-form-item>
       </el-form>
