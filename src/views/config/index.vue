@@ -48,57 +48,57 @@ export default {
         label: '防打扰',
         component: 'NotDisturb',
         loading: false,
-        roles: ['aaa']
+        roles: ['线索统筹']
       },
       {
         label: '全局网点分配比例',
         component: 'GlobalOutletDistribute',
         loading: false,
-        roles: ['']
+        roles: ['线索统筹']
       },
       {
         label: '用例网点分配比例',
         component: 'UseCaseOutletDistribute',
         loading: false,
-        roles: ['admin']
+        roles: ['线索统筹']
       },
       {
         label: '用例优先级',
         component: 'UseCasePriority',
         loading: false,
-        roles: ['admin']
+        roles: ['线索统筹']
       },
       {
         label: '线索优先级',
         component: 'CluePriority',
         loading: false,
-        roles: ['admin']
+        roles: ['用例管理']
 
       },
       {
         label: '分配角色',
         component: 'Assign',
         loading: false,
-        roles: ['admin']
+        roles: ['业务管理']
 
       },
       {
         label: '厌恶营销名单（CRM）',
         component: 'HateMarketingCRM',
         loading: false,
-        roles: ['admin']
+        roles: ['事件注册', '用例管理']
       },
       {
         label: '不营销人员名单（CRM）',
         component: 'NeverMarketingCRM',
         loading: false,
-        roles: ['admin']
+        roles: ['事件注册', '用例管理']
       },
       {
         label: '黑名单（短信）',
         component: 'BlackListSMS',
         loading: false,
-        roles: ['admin']
+        roles: ['事件注册', '用例管理']
       }
       ]
     }

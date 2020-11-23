@@ -20,7 +20,10 @@ export const constantRoutes = [
     meta: {
       title: '401', hide: true
     }
-  },
+  }
+]
+
+export const asyncRoutes = [
   {
     path: '/',
     redirect: '/home',
@@ -32,38 +35,6 @@ export const constantRoutes = [
         component: () => import('@/views/home/index'),
         meta: { title: '首页', icon: 'home' }
       },
-      {
-        // 事件看板
-        path: 'eventBoard',
-        name: 'EventBoard',
-        component: () => import('@/views/eventBoard/index'),
-        meta: { title: '事件看板', icon: 'eventList' }
-      },
-      {
-        // 事件详情
-        path: 'eventDetail',
-        name: 'EventDetail',
-        component: () => import('@/views/eventDetail/index'),
-        meta: { title: '事件详情', hide: true }
-      },
-
-      {
-        // 总看板
-        path: 'totalBoard',
-        name: 'TotalBoard',
-        component: () => import('@/views/totalBoard/index'),
-        meta: { title: '线索发布总览', icon: 'list' }
-      }
-    ]
-  }
-]
-
-export const asyncRoutes = [
-  {
-    path: '/',
-    redirect: '/home',
-    component: Layout,
-    children: [
       {
         // 营销用例
         path: 'useCase',
@@ -89,7 +60,20 @@ export const asyncRoutes = [
         component: () => import('@/views/createEvent/index'),
         meta: { title: '新建营销事件', icon: 'create', roles: ['事件注册'] }
       },
-
+      {
+        // 事件看板
+        path: 'eventBoard',
+        name: 'EventBoard',
+        component: () => import('@/views/eventBoard/index'),
+        meta: { title: '事件看板', icon: 'eventList' }
+      },
+      {
+        // 事件详情
+        path: 'eventDetail',
+        name: 'EventDetail',
+        component: () => import('@/views/eventDetail/index'),
+        meta: { title: '事件详情', hide: true }
+      },
       {
         // 产品库
         path: 'product',
@@ -117,6 +101,13 @@ export const asyncRoutes = [
         name: 'Sms',
         component: () => import('@/views/sms/index'),
         meta: { title: '短信库', icon: 'shortmessage', roles: ['事件注册', '用例管理'] }
+      },
+      {
+        // 总看板
+        path: 'totalBoard',
+        name: 'TotalBoard',
+        component: () => import('@/views/totalBoard/index'),
+        meta: { title: '线索发布总览', icon: 'list' }
       },
       {
         path: 'test',
