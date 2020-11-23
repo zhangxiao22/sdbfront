@@ -64,28 +64,6 @@
                    icon="el-icon-plus"
                    @click="addTarget" />
       </el-form-item>
-      <el-form-item required
-                    label="每周线索分配上限（CRM）："
-                    prop="assignUpper_crm">
-        <el-input-number v-model="baseInfo.assignUpper_crm"
-                         style="width:200px;"
-                         controls-position="right"
-                         :min="0"
-                         :max="MAX_NUMBER"
-                         :step="1000"
-                         @blur="handleBlurCRM" />
-      </el-form-item>
-      <el-form-item required
-                    label="每周线索分配上限（短信）："
-                    prop="assignUpper_sms">
-        <el-input-number v-model="baseInfo.assignUpper_sms"
-                         style="width:200px;"
-                         controls-position="right"
-                         :min="0"
-                         :max="MAX_NUMBER"
-                         :step="1000"
-                         @blur="handleBlurSMS" />
-      </el-form-item>
       <el-form-item label="用例描述："
                     prop="desc">
         <el-input v-model.trim="baseInfo.desc"
@@ -128,8 +106,6 @@ export default {
             targetValue: ''
           }
         ],
-        assignUpper_crm: 0,
-        assignUpper_sms: 0,
         desc: ''
       },
       targetOpt: []
@@ -151,8 +127,6 @@ export default {
           value: n.targetValue
         }
       })
-      data.crmWeekClueLimit = this.baseInfo.assignUpper_crm
-      data.smsWeekClueLimit = this.baseInfo.assignUpper_sms
       data.description = this.baseInfo.desc
       return data
     }
@@ -183,21 +157,9 @@ export default {
         this.resetTargetOpt()
       })
     },
-    handleBlurCRM() {
-      if (!this.baseInfo.assignUpper_crm) {
-        this.baseInfo.assignUpper_crm = 0
-      }
-    },
-    handleBlurSMS() {
-      if (!this.baseInfo.assignUpper_sms) {
-        this.baseInfo.assignUpper_sms = 0
-      }
-    },
     getUseCaseById() {
       getUseCaseDetailById({ id: this.id }).then(res => {
         this.baseInfo.name = res.data.name
-        this.baseInfo.assignUpper_crm = res.data.crmWeekClueLimit
-        this.baseInfo.assignUpper_sms = res.data.smsWeekClueLimit
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
           let obj = this.targetOpt.find(n => {

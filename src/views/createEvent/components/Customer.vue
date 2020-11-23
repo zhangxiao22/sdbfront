@@ -26,7 +26,7 @@ export default {
   },
   data() {
     return {
-      activeName: '1'
+      activeName: '2'
     }
   },
   computed: {

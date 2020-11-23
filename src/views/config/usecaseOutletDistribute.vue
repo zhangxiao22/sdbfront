@@ -234,8 +234,8 @@ export default {
       let hasSame = false
       const arr = this.form.useCaseOutlets
       for (let i = 0; i < arr.length; i++) {
-        console.log('index:', index, arr[index].useCase, arr[index].outlet)
-        console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
+        // console.log('index:', index, arr[index].useCase, arr[index].outlet)
+        // console.log('i:', i, '/////', arr[i].useCase, arr[i].outlet)
         if (
           (i !== index) &&
           (arr[i].useCase && arr[index].useCase) &&
