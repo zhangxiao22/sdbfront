@@ -1,14 +1,15 @@
-import { logout, getUserInfo } from '@/api/api'
-import { getToken, setToken, removeToken } from '@/utils/auth'
+import { getUserInfo } from '@/api/api'
 import router, { resetRouter } from '@/router'
 
 const getDefaultState = () => {
   return {
-    token: getToken(),
     userName: '',
-    avatar: '',
-    subBranchName: '',
-    roles: []
+    userId: '',
+    jobId: '',
+    jobName: '',
+    orgId: '',
+    orgInfoList: [],
+    permissionPack: { label: '', value: '' }
   }
 }
 
@@ -20,19 +21,19 @@ const mutations = {
   },
   SET_STATE: (state, data) => {
     Object.assign(state, data)
-  },
-  SET_TOKEN: (state, token) => {
-    state.token = token
-  },
-  SET_NAME: (state, name) => {
-    state.userName = name
-  },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
-  },
-  SET_ROLES: (state, roles) => {
-    state.roles = roles
   }
+  // SET_TOKEN: (state, token) => {
+  //   state.token = token
+  // },
+  // SET_NAME: (state, name) => {
+  //   state.userName = name
+  // },
+  // SET_AVATAR: (state, avatar) => {
+  //   state.avatar = avatar
+  // },
+  // SET_ROLES: (state, roles) => {
+  //   state.roles = roles
+  // }
 }
 
 const actions = {
@@ -41,16 +42,13 @@ const actions = {
     return new Promise((resolve, reject) => {
       getUserInfo().then(response => {
         const { data } = response
-
+        // console.log('????', data)
         // if (!data) {
         //   return reject('Verification failed, please Login again.')
         // }
 
-        const { name, avatar, roles } = data
+        // const { name, avatar, roles } = data
 
-        // commit('SET_NAME', name)
-        // commit('SET_AVATAR', avatar)
-        // commit('SET_ROLES', roles)
         commit('SET_STATE', data)
         resolve(data)
       }).catch(error => {
@@ -63,7 +61,7 @@ const actions = {
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
       // logout(state.token).then(() => {
-      removeToken() // must remove  token  first
+      // removeToken() // must remove  token  first
       resetRouter()
       commit('RESET_STATE')
       commit('SET_ROLES', [])

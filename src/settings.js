@@ -1,6 +1,6 @@
 module.exports = {
 
-  title: 'sdb',
+  title: '大数据营销平台',
 
   /**
    * @type {boolean} true | false

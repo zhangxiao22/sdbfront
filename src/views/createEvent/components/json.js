@@ -19,6 +19,13 @@ export const DATA = [
       {
         'label': '区间',
         'value': 2
+      },
+      {
+        'label': '有值',
+        'value': '有值'
+      }, {
+        'label': '没值',
+        'value': '没值'
       }],
     'enumCandidateList': null
   },
@@ -42,6 +49,12 @@ export const DATA = [
       {
         'label': '不等于',
         'value': 2
+      }, {
+        'label': '有值',
+        'value': '有值'
+      }, {
+        'label': '没值',
+        'value': '没值'
       }
     ],
     'enumCandidateList': null
@@ -58,6 +71,12 @@ export const DATA = [
       {
         'label': '等于',
         'value': 0
+      }, {
+        'label': '有值',
+        'value': '有值'
+      }, {
+        'label': '没值',
+        'value': '没值'
       }
     ],
     'enumCandidateList': [
@@ -87,6 +106,12 @@ export const DATA = [
       {
         'label': '区间',
         'value': 0
+      }, {
+        'label': '有值',
+        'value': '有值'
+      }, {
+        'label': '没值',
+        'value': '没值'
       }
     ],
     'enumCandidateList': []

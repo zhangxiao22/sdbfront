@@ -7,7 +7,8 @@ import { asyncRoutes, constantRoutes } from '@/router'
  */
 function hasPermission(roles, route) {
   if (route.meta && route.meta.roles) {
-    return roles.some(role => route.meta.roles.includes(role))
+    // return roles.some(role => route.meta.roles.includes(role))
+    return route.meta.roles.includes(roles)
   } else {
     return true
   }
@@ -20,7 +21,6 @@ function hasPermission(roles, route) {
  */
 export function filterAsyncRoutes(routes, roles) {
   const res = []
-
   routes.forEach(route => {
     const tmp = { ...route }
     if (hasPermission(roles, tmp)) {
@@ -35,7 +35,9 @@ export function filterAsyncRoutes(routes, roles) {
 }
 
 const state = {
+  // 所有router
   routes: [],
+  // 动态router
   addRoutes: []
 }
 
@@ -49,12 +51,7 @@ const mutations = {
 const actions = {
   generateRoutes({ commit }, roles) {
     return new Promise(resolve => {
-      // let accessedRoutes
-      // if (roles.includes('admin')) {
-      //   accessedRoutes = asyncRoutes || []
-      // } else {
       const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles)
-      // }
       commit('SET_ROUTES', accessedRoutes)
       resolve(accessedRoutes)
     })
