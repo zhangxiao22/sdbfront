@@ -65,19 +65,21 @@ export const asyncRoutes = [
     component: Layout,
     children: [
       {
+        // 营销用例
         path: 'useCase',
         name: 'UseCase',
         component: () => import('@/views/useCase/index'),
         meta: {
-          title: '用例库', icon: 'useCase', roles: ['基础包']
+          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '业务管理']
         }
       },
       {
+        // 新建营销用例
         path: 'createUseCase',
         name: 'CreateUseCase',
         component: () => import('@/views/createUseCase/index'),
         meta: {
-          title: '创建用例', hide: true, roles: ['基础包']
+          title: '创建用例', hide: true, roles: ['用例管理']
         }
       },
       {
@@ -93,25 +95,28 @@ export const asyncRoutes = [
         path: 'product',
         name: 'Product',
         component: () => import('@/views/product/index'),
-        meta: { title: '产品库', icon: 'product', roles: ['事件注册'] }
+        meta: { title: '产品库', icon: 'product', roles: ['事件注册', '用例管理'] }
       },
       {
+        // 话术库
         path: 'word',
         name: 'Word',
         component: () => import('@/views/word/index'),
-        meta: { title: '话术库', icon: 'chat', roles: ['基础包'] }
+        meta: { title: '话术库', icon: 'chat', roles: ['事件注册', '用例管理'] }
       },
       {
+        // 权益库
         path: 'interest',
         name: 'Interest',
         component: () => import('@/views/interest/index'),
-        meta: { title: '权益库', icon: 'interest', roles: ['基础包'] }
+        meta: { title: '权益库', icon: 'interest', roles: ['事件注册', '用例管理'] }
       },
       {
+        // 短信库
         path: 'sms',
         name: 'Sms',
         component: () => import('@/views/sms/index'),
-        meta: { title: '短信库', icon: 'shortmessage', roles: ['基础包'] }
+        meta: { title: '短信库', icon: 'shortmessage', roles: ['事件注册', '用例管理'] }
       },
       {
         path: 'test',
@@ -132,7 +137,7 @@ export const asyncRoutes = [
         path: 'config',
         name: 'Config',
         component: () => import('@/views/config/index'),
-        meta: { title: '系统配置', icon: 'config', roles: ['基础包'] }
+        meta: { title: '系统配置', icon: 'config', roles: ['事件注册', '用例管理', '线索统筹', '业务管理'] }
       }
     ]
   },
