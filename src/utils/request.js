@@ -43,41 +43,33 @@ service.interceptors.response.use(
         type: 'error',
         duration: 10 * 1000
       })
-      if (res.code === 401) {
-        // to re-login
-        // MessageBox.confirm('You have been logged out, you can cancel to stay on this page, or log in again', 'Confirm logout', {
-        //   confirmButtonText: 'Re-Login',
-        //   cancelButtonText: 'Cancel',
-        //   type: 'warning'
-        // }).then(() => {
-        //   store.dispatch('user/resetToken').then(() => {
-        //     location.reload()
-        //   })
-        // })
 
-        // Message({
-        //   message: '登陆失效',
-        //   type: 'error',
-        //   duration: 5 * 1000
-        // })
-        console.log('接口401?')
-        store.dispatch('user/resetToken').then(() => {
-          router.replace('/start')
-          // location.reload()
-        })
-      }
       return Promise.reject(new Error(res.message || 'Error'))
     } else {
       return res
     }
   },
-  error => {
+  (error) => {
     Message.closeAll()
-    Message({
-      message: '网络错误，请稍后重试',
-      type: 'error',
-      duration: 5 * 1000
-    })
+    if (error.response) {
+      const { status, data } = error.response
+      if (status === 401) {
+        Message({
+          message: data.msg,
+          type: 'error',
+          duration: 5 * 1000
+        })
+        // router.replace('/')
+        // location.reload()
+      }
+    } else {
+      Message({
+        message: '网络错误，请稍后重试',
+        type: 'error',
+        duration: 5 * 1000
+      })
+    }
+
     return Promise.reject(error)
   }
 )
