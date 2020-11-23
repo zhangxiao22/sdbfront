@@ -25,7 +25,7 @@ service.interceptors.request.use(
   },
   error => {
     // do something with request error
-    console.log(error) // for debug
+    // console.log(error) // for debug
     return Promise.reject(error)
   }
 )
@@ -53,13 +53,13 @@ service.interceptors.response.use(
     Message.closeAll()
     if (error.response) {
       const { status, data } = error.response
-      if (status === 401) {
+      if (status === 401 || status === 403) {
         Message({
           message: data.msg,
           type: 'error',
           duration: 5 * 1000
         })
-        // router.replace('/')
+        router.replace('/401')
         // location.reload()
       }
     } else {

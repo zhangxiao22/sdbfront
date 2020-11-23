@@ -122,16 +122,8 @@ export const asyncRoutes = [
         path: 'test',
         name: 'Test',
         component: () => import('@/views/test/index'),
-        meta: { title: 'test', icon: 'list', roles: ['基础包'] }
+        meta: { title: 'test', icon: 'list', roles: ['admin'] }
       },
-      // {
-      //   // 营销结果看板
-      //   path: 'resultsBoard',
-      //   name: 'ResultsBoard',
-      //   component: () => import('@/views/resultsBoard/index'),
-      //   meta: { title: '营销结果看板', icon: 'list', roles: ['基础包'] }
-      // },
-
       {
         // 设置
         path: 'config',

@@ -60,7 +60,7 @@ export default {
   methods: {
     getMenu() {
       this.menu = []
-      console.log(this.routes)
+      // console.log(this.routes)
       this.routes.forEach((n, i) => {
         if (n.path === '/') {
           n.children.forEach((m, j) => {
