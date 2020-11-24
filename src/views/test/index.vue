@@ -14,9 +14,11 @@
            class="top-select">
         <el-select v-model="leftPost"
                    style="width:100%;"
-                   placeholder="请选择岗位">
+                   placeholder="请选择岗位"
+                   @change="handleSelectOpt($event,leftPost)">
           <el-option v-for="item in options"
                      :key="item.value"
+                     :disabled="false"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
@@ -24,11 +26,12 @@
       </div>
       <div slot="title-right"
            class="top-select">
-        <el-select v-model="leftPost"
+        <el-select v-model="rightPost"
                    style="width:100%;"
                    placeholder="请选择岗位">
           <el-option v-for="item in options"
                      :key="item.value"
+                     :disabled="false"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
@@ -39,7 +42,7 @@
 </template>
 
 <script>
-import { postPeopleList } from '@/api/api'
+import { postPeopleList, getAllJob } from '@/api/api'
 import treeTransfer from 'el-tree-transfer' // 引入
 const translate = (data) => {
   // console.log('data', data)
@@ -131,11 +134,39 @@ export default {
   watch: {},
   created() {
     this.getPostPeopleList()
+    this.getJobOpt()
   },
   mounted() {
 
   },
   methods: {
+    handleSelectOpt(val, item) {
+      // 设置不可选项
+      this.resetOpt()
+    },
+    resetOpt() {
+      const temp = []
+      this.leftPost.forEach((n, i) => {
+        n.item && temp.push(n.item)
+      })
+      this.rightPost.forEach((n, i) => {
+        n.item && temp.push(n.item)
+      })
+      this.options.forEach((n, i) => {
+        n.disabled = temp.includes(n.value)
+      })
+    },
+    getJobOpt() {
+      getAllJob().then(res => {
+        this.options = res.data.map(n => {
+          return Object.assign({}, {
+            value: n.id,
+            label: n.name,
+            disabled: false
+          })
+        })
+      })
+    },
     getPostPeopleList() {
       postPeopleList({ jobId: 1 }).then(res => {
         this.leftData = translate(res.data.orgGraphVOList)
