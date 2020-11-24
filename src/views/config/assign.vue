@@ -75,7 +75,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getAllJob, saveBatch, getPermissionPackEnum } from '@/api/api'
+import { getAllJob, insertJob, getPermissionPackEnum, deleteJob } from '@/api/api'
 
 export default {
   name: 'Assign',
@@ -122,12 +122,12 @@ export default {
         {
           prop: 'people',
           label: '岗位人数'
+        },
+        {
+          prop: 'operate',
+          label: '操作',
+          slot: true
         }
-        // {
-        //   prop: 'operate',
-        //   label: '操作',
-        //   slot: true
-        // }
       ],
       tableData: [],
       roleOpt: []
@@ -184,53 +184,53 @@ export default {
       this.$refs['formReg'] && this.$refs['formReg'].resetFields()
       this.showDialog = true
     },
-    // handleEdit(row) {
-    //   // this.$refs['formReg'] && this.$refs['formReg'].resetFields()
-    //   this.showDialog = true
-    //   this.isEdit = row.id
-    //   console.log(row)
-    //   this.tableData.find((n, i) => {
-    //     if (n.id === row.id) {
-    //       this.form.name = row.post
-    //       this.form.role = row.role.value
-    //       return true
-    //     }
-    //   })
-    //   // if (this.id) {
-    //   // }
-    // },
-    // handleDel(row) {
-    //   let delList = []
-    //   delList = JSON.parse(JSON.stringify(this.tableData))
-    //   delList.find((n, i) => {
-    //     if (n.id === row.id) {
-    //       delList.splice(i, 1)
-    //       return true
-    //     }
-    //   })
-    //   const data = {}
-    //   data.jobList = delList.map(n => {
-    //     return Object.assign({}, {
-    //       id: n.id,
-    //       name: n.post,
-    //       permissionPack: n.role.value
-    //     })
-    //   })
-    //   this.$confirm(`是否确认删除岗位（${row.post}）？`)
-    //     .then(_ => {
-    //       saveBatch(data).then(res => {
-    //         if (res.code === 200) {
-    //           this.$message({
-    //             message: '保存成功',
-    //             type: 'success',
-    //             duration: '3000'
-    //           })
-    //           this.resetAll()
-    //         }
-    //       })
-    //     }).finally(() => {
-    //     })
-    // },
+    handleEdit(row) {
+      // this.$refs['formReg'] && this.$refs['formReg'].resetFields()
+      this.showDialog = true
+      this.isEdit = row.id
+      console.log(row)
+      this.tableData.find((n, i) => {
+        if (n.id === row.id) {
+          this.form.name = row.post
+          this.form.role = row.role.value
+          return true
+        }
+      })
+      // if (this.id) {
+      // }
+    },
+    handleDel(row) {
+      // let delList = []
+      // delList = JSON.parse(JSON.stringify(this.tableData))
+      // delList.find((n, i) => {
+      //   if (n.id === row.id) {
+      //     delList.splice(i, 1)
+      //     return true
+      //   }
+      // })
+      // const data = {}
+      // data.jobList = delList.map(n => {
+      //   return Object.assign({}, {
+      //     id: n.id,
+      //     name: n.post,
+      //     permissionPack: n.role.value
+      //   })
+      // })
+      this.$confirm(`是否确认删除岗位（${row.post}）？`)
+        .then(_ => {
+          deleteJob({ jobId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '删除成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.getList()
+            }
+          })
+        }).finally(() => {
+        })
+    },
     ensureAddList() {
       this.$refs['formReg'].validate((valid) => {
         if (valid) {
@@ -255,7 +255,7 @@ export default {
           const data = {}
           data.name = this.form.name
           data.permissionPack = this.form.role
-          saveBatch(data).then(res => {
+          insertJob(data).then(res => {
             this.buttonLoading = false
             if (res.code === 200) {
               this.$message({

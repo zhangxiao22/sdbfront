@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { postPeopleList, getAllJob } from '@/api/api'
+import { postPeopleList, getAllJob, occupyJob } from '@/api/api'
 import treeTransfer from 'el-tree-transfer' // 引入
 import { P } from '@antv/g2plot'
 const translate = (data) => {
@@ -119,7 +119,8 @@ export default {
       this.leftData = await this.getPostPeopleList(this.leftPost)
     },
     async handleSelectRightOpt() {
-      this.leftData = await this.getPostPeopleList(this.rightPost)
+      console.log(this.rightPost)
+      this.rightData = await this.getPostPeopleList(this.rightPost)
     },
     // 获取岗位下拉
     getJobOpt() {
@@ -151,15 +152,30 @@ export default {
       const users = obj.nodes.filter(n => {
         return !n.children.length
       }).map(m => m.userId)
-      console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
+      const data = {}
+      data.userJobList = []
+      for (var i = 0; i < users.length; i++) {
+        data.userJobList.push({ jobId: this.rightPost, empCode: users[i] })
+      }
+      occupyJob(data).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '分配成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+      })
+      // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
     // 监听穿梭框组件移除
     remove(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
-      console.log('fromData:', fromData)
-      console.log('toData:', toData)
-      console.log('obj:', obj)
+      // console.log('fromData:', fromData)
+      // console.log('toData:', toData)
+      // console.log('obj:', obj)
     }
   }
 }
