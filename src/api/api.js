@@ -507,3 +507,29 @@ export function postList(params) {
   })
 }
 
+// 获取岗位
+export function getAllJob() {
+  return request({
+    url: '/config/job/getAll',
+    method: 'get'
+  })
+}
+
+// 新增岗位
+export function saveBatch(data) {
+  return request({
+    url: '/config/job/saveBatch',
+    method: 'post',
+    data
+  })
+}
+
+// 下载黑名单
+export function downloadTest(params) {
+  return request({
+    url: '/hateSale/downloadAll',
+    method: 'get',
+    responseType: 'blob',
+    params
+  })
+}
