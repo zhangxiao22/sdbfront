@@ -1,14 +1,18 @@
 <template>
   <div class="container">
-    <tree-transfer :title="[' ', ' ']"
+    <tree-transfer ref="transferRef"
+                   :title="[' ', ' ']"
                    :button_text="['到右边','到左边']"
                    :from_data="leftData"
                    :to_data="rightData"
                    :default-props="{label:'label'}"
                    height="100%"
                    filter
+                   :default-checked-keys="defaultCheckedKeys"
                    :render-content-left="renderContent"
                    :render-content-right="renderContent"
+                   @left-check-change="leftCheckChange"
+                   @right-check-change="rightCheckChange"
                    @addBtn="add"
                    @removeBtn="remove">
       <div slot="title-left"
@@ -24,7 +28,7 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-        <span class="count">11/884</span>
+        <span class="count">{{ leftCheckedTotalCount }}/{{ leftTotalCount }}</span>
       </div>
       <div slot="title-right"
            class="top-select">
@@ -38,7 +42,7 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-        <span class="count">222/666</span>
+        <span class="count">{{ rightCheckedTotalCount }}/{{ rightTotalCount }}</span>
       </div>
     </tree-transfer>
   </div>
@@ -60,12 +64,13 @@ const translate = (data) => {
     // console.log(n.userGraphVOList, n.subOrgList)
     return Object.assign({}, n, {
       id: n.orgId || n.userId,
-      pid: n.parentOrgId,
+      pid: n.parentOrgId || 0,
       label: n.orgName || n.userName,
       children: translate([...n.userGraphVOList || [], ...n.subOrgList || []])
     })
   })
 }
+
 export default {
   components: {
     treeTransfer
@@ -73,6 +78,7 @@ export default {
 
   data() {
     return {
+      defaultCheckedKeys: [],
       // 岗位
       options: [{
         label: '未分配',
@@ -88,7 +94,11 @@ export default {
         //   label: '一级 1',
         //   children: []}
       ],
-      rightData: []
+      rightData: [],
+      leftTotalCount: 0,
+      leftCheckedTotalCount: 0,
+      rightTotalCount: 0,
+      rightCheckedTotalCount: 0
     }
   },
   computed: {
@@ -116,6 +126,82 @@ export default {
 
   },
   methods: {
+    resetLeft() {
+      // 清空全选按钮
+      this.$refs.transferRef.clearChecked('left')
+      // 清空已选项
+      this.$refs.transferRef.from_check_keys = []
+      // 清空筛选
+      this.$refs.transferRef.filterFrom = ''
+      // 清空源数据
+      this.leftData = []
+      // 清空已选人数
+      this.leftCheckedTotalCount = 0
+    },
+    resetRight() {
+      this.$refs.transferRef.clearChecked('right')
+      this.$refs.transferRef.to_check_keys = []
+      this.$refs.transferRef.filterTo = ''
+      this.rightData = []
+      this.rightCheckedTotalCount = 0
+    },
+    checkBtn() {
+      // console.log(this.$refs.transferRef.from_check_keys, this.$refs.transferRef.to_check_keys)\
+      if (this.leftPost === '' || this.rightPost === '') {
+        this.$nextTick(() => {
+          this.$refs.transferRef.from_disabled = true
+          this.$refs.transferRef.to_disabled = true
+        })
+      } else {
+        this.$refs.transferRef.from_disabled = !this.$refs.transferRef.from_check_keys.length
+        this.$refs.transferRef.to_disabled = !this.$refs.transferRef.to_check_keys.length
+      }
+    },
+    getTotalPeopleCounts(list) {
+      let count = 0
+      const refn = (data) => {
+        data.forEach(n => {
+          if (n.children.length) {
+            refn(n.children)
+          } else {
+            count += 1
+          }
+        })
+      }
+      refn(list)
+      return count
+    },
+    getCheckPeopleCounts(treeObj) {
+      return treeObj.checkedNodes.filter(n => {
+        return !n.children.length
+      }).length
+    },
+    leftCheckChange(nodeObj, treeObj, checkAll) {
+      // console.log(nodeObj, treeObj, checkAll)
+      if (checkAll) {
+        this.leftCheckedTotalCount = this.leftTotalCount
+      } else {
+        if (treeObj) {
+          this.leftCheckedTotalCount = this.getCheckPeopleCounts(treeObj)
+        } else {
+          this.leftCheckedTotalCount = 0
+        }
+      }
+      this.checkBtn()
+    },
+    rightCheckChange(nodeObj, treeObj, checkAll) {
+      // console.log(nodeObj, treeObj, checkAll)
+      if (checkAll) {
+        this.rightCheckedTotalCount = this.rightTotalCount
+      } else {
+        if (treeObj) {
+          this.rightCheckedTotalCount = this.getCheckPeopleCounts(treeObj)
+        } else {
+          this.rightCheckedTotalCount = 0
+        }
+      }
+      this.checkBtn()
+    },
     renderContent(h, { node, data, store }) {
       if (node.isLeaf) {
         return (
@@ -131,13 +217,19 @@ export default {
       }
     },
     async handleSelectLeftOpt() {
+      this.resetLeft()
+      this.checkBtn()
       // console.log(this.leftPost)
       this.leftData = await this.getPostPeopleList(this.leftPost)
-      console.log(this.leftData)
+      // this.leftTotalCount = Math.random()
+      this.leftTotalCount = this.getTotalPeopleCounts(this.leftData)
     },
     async handleSelectRightOpt() {
+      this.resetRight()
+      this.checkBtn()
       // console.log(this.rightPost)
       this.rightData = await this.getPostPeopleList(this.rightPost)
+      this.rightTotalCount = this.getTotalPeopleCounts(this.rightData)
     },
     // 获取岗位下拉
     getJobOpt() {
