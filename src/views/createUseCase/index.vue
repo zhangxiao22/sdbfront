@@ -2,6 +2,7 @@
   <div class="container shun-card">
     <el-page-header :content="id?'编辑用例':'新建用例'"
                     @back="goBack" />
+    {{ baseInfo }}
     <el-form ref="regFormRef"
              :model="baseInfo"
              label-width="220px"
@@ -15,6 +16,26 @@
                   show-word-limit
                   :disabled="!!id"
                   maxlength="50" />
+      </el-form-item>
+      <el-form-item label="用例分类："
+                    :rules="[{
+                      required: true, message: '请选择用例分类', trigger: 'change'
+                    }]"
+                    prop="type">
+        <el-radio v-for="item of types"
+                  :key="item.label"
+                  v-model="baseInfo.type"
+                  :label="item.value">{{ item.label }}</el-radio>
+      </el-form-item>
+      <el-form-item label="事件注册参与人："
+                    :rules="[{
+                      required: true, message: '请选择事件注册参与人', trigger: 'change'
+                    }]"
+                    prop="type">
+        <el-radio v-for="item of types"
+                  :key="item.label"
+                  v-model="baseInfo.type"
+                  :label="item.value">{{ item.label }}</el-radio>
       </el-form-item>
       <el-form-item class="target-form-item"
                     required
@@ -98,8 +119,19 @@ export default {
   data() {
     return {
       MAX_NUMBER,
+      types: [
+        {
+          value: '1',
+          label: '选项一'
+        },
+        {
+          value: '2',
+          label: '选项二'
+        }
+      ],
       baseInfo: {
         name: '',
+        type: '',
         target: [
           {
             targetSelect: '',

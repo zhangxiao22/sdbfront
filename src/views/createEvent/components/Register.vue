@@ -166,9 +166,9 @@ export default {
     id() {
       return +this.$route.query.id
     },
-    useid() {
-      return +this.$route.query.useid || ''
-    },
+    // useid() {
+    //   return +this.$route.query.useid || ''
+    // },
     // 获取数据
     getData() {
       const data = {}
@@ -213,9 +213,9 @@ export default {
     }
   },
   created() {
-    this.useCase().then(() => {
-      this.useid && (this.baseInfo.useCaseId = this.useid)
-    })
+    // this.useCase().then(() => {
+    //   this.useid && (this.baseInfo.useCaseId = this.useid)
+    // })
     this.eventCategoryList()
     this.sampleList()
     if (this.id) {
@@ -237,7 +237,7 @@ export default {
         })
         // this.$refs['regFormRef'].resetFields()
       }
-      this.baseInfo.useCaseId = this.useid
+      // this.baseInfo.useCaseId = this.useid
     },
     // 获取详情
     getDetail() {

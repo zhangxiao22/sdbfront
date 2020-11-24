@@ -211,9 +211,6 @@ export default {
   computed: {
     id() {
       return +this.$route.query.id
-    },
-    useid() {
-      return +this.$route.query.useid
     }
   },
   mounted() {
