@@ -165,7 +165,7 @@ export default {
         getOutletList().then(res => {
           this.outletOpt = res.data.map(n => {
             return {
-              label: n.name,
+              label: n.orgName,
               value: n.id,
               disabled: false
             }
