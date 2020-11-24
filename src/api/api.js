@@ -498,10 +498,10 @@ export function setUseCasePriority(data) {
   })
 }
 
-// 获取岗位
-export function postList(params) {
+// 获取岗位下的人员
+export function postPeopleList(params) {
   return request({
-    url: 'http://10.5.12.233:8848/org/flatten',
+    url: '/config/role/orgList',
     method: 'get',
     params
   })

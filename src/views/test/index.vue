@@ -39,8 +39,25 @@
 </template>
 
 <script>
-import { postList } from '@/api/api'
+import { postPeopleList } from '@/api/api'
 import treeTransfer from 'el-tree-transfer' // 引入
+const translate = (data) => {
+  // console.log('data', data)
+  if (!data) return []
+  return data.map(n => {
+    if (n.userGraphVOList) {
+      n.userGraphVOList.forEach(a => {
+        a.parentOrgId = n.orgId
+      })
+    }
+    return Object.assign({}, n, {
+      id: n.orgId || n.userId,
+      pid: n.parentOrgId,
+      label: n.orgName || n.userName,
+      children: translate(n.userGraphVOList?.length ? n.userGraphVOList : n.subOrgList)
+    })
+  })
+}
 export default {
   components: {
     treeTransfer
@@ -70,39 +87,39 @@ export default {
       // 右边选的岗位
       rightPost: '',
       leftData: [
-        {
-          id: '1',
-          pid: 0,
-          label: '一级 1',
-          children: [
-            {
-              id: '1-1',
-              pid: '1',
-              label: '二级 1-1',
-              disabled: true,
-              children: []
-            },
-            {
-              id: '1-2',
-              pid: '1',
-              label: '二级 1-2',
-              children: [
-                {
-                  id: '1-2-1',
-                  pid: '1-2',
-                  children: [],
-                  label: '二级 1-2-1'
-                },
-                {
-                  id: '1-2-2',
-                  pid: '1-2',
-                  children: [],
-                  label: '二级 1-2-2'
-                }
-              ]
-            }
-          ]
-        }
+        // {
+        //   id: '1',
+        //   pid: 0,
+        //   label: '一级 1',
+        //   children: [
+        //     {
+        //       id: '1-1',
+        //       pid: '1',
+        //       label: '二级 1-1',
+        //       disabled: true,
+        //       children: []
+        //     },
+        //     {
+        //       id: '1-2',
+        //       pid: '1',
+        //       label: '二级 1-2',
+        //       children: [
+        //         {
+        //           id: '1-2-1',
+        //           pid: '1-2',
+        //           children: [],
+        //           label: '二级 1-2-1'
+        //         },
+        //         {
+        //           id: '1-2-2',
+        //           pid: '1-2',
+        //           children: [],
+        //           label: '二级 1-2-2'
+        //         }
+        //       ]
+        //     }
+        //   ]
+        // }
       ],
       rightData: []
     }
@@ -113,14 +130,18 @@ export default {
 
   watch: {},
   created() {
-    // postList().then(res => {
-    //   this.leftData = res.data
-    // })
+    this.getPostPeopleList()
   },
   mounted() {
 
   },
   methods: {
+    getPostPeopleList() {
+      postPeopleList({ jobId: 1 }).then(res => {
+        this.leftData = translate(res.data.orgGraphVOList)
+        // console.log(this.leftData)
+      })
+    },
     // 监听穿梭框组件添加
     add(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
@@ -128,6 +149,10 @@ export default {
       console.log('fromData:', fromData)
       console.log('toData:', toData)
       console.log('obj:', obj)
+      const users = obj.nodes.filter(n => {
+        return !n.children.length
+      }).map(m => m.userId)
+      console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
     // 监听穿梭框组件移除
     remove(fromData, toData, obj) {

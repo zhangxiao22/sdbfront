@@ -1,36 +1,27 @@
 <template>
-  <div class="errPage-container">
-    <el-row>
-      <el-col :span="12">
-        <h2>你没有权限去该页面</h2>
+  <div class="wscn-http404-container">
+    <div class="wscn-http404">
+
+      <div class="bullshit">
+        <h2>您没有权限访问该页面</h2>
         <h4>请重新登录或联系管理员</h4>
-      </el-col>
-    </el-row>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-// import errGif from '@/assets/401_images/401.gif'
 
 export default {
-  name: 'Page401',
-  data() {
-    return {
-      // errGif: errGif + '?' + +new Date(),
-      // ewizardClap: 'https://wpimg.wallstcn.com/007ef517-bafd-4066-aae4-6883632d9646',
-      // dialogVisible: false
-    }
-  },
-  methods: {
-
-  }
+  name: 'Page401'
 }
 </script>
 
 <style lang="scss" scoped>
-.errPage-container {
-  width: 800px;
-  max-width: 100%;
-  margin: 100px auto;
+.wscn-http404-container {
+  transform: translate(-50%, -50%);
+  position: absolute;
+  top: 40%;
+  left: 50%;
 }
 </style>
