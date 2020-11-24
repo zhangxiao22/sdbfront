@@ -14,7 +14,8 @@
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
-                   plain>
+                   plain
+                   @click="handleAdd()">
           新增岗位
         </el-button>
       </template>
@@ -22,30 +23,38 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="edit(scope.row)">编辑</div>
+               @click="handleEdit(scope.row)">编辑</div>
           <div class="btn"
-               style="color:#f56c6c;">删除</div>
+               style="color:#f56c6c;"
+               @click="handleDel(scope.row)">删除</div>
         </div>
       </template>
     </shun-table>
-    <el-dialog title="分配角色"
+    <el-dialog :title="isEdit?'编辑岗位':'新增岗位'"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                :model="form">
-        <el-form-item label="角色名称："
+        <el-form-item label="岗位名称："
                       prop="name"
+                      :rules="[{
+                        required: true, message: '请输入岗位', trigger: 'blur'
+                      }]"
                       label-width="110px">
           <el-input v-model="form.name"
+                    :disabled="isEdit?true:false"
                     style="width:90%;"
                     placeholder="请输入名称" />
         </el-form-item>
         <el-form-item label="选择角色："
-                      prop="rule"
+                      prop="role"
+                      :rules="[{
+                        required: true, message: '请选择角色', trigger: 'blur'
+                      }]"
                       label-width="110px">
-          <el-select v-model="form.rule"
+          <el-select v-model="form.role"
                      style="width:90%;"
                      placeholder="请选择">
-            <el-option v-for="item in ruleOpt"
+            <el-option v-for="item in roleOpt"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
@@ -54,9 +63,10 @@
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button @click="cancelAddList">取 消</el-button>
         <el-button type="primary"
-                   @click="showDialog = false">确 定</el-button>
+                   :loading="buttonLoading"
+                   @click="ensureAddList()">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -65,7 +75,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { } from '@/api/api'
+import { getAllJob, saveBatch, getPermissionPackEnum } from '@/api/api'
 
 export default {
   name: 'Assign',
@@ -94,6 +104,8 @@ export default {
     return {
       loading: false,
       showDialog: false,
+      buttonLoading: false,
+      isEdit: false,
       form: {
         name: '',
         rule: ''
@@ -104,7 +116,7 @@ export default {
           label: '岗位名称'
         },
         {
-          prop: 'role',
+          prop: 'role.label',
           label: '角色'
         },
         {
@@ -118,7 +130,7 @@ export default {
         }
       ],
       tableData: [],
-      ruleOpt: [{
+      roleOpt: [{
         value: '1',
         label: '普通员工'
       }, {
@@ -136,36 +148,145 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
+    },
+    getData() {
+      const data = {}
+      // const add = {}
+      // add.name = this.form.name
+      // add.permissionPack = this.form.role
+      data.jobList = this.tableData.map(n => {
+        return Object.assign({}, {
+          id: n.id,
+          name: n.post,
+          permissionPack: n.role.value
+        })
+      })
+      // data.jobList.push(add)
+      return data
     }
   },
 
   watch: {},
   created() {
     this.getList()
+    this.getRoleOpt()
   },
   methods: {
-    getList() {
-      this.tableData = [{
-        post: '岗位1',
-        role: '普通员工',
-        people: 6
-      }, {
-        post: '岗位2',
-        role: '管理员',
-        people: 6
-      }, {
-        post: '业务主管',
-        role: '审批员',
-        people: 6
-      }, {
-        post: '行长',
-        role: '超级管理员',
-        people: 6
-      }]
+    resetAll() {
+      this.getList()
     },
-    edit(id) {
+    getList() {
+      getAllJob().then(res => {
+        this.tableData = res.data.map(n => {
+          return Object.assign({}, {
+            id: n.id,
+            post: n.name,
+            role: n.permissionPack,
+            people: n.userJobCount
+          })
+        })
+      })
+    },
+    getRoleOpt() {
+      getPermissionPackEnum().then(res => {
+        this.roleOpt = res.data
+      })
+    },
+    handleAdd() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.isEdit = false
       this.showDialog = true
+    },
+    handleEdit(row) {
+      // this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.showDialog = true
+      this.isEdit = row.id
+      console.log(row)
+      this.tableData.find((n, i) => {
+        if (n.id === row.id) {
+          this.form.name = row.post
+          this.form.role = row.role.value
+          return true
+        }
+      })
+      // if (this.id) {
+      // }
+    },
+    handleDel(row) {
+      let delList = []
+      delList = JSON.parse(JSON.stringify(this.tableData))
+      delList.find((n, i) => {
+        if (n.id === row.id) {
+          delList.splice(i, 1)
+          return true
+        }
+      })
+      const data = {}
+      data.jobList = delList.map(n => {
+        return Object.assign({}, {
+          id: n.id,
+          name: n.post,
+          permissionPack: n.role.value
+        })
+      })
+      this.$confirm(`是否确认删除岗位（${row.post}）？`)
+        .then(_ => {
+          saveBatch(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
+        }).finally(() => {
+        })
+    },
+    ensureAddList() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          if (this.isEdit) {
+            this.getData.jobList.find((n, i) => {
+              if (n.id === this.id) {
+                this.getData.jobList.splice(i, 1, {
+                  id: n.id,
+                  // name: n.post,
+                  permissionPack: this.form.role
+                })
+                return true
+              }
+            })
+          } else {
+            const addData = {}
+            addData.name = this.form.name
+            addData.permissionPack = this.form.role
+            this.getData.jobList.push(addData)
+          }
+          saveBatch(this.getData).then(res => {
+            this.buttonLoading = false
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.resetAll()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+            this.isEdit = false
+          })
+        }
+      })
+    },
+    cancelAddList() {
+      // this.$refs['regFormRef'].resetFields()
+      this.showDialog = false
+      this.isEdit = false
     }
   }
 }

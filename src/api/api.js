@@ -523,6 +523,13 @@ export function saveBatch(data) {
     data
   })
 }
+// 获取角色
+export function getPermissionPackEnum() {
+  return request({
+    url: '/config/job/getPermissionPackEnum',
+    method: 'get'
+  })
+}
 
 // 下载黑名单
 export function downloadTest(params) {
