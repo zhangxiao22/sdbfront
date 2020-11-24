@@ -25,10 +25,10 @@
         <el-form-item label="选择："
                       prop="priority"
                       label-width="110px">
-          <el-select v-model="form.rule"
+          <el-select v-model="form.priority"
                      style="width:90%;"
                      placeholder="请选择">
-            <el-option v-for="item in ruleOpt"
+            <el-option v-for="item in priorityOpt"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
@@ -37,9 +37,10 @@
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="showDialog = false">取 消</el-button>
+        <el-button @click="cancelAddList">取 消</el-button>
         <el-button type="primary"
-                   @click="showDialog = false">确 定</el-button>
+                   :loading="buttonLoading"
+                   @click="ensureAddList">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -48,7 +49,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { } from '@/api/api'
+import { checkCluePriorityList, getCluePriorityRuleEnums, setCluePriority } from '@/api/api'
 
 export default {
   name: 'Assign',
@@ -76,17 +77,19 @@ export default {
   data() {
     return {
       loading: false,
+      buttonLoading: false,
       showDialog: false,
       form: {
-        rule: ''
+        id: '',
+        priority: ''
       },
       tableColumnList: [
         {
-          prop: 'post',
+          prop: 'useCaseName',
           label: '用例'
         },
         {
-          prop: 'role',
+          prop: 'priority.label',
           label: '优先级'
         },
         {
@@ -96,19 +99,7 @@ export default {
         }
       ],
       tableData: [],
-      ruleOpt: [{
-        value: '1',
-        label: '普通员工'
-      }, {
-        value: '2',
-        label: '管理员'
-      }, {
-        value: '3',
-        label: '审批员'
-      }, {
-        value: '4',
-        label: '超级管理员'
-      }]
+      priorityOpt: []
     }
   },
   computed: {
@@ -120,26 +111,56 @@ export default {
   watch: {},
   created() {
     this.getList()
+    this.getPriorityOpt()
   },
   methods: {
     getList() {
-      this.tableData = [{
-        post: '岗位1',
-        role: '普通员工'
-      }, {
-        post: '岗位2',
-        role: '管理员'
-      }, {
-        post: '业务主管',
-        role: '审批员'
-      }, {
-        post: '行长',
-        role: '超级管理员'
-      }]
+      checkCluePriorityList().then(res => {
+        this.tableData = res.data.map(n => {
+          return Object.assign({}, {
+            id: n.id,
+            useCaseName: n.name,
+            priority: n.cluePriorityRule
+          })
+        })
+      })
     },
-    edit(id) {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+    getPriorityOpt() {
+      getCluePriorityRuleEnums().then(res => {
+        this.priorityOpt = res.data
+      })
+    },
+    edit(row) {
+      // this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.showDialog = true
+      this.form.id = row.id
+      this.form.priority = row.priority.value
+    },
+    cancelAddList() {
+      this.showDialog = false
+    },
+    ensureAddList() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          const data = {}
+          data.id = this.form.id
+          data.cluePriorityRule = this.form.priority
+          setCluePriority(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList()
+            }
+          }).catch(() => {
+            this.buttonLoading = false
+          })
+        }
+      })
     }
   }
 }

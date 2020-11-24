@@ -498,6 +498,31 @@ export function setUseCasePriority(data) {
   })
 }
 
+// 获取线索
+export function checkCluePriorityList() {
+  return request({
+    url: '/event/checkCluePriorityList',
+    method: 'get'
+  })
+}
+
+// 获取优先级列表
+export function getCluePriorityRuleEnums() {
+  return request({
+    url: '/event/getCluePriorityRuleEnums',
+    method: 'get'
+  })
+}
+
+// 修改线索优先级
+export function setCluePriority(data) {
+  return request({
+    url: '/event/setCluePriority',
+    method: 'post',
+    data
+  })
+}
+
 // 获取岗位下的人员
 export function postPeopleList(params) {
   return request({

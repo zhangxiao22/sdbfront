@@ -200,6 +200,7 @@ export default {
     ensureAddList() {
       this.$refs['formReg'].validate((valid) => {
         if (valid) {
+          this.buttonLoading = true
           let ajxj
           const data = {}
           if (this.form.id) {
