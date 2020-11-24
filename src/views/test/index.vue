@@ -12,13 +12,14 @@
                    @removeBtn="remove">
       <div slot="title-left"
            class="top-select">
+        <!-- {{ JSON.stringify(leftPost) }} -->
         <el-select v-model="leftPost"
                    style="width:100%;"
                    placeholder="请选择岗位"
                    @change="handleSelectOpt($event,leftPost)">
-          <el-option v-for="item in options"
+          <el-option v-for="item in leftOptions"
                      :key="item.value"
-                     :disabled="false"
+                     :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
@@ -29,9 +30,9 @@
         <el-select v-model="rightPost"
                    style="width:100%;"
                    placeholder="请选择岗位">
-          <el-option v-for="item in options"
+          <el-option v-for="item in rightOptions"
                      :key="item.value"
-                     :disabled="false"
+                     :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
@@ -70,20 +71,8 @@ export default {
     return {
       // 岗位
       options: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
+        label: '为分配',
+        value: null
       }],
       // 左边选的岗位
       leftPost: '',
@@ -99,7 +88,20 @@ export default {
     }
   },
   computed: {
-
+    leftOptions() {
+      return this.options.map(n => {
+        return Object.assign({}, n, {
+          disabled: n.value === this.rightPost
+        })
+      })
+    },
+    rightOptions() {
+      return this.options.map(n => {
+        return Object.assign({}, n, {
+          disabled: n.value === this.leftPost
+        })
+      })
+    }
   },
 
   watch: {},
@@ -112,25 +114,11 @@ export default {
   },
   methods: {
     handleSelectOpt(val, item) {
-      // 设置不可选项
-      this.resetOpt()
-    },
-    resetOpt() {
-      const temp = []
-      this.leftPost.forEach((n, i) => {
-        n.item && temp.push(n.item)
-      })
-      this.rightPost.forEach((n, i) => {
-        n.item && temp.push(n.item)
-      })
-      this.options.forEach((n, i) => {
-        n.disabled = temp.includes(n.value)
-      })
     },
     getJobOpt() {
       getAllJob().then(res => {
-        this.options = res.data.map(n => {
-          return Object.assign({}, {
+        res.data.forEach(n => {
+          this.options.push({
             value: n.id,
             label: n.name,
             disabled: false
