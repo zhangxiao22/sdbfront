@@ -41,7 +41,7 @@
                       }]"
                       label-width="110px">
           <el-input v-model="form.name"
-                    :disabled="isEdit?true:false"
+                    :disabled="isEdit"
                     style="width:90%;"
                     placeholder="请输入名称" />
         </el-form-item>
@@ -107,8 +107,9 @@ export default {
       buttonLoading: false,
       isEdit: false,
       form: {
+        id: '',
         name: '',
-        rule: ''
+        role: ''
       },
       tableColumnList: [
         {
@@ -137,21 +138,6 @@ export default {
     parentRef() {
       return this.$refs.table
     }
-    // getData() {
-    //   const data = {}
-    //   // const add = {}
-    //   // add.name = this.form.name
-    //   // add.permissionPack = this.form.role
-    //   data.jobList = this.tableData.map(n => {
-    //     return Object.assign({}, {
-    //       id: n.id,
-    //       name: n.post,
-    //       permissionPack: n.role.value
-    //     })
-    //   })
-    //   // data.jobList.push(add)
-    //   return data
-    // }
   },
 
   watch: {},
@@ -160,11 +146,10 @@ export default {
     this.getRoleOpt()
   },
   methods: {
-    // resetAll() {
-    //   this.getList()
-    // },
     getList() {
+      this.loading = true
       getAllJob().then(res => {
+        this.loading = false
         this.tableData = res.data.map(n => {
           return Object.assign({}, {
             id: n.id,
@@ -181,43 +166,23 @@ export default {
       })
     },
     handleAdd() {
+      this.isEdit = false
+      console.log(this.$refs['formReg'])
       this.$refs['formReg'] && this.$refs['formReg'].resetFields()
+      this.form.id = ''
       this.showDialog = true
     },
     handleEdit(row) {
-      // this.$refs['formReg'] && this.$refs['formReg'].resetFields()
+      this.isEdit = true
+      this.form.id = row.id
+      this.form.name = row.post
+      this.form.role = row.role.value
       this.showDialog = true
-      this.isEdit = row.id
-      console.log(row)
-      this.tableData.find((n, i) => {
-        if (n.id === row.id) {
-          this.form.name = row.post
-          this.form.role = row.role.value
-          return true
-        }
-      })
-      // if (this.id) {
-      // }
     },
     handleDel(row) {
-      // let delList = []
-      // delList = JSON.parse(JSON.stringify(this.tableData))
-      // delList.find((n, i) => {
-      //   if (n.id === row.id) {
-      //     delList.splice(i, 1)
-      //     return true
-      //   }
-      // })
-      // const data = {}
-      // data.jobList = delList.map(n => {
-      //   return Object.assign({}, {
-      //     id: n.id,
-      //     name: n.post,
-      //     permissionPack: n.role.value
-      //   })
-      // })
       this.$confirm(`是否确认删除岗位（${row.post}）？`)
         .then(_ => {
+          this.loading = true
           deleteJob({ jobId: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -229,34 +194,23 @@ export default {
             }
           })
         }).finally(() => {
+          this.loading = false
         })
     },
     ensureAddList() {
       this.$refs['formReg'].validate((valid) => {
         if (valid) {
-          // this.buttonLoading = true
-          // if (this.isEdit) {
-          //   this.getData.jobList.find((n, i) => {
-          //     if (n.id === this.id) {
-          //       this.getData.jobList.splice(i, 1, {
-          //         id: n.id,
-          //         // name: n.post,
-          //         permissionPack: this.form.role
-          //       })
-          //       return true
-          //     }
-          //   })
-          // } else {
-          //   const addData = {}
-          //   addData.name = this.form.name
-          //   addData.permissionPack = this.form.role
-          //   this.getData.jobList.push(addData)
-          // }
+          let ajxj
           const data = {}
+          if (this.form.id) {
+            data.id = this.form.id
+            ajxj = ''
+          } else {
+            ajxj = insertJob
+          }
           data.name = this.form.name
           data.permissionPack = this.form.role
-          insertJob(data).then(res => {
-            this.buttonLoading = false
+          ajxj(data).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',

@@ -169,13 +169,14 @@
                :before-close="closeClueDialog"
                :visible.sync="clueDialog">
       <el-form ref="formRef"
+               style="width:500px;margin:0 auto;"
                label-width="220px"
                :model="clueInfo">
         <el-form-item required
                       label="每周线索分配上限（CRM）："
                       prop="assignUpper_crm">
           <el-input-number v-model="clueInfo.assignUpper_crm"
-                           style="width:90%;"
+                           style="width:200px;"
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
@@ -188,7 +189,7 @@
                       label="每周线索分配上限（短信）："
                       prop="assignUpper_sms">
           <el-input-number v-model="clueInfo.assignUpper_sms"
-                           style="width:90%;"
+                           style="width:200px;"
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
