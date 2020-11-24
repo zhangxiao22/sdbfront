@@ -515,7 +515,7 @@ export function getAllJob() {
   })
 }
 
-// 新增岗位
+// 保存岗位
 export function saveBatch(data) {
   return request({
     url: '/config/job/saveBatch',
@@ -523,6 +523,34 @@ export function saveBatch(data) {
     data
   })
 }
+
+// 新增岗位
+export function insertJob(data) {
+  return request({
+    url: '/config/job/insert',
+    method: 'post',
+    data
+  })
+}
+
+// 删除岗位
+export function deleteJob(params) {
+  return request({
+    url: '/config/job/delete',
+    method: 'get',
+    params
+  })
+}
+
+// 分配岗位
+export function occupyJob(data) {
+  return request({
+    url: '/config/userJob/occupyJob',
+    method: 'post',
+    data
+  })
+}
+
 // 获取角色
 export function getPermissionPackEnum() {
   return request({
