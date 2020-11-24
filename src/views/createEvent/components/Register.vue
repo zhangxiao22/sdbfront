@@ -57,7 +57,32 @@
                         start-placeholder="开始日期"
                         end-placeholder="结束日期" />
       </el-form-item>
-
+      <el-form-item required
+                    label="每周线索分配上限（CRM）："
+                    prop="assignUpper_crm">
+        <el-input-number v-model="baseInfo.assignUpper_crm"
+                         style="width:200px;"
+                         controls-position="right"
+                         :min="0"
+                         :max="10000000"
+                         oninput="value=value.replace(/[^\d]/g,'')"
+                         :step="1000"
+                         :precision="0"
+                         @blur="handleBlurCRM" />
+      </el-form-item>
+      <el-form-item required
+                    style="margin-bottom:0;"
+                    label="每周线索分配上限（短信）："
+                    prop="assignUpper_sms">
+        <el-input-number v-model="baseInfo.assignUpper_sms"
+                         style="margin:0;"
+                         controls-position="right"
+                         :min="0"
+                         :max="10000000"
+                         :step="1000"
+                         :precision="0"
+                         @blur="handleBlurSMS" />
+      </el-form-item>
       <el-form-item prop="trial">
         <div slot="label">
           <Info content="不能超过30%" />
@@ -84,7 +109,6 @@
                              @blur="handlerControlBlur" />%
           </el-form-item>
         </div>
-
       </el-form-item>
       <el-form-item v-show="baseInfo.trial"
                     prop="sample"
@@ -123,6 +147,8 @@ const DEFAULT_BASEINFO = {
   useCaseId: '',
   statusValue: '',
   category: '',
+  assignUpper_crm: '',
+  assignUpper_sms: '',
   // categoryValue: '',
   date: [],
   // startDate: '',
@@ -278,6 +304,16 @@ export default {
       getEventCategory().then(res => {
         this.categoryOpt = res.data.eventCategoryEnumList
       })
+    },
+    handleBlurCRM() {
+      if (!this.clueInfo.assignUpper_crm) {
+        this.clueInfo.assignUpper_crm = 0
+      }
+    },
+    handleBlurSMS() {
+      if (!this.clueInfo.assignUpper_sms) {
+        this.clueInfo.assignUpper_sms = 0
+      }
     },
     // 获取抽样方式
     sampleList() {
