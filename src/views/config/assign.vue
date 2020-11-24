@@ -15,7 +15,7 @@
                    type="primary"
                    icon="el-icon-plus"
                    plain
-                   @click="handleAdd()">
+                   @click="handleAdd">
           新增岗位
         </el-button>
       </template>
@@ -32,7 +32,7 @@
     </shun-table>
     <el-dialog :title="isEdit?'编辑岗位':'新增岗位'"
                :visible.sync="showDialog">
-      <el-form ref="regFormRef"
+      <el-form ref="formReg"
                :model="form">
         <el-form-item label="岗位名称："
                       prop="name"
@@ -66,7 +66,7 @@
         <el-button @click="cancelAddList">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="ensureAddList()">确 定</el-button>
+                   @click="ensureAddList">确 定</el-button>
       </div>
     </el-dialog>
 
@@ -122,48 +122,36 @@ export default {
         {
           prop: 'people',
           label: '岗位人数'
-        },
-        {
-          prop: 'operate',
-          label: '操作',
-          slot: true
         }
+        // {
+        //   prop: 'operate',
+        //   label: '操作',
+        //   slot: true
+        // }
       ],
       tableData: [],
-      roleOpt: [{
-        value: '1',
-        label: '普通员工'
-      }, {
-        value: '2',
-        label: '管理员'
-      }, {
-        value: '3',
-        label: '审批员'
-      }, {
-        value: '4',
-        label: '超级管理员'
-      }]
+      roleOpt: []
     }
   },
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    getData() {
-      const data = {}
-      // const add = {}
-      // add.name = this.form.name
-      // add.permissionPack = this.form.role
-      data.jobList = this.tableData.map(n => {
-        return Object.assign({}, {
-          id: n.id,
-          name: n.post,
-          permissionPack: n.role.value
-        })
-      })
-      // data.jobList.push(add)
-      return data
     }
+    // getData() {
+    //   const data = {}
+    //   // const add = {}
+    //   // add.name = this.form.name
+    //   // add.permissionPack = this.form.role
+    //   data.jobList = this.tableData.map(n => {
+    //     return Object.assign({}, {
+    //       id: n.id,
+    //       name: n.post,
+    //       permissionPack: n.role.value
+    //     })
+    //   })
+    //   // data.jobList.push(add)
+    //   return data
+    // }
   },
 
   watch: {},
@@ -172,9 +160,9 @@ export default {
     this.getRoleOpt()
   },
   methods: {
-    resetAll() {
-      this.getList()
-    },
+    // resetAll() {
+    //   this.getList()
+    // },
     getList() {
       getAllJob().then(res => {
         this.tableData = res.data.map(n => {
@@ -193,79 +181,81 @@ export default {
       })
     },
     handleAdd() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-      this.isEdit = false
+      this.$refs['formReg'] && this.$refs['formReg'].resetFields()
       this.showDialog = true
     },
-    handleEdit(row) {
-      // this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-      this.showDialog = true
-      this.isEdit = row.id
-      console.log(row)
-      this.tableData.find((n, i) => {
-        if (n.id === row.id) {
-          this.form.name = row.post
-          this.form.role = row.role.value
-          return true
-        }
-      })
-      // if (this.id) {
-      // }
-    },
-    handleDel(row) {
-      let delList = []
-      delList = JSON.parse(JSON.stringify(this.tableData))
-      delList.find((n, i) => {
-        if (n.id === row.id) {
-          delList.splice(i, 1)
-          return true
-        }
-      })
-      const data = {}
-      data.jobList = delList.map(n => {
-        return Object.assign({}, {
-          id: n.id,
-          name: n.post,
-          permissionPack: n.role.value
-        })
-      })
-      this.$confirm(`是否确认删除岗位（${row.post}）？`)
-        .then(_ => {
-          saveBatch(data).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.resetAll()
-            }
-          })
-        }).finally(() => {
-        })
-    },
+    // handleEdit(row) {
+    //   // this.$refs['formReg'] && this.$refs['formReg'].resetFields()
+    //   this.showDialog = true
+    //   this.isEdit = row.id
+    //   console.log(row)
+    //   this.tableData.find((n, i) => {
+    //     if (n.id === row.id) {
+    //       this.form.name = row.post
+    //       this.form.role = row.role.value
+    //       return true
+    //     }
+    //   })
+    //   // if (this.id) {
+    //   // }
+    // },
+    // handleDel(row) {
+    //   let delList = []
+    //   delList = JSON.parse(JSON.stringify(this.tableData))
+    //   delList.find((n, i) => {
+    //     if (n.id === row.id) {
+    //       delList.splice(i, 1)
+    //       return true
+    //     }
+    //   })
+    //   const data = {}
+    //   data.jobList = delList.map(n => {
+    //     return Object.assign({}, {
+    //       id: n.id,
+    //       name: n.post,
+    //       permissionPack: n.role.value
+    //     })
+    //   })
+    //   this.$confirm(`是否确认删除岗位（${row.post}）？`)
+    //     .then(_ => {
+    //       saveBatch(data).then(res => {
+    //         if (res.code === 200) {
+    //           this.$message({
+    //             message: '保存成功',
+    //             type: 'success',
+    //             duration: '3000'
+    //           })
+    //           this.resetAll()
+    //         }
+    //       })
+    //     }).finally(() => {
+    //     })
+    // },
     ensureAddList() {
-      this.$refs['regFormRef'].validate((valid) => {
+      this.$refs['formReg'].validate((valid) => {
         if (valid) {
-          this.buttonLoading = true
-          if (this.isEdit) {
-            this.getData.jobList.find((n, i) => {
-              if (n.id === this.id) {
-                this.getData.jobList.splice(i, 1, {
-                  id: n.id,
-                  // name: n.post,
-                  permissionPack: this.form.role
-                })
-                return true
-              }
-            })
-          } else {
-            const addData = {}
-            addData.name = this.form.name
-            addData.permissionPack = this.form.role
-            this.getData.jobList.push(addData)
-          }
-          saveBatch(this.getData).then(res => {
+          // this.buttonLoading = true
+          // if (this.isEdit) {
+          //   this.getData.jobList.find((n, i) => {
+          //     if (n.id === this.id) {
+          //       this.getData.jobList.splice(i, 1, {
+          //         id: n.id,
+          //         // name: n.post,
+          //         permissionPack: this.form.role
+          //       })
+          //       return true
+          //     }
+          //   })
+          // } else {
+          //   const addData = {}
+          //   addData.name = this.form.name
+          //   addData.permissionPack = this.form.role
+          //   this.getData.jobList.push(addData)
+          // }
+          const data = {}
+          data.name = this.form.name
+          data.permissionPack = this.form.role
+          saveBatch(data).then(res => {
             this.buttonLoading = false
             if (res.code === 200) {
               this.$message({
@@ -274,19 +264,16 @@ export default {
                 duration: '3000'
               })
               this.showDialog = false
-              this.resetAll()
+              this.getList()
             }
           }).finally(() => {
             this.buttonLoading = false
-            this.isEdit = false
           })
         }
       })
     },
     cancelAddList() {
-      // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
-      this.isEdit = false
     }
   }
 }
