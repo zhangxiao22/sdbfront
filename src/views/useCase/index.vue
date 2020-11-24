@@ -268,7 +268,7 @@ export default {
         {
           prop: 'name',
           label: '状态/用例名称',
-          minWidth: 200,
+          minWidth: 300,
           notShowOverflowTooltip: true,
           slot: true
         },
