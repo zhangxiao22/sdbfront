@@ -130,19 +130,7 @@ export default {
         }
       ],
       tableData: [],
-      roleOpt: [{
-        value: '1',
-        label: '普通员工'
-      }, {
-        value: '2',
-        label: '管理员'
-      }, {
-        value: '3',
-        label: '审批员'
-      }, {
-        value: '4',
-        label: '超级管理员'
-      }]
+      roleOpt: []
     }
   },
   computed: {
