@@ -153,21 +153,22 @@ export default {
         return !n.children.length
       }).map(m => m.userId)
       const data = {}
-      data.userJobList = []
-      for (var i = 0; i < users.length; i++) {
-        data.userJobList.push({ jobId: this.rightPost, empCode: users[i] })
-      }
-      occupyJob(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '分配成功',
-            type: 'success',
-            duration: '3000'
-          })
-        }
-      }).finally(() => {
-      })
-      // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
+      // data.userJobList = []
+      // for (var i = 0; i < users.length; i++) {
+      //   data.userJobList.push({ jobId: this.rightPost, empCode: users[i] })
+      // }
+      console.log(data)
+      // occupyJob(data).then(res => {
+      //   if (res.code === 200) {
+      //     this.$message({
+      //       message: '分配成功',
+      //       type: 'success',
+      //       duration: '3000'
+      //     })
+      //   }
+      // }).finally(() => {
+      // })
+      console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
     // 监听穿梭框组件移除
     remove(fromData, toData, obj) {
