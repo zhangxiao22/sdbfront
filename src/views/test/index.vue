@@ -16,7 +16,7 @@
         <el-select v-model="leftPost"
                    style="width:100%;"
                    placeholder="请选择岗位"
-                   @change="handleSelectOpt($event,leftPost)">
+                   @change="handleSelectLeftOpt">
           <el-option v-for="item in leftOptions"
                      :key="item.value"
                      :disabled="item.disabled"
@@ -29,7 +29,8 @@
            class="top-select">
         <el-select v-model="rightPost"
                    style="width:100%;"
-                   placeholder="请选择岗位">
+                   placeholder="请选择岗位"
+                   @change="handleSelectRightOpt">
           <el-option v-for="item in rightOptions"
                      :key="item.value"
                      :disabled="item.disabled"
@@ -45,6 +46,7 @@
 <script>
 import { postPeopleList, getAllJob } from '@/api/api'
 import treeTransfer from 'el-tree-transfer' // 引入
+import { P } from '@antv/g2plot'
 const translate = (data) => {
   // console.log('data', data)
   if (!data) return []
@@ -72,7 +74,7 @@ export default {
       // 岗位
       options: [{
         label: '为分配',
-        value: null
+        value: 'null'
       }],
       // 左边选的岗位
       leftPost: '',
@@ -106,15 +108,20 @@ export default {
 
   watch: {},
   created() {
-    this.getPostPeopleList()
     this.getJobOpt()
   },
   mounted() {
 
   },
   methods: {
-    handleSelectOpt(val, item) {
+    async handleSelectLeftOpt() {
+      console.log(this.leftPost)
+      this.leftData = await this.getPostPeopleList(this.leftPost)
     },
+    async handleSelectRightOpt() {
+      this.leftData = await this.getPostPeopleList(this.rightPost)
+    },
+    // 获取岗位下拉
     getJobOpt() {
       getAllJob().then(res => {
         res.data.forEach(n => {
@@ -126,10 +133,12 @@ export default {
         })
       })
     },
-    getPostPeopleList() {
-      postPeopleList({ jobId: 1 }).then(res => {
-        this.leftData = translate(res.data.orgGraphVOList)
-        // console.log(this.leftData)
+    // 获取岗位下的人员
+    getPostPeopleList(jobId) {
+      return new Promise((resolve, reject) => {
+        postPeopleList({ jobId }).then(res => {
+          resolve(translate(res.data.orgGraphVOList))
+        })
       })
     },
     // 监听穿梭框组件添加
