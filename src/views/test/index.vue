@@ -115,7 +115,7 @@ export default {
   },
   methods: {
     async handleSelectLeftOpt() {
-      console.log(this.leftPost)
+      // console.log(this.leftPost)
       this.leftData = await this.getPostPeopleList(this.leftPost)
     },
     async handleSelectRightOpt() {

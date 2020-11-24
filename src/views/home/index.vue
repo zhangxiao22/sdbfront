@@ -8,7 +8,6 @@
         <div v-for="(item,i) of box.list"
              :key="i"
              class="card"
-             :class="item.type"
              :style="{backgroundImage:'url('+item.img+')'}"
              @click="handleClick(item.path)">
           <div class="title">{{ item.title }}</div>
@@ -97,20 +96,17 @@ export default {
             {
               img: require('../../assets/home/1-2.png'),
               title: '用户角色设置',
-              desc: '',
-              type: 'small'
+              desc: ''
             },
             {
               img: require('../../assets/home/1-2.png'),
               title: '参数设置',
-              desc: '',
-              type: 'small'
+              desc: ''
             },
             {
               img: require('../../assets/home/1-2.png'),
               title: '其他设置',
-              desc: '',
-              type: 'small'
+              desc: ''
             }
           ]
         }
@@ -196,13 +192,12 @@ export default {
         background-position: center;
         background-repeat: no-repeat;
         background-size: cover;
+        transition: all 0.3s;
         /*border: 1px solid transparent;*/
-        &.small {
-          height: 108px;
-        }
 
         &:hover {
-          box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.35);
+          transform: translateY(-5px);
+          box-shadow: 0 5px 10px 0 rgba(0, 0, 0, 0.3);
 
           .title {
             font-weight: bolder;
