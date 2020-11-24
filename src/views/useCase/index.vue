@@ -98,12 +98,12 @@
             </span>
             <el-dropdown-menu slot="dropdown"
                               class="operate-drop">
-              <el-dropdown-item v-if="scope.row.effect">
+              <!-- <el-dropdown-item v-if="scope.row.effect">
                 <div class="btn"
                      @click="handleCraeteEvent(scope.row)">
                   新建事件
                 </div>
-              </el-dropdown-item>
+              </el-dropdown-item> -->
               <el-dropdown-item v-if="scope.row.canModify">
                 <div class="btn"
                      @click="handleEditEvent(scope.row)">

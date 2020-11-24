@@ -7,14 +7,15 @@
                    :default-props="{label:'label'}"
                    height="100%"
                    filter
-                   open-all
+                   :render-content-left="renderContent"
+                   :render-content-right="renderContent"
                    @addBtn="add"
                    @removeBtn="remove">
       <div slot="title-left"
            class="top-select">
         <!-- {{ JSON.stringify(leftPost) }} -->
         <el-select v-model="leftPost"
-                   style="width:100%;"
+                   style="width:100%;flex:1;"
                    placeholder="请选择岗位"
                    @change="handleSelectLeftOpt">
           <el-option v-for="item in leftOptions"
@@ -23,12 +24,12 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-        <span class="count">884</span>
+        <span class="count">11/884</span>
       </div>
       <div slot="title-right"
            class="top-select">
         <el-select v-model="rightPost"
-                   style="width:100%;"
+                   style="width:100%;flex:1;"
                    placeholder="请选择岗位"
                    @change="handleSelectRightOpt">
           <el-option v-for="item in rightOptions"
@@ -37,7 +38,7 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-        <span class="count">666</span>
+        <span class="count">222/666</span>
       </div>
     </tree-transfer>
   </div>
@@ -56,11 +57,12 @@ const translate = (data) => {
         a.parentOrgId = n.orgId
       })
     }
+    // console.log(n.userGraphVOList, n.subOrgList)
     return Object.assign({}, n, {
       id: n.orgId || n.userId,
       pid: n.parentOrgId,
       label: n.orgName || n.userName,
-      children: translate(n.userGraphVOList?.length ? n.userGraphVOList : n.subOrgList)
+      children: translate([...n.userGraphVOList || [], ...n.subOrgList || []])
     })
   })
 }
@@ -114,13 +116,27 @@ export default {
 
   },
   methods: {
+    renderContent(h, { node, data, store }) {
+      if (node.isLeaf) {
+        return (
+          <span class='custom-tree-node'>
+            <svg-icon style='color:#999;margin-right:5px;' icon-class='user2' />
+            <span>{node.label}</span>
+          </span>)
+      } else {
+        return (
+          <span class='custom-tree-node'>
+            <span>{node.label}</span>
+          </span>)
+      }
+    },
     async handleSelectLeftOpt() {
       // console.log(this.leftPost)
       this.leftData = await this.getPostPeopleList(this.leftPost)
       console.log(this.leftData)
     },
     async handleSelectRightOpt() {
-      console.log(this.rightPost)
+      // console.log(this.rightPost)
       this.rightData = await this.getPostPeopleList(this.rightPost)
     },
     // 获取岗位下拉
@@ -219,6 +235,8 @@ export default {
         flex: 1;
         display: flex;
         .count {
+          width: 100px;
+          text-align: right;
           font-size: 14px;
           margin-left: 10px;
           color: #888;
