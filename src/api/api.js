@@ -533,6 +533,15 @@ export function insertJob(data) {
   })
 }
 
+// 编辑岗位
+export function updateJob(data) {
+  return request({
+    url: '/config/job/update',
+    method: 'post',
+    data
+  })
+}
+
 // 删除岗位
 export function deleteJob(params) {
   return request({

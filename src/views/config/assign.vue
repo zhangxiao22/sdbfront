@@ -75,7 +75,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getAllJob, insertJob, getPermissionPackEnum, deleteJob } from '@/api/api'
+import { getAllJob, insertJob, getPermissionPackEnum, deleteJob, updateJob } from '@/api/api'
 
 export default {
   name: 'Assign',
@@ -204,7 +204,7 @@ export default {
           const data = {}
           if (this.form.id) {
             data.id = this.form.id
-            ajxj = ''
+            ajxj = updateJob
           } else {
             ajxj = insertJob
           }

@@ -73,8 +73,8 @@ export default {
     return {
       // 岗位
       options: [{
-        label: '为分配',
-        value: 'null'
+        label: '未分配',
+        value: null
       }],
       // 左边选的岗位
       leftPost: '',
@@ -117,6 +117,7 @@ export default {
     async handleSelectLeftOpt() {
       // console.log(this.leftPost)
       this.leftData = await this.getPostPeopleList(this.leftPost)
+      console.log(this.leftData)
     },
     async handleSelectRightOpt() {
       console.log(this.rightPost)
@@ -146,32 +147,48 @@ export default {
     add(fromData, toData, obj) {
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
-      console.log('fromData:', fromData)
-      console.log('toData:', toData)
-      console.log('obj:', obj)
+      // console.log('fromData:', fromData)
+      // console.log('toData:', toData)
+      // console.log('obj:', obj)
       const users = obj.nodes.filter(n => {
         return !n.children.length
       }).map(m => m.userId)
       const data = {}
-      // data.userJobList = []
-      // for (var i = 0; i < users.length; i++) {
-      //   data.userJobList.push({ jobId: this.rightPost, empCode: users[i] })
-      // }
+      data.userIdList = users
+      data.jobId = this.rightPost
       console.log(data)
-      // occupyJob(data).then(res => {
-      //   if (res.code === 200) {
-      //     this.$message({
-      //       message: '分配成功',
-      //       type: 'success',
-      //       duration: '3000'
-      //     })
-      //   }
-      // }).finally(() => {
-      // })
-      console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
+      occupyJob(data).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '分配成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+      })
+      // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
     // 监听穿梭框组件移除
     remove(fromData, toData, obj) {
+      const users = obj.nodes.filter(n => {
+        return !n.children.length
+      }).map(m => m.userId)
+      const data = {}
+      data.userIdList = users
+      data.jobId = this.leftPost
+      console.log(data)
+      occupyJob(data).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '分配成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+      })
+      // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
       // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
       // console.log('fromData:', fromData)
