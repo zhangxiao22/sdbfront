@@ -1,308 +1,93 @@
 <template>
   <div class="container">
-    <tree-transfer ref="transferRef"
-                   :title="[' ', ' ']"
-                   :button_text="['到右边','到左边']"
-                   :from_data="leftData"
-                   :to_data="rightData"
-                   :default-props="{label:'label'}"
-                   height="100%"
-                   filter
-                   :default-checked-keys="defaultCheckedKeys"
-                   :render-content-left="renderContent"
-                   :render-content-right="renderContent"
-                   @left-check-change="leftCheckChange"
-                   @right-check-change="rightCheckChange"
-                   @addBtn="add"
-                   @removeBtn="remove">
-      <div slot="title-left"
-           class="top-select">
-        <!-- {{ JSON.stringify(leftPost) }} -->
-        <el-select v-model="leftPost"
-                   style="width:100%;flex:1;"
-                   placeholder="请选择岗位"
-                   @change="handleSelectLeftOpt">
-          <el-option v-for="item in leftOptions"
-                     :key="item.value"
-                     :disabled="item.disabled"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-        <span class="count">{{ leftCheckedTotalCount }}/{{ leftTotalCount }}</span>
-      </div>
-      <div slot="title-right"
-           class="top-select">
-        <el-select v-model="rightPost"
-                   style="width:100%;flex:1;"
-                   placeholder="请选择岗位"
-                   @change="handleSelectRightOpt">
-          <el-option v-for="item in rightOptions"
-                     :key="item.value"
-                     :disabled="item.disabled"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
-        <span class="count">{{ rightCheckedTotalCount }}/{{ rightTotalCount }}</span>
-      </div>
-    </tree-transfer>
+    {{ form.value }}
+    <el-form ref="form"
+             :model="form"
+             label-width="80px">
+      <el-form-item label="活动名称"
+                    prop="value"
+                    :rules="[{
+                      required: true, message: '请选择规则标签',trigger:'change'
+                    }]">
+        <el-cascader v-model="form.value"
+                     :options="options"
+                     clearable />
+      </el-form-item>
+
+    </el-form>
+
   </div>
 </template>
 
 <script>
-import { postPeopleList, getAllJob, occupyJob } from '@/api/api'
-import treeTransfer from 'el-tree-transfer' // 引入
-import { P } from '@antv/g2plot'
-const translate = (data) => {
-  // console.log('data', data)
-  if (!data) return []
-  return data.map(n => {
-    if (n.userGraphVOList) {
-      n.userGraphVOList.forEach(a => {
-        a.parentOrgId = n.orgId
-      })
-    }
-    // console.log(n.userGraphVOList, n.subOrgList)
-    return Object.assign({}, n, {
-      id: n.orgId || n.userId,
-      pid: n.parentOrgId || 0,
-      label: n.orgName || n.userName,
-      children: translate([...n.userGraphVOList || [], ...n.subOrgList || []])
-    })
-  })
-}
 
 export default {
   components: {
-    treeTransfer
   },
 
   data() {
     return {
-      defaultCheckedKeys: [],
-      // 岗位
+      form: {
+        // value: [[1, 2]]
+      },
+      // props: { multiple: true },
       options: [{
-        label: '未分配',
-        value: null
-      }],
-      // 左边选的岗位
-      leftPost: '',
-      // 右边选的岗位
-      rightPost: '',
-      leftData: [
-        //  {id: '1',
-        //   pid: 0,
-        //   label: '一级 1',
-        //   children: []}
-      ],
-      rightData: [],
-      leftTotalCount: 0,
-      leftCheckedTotalCount: 0,
-      rightTotalCount: 0,
-      rightCheckedTotalCount: 0
+        value: 1,
+        label: '东南',
+        children: [{
+          value: 2,
+          label: '上海',
+          children: null
+        }, {
+          value: 7,
+          label: '江苏',
+          children: [
+            { value: 8, label: '南京' },
+            { value: 9, label: '苏州' },
+            { value: 10, label: '无锡' }
+          ]
+        }, {
+          value: 12,
+          label: '浙江',
+          children: [
+            { value: 13, label: '杭州' },
+            { value: 14, label: '宁波' },
+            { value: 15, label: '嘉兴' }
+          ]
+        }]
+      }, {
+        value: 17,
+        label: '西北',
+        children: [{
+          value: 18,
+          label: '陕西',
+          children: [
+            { value: 19, label: '西安' },
+            { value: 20, label: '延安' }
+          ]
+        }, {
+          value: 21,
+          label: '新疆维吾尔族自治区',
+          children: [
+            { value: 22, label: '乌鲁木齐' },
+            { value: 23, label: '克拉玛依' }
+          ]
+        }]
+      }]
     }
   },
   computed: {
-    leftOptions() {
-      return this.options.map(n => {
-        return Object.assign({}, n, {
-          disabled: n.value === this.rightPost
-        })
-      })
-    },
-    rightOptions() {
-      return this.options.map(n => {
-        return Object.assign({}, n, {
-          disabled: n.value === this.leftPost
-        })
-      })
-    }
+
   },
 
   watch: {},
   created() {
-    this.getJobOpt()
   },
   mounted() {
 
   },
   methods: {
-    resetLeft() {
-      // 清空全选按钮
-      this.$refs.transferRef.clearChecked('left')
-      // 清空已选项
-      this.$refs.transferRef.from_check_keys = []
-      // 清空筛选
-      this.$refs.transferRef.filterFrom = ''
-      // 清空源数据
-      this.leftData = []
-      // 清空已选人数
-      this.leftCheckedTotalCount = 0
-    },
-    resetRight() {
-      this.$refs.transferRef.clearChecked('right')
-      this.$refs.transferRef.to_check_keys = []
-      this.$refs.transferRef.filterTo = ''
-      this.rightData = []
-      this.rightCheckedTotalCount = 0
-    },
-    checkBtn() {
-      // console.log(this.$refs.transferRef.from_check_keys, this.$refs.transferRef.to_check_keys)\
-      if (this.leftPost === '' || this.rightPost === '') {
-        this.$nextTick(() => {
-          this.$refs.transferRef.from_disabled = true
-          this.$refs.transferRef.to_disabled = true
-        })
-      } else {
-        this.$refs.transferRef.from_disabled = !this.$refs.transferRef.from_check_keys.length
-        this.$refs.transferRef.to_disabled = !this.$refs.transferRef.to_check_keys.length
-      }
-    },
-    getTotalPeopleCounts(list) {
-      let count = 0
-      const refn = (data) => {
-        data.forEach(n => {
-          if (n.children.length) {
-            refn(n.children)
-          } else {
-            count += 1
-          }
-        })
-      }
-      refn(list)
-      return count
-    },
-    getCheckPeopleCounts(treeObj) {
-      return treeObj.checkedNodes.filter(n => {
-        return !n.children.length
-      }).length
-    },
-    leftCheckChange(nodeObj, treeObj, checkAll) {
-      // console.log(nodeObj, treeObj, checkAll)
-      if (checkAll) {
-        this.leftCheckedTotalCount = this.leftTotalCount
-      } else {
-        if (treeObj) {
-          this.leftCheckedTotalCount = this.getCheckPeopleCounts(treeObj)
-        } else {
-          this.leftCheckedTotalCount = 0
-        }
-      }
-      this.checkBtn()
-    },
-    rightCheckChange(nodeObj, treeObj, checkAll) {
-      // console.log(nodeObj, treeObj, checkAll)
-      if (checkAll) {
-        this.rightCheckedTotalCount = this.rightTotalCount
-      } else {
-        if (treeObj) {
-          this.rightCheckedTotalCount = this.getCheckPeopleCounts(treeObj)
-        } else {
-          this.rightCheckedTotalCount = 0
-        }
-      }
-      this.checkBtn()
-    },
-    renderContent(h, { node, data, store }) {
-      if (node.isLeaf) {
-        return (
-          <span class='custom-tree-node'>
-            <svg-icon style='color:#999;margin-right:5px;' icon-class='user2' />
-            <span>{node.label}</span>
-          </span>)
-      } else {
-        return (
-          <span class='custom-tree-node'>
-            <span>{node.label}</span>
-          </span>)
-      }
-    },
-    async handleSelectLeftOpt() {
-      this.resetLeft()
-      this.checkBtn()
-      // console.log(this.leftPost)
-      this.leftData = await this.getPostPeopleList(this.leftPost)
-      // this.leftTotalCount = Math.random()
-      this.leftTotalCount = this.getTotalPeopleCounts(this.leftData)
-    },
-    async handleSelectRightOpt() {
-      this.resetRight()
-      this.checkBtn()
-      // console.log(this.rightPost)
-      this.rightData = await this.getPostPeopleList(this.rightPost)
-      this.rightTotalCount = this.getTotalPeopleCounts(this.rightData)
-    },
-    // 获取岗位下拉
-    getJobOpt() {
-      getAllJob().then(res => {
-        res.data.forEach(n => {
-          this.options.push({
-            value: n.id,
-            label: n.name,
-            disabled: false
-          })
-        })
-      })
-    },
-    // 获取岗位下的人员
-    getPostPeopleList(jobId) {
-      return new Promise((resolve, reject) => {
-        postPeopleList({ jobId }).then(res => {
-          resolve(translate(res.data.orgGraphVOList))
-        })
-      })
-    },
-    // 监听穿梭框组件添加
-    add(fromData, toData, obj) {
-      // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
-      // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
-      // console.log('fromData:', fromData)
-      // console.log('toData:', toData)
-      // console.log('obj:', obj)
-      const users = obj.nodes.filter(n => {
-        return !n.children.length
-      }).map(m => m.userId)
-      const data = {}
-      data.userIdList = users
-      data.jobId = this.rightPost
-      console.log(data)
-      occupyJob(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '分配成功',
-            type: 'success',
-            duration: '3000'
-          })
-        }
-      }).finally(() => {
-      })
-      // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
-    },
-    // 监听穿梭框组件移除
-    remove(fromData, toData, obj) {
-      const users = obj.nodes.filter(n => {
-        return !n.children.length
-      }).map(m => m.userId)
-      const data = {}
-      data.userIdList = users
-      data.jobId = this.leftPost
-      console.log(data)
-      occupyJob(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '分配成功',
-            type: 'success',
-            duration: '3000'
-          })
-        }
-      }).finally(() => {
-      })
-      // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
-      // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
-      // 通讯录模式addressList时，返回参数为右侧收件人列表、右侧抄送人列表、右侧密送人列表
-      // console.log('fromData:', fromData)
-      // console.log('toData:', toData)
-      // console.log('obj:', obj)
-    }
+
   }
 }
 </script>
@@ -311,34 +96,5 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  background: #fff;
-  padding: 40px;
-  ::v-deep .wl-transfer {
-    .transfer-left,
-    .transfer-right {
-      overflow: hidden;
-    }
-    .transfer-title {
-      // padding-right: 5px;
-      // background: #fff;
-      display: flex;
-      align-items: center;
-      .top-select {
-        flex: 1;
-        display: flex;
-        .count {
-          width: 100px;
-          text-align: right;
-          font-size: 14px;
-          margin-left: 10px;
-          color: #888;
-        }
-      }
-    }
-  }
-
-  .left-select {
-    display: inline-block;
-  }
 }
 </style>

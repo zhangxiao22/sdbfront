@@ -31,16 +31,18 @@
                       required: true, message: '请选择事件注册参与人', trigger: 'change'
                     }]"
                     prop="participants">
-        <el-select v-model="baseInfo.participants"
-                   filterable
-                   multiple
-                   style="width:100%;"
-                   placeholder="请选择">
-          <el-option v-for="item in participantsOptions"
-                     :key="item.value"
-                     :label="item.label"
-                     :value="item.value" />
-        </el-select>
+        <el-cascader v-model="baseInfo.participants"
+                     style="width:100%"
+                     :show-all-levels="false"
+                     :options="participantsOptions"
+                     :props="{ multiple: true }">
+          <template slot-scope="{ node, data }">
+            <svg-icon v-if="node.isLeaf"
+                      style="color:#999;margin-right:5px;"
+                      icon-class="user2" />
+            <span>{{ data.label }}</span>
+          </template>
+        </el-cascader>
       </el-form-item>
       <el-form-item class="target-form-item"
                     required
@@ -114,8 +116,8 @@
 </template>
 
 <script>
-import { MAX_NUMBER } from '@/utils'
-import { getTargetList, saveUseCase, getUseCaseDetailById, editUseCase } from '@/api/api'
+import { MAX_NUMBER, translate } from '@/utils'
+import { getUseCaseType, getUseCaseParticipant, getTargetList, saveUseCase, getUseCaseDetailById, editUseCase } from '@/api/api'
 
 export default {
   name: 'CreateUseCase',
@@ -124,32 +126,8 @@ export default {
   data() {
     return {
       MAX_NUMBER,
-      types: [
-        {
-          value: '1',
-          label: '选项一'
-        },
-        {
-          value: '2',
-          label: '选项二'
-        }
-      ],
-      participantsOptions: [{
-        value: '选项1',
-        label: '黄金糕'
-      }, {
-        value: '选项2',
-        label: '双皮奶'
-      }, {
-        value: '选项3',
-        label: '蚵仔煎'
-      }, {
-        value: '选项4',
-        label: '龙须面'
-      }, {
-        value: '选项5',
-        label: '北京烤鸭'
-      }],
+      types: [],
+      participantsOptions: [],
       baseInfo: {
         name: '',
         type: '',
@@ -174,6 +152,8 @@ export default {
       const data = {}
       data.id = this.id
       data.name = this.baseInfo.name
+      data.category = this.baseInfo.type
+      data.eventParticipants = this.baseInfo.participants
       // 目标
       data.useCaseAchieveList = this.baseInfo.target.map(n => {
         return {
@@ -189,6 +169,8 @@ export default {
 
   },
   created() {
+    this.getType()
+    this.getParticipant()
     this.targetList().then(() => {
       if (this.id) {
         this.getUseCaseById()
@@ -215,9 +197,26 @@ export default {
         })
       }
     },
+    // 获取用例类型
+    getType() {
+      getUseCaseType().then(res => {
+        this.types = res.data
+      })
+    },
+    // 获取参与人
+    getParticipant() {
+      getUseCaseParticipant().then(res => {
+        this.participantsOptions = translate(res.data.orgGraphVOList, {
+          id: 'value',
+          noChildren: null
+        })
+      })
+    },
     getUseCaseById() {
       getUseCaseDetailById({ id: this.id }).then(res => {
         this.baseInfo.name = res.data.name
+        this.baseInfo.type = res.data.category.value
+        this.baseInfo.participants = res.data.eventParticipants
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
           let obj = this.targetOpt.find(n => {

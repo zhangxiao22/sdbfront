@@ -448,3 +448,34 @@ export function downloadFile(url, params) {
   window.open(openUrl, '_self')
 }
 
+// nb数据转tree
+export function translate(data, opt = {}) {
+  // 参数的别名
+  const defaultOpt = {
+    id: 'id',
+    pid: 'pid',
+    label: 'label',
+    children: 'children',
+    noChildren: []
+  }
+  const option = Object.assign(defaultOpt, opt)
+  // console.log(option.noChildren)
+  const refn = (list) => {
+    if (!list.length) return option.noChildren
+    return list.map(n => {
+      if (n.userGraphVOList) {
+        n.userGraphVOList.forEach(a => {
+          a.parentOrgId = n.orgId
+        })
+      }
+      // console.log(n.userGraphVOList, n.subOrgList)
+      return Object.assign({}, n, {
+        [option.id]: n.orgId || n.userId,
+        [option.pid]: n.parentOrgId || 0,
+        [option.label]: n.orgName || n.userName,
+        [option.children]: refn([...n.userGraphVOList || [], ...n.subOrgList || []])
+      })
+    })
+  }
+  return refn(data)
+}

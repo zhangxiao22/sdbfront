@@ -50,25 +50,8 @@
 
 <script>
 import { postPeopleList, getAllJob, occupyJob } from '@/api/api'
+import { translate } from '@/utils'
 import treeTransfer from 'el-tree-transfer' // 引入
-const translate = (data) => {
-  // console.log('data', data)
-  if (!data) return []
-  return data.map(n => {
-    if (n.userGraphVOList) {
-      n.userGraphVOList.forEach(a => {
-        a.parentOrgId = n.orgId
-      })
-    }
-    // console.log(n.userGraphVOList, n.subOrgList)
-    return Object.assign({}, n, {
-      id: n.orgId || n.userId,
-      pid: n.parentOrgId || 0,
-      label: n.orgName || n.userName,
-      children: translate([...n.userGraphVOList || [], ...n.subOrgList || []])
-    })
-  })
-}
 
 export default {
   name: 'JobOccupy',

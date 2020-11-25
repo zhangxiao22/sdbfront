@@ -15,11 +15,12 @@
              :key="ci"
              class="condition-item"
              :class="{single:condition.length===1}">
-          <!-- {{ ci }} {{ conditionItem.conditionSelect }} -->
+          <!-- {{ ci }}  -->
+          {{ conditionItem.conditionSelect }}
           <el-form-item :prop="'condition.' + ci + '.conditionSelect'"
                         class="item"
                         :rules="[{
-                          required: true, message: '请选择规则标签'
+                          required: true, message: '请选择规则标签',trigger:'change'
                         }]">
             <el-tooltip :content="conditionItem.conditionLabel||'请选择'"
                         placement="left">
@@ -298,10 +299,10 @@ export default {
     },
 
     // 通过规则选中的值，返回一条规则应该展示的数据
-    resetOpt(optValue) {
+    resetOpt(optValue, conditionSelectVal) {
       if (!optValue) {
         return {
-          // andOrText: '且'
+          conditionSelect: [],
           andOrText: {
             value: 1,
             label: '且'
@@ -334,7 +335,7 @@ export default {
         }
         const data = {
           // 规则选中选项的值
-          conditionSelect: item.id,
+          conditionSelect: conditionSelectVal,
           // 规则选中的名称
           conditionLabel: item.tagScdClNm,
           // 类型
@@ -378,18 +379,18 @@ export default {
       })
     },
 
-    tagsInit(gi, optValue) {
+    tagsInit(ci, optValue) {
       /**
-       * gi: 客群的index
+       * ci: condition的index
          optValue: 选项的值
        */
-      this.condition.splice(gi, 1, this.resetOpt(optValue))
+      this.condition.splice(ci, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
       // console.log(val[0], 'i===========', i)
       for (let j = 0; j < this.tags.length; j++) {
         if (this.tags[j].value === val[2]) {
-          this.tagsInit(i, val[2])
+          this.condition.splice(i, 1, this.resetOpt(val[2], val))
           break
         }
       }

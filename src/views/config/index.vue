@@ -31,6 +31,7 @@ import CluePriority from './cluePriority'
 import HateMarketingCRM from './hateMarketingCRM'
 import NeverMarketingCRM from './neverMarketingCRM'
 import BlackListSMS from './blackListSMS'
+import EventPriority from './eventPriority'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -44,7 +45,8 @@ export default {
     CluePriority,
     HateMarketingCRM,
     NeverMarketingCRM,
-    BlackListSMS
+    BlackListSMS,
+    EventPriority
   },
   data() {
     return {
@@ -78,7 +80,12 @@ export default {
         component: 'CluePriority',
         loading: false,
         roles: ['用例管理']
-
+      },
+      {
+        label: '事件优先级',
+        component: 'EventPriority',
+        loading: false,
+        roles: ['线索统筹']
       },
       {
         label: '岗位管理',

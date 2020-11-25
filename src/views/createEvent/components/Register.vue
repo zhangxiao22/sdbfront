@@ -2,7 +2,7 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="baseInfo"
-             label-width="110px"
+             label-width="250px"
              class="reg-form">
       <el-form-item label="事件名称："
                     :rules="[{
@@ -59,29 +59,27 @@
       </el-form-item>
       <el-form-item required
                     label="每周线索分配上限（CRM）："
-                    prop="assignUpper_crm">
-        <el-input-number v-model="baseInfo.assignUpper_crm"
+                    prop="crmWeekClueLimit">
+        <el-input-number v-model="baseInfo.crmWeekClueLimit"
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
                          :max="10000000"
-                         oninput="value=value.replace(/[^\d]/g,'')"
                          :step="1000"
                          :precision="0"
-                         @blur="handleBlurCRM" />
+                         @blur="baseInfo.crmWeekClueLimit=$event.target.value||0" />
       </el-form-item>
       <el-form-item required
-                    style="margin-bottom:0;"
                     label="每周线索分配上限（短信）："
-                    prop="assignUpper_sms">
-        <el-input-number v-model="baseInfo.assignUpper_sms"
-                         style="margin:0;"
+                    prop="smsWeekClueLimit">
+        <el-input-number v-model="baseInfo.smsWeekClueLimit"
+                         style="width:200px;"
                          controls-position="right"
                          :min="0"
                          :max="10000000"
                          :step="1000"
                          :precision="0"
-                         @blur="handleBlurSMS" />
+                         @blur="baseInfo.smsWeekClueLimit=$event.target.value||0" />
       </el-form-item>
       <el-form-item prop="trial">
         <div slot="label">
@@ -147,13 +145,13 @@ const DEFAULT_BASEINFO = {
   useCaseId: '',
   statusValue: '',
   category: '',
-  assignUpper_crm: '',
-  assignUpper_sms: '',
+  crmWeekClueLimit: '',
+  smsWeekClueLimit: '',
   // categoryValue: '',
   date: [],
   // startDate: '',
   // endDate: '',
-  // 是否试点
+  // 对照组
   trial: false,
   // 比例
   control: 5,
@@ -204,8 +202,10 @@ export default {
       data.category = this.baseInfo.category
       data.startDate = this.baseInfo.date[0]
       data.endDate = this.baseInfo.date[1]
+      data.crmWeekClueLimit = this.baseInfo.crmWeekClueLimit
+      data.smsWeekClueLimit = this.baseInfo.smsWeekClueLimit
 
-      // 是否试点
+      // 是否对照组
       data.trial = this.baseInfo.trial
       // 比例
       data.control = this.baseInfo.control
@@ -226,6 +226,10 @@ export default {
         this.changeEventCategory()
         // 起止日期
         this.changePicker()
+        // 每周线索分配上限（CRM）
+        this.baseInfoDetail.crmWeekClueLimit = this.baseInfo.crmWeekClueLimit
+        // 每周线索分配上限（短信）
+        this.baseInfoDetail.smsWeekClueLimit = this.baseInfo.smsWeekClueLimit
         // 对照组
         this.baseInfoDetail.trial = this.baseInfo.trial
         // 百分比
@@ -239,9 +243,9 @@ export default {
     }
   },
   created() {
-    // this.useCase().then(() => {
-    //   this.useid && (this.baseInfo.useCaseId = this.useid)
-    // })
+    this.useCase().then(() => {
+      // this.useid && (this.baseInfo.useCaseId = this.useid)
+    })
     this.eventCategoryList()
     this.sampleList()
     if (this.id) {
@@ -276,6 +280,8 @@ export default {
         this.baseInfo.statusValue = data.status.value
         this.baseInfo.category = data.category.value
         this.baseInfo.date = [data.startDate, data.endDate]
+        this.baseInfo.crmWeekClueLimit = data.crmWeekClueLimit
+        this.baseInfo.smsWeekClueLimit = data.smsWeekClueLimit
 
         this.baseInfo.trial = data.trial
         this.baseInfo.sample = data.sample.value
@@ -402,7 +408,7 @@ export default {
 .container {
   padding: 50px 20px;
   .reg-form {
-    width: 600px;
+    width: 700px;
     margin: 0 auto;
     .target-form-item {
       width: 600px;

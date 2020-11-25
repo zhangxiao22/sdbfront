@@ -31,13 +31,25 @@
                  style="margin-right:5px;" />
               <div class="time">{{ baseInfoDetail.startDate }} 至 {{ baseInfoDetail.endDate }}</div>
             </div>
+            <!-- 每周线索分配上限（CRM） -->
+            <div v-show="baseInfoDetail.crmWeekClueLimit"
+                 class="shun-sibling-box item">
+              <div class="value">周上限 (CRM)</div>
+              <div class="value">{{ baseInfoDetail.crmWeekClueLimit | formatMoney }}</div>
+            </div>
+            <!-- 每周线索分配上限（短信） -->
+            <div v-show="baseInfoDetail.smsWeekClueLimit"
+                 class="shun-sibling-box item">
+              <div class="value">周上限 (短信)</div>
+              <div class="value">{{ baseInfoDetail.smsWeekClueLimit | formatMoney }}</div>
+            </div>
             <!-- 目标设置 -->
-            <el-tag v-show="baseInfoDetail.targetCount"
+            <!-- <el-tag v-show="baseInfoDetail.targetCount"
                     class="item"
                     size="mini"
                     type="warning">
               {{ baseInfoDetail.targetCount }} 个目标
-            </el-tag>
+            </el-tag> -->
             <!-- 对照组 && 抽样方式 -->
             <div v-show="baseInfoDetail.trial"
                  class="shun-sibling-box item">
@@ -77,7 +89,7 @@
           </div>
           <div slot="description"
                class="group step-detail">
-            <el-tag v-show="groupDetail.peopleNum"
+            <el-tag v-show="ployDetail.ployCount"
                     class="item"
                     size="mini"
                     type="warning">
@@ -104,8 +116,8 @@
                 class="bottom-left">
           <el-button icon="el-icon-refresh-left"
                      @click="reset">重置</el-button>
-          <el-button icon="el-icon-document"
-                     @click="save">保存草稿</el-button>
+          <!-- <el-button icon="el-icon-document"
+                     @click="save">保存草稿</el-button> -->
         </el-col>
         <el-col :span="8"
                 class="bottom-middle">
@@ -153,7 +165,11 @@ const DEFAULT_DATA = {
     startDate: '',
     // 结束日期
     endDate: '',
-    // 是否试点
+    // 每周线索分配上限（CRM）
+    crmWeekClueLimit: '',
+    // 每周线索分配上限（短信）
+    smsWeekClueLimit: '',
+    // 是否对照组
     trial: false,
     // 试点比例
     control: '',
@@ -205,7 +221,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: 3
     }
   },
   computed: {
@@ -261,6 +277,8 @@ export default {
         this.baseInfoDetail.useCaseName = baseInfo.useCaseName
         this.baseInfoDetail.startDate = baseInfo.startDate
         this.baseInfoDetail.endDate = baseInfo.endDate
+        this.baseInfoDetail.crmWeekClueLimit = baseInfo.crmWeekClueLimit
+        this.baseInfoDetail.smsWeekClueLimit = baseInfo.smsWeekClueLimit
         this.baseInfoDetail.trial = baseInfo.trial
         this.baseInfoDetail.sampleValue = baseInfo.sample.label
         this.baseInfoDetail.control = baseInfo.control

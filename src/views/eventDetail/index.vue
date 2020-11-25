@@ -63,10 +63,16 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 .container {
+  .main-container {
+    min-height: 100%;
+  }
   .header {
     padding: 16px;
     .header-divider {
       margin: 15px 0;
+    }
+    .button-group {
+      margin-top: 16px;
     }
   }
   .preview-container {

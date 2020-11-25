@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const api2 = process.env.VUE_APP_BASE_API_2
-const api3 = process.env.VUE_APP_BASE_API_3
+// const api3 = process.env.VUE_APP_BASE_API_3
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -327,7 +327,7 @@ export function getUseCaseList(data) {
     data
   })
 }
-// 获取用例
+// 获取用例（我的）
 export function getUseCaseForEvent() {
   return request({
     url: '/event/getMyUseCase',
@@ -371,6 +371,23 @@ export function changeStatusUseCase(data) {
   })
 }
 
+// 获取用例类型
+export function getUseCaseType(params) {
+  return request({
+    url: '/event/getUseCaseCategoryEnums',
+    method: 'get',
+    params
+  })
+}
+// 获取用例参与人
+export function getUseCaseParticipant(params) {
+  return request({
+    url: '/event/geteALLEventParticipant',
+    method: 'get',
+    params
+  })
+}
+
 // 新建用例
 export function saveUseCase(data) {
   return request({
@@ -389,7 +406,7 @@ export function editUseCase(data) {
   })
 }
 
-// 根据id获取用例
+// 根据id获取用例详情
 export function getUseCaseDetailById(params) {
   return request({
     url: '/event/getUseCaseDetailById',

@@ -180,7 +180,6 @@
                            controls-position="right"
                            :min="0"
                            :max="MAX_NUMBER"
-                           oninput="value=value.replace(/[^\d]/g,'')"
                            :step="1000"
                            :precision="0"
                            @blur="handleBlurCRM" />

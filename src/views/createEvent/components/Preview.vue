@@ -3,6 +3,7 @@
     <div v-if="detail.id"
          class="header">
       <div class="title">
+        <div class="status">{{ detail.status.label }}</div>
         {{ detail.name }}
         <el-tag effect="dark"
                 style="margin-left:10px;">{{ detail.category.label }}</el-tag>
@@ -16,6 +17,16 @@
       <div class="time">
         <i class="el-icon-time" />
         {{ detail.startDate }} 至 {{ detail.endDate }}
+      </div>
+      <div class="block">
+        <div class="shun-sibling-box item">
+          <div class="value">每周线索分配上限 (CRM)</div>
+          <div class="value">{{ detail.crmWeekClueLimit | formatMoney }}</div>
+        </div>
+        <div class="shun-sibling-box item">
+          <div class="value">每周线索分配上限 (短信)</div>
+          <div class="value">{{ detail.crmWeekClueLimit | formatMoney }}</div>
+        </div>
       </div>
       <div class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
@@ -415,6 +426,19 @@ export default {
   padding: 20px 0;
   .header {
     padding: 0 20px;
+    .status {
+      height: 30px;
+      border-radius: 0 20px 20px 0;
+      background-color: $blue;
+      color: #fff;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      padding: 0 15px;
+      font-weight: bold;
+      margin-left: -20px;
+      margin-right: 15px;
+    }
     .title {
       font-size: 20px;
       font-weight: bold;
@@ -448,6 +472,14 @@ export default {
       font-size: 14px;
       color: #888;
       margin-top: 15px;
+    }
+    .block {
+      margin-top: 15px;
+      display: flex;
+      font-size: 12px;
+      .item {
+        margin-right: 10px;
+      }
     }
     .group-target {
       display: flex;
