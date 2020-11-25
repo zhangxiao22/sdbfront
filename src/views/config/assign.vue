@@ -142,10 +142,12 @@ export default {
 
   watch: {},
   created() {
-    this.getList()
-    this.getRoleOpt()
   },
   methods: {
+    init() {
+      this.getList()
+      this.getRoleOpt()
+    },
     getList() {
       this.loading = true
       getAllJob().then(res => {

@@ -1,15 +1,17 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="4"
+             :value="tabIndex"
              type="border-card"
-             style="height: 100%;">
+             style="height: 100%;"
+             @tab-click="handleTabClick">
       <template v-for="(item,i) of realTabList">
         <el-tab-pane v-if="!item.hide"
                      :key="i"
                      v-loading="item.loading"
                      :label="item.label">
           <component :is="item.component"
+                     ref="component"
                      :loading.sync="item.loading" />
         </el-tab-pane>
       </template>
@@ -46,6 +48,7 @@ export default {
   },
   data() {
     return {
+      tabIndex: '5',
       tabList: [{
         label: '防打扰',
         component: 'NotDisturb',
@@ -63,12 +66,6 @@ export default {
         component: 'UseCaseOutletDistribute',
         loading: false,
         roles: ['线索统筹']
-      },
-      {
-        label: '岗位分配',
-        component: 'JobOccupy',
-        loading: false,
-        roles: ['业务管理']
       },
       {
         label: '用例优先级',
@@ -89,6 +86,12 @@ export default {
         loading: false,
         roles: ['业务管理']
 
+      },
+      {
+        label: '岗位分配',
+        component: 'JobOccupy',
+        loading: false,
+        roles: ['业务管理']
       },
       {
         label: '厌恶营销名单（CRM）',
@@ -130,8 +133,12 @@ export default {
     // console.log('this.roles', this.roles)
   },
   mounted() {
+    this.$refs.component[+this.tabIndex].init()
   },
   methods: {
+    handleTabClick(val) {
+      this.$refs.component[val.index].init()
+    }
   }
 }
 </script>
@@ -139,5 +146,11 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 .container {
+  ::v-deep .el-tabs__content {
+    height: 100%;
+    .el-tab-pane {
+      height: 100%;
+    }
+  }
 }
 </style>

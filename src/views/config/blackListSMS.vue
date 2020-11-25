@@ -234,9 +234,11 @@ export default {
   },
   watch: {},
   created() {
-    this.search()
   },
   methods: {
+    init() {
+      this.search()
+    },
     resetAll() {
       this.reset()
       this.$refs.table.resetSelection()

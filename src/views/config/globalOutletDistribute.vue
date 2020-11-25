@@ -109,13 +109,16 @@ export default {
 
   },
   created() {
-    this.outletsList().then(() => {
-      this.getDetail()
-    })
+
   },
   mounted() {
   },
   methods: {
+    init() {
+      this.outletsList().then(() => {
+        this.getDetail()
+      })
+    },
     reset() {
       this.form.outlets = [{
         item: '',

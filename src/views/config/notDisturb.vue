@@ -151,9 +151,11 @@ export default {
 
   watch: {},
   created() {
-    this.getList()
   },
   methods: {
+    init() {
+      this.getList()
+    },
     validateNumber(rule, value, callback) {
       if (this.form.maxAge < this.form.minAge) {
         callback(new Error('年龄下限必须小于或等于年龄上限'))

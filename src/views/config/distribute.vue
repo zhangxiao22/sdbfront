@@ -194,19 +194,12 @@ export default {
 
   },
   created() {
-    this.useCaseList()
   },
   mounted() {
   },
   methods: {
-    reset() {
-
-    },
-    getDetail() {
-
-    },
-    save() {
-
+    init() {
+      this.useCaseList()
     },
     // 获取目标
     useCaseList() {

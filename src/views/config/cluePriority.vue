@@ -4,9 +4,7 @@
     <shun-table ref="table"
                 :is-card="false"
                 :loading="loading"
-                :show-selection="showSelection"
                 :show-pagination="false"
-                :multiple="multiple"
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -52,27 +50,11 @@ import ShunTable from '@/components/ShunTable'
 import { checkCluePriorityList, getCluePriorityRuleEnums, setCluePriority } from '@/api/api'
 
 export default {
-  name: 'Assign',
   components: {
     ShunTable
   },
   props: {
-    showSelection: {
-      type: Boolean,
-      default: false
-    },
-    // 是否多选
-    multiple: {
-      type: Boolean,
-      default: true
-    },
-    // 表格已选中项
-    selectedItems: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
+
   },
   data() {
     return {
@@ -110,10 +92,12 @@ export default {
 
   watch: {},
   created() {
-    this.getList()
-    this.getPriorityOpt()
   },
   methods: {
+    init() {
+      this.getList()
+      this.getPriorityOpt()
+    },
     getList() {
       checkCluePriorityList().then(res => {
         this.tableData = res.data.map(n => {
@@ -156,7 +140,7 @@ export default {
               this.showDialog = false
               this.getList()
             }
-          }).catch(() => {
+          }).finally(() => {
             this.buttonLoading = false
           })
         }

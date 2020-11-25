@@ -125,14 +125,17 @@ export default {
 
   },
   created() {
-    this.outletsList()
-    this.useCaseList().then(() => {
-      this.getDetail()
-    })
+
   },
   mounted() {
   },
   methods: {
+    init() {
+      this.outletsList()
+      this.useCaseList().then(() => {
+        this.getDetail()
+      })
+    },
     reset() {
       this.form.useCaseOutlets = [{
         useCase: '',

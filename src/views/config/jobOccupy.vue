@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="job-container">
     <tree-transfer ref="transferRef"
                    :title="[' ', ' ']"
                    :button_text="['到右边','到左边']"
@@ -51,7 +51,6 @@
 <script>
 import { postPeopleList, getAllJob, occupyJob } from '@/api/api'
 import treeTransfer from 'el-tree-transfer' // 引入
-import { P } from '@antv/g2plot'
 const translate = (data) => {
   // console.log('data', data)
   if (!data) return []
@@ -126,12 +125,14 @@ export default {
 
   watch: {},
   created() {
-    this.getJobOpt()
+    // console.log(this.loading, '???')
   },
   mounted() {
-
   },
   methods: {
+    init() {
+      this.getJobOpt()
+    },
     resetLeft() {
       // 清空全选按钮
       this.$refs.transferRef.clearChecked('left')
@@ -226,7 +227,9 @@ export default {
       this.resetLeft()
       this.checkBtn()
       // console.log(this.leftPost)
+      this.$emit('update:loading', true)
       this.leftData = await this.getPostPeopleList(this.leftPost)
+      this.$emit('update:loading', false)
       // this.leftTotalCount = Math.random()
       this.leftTotalCount = this.getTotalPeopleCounts(this.leftData)
     },
@@ -234,7 +237,9 @@ export default {
       this.resetRight()
       this.checkBtn()
       // console.log(this.rightPost)
+      this.$emit('update:loading', true)
       this.rightData = await this.getPostPeopleList(this.rightPost)
+      this.$emit('update:loading', false)
       this.rightTotalCount = this.getTotalPeopleCounts(this.rightData)
     },
     // 获取岗位下拉
@@ -270,7 +275,8 @@ export default {
       const data = {}
       data.userIdList = users
       data.jobId = this.rightPost
-      console.log(data)
+      // console.log(data)
+      this.$emit('update:loading', true)
       occupyJob(data).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -280,6 +286,7 @@ export default {
           })
         }
       }).finally(() => {
+        this.$emit('update:loading', false)
       })
       // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
@@ -291,7 +298,8 @@ export default {
       const data = {}
       data.userIdList = users
       data.jobId = this.leftPost
-      console.log(data)
+      // console.log(data)
+      this.$emit('update:loading', true)
       occupyJob(data).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -301,6 +309,7 @@ export default {
           })
         }
       }).finally(() => {
+        this.$emit('update:loading', false)
       })
       // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
       // 树形穿梭框模式transfer时，返回参数为左侧树移动后数据、右侧树移动后数据、移动的{keys,nodes,halfKeys,halfNodes}对象
@@ -316,9 +325,10 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 
-.container {
-  background: #fff;
-  padding: 40px;
+.job-container {
+  // background: #fff;
+  height: 100%;
+  padding: 20px;
   ::v-deep .wl-transfer {
     .transfer-left,
     .transfer-right {

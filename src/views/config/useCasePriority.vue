@@ -52,22 +52,28 @@ export default {
 
   watch: {},
   created() {
-    this.getList()
   },
   mounted() {
-    const _this = this
-    const el = document.querySelector('#use-case-table tbody')
-    Sortable.create(el, {
-      onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-        const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
-        _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
-        if (newIndex !== oldIndex) {
-          _this.saveData()
-        }
-      }
-    })
+
   },
   methods: {
+    init() {
+      this.getList()
+      this.sortable()
+    },
+    sortable() {
+      const _this = this
+      const el = document.querySelector('#use-case-table tbody')
+      Sortable.create(el, {
+        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
+          const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
+          _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
+          if (newIndex !== oldIndex) {
+            _this.saveData()
+          }
+        }
+      })
+    },
     rowKey(row) {
       return row.id
     },

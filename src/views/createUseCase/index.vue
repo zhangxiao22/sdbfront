@@ -2,7 +2,6 @@
   <div class="container shun-card">
     <el-page-header :content="id?'编辑用例':'新建用例'"
                     @back="goBack" />
-    {{ baseInfo }}
     <el-form ref="regFormRef"
              :model="baseInfo"
              label-width="220px"
@@ -31,11 +30,17 @@
                     :rules="[{
                       required: true, message: '请选择事件注册参与人', trigger: 'change'
                     }]"
-                    prop="type">
-        <el-radio v-for="item of types"
-                  :key="item.label"
-                  v-model="baseInfo.type"
-                  :label="item.value">{{ item.label }}</el-radio>
+                    prop="participants">
+        <el-select v-model="baseInfo.participants"
+                   filterable
+                   multiple
+                   style="width:100%;"
+                   placeholder="请选择">
+          <el-option v-for="item in participantsOptions"
+                     :key="item.value"
+                     :label="item.label"
+                     :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item class="target-form-item"
                     required
@@ -98,7 +103,7 @@
         <el-button icon="el-icon-document"
                    type="primary"
                    style="width:100px;"
-                   @click="save">保存</el-button>
+                   @click="save">提交</el-button>
         <el-button icon="el-icon-refresh"
                    style="width:100px;"
                    @click="reset">重置</el-button>
@@ -129,9 +134,26 @@ export default {
           label: '选项二'
         }
       ],
+      participantsOptions: [{
+        value: '选项1',
+        label: '黄金糕'
+      }, {
+        value: '选项2',
+        label: '双皮奶'
+      }, {
+        value: '选项3',
+        label: '蚵仔煎'
+      }, {
+        value: '选项4',
+        label: '龙须面'
+      }, {
+        value: '选项5',
+        label: '北京烤鸭'
+      }],
       baseInfo: {
         name: '',
         type: '',
+        participants: [],
         target: [
           {
             targetSelect: '',
@@ -180,14 +202,18 @@ export default {
       this.$router.push('/useCase')
     },
     reset() {
-      this.baseInfo.target = [{
-        targetSelect: '',
-        targetValue: ''
-      }]
-      this.$nextTick(() => {
-        this.$refs['regFormRef'].resetFields()
-        this.resetTargetOpt()
-      })
+      if (this.id) {
+        this.getUseCaseById()
+      } else {
+        this.baseInfo.target = [{
+          targetSelect: '',
+          targetValue: ''
+        }]
+        this.$nextTick(() => {
+          this.$refs['regFormRef'].resetFields()
+          this.resetTargetOpt()
+        })
+      }
     },
     getUseCaseById() {
       getUseCaseDetailById({ id: this.id }).then(res => {
