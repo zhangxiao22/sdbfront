@@ -1,11 +1,14 @@
 <template>
   <div class="container">
-    <Group ref="totalRuleRef"
-           :condition="totalCondition"
-           :min-length="0"
-           label="整体规则"
-           @check="checkAll" />
-
+    <el-form>
+      <Group ref="totalRuleRef"
+             :condition="totalCondition"
+             :min-length="0"
+             label="整体规则"
+             @check="checkAll" />
+      {{ totalCondition }}
+      <el-form-item label="客户人数：">{{ totalPeople }}</el-form-item>
+    </el-form>
     <el-form ref="form"
              :model="{labelTabs}"
              label-width="100px"
@@ -31,7 +34,6 @@
                v-model="labelIndex"
                type="card"
                @tab-remove="removeTab">
-
         <el-tab-pane v-for="(item, ti) of labelTabs"
                      :key="item.name"
                      :closable="item.closable"
@@ -55,10 +57,12 @@
                       :autosize="{ minRows: 2, maxRows: 4}"
                       placeholder="请输入客群描述" />
           </el-form-item>
+          <!-- {{ labelTabs }} -->
           <Group v-if="item.closable"
                  ref="groupRuleRef"
                  required
-                 :condition="item.condition" />
+                 :condition="item.condition"
+                 @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
         </el-tab-pane>
       </el-tabs>
@@ -72,7 +76,7 @@ import Info from '@/components/Info'
 import Group from './Group'
 import bus from '../bus'
 import Sortable from 'sortablejs'
-import { } from '@/api/api'
+import { getPeopleCount, saveGroup, getGroup } from '@/api/api'
 
 export default {
   name: 'WhiteList',
@@ -82,6 +86,8 @@ export default {
   },
   data() {
     return {
+      totalPeople: '',
+      fileId: null,
       labelTabs: [
         //   {
         //   title: '其他客群',
@@ -93,9 +99,11 @@ export default {
       ],
       // 值
       labelIndex: '0',
+      people: '0',
       // 用于计数 累加
       labelTabsCounts: 0,
-      totalCondition: []
+      totalCondition: [],
+      supplyIdList: []
     }
   },
   computed: {
@@ -110,15 +118,99 @@ export default {
     this.tabDrop()
   },
   created() {
+    if (this.id) {
+      // this.getDetail()
+    }
   },
   methods: {
     reset() {
       this.getDetail()
     },
+
+    // getDetail() {
+    //   // todo
+    // },
+    // 获取规则信息
     getDetail() {
-      // todo
+      getGroup({ baseId: this.id }).then(res => {
+        this.fullData = res.data.abstractDetail.tagList
+        this.totalCondition = this.fullData.map((n) => {
+          return {
+            conditionSelect: n.tagId,
+            tagContentUnitVOList: n.tagContentUnitVOList,
+            andOrText: n.combineRelation
+          }
+        })
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.YEAR_INCOME') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { numberVal: n.content })
+          })
+        }
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.VIP_LEVEL') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { numberVal: n.content })
+          })
+        }
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.IS_MALE') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { selectVal: n.content })
+          })
+        }
+        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.VIP_LEVEL1') {
+          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
+            return Object.assign({}, { dateVal: n.content })
+          })
+        }
+      }).catch(() => {
+      })
     },
     validateAndNext() {
+      const fn = () => {
+        const data = {
+          baseId: this.id,
+          loadType: 2,
+          fileId: this.fileId,
+          supplyIdList: this.supplyIdList,
+          userId: 1,
+          subBranchId: 1000,
+          rawGroup: {
+            count: this.totalPeople,
+            tagList: this.totalCondition.map((n, i) => {
+              return {
+                tagId: n.conditionSelect,
+                contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
+                combineRelation: n.andOrText.value
+              }
+            })
+          },
+          groupSaveCriteriaList: this.labelTabs.map((n, i) => {
+            return {
+              name: n.title,
+              count: n.people,
+              desc: n.desc,
+              tagList: n.condition.map((m, i) => {
+                return {
+                  tagId: m.conditionSelect,
+                  contentWithRelation: [{ content: JSON.stringify(m.conditionValue.numberVal) || m.conditionValue.selectVal || m.conditionValue.dateVal || 0, tagRelation: m.compare }],
+                  combineRelation: m.andOrText.value
+                }
+              })
+            }
+          })
+        }
+        console.log(data)
+        return new Promise((resolve, reject) => {
+          saveGroup(data).then(res => {
+            if (res.code === 200) {
+              resolve()
+            } else {
+              reject()
+            }
+          }).catch(() => {
+            reject()
+          })
+        })
+      }
       return new Promise((resolve, reject) => {
         // 校验整体规则
         this.$refs.totalRuleRef.validate((valid) => {
@@ -140,6 +232,11 @@ export default {
               reject()
             }
           })
+        })
+        fn().then(() => {
+          resolve()
+        }).catch(() => {
+          reject()
         })
       })
     },
@@ -194,8 +291,33 @@ export default {
       })
     },
     checkAll(val) {
-      console.log(val)
-      console.log(JSON.stringify(val))
+      // console.log(val)
+      const data = val.map((n) => {
+        return {
+          tagId: n.conditionSelect,
+          // contentWithRelation: n.conditionSelect
+          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
+          combineRelation: n.andOrText.value
+        }
+      })
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: data }).then(res => {
+        this.totalPeople = res.data.count
+        // console.log('people==============', this.totalPeople)
+      })
+      // console.log(JSON.stringify(val))
+    },
+    checkGroup(item, ti) {
+      console.log(item, ti)
+      const data = item.condition.map((n) => {
+        return {
+          tagId: n.conditionSelect,
+          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
+          combineRelation: n.andOrText.value
+        }
+      })
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: data }).then(res => {
+        this.labelTabs[ti].people = res.data.count
+      })
     }
   }
 }

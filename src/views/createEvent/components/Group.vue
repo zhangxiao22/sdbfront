@@ -23,7 +23,7 @@
                         }]">
             <el-tooltip :content="conditionItem.conditionLabel||'请选择'"
                         placement="left">
-              <el-select v-model="conditionItem.conditionSelect"
+              <!-- <el-select v-model="conditionItem.conditionSelect"
                          filterable
                          class="condition-item-input"
                          @change="selectCondition($event,ci)">
@@ -35,7 +35,14 @@
                             :icon-class="optItem.type" />
                   {{ optItem.label }}
                 </el-option>
-              </el-select>
+                {{ tags }}
+              </el-select> -->
+
+              <el-cascader v-model="conditionItem.conditionSelect"
+                           filterable
+                           :options="tags"
+                           @change="selectCondition($event,ci)" />
+
             </el-tooltip>
           </el-form-item>
           <!-- 比较符 -->
@@ -129,6 +136,7 @@
                    plain
                    @click="check">筛选客户</el-button>
       </el-form-item>
+
     </el-form>
   </div>
 </template>
@@ -167,12 +175,13 @@ export default {
   },
   data() {
     return {
+      // condition: [],
       numberOptions: [],
       stringOptions: [],
       MAX_NUMBER,
       originData: [],
-      numberFlat: {},
-      people: 0
+      numberFlat: {}
+      // totalPeople: 0
     }
   },
   computed: {
@@ -182,9 +191,17 @@ export default {
     tags() {
       return this.originData.map((n) => {
         return {
-          label: n.name,
+          label: n.tagCtgryNm,
           value: n.id,
-          type: n.type
+          children: [{
+            label: n.tagPrimClNm,
+            value: n.id,
+            children: [{
+              label: n.tagScdClNm,
+              value: n.id
+            }]
+          }
+          ]
         }
       })
     },
@@ -201,11 +218,7 @@ export default {
   },
   created() {
     // this.tagsInit(0, 0)
-    this.getRuleList().then(() => {
-      if (this.id) {
-        this.getDetail()
-      }
-    })
+    this.getRuleList()
   },
 
   methods: {
@@ -241,17 +254,17 @@ export default {
       })
     },
     check() {
-      // this.$refs.form.validate((valid) => {
-      //   if (valid) {
-      //     this.$emit('check', this.condition)
-      //   }
-      // })
       this.$refs.form.validate((valid) => {
         if (valid) {
-          this.$emit('check', this.transfer())
-          this.filter()
+          this.$emit('check', this.condition)
         }
       })
+      // this.$refs.form.validate((valid) => {
+      //   if (valid) {
+      //     this.$emit('check', this.transfer())
+      //     this.filter()
+      //   }
+      // })
     },
     getRuleList() {
       return new Promise((resolve, reject) => {
@@ -323,7 +336,7 @@ export default {
           // 规则选中选项的值
           conditionSelect: item.id,
           // 规则选中的名称
-          conditionLabel: item.name,
+          conditionLabel: item.tagScdClNm,
           // 类型
           type: item.type,
           // 比较符号的选项
@@ -356,45 +369,12 @@ export default {
       })
       return data
     },
-    // 获取规则信息
-    getDetail() {
-      getGroup({ baseId: this.id }).then(res => {
-        this.fullData = res.data.abstractDetail.tagList
-        this.condition = this.fullData.map((n) => {
-          return {
-            conditionSelect: n.tagId,
-            tagContentUnitVOList: n.tagContentUnitVOList,
-            andOrText: n.combineRelation
-          }
-        })
-        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.YEAR_INCOME') {
-          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
-            return Object.assign({}, { numberVal: n.content })
-          })
-        }
-        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.VIP_LEVEL') {
-          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
-            return Object.assign({}, { numberVal: n.content })
-          })
-        }
-        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.IS_MALE') {
-          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
-            return Object.assign({}, { selectVal: n.content })
-          })
-        }
-        if (this.conditionValue.conditionSelect === 'R_CUS_PER_CHARAC_BUSI.VIP_LEVEL1') {
-          this.condition.conditionValue = this.condition.tagContentUnitVOList.map((n) => {
-            return Object.assign({}, { dateVal: n.content })
-          })
-        }
-      }).catch(() => {
-      })
-    },
+
     // 筛选出的客户人数
     filter() {
       getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transfer() }).then(res => {
-        this.people = res.data.count
-        console.log(this.people)
+        this.totalPeople = res.data.count
+        // console.log(this.totalPeople)
       })
     },
 
@@ -406,9 +386,10 @@ export default {
       this.condition.splice(gi, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
+      // console.log(val[0], 'i===========', i)
       for (let j = 0; j < this.tags.length; j++) {
-        if (this.tags[j].value === val) {
-          this.tagsInit(i, val)
+        if (this.tags[j].value === val[2]) {
+          this.tagsInit(i, val[2])
           break
         }
       }
