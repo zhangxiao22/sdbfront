@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <el-tabs tab-position="left"
-             value="2"
+             value="4"
              type="border-card"
              style="height: 100%;">
       <template v-for="(item,i) of realTabList">
@@ -23,6 +23,7 @@ import Assign from './assign'
 import NotDisturb from './notDisturb'
 import GlobalOutletDistribute from './globalOutletDistribute'
 import UseCaseOutletDistribute from './usecaseOutletDistribute'
+import JobOccupy from './jobOccupy'
 import UseCasePriority from './useCasePriority'
 import CluePriority from './cluePriority'
 import HateMarketingCRM from './hateMarketingCRM'
@@ -36,6 +37,7 @@ export default {
     NotDisturb,
     GlobalOutletDistribute,
     UseCaseOutletDistribute,
+    JobOccupy,
     UseCasePriority,
     CluePriority,
     HateMarketingCRM,
@@ -61,6 +63,12 @@ export default {
         component: 'UseCaseOutletDistribute',
         loading: false,
         roles: ['线索统筹']
+      },
+      {
+        label: '岗位分配',
+        component: 'JobOccupy',
+        loading: false,
+        roles: ['业务管理']
       },
       {
         label: '用例优先级',
