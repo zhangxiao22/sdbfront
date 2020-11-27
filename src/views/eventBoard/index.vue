@@ -16,7 +16,7 @@
                 @filter-change="filterChange"
                 @tab-click="tabClick">
       <template v-slot:main-buttons>
-        <el-button v-if="false"
+        <el-button v-if="roleJudge.createEvent"
                    class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -154,6 +154,7 @@
 <script>
 import ShunTable from '@/components/ShunTable'
 import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent, copyEvent, deleteEvent } from '@/api/api'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'EventBoard',
@@ -180,6 +181,8 @@ export default {
   },
   data() {
     return {
+      // 权限判断
+      roleJudge: {},
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -238,6 +241,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'roles'
+    ]),
     parentRef() {
       return this.$refs.table
     }
@@ -248,6 +254,8 @@ export default {
 
   watch: {},
   created() {
+    // 是否能新建事件
+    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === 'admin'
     this.eventCategoryList()
     this.getOwner()
     this.useCase()

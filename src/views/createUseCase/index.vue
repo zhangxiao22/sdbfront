@@ -49,7 +49,15 @@
                       required: true, message: '请选择分发模式', trigger: 'change'
                     }]"
                     prop="ditributeMode">
-        123
+        <el-select v-model="baseInfo.ditributeMode"
+                   style="width:100%;"
+                   placeholder="请选择">
+          <el-option v-for="item in ditributeModeOptions"
+                     :key="item.value"
+                     :disabled="item.disabled"
+                     :label="item.label"
+                     :value="item.value" />
+        </el-select>
       </el-form-item>
       <el-form-item class="target-form-item"
                     required
@@ -139,6 +147,7 @@ export default {
         name: '',
         type: '',
         participants: [],
+        ditributeMode: 1,
         target: [
           {
             targetSelect: '',
@@ -147,7 +156,35 @@ export default {
         ],
         desc: ''
       },
-      targetOpt: []
+      targetOpt: [],
+      ditributeModeOptions: [{
+        value: 1,
+        label: '负债类挂靠-白名单-主办-高频-历史'
+      },
+      {
+        value: 2,
+        label: '负债类挂靠-白名单-高频-主办-历史',
+        disabled: true
+      },
+      {
+        value: 3,
+        label: '小贷挂靠-白名单-主办-高频-历史',
+        disabled: true
+      },
+      {
+        value: 4,
+        label: '小贷挂靠-白名单-高频-主办-历史',
+        disabled: true
+      },
+      {
+        value: 5,
+        label: '消贷挂靠-白名单-主办-高频-历史',
+        disabled: true
+      }, {
+        value: 6,
+        label: '消贷挂靠-白名单-高频-主办-历史',
+        disabled: true
+      }]
     }
   },
   computed: {
@@ -161,6 +198,7 @@ export default {
       data.name = this.baseInfo.name
       data.category = this.baseInfo.type
       data.eventParticipants = this.baseInfo.participants
+      data.ditributeMode = this.baseInfo.ditributeMode
       // 目标
       data.useCaseAchieveList = this.baseInfo.target.map(n => {
         return {
@@ -224,6 +262,7 @@ export default {
         this.baseInfo.name = res.data.name
         this.baseInfo.type = res.data.category.value
         this.baseInfo.participants = res.data.eventParticipants
+        this.baseInfo.ditributeMode = res.data.ditributeMode
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
           let obj = this.targetOpt.find(n => {
