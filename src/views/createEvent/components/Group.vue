@@ -417,7 +417,7 @@ export default {
           // 比较符号的选项
           compareOpt: item.relations,
           // 比较符号的值
-          compare: 0,
+          compare: valDetail[0].compare.value,
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
           // 数字型-单位

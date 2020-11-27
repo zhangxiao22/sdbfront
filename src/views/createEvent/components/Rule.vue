@@ -184,7 +184,7 @@ export default {
             }),
             valDetail: n.tagList.map((m) => {
               return m.tagContentUnitVOList.map((k) => {
-                return { content: k.content }
+                return { content: k.content, compare: k.tagRelation }
               })
             })
           }
@@ -195,7 +195,7 @@ export default {
         })
         this.valDetail = res.data.abstractDetail.tagList.map(n => {
           return n.tagContentUnitVOList.map((m) => {
-            return { content: m.content }
+            return { content: m.content, compare: m.tagRelation }
           })
         })
         console.log('testtesttesttesttesttesttesttest', this.labelTabs)
