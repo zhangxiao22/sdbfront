@@ -4,6 +4,7 @@
       <Group ref="totalRuleRef"
              :condition="totalCondition"
              :total-detail="totalDetail"
+             :val-detail="valDetail"
              :min-length="0"
              label="整体规则"
              @check="checkAll" />
@@ -63,6 +64,7 @@
                  ref="groupRuleRef"
                  required
                  :condition="item.condition"
+                 :val-detail="item.valDetail"
                  :total-detail="item.groupDetail"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
@@ -89,6 +91,7 @@ export default {
   data() {
     return {
       totalDetail: [],
+      valDetail: [],
       totalPeople: '',
       fileId: null,
       labelTabs: [
@@ -177,6 +180,11 @@ export default {
             condition: [],
             groupDetail: n.tagList.map((m) => {
               return m.tagId
+            }),
+            valDetail: n.tagList.map((m) => {
+              return m.tagContentUnitVOList.map((k) => {
+                return { content: k.content }
+              })
             })
           }
         })
@@ -184,7 +192,12 @@ export default {
         this.totalDetail = res.data.abstractDetail.tagList.map(n => {
           return n.tagId
         })
-        console.log('testtesttesttesttesttesttesttest', this.totalDetail)
+        this.valDetail = res.data.abstractDetail.tagList.map(n => {
+          return n.tagContentUnitVOList.map((m) => {
+            return { content: m.content }
+          })
+        })
+        console.log('testtesttesttesttesttesttesttest', this.labelTabs)
       }).catch(() => {
       })
     },

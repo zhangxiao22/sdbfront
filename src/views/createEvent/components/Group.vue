@@ -177,6 +177,12 @@ export default {
       type: Number,
       default: 1
     },
+    valDetail: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
     label: {
       type: String,
       default: '分群规则'
@@ -239,8 +245,9 @@ export default {
     // console.log('parent', this.$parent.$parent)
     this.getRuleList().then(() => {
       setTimeout(() => {
-        console.log('abcddddd', this.totalDetail)
-        this.delayRun(this.getTagId(), 1000)
+        console.log('abcddddd', this.valDetail)
+        // this.delayRun(this.getTagId(), 1000)
+        this.delayRun(this.getAllData(), 1000)
       }, 300)
     })
   },
@@ -322,6 +329,15 @@ export default {
       //   }
       // }
     },
+    getAllData() {
+      if (this.totalDetail) {
+        let vals = []
+        for (let i = 0; i < this.totalDetail.length; i++) {
+          vals = [this.totalDetail[i], this.totalDetail[i], this.totalDetail[i]]
+          this.condition.splice(i, 1, this.setOpt(this.totalDetail[i], vals, this.valDetail[i]))
+        }
+      }
+    },
     delayRun(code, time) {
       var t = setTimeout(code, time)
     },
@@ -355,6 +371,67 @@ export default {
           label: n
         }
       })
+    },
+
+    setOpt(optValue, conditionSelectVal, valDetail) {
+      if (!optValue) {
+        return {
+          conditionSelect: [],
+          andOrText: {
+            value: 1,
+            label: '且'
+          }
+        }
+      } else {
+        const item = this.originData.find((n) => {
+          return n.id === optValue
+        })
+        let conditionValue
+        if (item.type === '数值型') {
+          conditionValue = {
+            numberVal: valDetail[0].content
+          }
+        }
+        if (item.type === '字符串型') {
+          conditionValue = {
+            stringVal: valDetail[0].content
+          }
+        }
+        if (item.type === '枚举型') {
+          conditionValue = {
+            selectVal: valDetail[0].content.value
+          }
+        }
+        if (item.type === '日期型') {
+          conditionValue = {
+            dateVal: valDetail[0].content
+          }
+        }
+        const data = {
+          // 规则选中选项的值
+          conditionSelect: conditionSelectVal,
+          // 规则选中的名称
+          conditionLabel: item.name,
+          // 类型
+          type: item.type,
+          // 比较符号的选项
+          compareOpt: item.relations,
+          // 比较符号的值
+          compare: 0,
+          // 枚举型可选项
+          selectOpt: item.enumCandidateList,
+          // 数字型-单位
+          unit: item.unit,
+          // 规则的值
+          conditionValue,
+          // andOrText: '且'
+          andOrText: {
+            value: 1,
+            label: '且'
+          }
+        }
+        return data
+      }
     },
 
     // 通过规则选中的值，返回一条规则应该展示的数据
