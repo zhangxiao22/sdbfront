@@ -44,6 +44,13 @@
           </template>
         </el-cascader>
       </el-form-item>
+      <el-form-item label="分发模式："
+                    :rules="[{
+                      required: true, message: '请选择分发模式', trigger: 'change'
+                    }]"
+                    prop="ditributeMode">
+        123
+      </el-form-item>
       <el-form-item class="target-form-item"
                     required
                     label="目标设置：">

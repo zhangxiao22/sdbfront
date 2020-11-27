@@ -136,6 +136,7 @@ export default {
   methods: {
     reset() {
       // return this.$refs['totalRuleRef'].reset()
+      this.labelTabsCounts = 0
       this.getDetail()
     },
     checkAll(val) {
