@@ -179,9 +179,11 @@ export default {
             people: n.count,
             closable: true,
             condition: [],
+            // 传递客群规则ID以及且或符号
             groupDetail: n.tagList.map((m) => {
-              return m.tagId
+              return { tagId: m.tagId, combineRelation: m.combineRelation }
             }),
+            // 传递客群规则比较符号和值
             valDetail: n.tagList.map((m) => {
               return m.tagContentUnitVOList.map((k) => {
                 return { content: k.content, compare: k.tagRelation }
@@ -190,15 +192,17 @@ export default {
           }
         })
         this.labelIndex = '1'
+        // 传递整体规则ID以及且或符号
         this.totalDetail = res.data.abstractDetail.tagList.map(n => {
-          return n.tagId
+          return { tagId: n.tagId, combineRelation: n.combineRelation }
         })
+        // 传递整体规则比较符号和值
         this.valDetail = res.data.abstractDetail.tagList.map(n => {
           return n.tagContentUnitVOList.map((m) => {
             return { content: m.content, compare: m.tagRelation }
           })
         })
-        console.log('testtesttesttesttesttesttesttest', this.labelTabs)
+        // console.log('testtesttesttesttesttesttesttest', this.labelTabs)
       }).catch(() => {
       })
     },
@@ -270,11 +274,11 @@ export default {
               reject()
             }
           })
-          fn().then(() => {
-            resolve()
-          }).catch(() => {
-            reject()
-          })
+        })
+        fn().then(() => {
+          resolve()
+        }).catch(() => {
+          reject()
         })
       })
     },
