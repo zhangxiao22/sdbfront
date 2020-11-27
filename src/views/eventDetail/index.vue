@@ -6,8 +6,10 @@
                         @back="goBack" />
         <el-divider class="header-divider" />
         <div class="button-group">
-          <el-button type="success">审批通过</el-button>
-          <el-popover v-model="popoverEdit"
+          <el-button v-if="roleJudge.canApprove"
+                     type="success">审批通过</el-button>
+          <el-popover v-if="roleJudge.canApprove"
+                      v-model="popoverEdit"
                       placement="top"
                       width="300">
             <el-input v-model.trim="rejectText"
@@ -38,20 +40,28 @@
 
 <script>
 import Preview from '@/views/createEvent/components/Preview'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     Preview
   },
   data() {
     return {
+      roleJudge: {},
       popoverEdit: false,
       rejectText: ''
     }
   },
   computed: {
-
+    ...mapGetters([
+      'roles'
+    ])
   },
   watch: {},
+  created() {
+    this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === 'admin'
+  },
   methods: {
     goBack() {
       this.$router.push('/eventBoard')

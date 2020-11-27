@@ -41,7 +41,8 @@
         </el-form>
       </template> -->
       <template v-slot:main-buttons>
-        <el-button class="button"
+        <el-button v-if="roleJudge.createUseCase"
+                   class="button"
                    type="primary"
                    icon="el-icon-plus"
                    plain
@@ -116,7 +117,7 @@
                   修改归属人
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="true">
+              <el-dropdown-item v-if="roleJudge.editClue">
                 <div class="btn"
                      @click="editClue(scope.row)">
                   线索分配
@@ -211,6 +212,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner, modifyUseCaseUser, setDistributeLimit } from '@/api/api'
 import { MAX_NUMBER } from '@/utils'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'UseCase',
@@ -237,6 +239,8 @@ export default {
   },
   data() {
     return {
+      // 权限判断
+      roleJudge: {},
       buttonLoading: false,
       ownerDialog: false,
       clueDialog: false,
@@ -333,7 +337,10 @@ export default {
       data.smsWeekClueLimit = this.clueInfo.assignUpper_sms
       data.id = this.clueData.id
       return data
-    }
+    },
+    ...mapGetters([
+      'roles'
+    ])
   },
 
   watch: {
@@ -341,6 +348,8 @@ export default {
   created() {
     this.search()
     this.getOwner()
+    this.roleJudge.createUseCase = this.roles === '用例管理' || this.roles === 'admin'
+    this.roleJudge.editClue = this.roles === '线索统筹' || this.roles === 'admin'
   },
   methods: {
     rowStyle({ row, index }) {
