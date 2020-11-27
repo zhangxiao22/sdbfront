@@ -221,7 +221,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 3
+      stepActive: 0
     }
   },
   computed: {

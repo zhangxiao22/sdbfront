@@ -294,6 +294,15 @@ export function deleteEvent(params) {
   })
 }
 
+// 事件排序
+export function setEventPriority(data) {
+  return request({
+    url: 'event/setEventPriority',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件汇总 ************************************************************/
 // 饼图
 export function getPie() {

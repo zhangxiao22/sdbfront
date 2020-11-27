@@ -151,10 +151,10 @@ export default {
     content: "";
     position: absolute;
     height: 0;
-    border-bottom: 2px solid #f0f2f5;
+    border-bottom: 1px solid #f0f2f5;
     top: 0;
-    left: -28px;
-    right: -28px;
+    left: 0;
+    right: 0;
   }
 }
 
@@ -231,13 +231,6 @@ export default {
 
     .button-container {
       margin-top: 15px;
-    }
-
-    .button {
-      margin-right: 20px;
-      margin-left: 0;
-      background: #668ae9;
-      border-color: #668ae9;
     }
   }
 }

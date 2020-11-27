@@ -136,11 +136,14 @@
               <div class="chart-item"
                    style="height:600px;">
                 <div class="chart-title">
-                  <svg-icon icon-class="chart-column" />用例线索数
+                  <svg-icon icon-class="chart-pie" />用例线索数
                 </div>
-                <BarChart id="usecase-bar"
+                <PieChart id="usecase-pie"
                           unit="条"
                           :data="usecaseBarData" />
+                <!-- <BarChart id="usecase-bar"
+                          unit="条"
+                          :data="usecaseBarData" /> -->
                 <!-- <ColumnChart id="usecase-bar"
                              meta-value="线索数量"
                              tooltip-title="线索数"
@@ -404,13 +407,13 @@ export default {
         { label: '用例在撒发阿迪舒服的撒发是4', value: 22103 },
         { label: '用例在撒发阿迪舒服的撒发是5', value: 61032 },
         { label: '用例在撒发阿迪舒服的撒发是6', value: 90324 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90124 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90224 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90424 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90524 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90364 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90366 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90328 }
+        { label: '用例在撒发阿迪舒服的撒发是7', value: 90124 },
+        { label: '用例在撒发阿迪舒服的撒发是8', value: 90224 },
+        { label: '用例在撒发阿迪舒服的撒发是9', value: 90424 },
+        { label: '用例在撒发阿迪舒服的撒发是10', value: 90524 },
+        { label: '用例在撒发阿迪舒服的撒发11', value: 90364 },
+        { label: '用例在撒发阿迪舒服的撒发是12', value: 90366 },
+        { label: '用例在撒发阿迪舒服的撒发是13', value: 90328 }
       ].sort((a, b) => {
         return b.value - a.value
       }),

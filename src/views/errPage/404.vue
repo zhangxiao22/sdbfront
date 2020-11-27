@@ -16,8 +16,8 @@
              alt="404">
       </div>
       <div class="bullshit">
-        <h2>该页面不存在</h2>
-        <el-button style="margin-top:30px;"
+        <div style="font-size:20px;font-weight:bold;margin:20px 0;">该页面不存在</div>
+        <el-button style="margin-top:20px;"
                    size="lage"
                    @click="$router.replace('/')">返回首页</el-button>
       </div>

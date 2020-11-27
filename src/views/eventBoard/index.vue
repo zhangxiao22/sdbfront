@@ -16,7 +16,8 @@
                 @filter-change="filterChange"
                 @tab-click="tabClick">
       <template v-slot:main-buttons>
-        <el-button class="button"
+        <el-button v-if="false"
+                   class="button"
                    type="primary"
                    icon="el-icon-plus"
                    plain
@@ -394,8 +395,7 @@ export default {
             }
           })
         })
-        this.loading = false
-      }).catch(() => {
+      }).finally(() => {
         this.loading = false
       })
     },

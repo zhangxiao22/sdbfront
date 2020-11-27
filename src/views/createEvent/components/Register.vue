@@ -57,8 +57,10 @@
                         start-placeholder="开始日期"
                         end-placeholder="结束日期" />
       </el-form-item>
-      <el-form-item required
-                    label="每周线索分配上限（CRM）："
+      <el-form-item label="每周线索分配上限（CRM）："
+                    :rules="[{
+                      required: true, message: '请填写每周线索分配上限（CRM）',
+                    }]"
                     prop="crmWeekClueLimit">
         <el-input-number v-model="baseInfo.crmWeekClueLimit"
                          style="width:200px;"
@@ -71,6 +73,9 @@
       </el-form-item>
       <el-form-item required
                     label="每周线索分配上限（短信）："
+                    :rules="[{
+                      required: true, message: '请填写每周线索分配上限（短信）',
+                    }]"
                     prop="smsWeekClueLimit">
         <el-input-number v-model="baseInfo.smsWeekClueLimit"
                          style="width:200px;"

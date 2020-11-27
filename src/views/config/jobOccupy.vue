@@ -1,4 +1,5 @@
 <template>
+  <!-- 岗位分配 -->
   <div class="job-container">
     <tree-transfer ref="transferRef"
                    :title="[' ', ' ']"
@@ -339,5 +340,11 @@ export default {
   .left-select {
     display: inline-block;
   }
+}
+</style>
+<style>
+body {
+  line-height: 1.15 !important;
+  color: #444 !important;
 }
 </style>

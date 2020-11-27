@@ -70,8 +70,6 @@
                           }]">
               <el-input-number v-model="conditionItem.conditionValue.numberVal"
                                controls-position="right"
-                               :min="1"
-                               :max="10"
                                @change="handleChangeNumberInput" />
             </el-form-item>
           </template>
@@ -240,8 +238,10 @@ export default {
   mounted() {
     // console.log('parent', this.$parent.$parent)
     this.getRuleList().then(() => {
-      console.log('abcddddd', this.totalDetail)
-      this.delayRun(this.getTagId(), 1000)
+      setTimeout(() => {
+        console.log('abcddddd', this.totalDetail)
+        this.delayRun(this.getTagId(), 1000)
+      }, 300)
     })
   },
   created() {
