@@ -302,6 +302,7 @@ export default {
     this.getDetail().then(() => {
       this.renderSwiper()
       this.handleClickSwiperSlider(this.groupActiveIndex)
+      this.$emit('getMainStatus', 2)
     })
   },
   mounted() {

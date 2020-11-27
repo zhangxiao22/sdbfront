@@ -6,10 +6,11 @@
                         @back="goBack" />
         <el-divider class="header-divider" />
         <div class="button-group">
-          <el-button v-if="roleJudge.canApprove"
+          <el-button v-if="roleJudge.canCheck && mainStatus=== 2"
+                     type="success">审核通过</el-button>
+          <el-button v-if="roleJudge.canApprove && mainStatus=== 3"
                      type="success">审批通过</el-button>
-          <el-popover v-if="roleJudge.canApprove"
-                      v-model="popoverEdit"
+          <el-popover v-model="popoverEdit"
                       placement="top"
                       width="300">
             <el-input v-model.trim="rejectText"
@@ -25,14 +26,18 @@
                          size="mini"
                          @click="popoverEdit = false">确定</el-button>
             </div>
-            <el-button slot="reference"
+            <el-button v-if="roleJudge.canCheck && mainStatus=== 2"
+                       slot="reference"
+                       type="danger"
+                       style="margin-left:20px;">审核驳回</el-button>
+            <el-button v-if="roleJudge.canApprove && mainStatus=== 3"
+                       slot="reference"
                        type="danger"
                        style="margin-left:20px;">审批驳回</el-button>
-
           </el-popover>
         </div>
       </div>
-      <Preview />
+      <Preview @getMainStatus="getMainStatus" />
     </div>
   </div>
 
@@ -48,6 +53,8 @@ export default {
   },
   data() {
     return {
+      isAudit: false,
+      mainStatus: null,
       roleJudge: {},
       popoverEdit: false,
       rejectText: ''
@@ -61,10 +68,16 @@ export default {
   watch: {},
   created() {
     this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === 'admin'
+    this.roleJudge.canCheck = this.roles === '用例管理' || this.roles === 'admin'
+    console.log(this.detail)
   },
   methods: {
     goBack() {
       this.$router.push('/eventBoard')
+    },
+    getMainStatus(data) {
+      console.log('getMainStatus??????', data)
+      this.mainStatus = data
     }
   }
 }
