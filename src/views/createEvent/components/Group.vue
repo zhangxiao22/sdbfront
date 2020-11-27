@@ -16,7 +16,7 @@
              class="condition-item"
              :class="{single:condition.length===1}">
           <!-- {{ ci }}  -->
-          {{ conditionItem.conditionSelect }}
+          <!-- {{ conditionItem.conditionSelect }} -->
           <el-form-item :prop="'condition.' + ci + '.conditionSelect'"
                         class="item"
                         :rules="[{
@@ -41,6 +41,7 @@
 
               <el-cascader v-model="conditionItem.conditionSelect"
                            filterable
+                           :show-all-levels="false"
                            :options="tags"
                            @change="selectCondition($event,ci)" />
 
@@ -157,6 +158,19 @@ export default {
         return []
       }
     },
+    totalDetail: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    groupDetail: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+
     maxLength: {
       type: Number,
       default: 5
@@ -177,6 +191,12 @@ export default {
   data() {
     return {
       // condition: [],
+      group: [],
+      groupAll: [],
+      // totalDetail: [],
+      // groupDetail: [],
+      totalCondition: [],
+      groupCondition: [],
       numberOptions: [],
       stringOptions: [],
       MAX_NUMBER,
@@ -195,10 +215,10 @@ export default {
           label: n.tagCtgryNm,
           value: n.id,
           children: [{
-            label: n.tagPrimClNm,
+            label: n.tagScdClNm,
             value: n.id,
             children: [{
-              label: n.tagScdClNm,
+              label: n.name,
               value: n.id
             }]
           }
@@ -217,12 +237,28 @@ export default {
     //   this.$emit('update:condition', this.value)
     // }
   },
+  mounted() {
+    // console.log('parent', this.$parent.$parent)
+    this.getRuleList().then(() => {
+      console.log('abcddddd', this.totalDetail)
+      this.delayRun(this.getTagId(), 1000)
+    })
+  },
   created() {
     // this.tagsInit(0, 0)
-    this.getRuleList()
+    // console.log('parent', this.$parent.$parent)
+    // this.getRuleList().then(() => {
+    //   console.log('abcddddd', this.totalDetail)
+    //   this.delayRun(this.getTagId(), 2000)
+    // })
+    // this.getRuleList()
   },
 
   methods: {
+    reset() {
+      // console.log('aaaaa')
+      // this.$parent.getDetail()
+    },
     validateNumber(rule, value, callback) {
       const index = rule.field.split('.')[1]
       if (this.condition[index].conditionValue.minVal === undefined && this.condition[index].conditionValue.maxVal === undefined) {
@@ -233,6 +269,8 @@ export default {
         // this.$refs.form.clearValidate(`condition.${index}.conditionValue.minVal`)
         callback()
       }
+    },
+    init() {
     },
     chcekNumber(index) {
       this.$refs.form.validateField(`condition.${index}.conditionValue.minVal`)
@@ -267,6 +305,26 @@ export default {
       //   }
       // })
     },
+    // 获取页面规则信息
+    getTagId() {
+      if (this.totalDetail) {
+        let vals = []
+        for (let i = 0; i < this.totalDetail.length; i++) {
+          vals = [this.totalDetail[i], this.totalDetail[i], this.totalDetail[i]]
+          this.condition.splice(i, 1, this.resetOpt(this.totalDetail[i], vals))
+        }
+      }
+      // if (this.groupDetail) {
+      //   let groupVals = []
+      //   for (let i = 0; i < this.groupDetail.length; i++) {
+      //     groupVals = [this.groupDetail[i], this.groupDetail[i], this.groupDetail[i]]
+      //     this.condition.splice(i, 1, this.resetOpt(this.groupDetail[i], groupVals))
+      //   }
+      // }
+    },
+    delayRun(code, time) {
+      var t = setTimeout(code, time)
+    },
     getRuleList() {
       return new Promise((resolve, reject) => {
         getCustomerLabel().then(res => {
@@ -282,12 +340,13 @@ export default {
           val.splice(i, 1)
         }
       }
-      this.numberOptions = val.map(n => {
-        return {
-          value: n,
-          label: n
-        }
-      })
+      // console.log(val)
+      // this.numberOptions = val.map(n => {
+      //   return {
+      //     value: n,
+      //     label: n
+      //   }
+      // })
     },
     handleChangeStringInput(val) {
       this.stringOptions = val.map(n => {
@@ -337,7 +396,7 @@ export default {
           // 规则选中选项的值
           conditionSelect: conditionSelectVal,
           // 规则选中的名称
-          conditionLabel: item.tagScdClNm,
+          conditionLabel: item.name,
           // 类型
           type: item.type,
           // 比较符号的选项
@@ -359,25 +418,6 @@ export default {
         return data
       }
     },
-    transfer() {
-      const data = this.condition.map((n) => {
-        return {
-          tagId: n.conditionSelect,
-          // contentWithRelation: n.conditionSelect
-          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
-          combineRelation: n.andOrText.value
-        }
-      })
-      return data
-    },
-
-    // 筛选出的客户人数
-    filter() {
-      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transfer() }).then(res => {
-        this.totalPeople = res.data.count
-        // console.log(this.totalPeople)
-      })
-    },
 
     tagsInit(ci, optValue) {
       /**
@@ -387,7 +427,7 @@ export default {
       this.condition.splice(ci, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
-      // console.log(val[0], 'i===========', i)
+      console.log(val[2], 'i===========', i)
       for (let j = 0; j < this.tags.length; j++) {
         if (this.tags[j].value === val[2]) {
           this.condition.splice(i, 1, this.resetOpt(val[2], val))
