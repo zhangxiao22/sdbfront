@@ -350,6 +350,7 @@ export default {
     this.getOwner()
     this.roleJudge.createUseCase = this.roles === '用例管理' || this.roles === 'admin'
     this.roleJudge.editClue = this.roles === '线索统筹' || this.roles === 'admin'
+    this.roleJudge.editPeople = this.roles === '业务管理' || this.roles === 'admin'
   },
   methods: {
     rowStyle({ row, index }) {

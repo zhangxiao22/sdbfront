@@ -265,7 +265,7 @@
 // If you use Swiper 6.0.0 or higher
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { getEventPreview } from '@/api/api'
+import { getEventPreview, showWaitApprovalEventDetail, getEventStatus } from '@/api/api'
 import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 
@@ -278,10 +278,15 @@ export default {
   directives: {
     // swiper: directive
   },
+  props: {
+
+  },
   data() {
     return {
       SELF_COLUMN_LIST,
       COMMON_COLUMN_LIST,
+      mainStatus: 1,
+      statusList: [111, 222],
       groupActiveIndex: 0,
       groupSwiper: {},
       mainSwiper: {},
@@ -293,28 +298,58 @@ export default {
   computed: {
     id() {
       return +this.$route.query.id
+    },
+    status() {
+      return this.$route.query.status
     }
   },
   watch: {
 
   },
   created() {
-    this.getDetail().then(() => {
-      this.renderSwiper()
-      this.handleClickSwiperSlider(this.groupActiveIndex)
-      this.$emit('getMainStatus', 2)
+    console.log('this.$route.query', this.$route)
+
+    this.getStatusList().then(() => {
+      this.judgeStatus(this.status)
+      this.$emit('getMainStatus', this.mainStatus)
+      this.getDetail().then(() => {
+        this.renderSwiper()
+        this.handleClickSwiperSlider(this.groupActiveIndex)
+      })
     })
   },
   mounted() {
     // this.mainSwiper.update()
   },
   methods: {
-    getDetail() {
-      const data = {
-        baseId: this.id
-      }
+    // 获取状态列表
+    getStatusList() {
       return new Promise((resolve) => {
-        getEventPreview(data).then(res => {
+        getEventStatus().then(res => {
+          this.statusList = res.data
+          resolve()
+        })
+      })
+    },
+    // 判断是否属于审批大状态
+    judgeStatus(data) {
+      // console.log('this.statusList.length', this.statusList.length)
+      // console.log('data+++++++++0', data)
+      for (let i = 0; i < this.statusList.length; i++) {
+        this.statusList[i].children.find(n => {
+          if (n.value === data.value) { this.mainStatus = this.statusList[i].id }
+        })
+      }
+    },
+    getDetail() {
+      return new Promise((resolve) => {
+        let ajax
+        if (this.mainStatus === 3) {
+          ajax = showWaitApprovalEventDetail
+        } else {
+          ajax = getEventPreview
+        }
+        ajax({ baseId: this.id }).then(res => {
           this.detail = res.data.eventBaseInfo
           this.groups = res.data.groupInfo.groupDetailList.map((n, i) => {
             return {
