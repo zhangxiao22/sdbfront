@@ -6,8 +6,7 @@
                 :loading="loading"
                 :show-pagination="false"
                 :table-data="tableData"
-                :table-column-list="tableColumnList"
-                @render="getList">
+                :table-column-list="tableColumnList">
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn"

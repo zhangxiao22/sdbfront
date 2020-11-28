@@ -32,7 +32,7 @@
     </shun-table>
     <el-dialog :title="isEdit?'编辑岗位':'新增岗位'"
                :visible.sync="showDialog">
-      <el-form ref="formReg"
+      <el-form ref="formRef"
                :model="form">
         <el-form-item label="岗位名称："
                       prop="name"
@@ -69,7 +69,6 @@
                    @click="ensureAddList">确 定</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
@@ -169,17 +168,18 @@ export default {
     },
     handleAdd() {
       this.isEdit = false
-      console.log(this.$refs['formReg'])
-      this.$refs['formReg'] && this.$refs['formReg'].resetFields()
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
       this.form.id = ''
       this.showDialog = true
     },
     handleEdit(row) {
-      this.isEdit = true
-      this.form.id = row.id
-      this.form.name = row.post
-      this.form.role = row.role.value
       this.showDialog = true
+      this.$nextTick(() => {
+        this.isEdit = true
+        this.form.id = row.id
+        this.form.name = row.post
+        this.form.role = row.role.value
+      })
     },
     handleDel(row) {
       this.$confirm(`是否确认删除岗位（${row.post}）？`)
@@ -200,7 +200,7 @@ export default {
         })
     },
     ensureAddList() {
-      this.$refs['formReg'].validate((valid) => {
+      this.$refs['formRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
           let ajxj
@@ -230,6 +230,8 @@ export default {
       })
     },
     cancelAddList() {
+      // console.log(this.$refs['formRef'])
+      // this.$refs['formRef'].resetFields()
       this.showDialog = false
     }
   }

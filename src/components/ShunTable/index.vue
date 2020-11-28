@@ -222,9 +222,18 @@ export default {
     },
     translate(obj, paramPropStr) {
       let val = obj
-      paramPropStr.split('.').forEach(n => {
-        val = val[n]
-      })
+      const arr = paramPropStr.split('.')
+      for (let i = 0; i < arr.length; i++) {
+        if (val) {
+          val = val[arr[i]]
+        } else {
+          val = ''
+          break
+        }
+      }
+      // paramPropStr.split('.').forEach(n => {
+
+      // })
       return val
     },
     // tab点击

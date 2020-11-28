@@ -53,11 +53,12 @@ export default {
       list: [{
         title: '活动按期开始',
         desc: '大法的 aside大撒发大法的 aside大撒',
-        timestamp: '2018-04-15'
+        timestamp: '2018-04-15',
+        user: ['dasfdas', 'asdfdasf']
       }, {
         title: '通过审核',
         desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-
+        user: ['dasfdas'],
         timestamp: '2018-04-13'
       }, {
         desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
@@ -101,12 +102,40 @@ export default {
     }
   },
   created() {
+    setTimeout(() => {
+      // this.form.name = 'aaaaa'
+    }, 3000)
   },
   mounted() {
 
   },
   methods: {
-
+    click() {
+      // this.form.id = '11'
+      // this.form.name = '22'
+      // this.form.role = '333'
+      // this.form = {
+      //   name: '222'
+      // }
+      console.log(this.$refs['formRef'])
+      this.showDialog = !this.showDialog
+      setTimeout(() => {
+        this.form.name = 'aaaaa'
+      })
+    },
+    change(aa) {
+      // console.log(aa)
+      // this.form.name = 'aaaaa'
+    },
+    cancelAddList() {
+      console.log(this.$refs['formRef'])
+      this.$refs['formRef'].resetFields()
+      // this.showDialog = false
+    },
+    cancelAddList111() {
+      console.log(this.$refs['formRef'])
+      this.$refs['formRef'].resetFields()
+    }
   }
 }
 </script>
