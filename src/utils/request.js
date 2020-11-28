@@ -38,8 +38,8 @@ service.interceptors.response.use(
     if (res.code !== 200) {
       Message.closeAll()
       Message({
-        // message: `${res.msg}：${res.subMsg}` || 'Error',
-        message: `${res.msg}` || 'Error',
+        message: `${res.subMsg ? res.subMsg.params : res.msg}` || 'Error',
+        // message: `${res.msg}` || 'Error',
         type: 'error',
         duration: 10 * 1000
       })

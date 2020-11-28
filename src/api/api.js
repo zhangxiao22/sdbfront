@@ -303,6 +303,43 @@ export function setEventPriority(data) {
   })
 }
 
+/** ************************************************ 事件审批 ************************************************************/
+// 事件审批
+export function isPass(data) {
+  return request({
+    url: '/approval/isPass',
+    method: 'post',
+    data
+  })
+}
+
+// 提交审核
+export function askForApproval(params) {
+  return request({
+    url: '/approval/askForApproval',
+    method: 'get',
+    params
+  })
+}
+
+// 获取审批页面
+export function showWaitApprovalEventDetail(params) {
+  return request({
+    url: '/approval/showWaitApprovalEventDetail',
+    method: 'get',
+    params
+  })
+}
+
+// 获取审批链路
+export function getEventApprovalLink(params) {
+  return request({
+    url: '/approval/getEventApprovalLink',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 事件汇总 ************************************************************/
 // 饼图
 export function getPie() {

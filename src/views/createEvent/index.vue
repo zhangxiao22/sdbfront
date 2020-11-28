@@ -139,7 +139,7 @@
           <el-button icon="el-icon-upload2"
                      type="success"
                      :disabled="stepActive!==3"
-                     @click="publish">提交审批</el-button>
+                     @click="publish">提交审核</el-button>
         </el-col>
         <!-- {{ baseInfoDetail }} -->
       </el-row>
@@ -152,7 +152,7 @@
 import { Register, Customer, Ploy, Preview } from './components'
 import bus from './bus'
 // import { mapGetters } from 'vuex'
-import { eventPublish, getEventInfo, getUseCaseDetailById } from '@/api/api'
+import { eventPublish, askForApproval, getEventInfo, getUseCaseDetailById } from '@/api/api'
 const DEFAULT_DATA = {
   baseInfoDetail: {
     // 事件名称
@@ -314,7 +314,12 @@ export default {
     },
     publish() {
       const data = { baseId: this.id }
-      eventPublish(data).then(res => {
+      // eventPublish(data).then(res => {
+      //   if (res.code === 200) {
+      //     this.$router.replace('/eventBoard')
+      //   }
+      // })
+      askForApproval(data).then(res => {
         if (res.code === 200) {
           this.$router.replace('/eventBoard')
         }

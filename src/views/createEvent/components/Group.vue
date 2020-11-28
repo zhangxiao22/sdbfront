@@ -245,20 +245,14 @@ export default {
     // console.log('parent', this.$parent.$parent)
     this.getRuleList().then(() => {
       setTimeout(() => {
-        console.log('abcddddd', this.valDetail)
+        // console.log('abcddddd', this.valDetail)
         // this.delayRun(this.getTagId(), 1000)
         this.delayRun(this.getAllData(), 1000)
-      }, 300)
+      }, 500)
     })
   },
   created() {
     // this.tagsInit(0, 0)
-    // console.log('parent', this.$parent.$parent)
-    // this.getRuleList().then(() => {
-    //   console.log('abcddddd', this.totalDetail)
-    //   this.delayRun(this.getTagId(), 2000)
-    // })
-    // this.getRuleList()
   },
 
   methods: {
@@ -313,27 +307,12 @@ export default {
       // })
     },
     // 获取页面规则信息
-    getTagId() {
-      if (this.totalDetail) {
-        let vals = []
-        for (let i = 0; i < this.totalDetail.length; i++) {
-          vals = [this.totalDetail[i], this.totalDetail[i], this.totalDetail[i]]
-          this.condition.splice(i, 1, this.resetOpt(this.totalDetail[i], vals))
-        }
-      }
-      // if (this.groupDetail) {
-      //   let groupVals = []
-      //   for (let i = 0; i < this.groupDetail.length; i++) {
-      //     groupVals = [this.groupDetail[i], this.groupDetail[i], this.groupDetail[i]]
-      //     this.condition.splice(i, 1, this.resetOpt(this.groupDetail[i], groupVals))
-      //   }
-      // }
-    },
     getAllData() {
       if (this.totalDetail) {
+        // console.log('this.totalDetal++++++++++++++', this.totalDetail)
         let vals = []
         for (let i = 0; i < this.totalDetail.length; i++) {
-          vals = [this.totalDetail[i], this.totalDetail[i], this.totalDetail[i]]
+          vals = [this.totalDetail[i].tagId, this.totalDetail[i].tagId, this.totalDetail[i].tagId]
           this.condition.splice(i, 1, this.setOpt(this.totalDetail[i], vals, this.valDetail[i]))
         }
       }
@@ -384,7 +363,7 @@ export default {
         }
       } else {
         const item = this.originData.find((n) => {
-          return n.id === optValue
+          return n.id === optValue.tagId
         })
         let conditionValue
         if (item.type === '数值型') {
@@ -417,7 +396,7 @@ export default {
           // 比较符号的选项
           compareOpt: item.relations,
           // 比较符号的值
-          compare: 0,
+          compare: valDetail[0].compare.value,
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
           // 数字型-单位
@@ -425,10 +404,8 @@ export default {
           // 规则的值
           conditionValue,
           // andOrText: '且'
-          andOrText: {
-            value: 1,
-            label: '且'
-          }
+          andOrText: this.englishAndOr(optValue.combineRelation)
+          // andOrText: optValue.combineRelation
         }
         return data
       }
@@ -504,7 +481,7 @@ export default {
       this.condition.splice(ci, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
-      console.log(val[2], 'i===========', i)
+      // console.log(val[2], 'i===========', i)
       for (let j = 0; j < this.tags.length; j++) {
         if (this.tags[j].value === val[2]) {
           this.condition.splice(i, 1, this.resetOpt(val[2], val))
@@ -525,6 +502,11 @@ export default {
     andOr(i) {
       // this.condition[i].andOrText = this.condition[i].andOrText === '且' ? '或' : '且'
       this.condition[i].andOrText = this.condition[i].andOrText.label === '且' ? { value: 2, label: '或' } : { value: 1, label: '且' }
+    },
+    englishAndOr(value) {
+      if (value) {
+        return value.value === 1 ? { value: 1, label: '且' } : { value: 2, label: '或' }
+      } else return null
     },
     getVal() {
       return this.condition

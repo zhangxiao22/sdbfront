@@ -139,16 +139,19 @@ export default {
       this.labelTabsCounts = 0
       this.getDetail()
     },
-    checkAll(val) {
+    transferDataByType(val) {
       const data = val.map((n) => {
         return {
           tagId: n.conditionSelect[2],
           // contentWithRelation: n.conditionSelect
-          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
+          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.stringVal || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
           combineRelation: n.andOrText.value
         }
       })
-      getPeopleCount({ baseId: this.id, rawSearchRuleList: data }).then(res => {
+      return data
+    },
+    checkAll(val) {
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(val) }).then(res => {
         this.totalPeople = res.data.count
         // console.log('people==============', this.totalPeople)
       })
@@ -156,14 +159,7 @@ export default {
     },
     checkGroup(item, ti) {
       // console.log(item, ti)
-      const data = item.condition.map((n) => {
-        return {
-          tagId: n.conditionSelect[2],
-          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
-          combineRelation: n.andOrText.value
-        }
-      })
-      getPeopleCount({ baseId: this.id, rawSearchRuleList: data }).then(res => {
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition) }).then(res => {
         this.labelTabs[ti].people = res.data.count
       })
     },
@@ -179,26 +175,30 @@ export default {
             people: n.count,
             closable: true,
             condition: [],
+            // 传递客群规则ID以及且或符号
             groupDetail: n.tagList.map((m) => {
-              return m.tagId
+              return { tagId: m.tagId, combineRelation: m.combineRelation }
             }),
+            // 传递客群规则比较符号和值
             valDetail: n.tagList.map((m) => {
               return m.tagContentUnitVOList.map((k) => {
-                return { content: k.content }
+                return { content: k.content, compare: k.tagRelation }
               })
             })
           }
         })
         this.labelIndex = '1'
+        // 传递整体规则ID以及且或符号
         this.totalDetail = res.data.abstractDetail.tagList.map(n => {
-          return n.tagId
+          return { tagId: n.tagId, combineRelation: n.combineRelation }
         })
+        // 传递整体规则比较符号和值
         this.valDetail = res.data.abstractDetail.tagList.map(n => {
           return n.tagContentUnitVOList.map((m) => {
-            return { content: m.content }
+            return { content: m.content, compare: m.tagRelation }
           })
         })
-        console.log('testtesttesttesttesttesttesttest', this.labelTabs)
+        // console.log('testtesttesttesttesttesttesttest', this.labelTabs)
       }).catch(() => {
       })
     },
@@ -213,26 +213,14 @@ export default {
           subBranchId: 1000,
           rawGroup: {
             count: this.totalPeople,
-            tagList: this.totalCondition.map((n, i) => {
-              return {
-                tagId: n.conditionSelect[2],
-                contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
-                combineRelation: n.andOrText.value
-              }
-            })
+            tagList: this.transferDataByType(this.totalCondition)
           },
           groupSaveCriteriaList: this.labelTabs.map((n, i) => {
             return {
               name: n.title,
               count: n.people,
               desc: n.desc,
-              tagList: n.condition.map((m, i) => {
-                return {
-                  tagId: m.conditionSelect[2],
-                  contentWithRelation: [{ content: JSON.stringify(m.conditionValue.numberVal) || m.conditionValue.selectVal || m.conditionValue.dateVal || 0, tagRelation: m.compare }],
-                  combineRelation: m.andOrText.value
-                }
-              })
+              tagList: this.transferDataByType(n.condition)
             }
           })
         }
@@ -270,11 +258,11 @@ export default {
               reject()
             }
           })
-          fn().then(() => {
-            resolve()
-          }).catch(() => {
-            reject()
-          })
+        })
+        fn().then(() => {
+          resolve()
+        }).catch(() => {
+          reject()
         })
       })
     },
