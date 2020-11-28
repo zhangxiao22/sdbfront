@@ -44,9 +44,15 @@ export default {
     }
   },
   mounted() {
-    this.render()
+    // this.render()
   },
   methods: {
+    updete() {
+      this.render()
+    },
+    clear() {
+      this.chart.clear()
+    },
     render() {
       this.chart = new Chart({
         container: this.id,

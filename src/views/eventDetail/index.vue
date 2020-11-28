@@ -6,7 +6,7 @@
                         @back="goBack" />
         <el-divider class="header-divider" />
         <div class="button-group">
-          <el-button type="success">审批通过</el-button>
+          <el-button type="success">通过</el-button>
           <el-popover v-model="popoverEdit"
                       placement="top"
                       width="300">
@@ -25,7 +25,7 @@
             </div>
             <el-button slot="reference"
                        type="danger"
-                       style="margin-left:20px;">审批驳回</el-button>
+                       style="margin-left:20px;">驳回</el-button>
 
           </el-popover>
         </div>

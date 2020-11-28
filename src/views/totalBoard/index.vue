@@ -113,6 +113,7 @@
                 <FunnelChart id="funnel"
                              :data="funnelData" />
                 <div class="chart-bottom">
+                  <div style="margin-right:20px;">有效执行数：<b>10000</b></div>
                   <div style="margin-right:20px;">有效执行率：<b>67%</b></div>
                   <div>实际达成率：<b>67%</b></div>
                 </div>
@@ -136,14 +137,22 @@
               <div class="chart-item"
                    style="height:600px;">
                 <div class="chart-title">
-                  <svg-icon icon-class="chart-pie" />用例线索数
+                  <svg-icon icon-class="chart-bar" />用例线索数
+                  <el-select v-model="funnelSel"
+                             style="margin-left:20px;"
+                             placeholder="请选择">
+                    <el-option v-for="item in funnelOpt"
+                               :key="item.value"
+                               :label="item.label"
+                               :value="item.value" />
+                  </el-select>
                 </div>
-                <PieChart id="usecase-pie"
-                          unit="条"
-                          :data="usecaseBarData" />
-                <!-- <BarChart id="usecase-bar"
+                <!-- <PieChart id="usecase-pie"
                           unit="条"
                           :data="usecaseBarData" /> -->
+                <BarChart id="usecase-bar"
+                          unit="条"
+                          :data="usecaseBarData" />
                 <!-- <ColumnChart id="usecase-bar"
                              meta-value="线索数量"
                              tooltip-title="线索数"
@@ -151,49 +160,73 @@
               </div>
             </el-col>
           </el-row>
-          <el-row class="crm-line-container">
-            <div class="sub-title">CRM</div>
-            <el-col :span="24"
-                    class="chart-item line-chart">
+          <div class="crm-line-container">
+            <div class="sub-title">
+              CRM
+              <el-button type="primary"
+                         style="margin-left:20px;"
+                         size="mini"
+                         @click="expandOpen">{{ expand?'折叠':'展开' }}
+                <i :class="expand?'el-icon-arrow-up':'el-icon-arrow-down'"
+                   class="el-icon--right" />
+              </el-button>
+              <!-- <el-select v-show="!expand"
+                         v-model="crmSel"
+                         style="margin-left:20px;"
+                         placeholder="请选择">
+                <el-option v-for="item in crmOpt"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select> -->
+            </div>
+            <div class="chart-item line-chart">
               <div class="chart-title">
-                <svg-icon icon-class="chart-line" />CRM执行率
-              </div>
-              <LineChart id="crm-line-1"
-                         :data="lineChartData" />
-            </el-col>
-            <el-col :span="24"
-                    class="chart-item line-chart">
-              <div class="chart-title">
-                <svg-icon icon-class="chart-line" />CRM联系成功率
-              </div>
-              <LineChart id="crm-line-2"
-                         :data="lineChartData" />
-            </el-col>
-            <el-col :span="24"
-                    class="chart-item line-chart">
-              <div class="chart-title">
-                <svg-icon icon-class="chart-line" />CRM有效执行率
-              </div>
-              <LineChart id="crm-line-3"
-                         :data="lineChartData" />
-            </el-col>
-            <el-col :span="24"
-                    class="chart-item line-chart">
-              <div class="chart-title">
-                <svg-icon icon-class="chart-line" />CRM成功购买率
-              </div>
-              <LineChart id="crm-line-4"
-                         :data="lineChartData" />
-            </el-col>
-            <el-col :span="24"
-                    class="chart-item line-chart">
-              <div class="chart-title">
-                <svg-icon icon-class="chart-line" />CRM成功购买率
+                <svg-icon icon-class="chart-line" />CRM实际达成率
               </div>
               <LineChart2 id="crm-line-5"
                           :data="lineChartData5" />
-            </el-col>
-          </el-row>
+            </div>
+
+            <el-collapse-transition>
+              <div v-show="expand">
+                <div class="chart-item line-chart">
+                  <div class="chart-title">
+                    <svg-icon icon-class="chart-line" />CRM执行率
+                  </div>
+                  <LineChart id="crm-line-1"
+                             ref="crmLineRef1"
+                             :data="lineChartData" />
+                </div>
+                <div class="chart-item line-chart">
+                  <div class="chart-title">
+                    <svg-icon icon-class="chart-line" />CRM联系成功率
+                  </div>
+                  <LineChart id="crm-line-2"
+                             ref="crmLineRef2"
+                             :data="lineChartData" />
+                </div>
+                <div class="chart-item line-chart">
+                  <div class="chart-title">
+                    <svg-icon icon-class="chart-line" />CRM有效执行率
+                  </div>
+                  <LineChart id="crm-line-3"
+                             ref="crmLineRef3"
+                             :data="lineChartData" />
+                </div>
+                <div class="chart-item line-chart">
+                  <div class="chart-title">
+                    <svg-icon icon-class="chart-line" />CRM成功购买率
+                  </div>
+                  <LineChart id="crm-line-4"
+                             ref="crmLineRef4"
+                             :data="lineChartData" />
+                </div>
+              </div>
+
+            </el-collapse-transition>
+
+          </div>
           <el-row class="crm-line-container"
                   style="border-left-color:rgb(103, 194, 58);">
             <div class="sub-title">短信</div>
@@ -387,6 +420,13 @@ export default {
         { label: '成功购买', value: 5500 }
       ],
       // 渠道线索数据
+      funnelSel: '1',
+      funnelOpt: [
+        { label: '线索数量', value: '1' },
+        { label: '线索执行', value: '2' },
+        { label: '联系成功', value: '3' },
+        { label: '成功购买', value: '4' }
+      ],
       channelPieData: [
         { label: '分类一', value: 10 },
         { label: '分类二', value: 20 },
@@ -418,6 +458,15 @@ export default {
         return b.value - a.value
       }),
       // crm
+      expand: false,
+      crmSel: '1',
+      crmOpt: [
+        { label: 'CRM执行率', value: '1' },
+        { label: 'CRM联系成功率', value: '2' },
+        { label: 'CRM有效执行率', value: '3' },
+        { label: 'CRM成功购买率', value: '4' },
+        { label: 'CRM实际达成率', value: '5' }
+      ],
       lineChartData: [
         {
           label: '9月第一批',
@@ -692,6 +741,18 @@ export default {
 
   },
   methods: {
+    expandOpen() {
+      this.expand = !this.expand
+      if (this.expand && !this.renderOnce) {
+        this.renderOnce = true
+        this.$nextTick(() => {
+          this.$refs.crmLineRef1.updete()
+          this.$refs.crmLineRef2.updete()
+          this.$refs.crmLineRef3.updete()
+          this.$refs.crmLineRef4.updete()
+        })
+      }
+    },
     getStatistics() {
       totalStatistics().then(res => {
         this.statistics = res.data.map(n => {
@@ -801,6 +862,8 @@ export default {
           padding: 20px;
           font-weight: bold;
           text-align: left;
+          display: flex;
+          align-items: center;
         }
       }
 
