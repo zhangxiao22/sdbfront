@@ -265,7 +265,7 @@
 // If you use Swiper 6.0.0 or higher
 import Swiper from 'swiper'
 import 'swiper/swiper-bundle.css'
-import { getEventPreview, showWaitApprovalEventDetail, getEventStatus } from '@/api/api'
+import { getEventPreview } from '@/api/api'
 import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 
@@ -279,14 +279,21 @@ export default {
     // swiper: directive
   },
   props: {
-
+    notAutoRender: {
+      type: Boolean,
+      default: false
+    },
+    previewData: {
+      type: Object,
+      default() {
+        return {}
+      }
+    }
   },
   data() {
     return {
       SELF_COLUMN_LIST,
       COMMON_COLUMN_LIST,
-      mainStatus: 1,
-      statusList: [111, 222],
       groupActiveIndex: 0,
       groupSwiper: {},
       mainSwiper: {},
@@ -298,102 +305,81 @@ export default {
   computed: {
     id() {
       return +this.$route.query.id
-    },
-    status() {
-      return this.$route.query.status
     }
   },
   watch: {
-
+    previewData: {
+      handler() {
+        if (JSON.stringify(this.previewData) !== '{}') {
+          this.tranform(this.previewData)
+          this.renderSwiper()
+          this.handleClickSwiperSlider(this.groupActiveIndex)
+        }
+      },
+      // immediate: true,
+      deep: true
+    }
   },
   created() {
-    console.log('this.$route.query', this.$route)
-
-    this.getStatusList().then(() => {
-      this.judgeStatus(this.status)
-      this.$emit('getMainStatus', this.mainStatus)
-      this.getDetail().then(() => {
-        this.renderSwiper()
-        this.handleClickSwiperSlider(this.groupActiveIndex)
-      })
-    })
+    if (!this.notAutoRender) {
+      this.getDetail()
+    }
+    // this.getDetail().then(() => {
+    //   this.renderSwiper()
+    //   this.handleClickSwiperSlider(this.groupActiveIndex)
+    // })
   },
   mounted() {
     // this.mainSwiper.update()
   },
   methods: {
-    // 获取状态列表
-    getStatusList() {
-      return new Promise((resolve) => {
-        getEventStatus().then(res => {
-          this.statusList = res.data
-          resolve()
-        })
+    getDetail() {
+      getEventPreview({ baseId: this.id }).then(res => {
+        this.previewData = res.data
       })
     },
-    // 判断是否属于审批大状态
-    judgeStatus(data) {
-      // console.log('this.statusList.length', this.statusList.length)
-      // console.log('data+++++++++0', data)
-      for (let i = 0; i < this.statusList.length; i++) {
-        this.statusList[i].children.find(n => {
-          if (n.value === data.value) { this.mainStatus = this.statusList[i].id }
-        })
-      }
-    },
-    getDetail() {
-      return new Promise((resolve) => {
-        let ajax
-        if (this.mainStatus === 3) {
-          ajax = showWaitApprovalEventDetail
-        } else {
-          ajax = getEventPreview
-        }
-        ajax({ baseId: this.id }).then(res => {
-          this.detail = res.data.eventBaseInfo
-          this.groups = res.data.groupInfo.groupDetailList.map((n, i) => {
+    tranform(data) {
+      this.detail = data.eventBaseInfo
+      this.groups = data.groupInfo.groupDetailList.map((n, i) => {
+        return {
+          active: false,
+          groupName: n.groupDetail.name,
+          count: n.groupDetail.count,
+          desc: n.groupDetail.desc,
+          ploy: n.strategyDetailList.map(m => {
             return {
-              active: false,
-              groupName: n.groupDetail.name,
-              count: n.groupDetail.count,
-              desc: n.groupDetail.desc,
-              ploy: n.strategyDetailList.map(m => {
-                return {
-                  ployName: m.name,
-                  range: m.range,
-                  product: m.productInfoList.map((product) => {
-                    return Object.assign({}, product, product.extraField)
-                  }),
-                  interest: m.couponInfoList,
-                  channels: m.strategyInfoList.map(x => {
-                    const item = CHANNEL_OPT.find(item => item.value === x.channel.value)
-                    return Object.assign({}, item, x, {
-                      timingDateValue: x.pushType.value === 1
-                        ? x.pushTimeInfo.scheduelPushInfoVO.interval.map(a => {
-                          let timerTime
-                          TIMING_OPT.forEach(b => {
-                            if (b.value === x.pushTimeInfo.scheduelPushInfoVO.intervalType.value) {
-                              b.children.forEach(c => {
-                                if (c.value === a) {
-                                  timerTime = `${b.label}${c.label}`
-                                }
-                              })
+              ployName: m.name,
+              range: m.range,
+              product: m.productInfoList.map((product) => {
+                return Object.assign({}, product, product.extraField)
+              }),
+              interest: m.couponInfoList,
+              channels: m.strategyInfoList.map(x => {
+                const item = CHANNEL_OPT.find(item => item.value === x.channel.value)
+                return Object.assign({}, item, x, {
+                  timingDateValue: x.pushType.value === 1
+                    ? x.pushTimeInfo.scheduelPushInfoVO.interval.map(a => {
+                      let timerTime
+                      TIMING_OPT.forEach(b => {
+                        if (b.value === x.pushTimeInfo.scheduelPushInfoVO.intervalType.value) {
+                          b.children.forEach(c => {
+                            if (c.value === a) {
+                              timerTime = `${b.label}${c.label}`
                             }
                           })
-                          return Object.assign(a, {
-                            timerTime
-                          })
-                        }) : undefined,
-                      ruleValue: x.pushType.value === 2
-                        ? x.pushTimeInfo.rulePushInfoList : undefined
-                    })
-                  })
-                }
+                        }
+                      })
+                      return Object.assign(a, {
+                        timerTime
+                      })
+                    }) : undefined,
+                  ruleValue: x.pushType.value === 2
+                    ? x.pushTimeInfo.rulePushInfoList : undefined
+                })
               })
             }
           })
-          resolve()
-        })
+        }
       })
     },
     handleExpandChange() {

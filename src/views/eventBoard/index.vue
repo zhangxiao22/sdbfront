@@ -105,8 +105,7 @@
                         placement="top-start">
               <div class="name elip bold"
                    :class="{link:scope.row.status.value!==1}"
-                   @click="eventDetail(scope.row.id,scope.row.status)">
-                <!-- @click="scope.row.status.value!==1 && eventDetail(scope.row.id)"> -->
+                   @click="scope.row.status.value!==1 && eventDetail(scope.row.id)">
                 {{ scope.row.name }}
               </div>
             </el-tooltip>
@@ -408,11 +407,10 @@ export default {
         this.loading = false
       })
     },
-    eventDetail(id, status) {
+    eventDetail(id) {
       this.$router.push({
         path: '/eventDetail', query: {
-          id,
-          status
+          id
         }
       })
     },

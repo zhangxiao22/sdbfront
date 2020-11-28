@@ -322,16 +322,7 @@ export function askForApproval(params) {
   })
 }
 
-// 获取审批页面
-export function showWaitApprovalEventDetail(params) {
-  return request({
-    url: '/approval/showWaitApprovalEventDetail',
-    method: 'get',
-    params
-  })
-}
-
-// 获取审批链路
+// 获取审批状态信息
 export function getEventApprovalLink(params) {
   return request({
     url: '/approval/getEventApprovalLink',
