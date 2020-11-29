@@ -3,7 +3,7 @@
     <div v-for="(box,pi) of realTabList"
          :key="pi"
          class="box">
-      <div class="box-title">{{ box.main_title }}</div>
+      <div class="box-title">{{ box.mainTitle }}</div>
       <div class="card-container">
         <div v-for="(item,i) of box.list"
              :key="i"
@@ -37,7 +37,7 @@ export default {
     return {
       cardList: [
         {
-          main_title: '营销事件管理',
+          mainTitle: '营销事件管理',
           list: [
             {
               img: require('../../assets/home/1-1.png'),
@@ -61,7 +61,7 @@ export default {
           ]
         },
         {
-          main_title: '营销资源管理',
+          mainTitle: '营销资源管理',
           list: [
             {
               img: require('../../assets/home/1-2.png'),
@@ -105,7 +105,7 @@ export default {
           ]
         },
         {
-          main_title: '系统参数设置',
+          mainTitle: '系统参数设置',
           list: [
             {
               img: require('../../assets/home/1-2.png'),
@@ -151,8 +151,6 @@ export default {
               return n.roles ? n.roles.includes(this.roles) : true
             }
           })
-        }, {
-          main_title: m.main_title
         })
       })
     }

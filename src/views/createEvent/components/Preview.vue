@@ -3,10 +3,11 @@
     <div v-if="detail.id"
          class="header">
       <div class="title">
-        <div class="status">{{ detail.status.label }}</div>
+        <div class="status"
+             :style="{background:colors[detail.largeStatus.value-2]}">{{ detail.status.label }}</div>
         {{ detail.name }}
-        <el-tag effect="dark"
-                style="margin-left:10px;">{{ detail.category.label }}</el-tag>
+        <!-- <el-tag effect="dark"
+                style="margin-left:10px;">{{ detail.category.label }}</el-tag> -->
         <div v-show="detail.trial"
              class="main-info-box">
           <div class="label">对照组</div>
@@ -292,6 +293,7 @@ export default {
   },
   data() {
     return {
+      colors: ['#ff9900', '#1890FF', '#67c23a', '#aaaaaa'],
       SELF_COLUMN_LIST,
       COMMON_COLUMN_LIST,
       groupActiveIndex: 0,
