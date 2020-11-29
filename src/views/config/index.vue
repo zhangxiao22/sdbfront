@@ -140,7 +140,7 @@ export default {
     // console.log('this.roles', this.roles)
   },
   mounted() {
-    this.$refs.component[+this.tabIndex].init()
+    this.$refs.component[+this.tabIndex]?.init()
   },
   methods: {
     handleTabClick(val) {
