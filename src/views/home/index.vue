@@ -1,6 +1,6 @@
 <template>
   <div class="container shun-card">
-    <div v-for="(box,pi) of cardList"
+    <div v-for="(box,pi) of realTabList"
          :key="pi"
          class="box">
       <div class="box-title">{{ box.main_title }}</div>
@@ -30,6 +30,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   data() {
     return {
@@ -41,19 +43,20 @@ export default {
               img: require('../../assets/home/1-1.png'),
               title: '',
               desc: '',
-              path: '/createEvent'
-            },
-            {
-              img: require('../../assets/home/1-2.png'),
-              title: '营销结果看板',
-              path: '/resultsBoard',
-              desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
+              path: '/createEvent',
+              roles: ['事件注册']
             },
             {
               img: require('../../assets/home/1-2.png'),
               title: '事件看板',
               path: '/eventBoard',
               desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
+            },
+            {
+              img: require('../../assets/home/1-2.png'),
+              title: '线索发布总览',
+              path: '/totalBoard',
+              desc: '线索发布总览的综合分析、反馈数据收集、为策略调整提供依据'
             }
           ]
         },
@@ -62,31 +65,42 @@ export default {
           list: [
             {
               img: require('../../assets/home/1-2.png'),
-              title: '可用模型',
-              desc: ''
-            },
-            {
-              img: require('../../assets/home/1-2.png'),
-              title: '可用策略',
+              title: '用例库',
               desc: '',
-              path: '/interest'
+              path: '/useCase',
+              roles: ['用例管理', '线索统筹', '业务管理']
+
             },
             {
               img: require('../../assets/home/1-2.png'),
               title: '产品库',
               desc: '',
-              path: '/product'
+              path: '/product',
+              roles: ['事件注册', '用例管理']
+
             },
             {
               img: require('../../assets/home/1-2.png'),
               title: '话术库',
               desc: '',
-              path: '/word'
+              path: '/word',
+              roles: ['事件注册', '用例管理']
+
             },
             {
               img: require('../../assets/home/1-2.png'),
-              title: '渠道管理',
-              desc: ''
+              title: '权益库',
+              desc: '',
+              path: '/interest',
+              roles: ['事件注册', '用例管理']
+
+            },
+            {
+              img: require('../../assets/home/1-2.png'),
+              title: '短信库',
+              desc: '',
+              path: '/sms',
+              roles: ['事件注册', '用例管理']
             }
           ]
         },
@@ -95,18 +109,10 @@ export default {
           list: [
             {
               img: require('../../assets/home/1-2.png'),
-              title: '用户角色设置',
-              desc: ''
-            },
-            {
-              img: require('../../assets/home/1-2.png'),
-              title: '参数设置',
-              desc: ''
-            },
-            {
-              img: require('../../assets/home/1-2.png'),
-              title: '其他设置',
-              desc: ''
+              title: '系统设置',
+              desc: '',
+              path: '/config',
+              roles: ['事件注册', '用例管理', '线索统筹', '业务管理']
             }
           ]
         }
@@ -129,6 +135,26 @@ export default {
           path: ''
         }
       ]
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'roles'
+    ]),
+    realTabList() {
+      return this.cardList.map(m => {
+        return Object.assign({
+          list: m.list.filter(n => {
+            if (this.roles === 'admin') {
+              return true
+            } else {
+              return n.roles ? n.roles.includes(this.roles) : true
+            }
+          })
+        }, {
+          main_title: m.main_title
+        })
+      })
     }
   },
   watch: {},
