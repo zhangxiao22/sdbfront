@@ -67,7 +67,9 @@
                     prop="isSwithOnUnDisturb">
         <el-tooltip :content="baseInfo.isSwithOnUnDisturb?'已开启':'已关闭'"
                     placement="top">
-          <el-switch v-model="baseInfo.isSwithOnUnDisturb" />
+          <el-switch v-model="baseInfo.isSwithOnUnDisturb"
+                     :active-value="1"
+                     :inactive-value="0" />
         </el-tooltip>
       </el-form-item>
       <el-form-item class="target-form-item"
@@ -158,7 +160,7 @@ export default {
         name: '',
         type: '',
         participants: [],
-        isSwithOnUnDisturb: true,
+        isSwithOnUnDisturb: 1,
         ditributeMode: 1,
         target: [
           {
@@ -210,6 +212,7 @@ export default {
       data.name = this.baseInfo.name
       data.category = this.baseInfo.type
       data.eventParticipants = this.baseInfo.participants
+      data.isSwithOnUnDisturb = this.baseInfo.isSwithOnUnDisturb
       data.ditributeMode = this.baseInfo.ditributeMode
       // 目标
       data.useCaseAchieveList = this.baseInfo.target.map(n => {
@@ -274,6 +277,7 @@ export default {
         this.baseInfo.name = res.data.name
         this.baseInfo.type = res.data.category.value
         this.baseInfo.participants = res.data.eventParticipants
+        this.baseInfo.isSwithOnUnDisturb = res.data.isSwithOnUnDisturb
         this.baseInfo.ditributeMode = res.data.ditributeMode
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
