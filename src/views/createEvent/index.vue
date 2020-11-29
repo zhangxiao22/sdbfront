@@ -18,11 +18,11 @@
                  size="mini">{{ baseInfoDetail.useCaseName }}
             </div>
             <!-- 事件类型 -->
-            <el-tag v-show="baseInfoDetail.categoryValue"
+            <!-- <el-tag v-show="baseInfoDetail.categoryValue"
                     class="item"
                     size="mini"
                     type="warning">{{ baseInfoDetail.categoryValue }}
-            </el-tag>
+            </el-tag> -->
             <!-- 起止日期 -->
             <div v-show="baseInfoDetail.startDate && baseInfoDetail.endDate"
                  class="item time-group"
@@ -160,7 +160,7 @@ const DEFAULT_DATA = {
     // 用例名称
     useCaseName: '',
     // 类型
-    categoryValue: '',
+    // categoryValue: '',
     // 开始日期
     startDate: '',
     // 结束日期
@@ -273,7 +273,7 @@ export default {
         // console.log(baseInfo)
         // 基本信息
         this.baseInfoDetail.name = baseInfo.name
-        this.baseInfoDetail.categoryValue = baseInfo.category.label
+        // this.baseInfoDetail.categoryValue = baseInfo.category.label
         this.baseInfoDetail.useCaseName = baseInfo.useCaseName
         this.baseInfoDetail.startDate = baseInfo.startDate
         this.baseInfoDetail.endDate = baseInfo.endDate

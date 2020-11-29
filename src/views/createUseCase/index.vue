@@ -59,6 +59,17 @@
                      :value="item.value" />
         </el-select>
       </el-form-item>
+
+      <el-form-item label="防打扰："
+                    :rules="[{
+                      required: true, message: '请选择是否防打扰', trigger: 'change'
+                    }]"
+                    prop="isSwithOnUnDisturb">
+        <el-tooltip :content="baseInfo.isSwithOnUnDisturb?'已开启':'已关闭'"
+                    placement="top">
+          <el-switch v-model="baseInfo.isSwithOnUnDisturb" />
+        </el-tooltip>
+      </el-form-item>
       <el-form-item class="target-form-item"
                     required
                     label="目标设置：">
@@ -147,6 +158,7 @@ export default {
         name: '',
         type: '',
         participants: [],
+        isSwithOnUnDisturb: true,
         ditributeMode: 1,
         target: [
           {

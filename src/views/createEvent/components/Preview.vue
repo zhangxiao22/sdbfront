@@ -311,9 +311,7 @@ export default {
     previewData: {
       handler() {
         if (JSON.stringify(this.previewData) !== '{}') {
-          this.tranform(this.previewData)
-          this.renderSwiper()
-          this.handleClickSwiperSlider(this.groupActiveIndex)
+          this.init(this.previewData)
         }
       },
       // immediate: true,
@@ -333,9 +331,18 @@ export default {
     // this.mainSwiper.update()
   },
   methods: {
+    init(data) {
+      this.tranform(data)
+      this.$nextTick(() => {
+        // 渲染swiper
+        this.renderSwiper()
+        this.handleClickSwiperSlider(this.groupActiveIndex)
+      })
+    },
     getDetail() {
       getEventPreview({ baseId: this.id }).then(res => {
-        this.previewData = res.data
+        // this.previewData = res.data
+        this.init(res.data)
       })
     },
     tranform(data) {

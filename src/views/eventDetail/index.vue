@@ -6,16 +6,14 @@
                         @back="goBack" />
         <el-divider class="header-divider" />
       </div>
-      <div v-if="mainStatus===3"
-           class="button-group">
+      <div class="button-group">
         <el-button type="success"
                    @click="resolveForm.resolveText='',showResolve=true;">审批通过</el-button>
         <el-button type="danger"
                    style="margin-left:20px;"
                    @click="resolveForm.rejectText='',showReject=true;">审批驳回</el-button>
       </div>
-      <div v-if="mainStatus===3"
-           class="timeline-container">
+      <div class="timeline-container">
         <div v-for="(item,i) of visibleList"
              :key="i"
              :class="{last:!copy_showHistory&&i === visibleList.length-1}"
@@ -115,8 +113,8 @@ export default {
   },
   data() {
     return {
-      showHistory: true,
-      copy_showHistory: true,
+      showHistory: false,
+      copy_showHistory: false,
       list: [],
       mainStatus: '',
       previewData: {},
@@ -169,7 +167,7 @@ export default {
             desc: n.comment,
             timestamp: n.modifyTime
           }
-        })
+        }).reverse()
       })
     },
     goBack() {
@@ -247,6 +245,7 @@ export default {
   .timeline-container {
     position: relative;
     padding-left: 20px;
+    margin: 0 20px 10px;
     .item {
       width: 500px;
       margin-bottom: 15px;
@@ -259,7 +258,8 @@ export default {
         width: 1px;
         top: 10px;
         bottom: -25px;
-        background: $blue;
+        background: #93a1c9;
+        opacity: 0.5;
         transform: translateX(4px);
       }
       &.last {
@@ -279,7 +279,7 @@ export default {
           width: 10px;
           height: 10px;
           top: 50%;
-          background: $blue;
+          background: #93a1c9;
           border-radius: 50%;
           transform: translateY(-50%);
         }
@@ -287,6 +287,7 @@ export default {
           font-size: 14px;
         }
         .user {
+          color: #888;
         }
         .time {
           margin-left: auto;

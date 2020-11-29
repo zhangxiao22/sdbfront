@@ -28,7 +28,7 @@
                      :value="item.value" />
         </el-select>
       </el-form-item>
-      <el-form-item label="事件类型："
+      <!-- <el-form-item label="事件类型："
                     :rules="[{
                       required: true, message: '请选择事件类型', trigger: 'change'
                     }]"
@@ -41,7 +41,7 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="起止日期："
                     :rules="[{
                       required: true, message: '请选择起止日期', trigger: 'change'
@@ -149,7 +149,7 @@ const DEFAULT_BASEINFO = {
   name: '',
   useCaseId: '',
   statusValue: '',
-  category: '',
+  // category: '',
   crmWeekClueLimit: '',
   smsWeekClueLimit: '',
   // categoryValue: '',
@@ -184,7 +184,7 @@ export default {
       // 用例
       useCaseOpt: [],
       // 类型
-      categoryOpt: [],
+      // categoryOpt: [],
       // 目标
       targetOpt: [],
       // 抽样方式
@@ -204,7 +204,7 @@ export default {
       data.id = this.id
       data.name = this.baseInfo.name
       data.useCaseId = this.baseInfo.useCaseId
-      data.category = this.baseInfo.category
+      // data.category = this.baseInfo.category
       data.startDate = this.baseInfo.date[0]
       data.endDate = this.baseInfo.date[1]
       data.crmWeekClueLimit = this.baseInfo.crmWeekClueLimit
@@ -228,7 +228,7 @@ export default {
         // 用例
         this.changeUseCase()
         // 事件类型
-        this.changeEventCategory()
+        // this.changeEventCategory()
         // 起止日期
         this.changePicker()
         // 每周线索分配上限（CRM）
@@ -251,7 +251,7 @@ export default {
     this.useCase().then(() => {
       // this.useid && (this.baseInfo.useCaseId = this.useid)
     })
-    this.eventCategoryList()
+    // this.eventCategoryList()
     this.sampleList()
     if (this.id) {
       this.getDetail()
@@ -311,11 +311,11 @@ export default {
       })
     },
     // 获取类型
-    eventCategoryList() {
-      getEventCategory().then(res => {
-        this.categoryOpt = res.data.eventCategoryEnumList
-      })
-    },
+    // eventCategoryList() {
+    //   getEventCategory().then(res => {
+    //     this.categoryOpt = res.data.eventCategoryEnumList
+    //   })
+    // },
     handleBlurCRM() {
       if (!this.clueInfo.assignUpper_crm) {
         this.clueInfo.assignUpper_crm = 0
@@ -377,14 +377,14 @@ export default {
       })
     },
     // 类型值
-    changeEventCategory() {
-      this.categoryOpt.some((n, i) => {
-        if (n.value === this.baseInfo.category) {
-          this.baseInfoDetail.categoryValue = n.label
-          return true
-        }
-      })
-    },
+    // changeEventCategory() {
+    //   this.categoryOpt.some((n, i) => {
+    //     if (n.value === this.baseInfo.category) {
+    //       this.baseInfoDetail.categoryValue = n.label
+    //       return true
+    //     }
+    //   })
+    // },
     // 选择时间
     changePicker() {
       if (this.baseInfo.date) {
