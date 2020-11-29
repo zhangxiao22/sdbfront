@@ -1,42 +1,15 @@
 <template>
   <div class="container">
-    <div class="timeline-container">
-      <div v-for="(item,i) of visibleList"
-           :key="i"
-           :class="{last:!copy_showHistory&&i === visibleList.length-1}"
-           class="item">
-        <div class="content-box">
-          <b class="title">{{ item.title }}</b>
-          <span class="user">（张三）</span>
-          <span class="time">{{ item.timestamp }}</span>
-        </div>
-        <div class="desc">{{ item.desc }}</div>
-      </div>
-      <div>
-        <el-collapse-transition>
-          <div v-show="showHistory">
-            <div v-for="(item,i) of hiddenList"
-                 :key="i"
-                 :class="{last:copy_showHistory&&i === hiddenList.length-1}"
-                 class="item">
-              <div class="content-box">
-                <b class="title">{{ item.title }}</b>
-                <span class="user">（张三）</span>
-                <span class="time">{{ item.timestamp }}</span>
-              </div>
-              <div class="desc">{{ item.desc }}</div>
-            </div>
-          </div>
-        </el-collapse-transition>
-      </div>
-      <el-button class="more"
-                 type="text"
-                 @click="showHistory=!showHistory">{{ showHistory?'收起':'查看更多' }}
-        <i :class="showHistory?'el-icon-arrow-up':'el-icon-arrow-down'"
-           style="margin-left:5px;" />
-      </el-button>
-    </div>
-
+    <el-dropdown>
+      <span class="el-dropdown-link">
+        下拉菜单<i class="el-icon-arrow-down el-icon--right" />
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <!-- <el-dropdown-item>黄金糕</el-dropdown-item> -->
+        <el-dropdown-item />
+        <el-dropdown-item />
+      </el-dropdown-menu>
+    </el-dropdown>
   </div>
 </template>
 

@@ -144,6 +144,7 @@
                      style="color:#f56c6c;"
                      @click="handleDelete(scope.row)">删除</div>
               </el-dropdown-item>
+              <el-dropdown-item />
             </el-dropdown-menu>
           </el-dropdown>
         </div>

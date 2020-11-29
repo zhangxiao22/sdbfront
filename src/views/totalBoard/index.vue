@@ -7,7 +7,8 @@
       <el-form :inline="true"
                :model="filterForm"
                class="shun-filter-container">
-        <el-form-item label="营销用例：">
+        <el-form-item label="营销用例："
+                      prop="useCase">
           <el-select v-model="filterForm.useCase"
                      clearable
                      placeholder="请选择">
@@ -37,7 +38,8 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="渠道：">
+        <el-form-item label="渠道："
+                      prop="channel">
           <el-select v-model="filterForm.channel"
                      clearable
                      placeholder="请选择">
@@ -354,7 +356,6 @@
 
 <script>
 import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2, BarChart, AreaChart } from './components'
-<<<<<<< HEAD
 import {
   totalOverview,
   totalFunnel,
@@ -364,13 +365,12 @@ import {
   totalStatistics,
   totalPurchaseAmount,
   totalRankOrg,
-  totalRankBrancg
+  totalRankBrancg,
+  getAllJob,
+  getUseCaseForEvent
 } from '@/api/api'
-=======
-import { totalStatistics, getAllJob, getUseCaseForEvent } from '@/api/api'
->>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
-import { DATA } from './json'
-console.log(DATA)
+// import { DATA } from './json'
+// console.log(DATA)
 export default {
   components: {
     FunnelChart,
@@ -510,36 +510,9 @@ export default {
           value: 5
         }
       ],
-<<<<<<< HEAD
-      postOpt: [{
-        label: '岗位1',
-        value: 1
-      }, {
-        label: '岗位2',
-        value: 2
-      }, {
-        label: '岗位3',
-        value: 3
-      }, {
-        label: '岗位4',
-        value: 4
-      }, {
-        label: '岗位5',
-        value: 5
-      }, {
-        label: '岗位6',
-        value: 6
-      }, {
-        label: '岗位7',
-        value: 7
-      }, {
-        label: '岗位8',
-        value: 8
-      }],
       rankChartData1: [],
       rankChartData2: [],
       rankChartData3: [],
-=======
       rankChartData: [{
         label: 'xx1',
         value: 100
@@ -571,7 +544,6 @@ export default {
         label: 'xx10',
         value: 10
       }],
->>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
       rankSelVal1: 1,
       rankSelVal2: 1,
       rankSelVal3: 1,
@@ -584,20 +556,16 @@ export default {
   },
   watch: {},
   created() {
-<<<<<<< HEAD
     this.render()
-=======
     // 获取岗位
     this.getPostOpt()
     this.getUseCase()
     // this.getStatistics()
->>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
   },
   mounted() {
 
   },
   methods: {
-<<<<<<< HEAD
     render() {
       this.getOverview()
       this.getFunnel()
@@ -643,7 +611,10 @@ export default {
         this.channelPieData = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
-=======
+          })
+        })
+      })
+    },
     // 获取岗位列表
     getPostOpt() {
       getAllJob().then(res => {
@@ -651,12 +622,10 @@ export default {
           this.postOpt.push({
             value: n.id,
             label: n.name
->>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
           })
         })
       })
     },
-<<<<<<< HEAD
     getCluesUseCase() {
       totalCluesUseCase().then(res => {
         this.usecaseBarData = res.data.map(n => {
@@ -693,7 +662,6 @@ export default {
 
       })
     },
-=======
     // 获取用例列表
     getUseCase() {
       getUseCaseForEvent().then(res => {
@@ -705,7 +673,6 @@ export default {
         })
       })
     },
->>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
     expandOpen() {
       this.expand = !this.expand
       if (this.expand && !this.renderOnce) {
