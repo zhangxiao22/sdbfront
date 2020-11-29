@@ -40,7 +40,9 @@ export default {
 
   watch: {
     data() {
-      this.chart.changeData(this.data)
+      if (this.data.length) {
+        this.chart.changeData(this.data)
+      }
     }
   },
   mounted() {

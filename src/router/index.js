@@ -107,7 +107,7 @@ export const asyncRoutes = [
         path: 'totalBoard',
         name: 'TotalBoard',
         component: () => import('@/views/totalBoard/index'),
-        meta: { title: '线索发布总览', icon: 'list' }
+        meta: { title: '线索发布总览', icon: 'board' }
       },
       {
         path: 'test',

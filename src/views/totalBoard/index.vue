@@ -196,7 +196,7 @@
                   </div>
                   <LineChart id="crm-line-1"
                              ref="crmLineRef1"
-                             :data="lineChartData" />
+                             :data="lineChartData1" />
                 </div>
                 <div class="chart-item line-chart">
                   <div class="chart-title">
@@ -204,7 +204,7 @@
                   </div>
                   <LineChart id="crm-line-2"
                              ref="crmLineRef2"
-                             :data="lineChartData" />
+                             :data="lineChartData2" />
                 </div>
                 <div class="chart-item line-chart">
                   <div class="chart-title">
@@ -212,7 +212,7 @@
                   </div>
                   <LineChart id="crm-line-3"
                              ref="crmLineRef3"
-                             :data="lineChartData" />
+                             :data="lineChartData3" />
                 </div>
                 <div class="chart-item line-chart">
                   <div class="chart-title">
@@ -220,7 +220,7 @@
                   </div>
                   <LineChart id="crm-line-4"
                              ref="crmLineRef4"
-                             :data="lineChartData" />
+                             :data="lineChartData4" />
                 </div>
               </div>
 
@@ -236,7 +236,7 @@
                 <svg-icon icon-class="chart-line" />短信实际达成率
               </div>
               <LineChart2 id="crm-line-6"
-                          :data="lineChartData5" />
+                          :data="lineChartData6" />
             </el-col>
           </el-row>
         </div>
@@ -292,7 +292,7 @@
                 </div>
                 <BarChart id="rank1"
                           unit="万元"
-                          :data="rankChartData" />
+                          :data="rankChartData1" />
               </div>
             </el-col>
             <el-col :span="24"
@@ -312,7 +312,7 @@
                 </div>
                 <BarChart id="rank2"
                           unit="万元"
-                          :data="rankChartData" />
+                          :data="rankChartData2" />
               </div>
             </el-col>
             <el-col :span="24"
@@ -340,7 +340,7 @@
                 </div>
                 <BarChart id="rank3"
                           unit="万元"
-                          :data="rankChartData" />
+                          :data="rankChartData3" />
               </div>
             </el-col>
           </el-row>
@@ -354,7 +354,17 @@
 
 <script>
 import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2, BarChart, AreaChart } from './components'
-import { totalStatistics } from '@/api/api'
+import {
+  totalOverview,
+  totalFunnel,
+  totalPie,
+  totalCluesUseCase,
+  totalAchieveRate,
+  totalStatistics,
+  totalPurchaseAmount,
+  totalRankOrg,
+  totalRankBrancg
+} from '@/api/api'
 import { DATA } from './json'
 console.log(DATA)
 export default {
@@ -389,35 +399,35 @@ export default {
       value: '',
       baseInfo: [{
         name: '累计营销用例',
-        value: '200',
+        value: '',
         unit: '个'
       }, {
         name: '累计营销事件',
-        value: '200',
+        value: '',
         unit: '条'
       }, {
         name: '生效中事件',
-        value: '200',
+        value: '',
         unit: '个'
       }, {
         name: 'AUM提升',
-        value: '200',
+        value: '',
         unit: '万元'
       }, {
         name: 'LUM提升',
-        value: '200',
+        value: '',
         unit: '万元'
       }, {
         name: '新开信用卡',
-        value: '200',
+        value: '',
         unit: '张'
       }],
       // 漏斗图数据
       funnelData: [
-        { label: '线索数量', value: 10000 },
-        { label: '线索执行', value: 9000 },
-        { label: '联系成功', value: 7000 },
-        { label: '成功购买', value: 5500 }
+        // { label: '线索数量', value: 10000 },
+        // { label: '线索执行', value: 9000 },
+        // { label: '联系成功', value: 7000 },
+        // { label: '成功购买', value: 5500 }
       ],
       // 渠道线索数据
       funnelSel: '1',
@@ -428,35 +438,14 @@ export default {
         { label: '成功购买', value: '4' }
       ],
       channelPieData: [
-        { label: '分类一', value: 10 },
-        { label: '分类二', value: 20 },
-        { label: '分类三', value: 30 },
-        { label: '分类四', value: 40 },
-        { label: '分类五', value: 50 }
+        // { label: '分类一', value: 10 },
+        // { label: '分类二', value: 20 },
+        // { label: '分类三', value: 30 },
+        // { label: '分类四', value: 40 },
+        // { label: '分类五', value: 50 }
       ],
       // 用例线索数据
-      usecaseBarData: [
-        { label: '用例一撒发阿迪舒服的撒发是', value: 10000 },
-        { label: '用例发阿迪舒服的撒发是', value: 90000 },
-        { label: '用例休息阿迪舒服的撒发是', value: 80000 },
-        { label: '用例学习啊撒发阿迪舒服的撒发是', value: 31410 },
-        { label: '用例在撒发阿迪舒服的撒发是', value: 34210 },
-        { label: '用例在撒发阿迪舒服的撒发是1', value: 10324 },
-        { label: '用例在撒发阿迪舒服的撒发是2', value: 20324 },
-        { label: '用例在撒发阿迪舒服的撒发是3', value: 52324 },
-        { label: '用例在撒发阿迪舒服的撒发是4', value: 22103 },
-        { label: '用例在撒发阿迪舒服的撒发是5', value: 61032 },
-        { label: '用例在撒发阿迪舒服的撒发是6', value: 90324 },
-        { label: '用例在撒发阿迪舒服的撒发是7', value: 90124 },
-        { label: '用例在撒发阿迪舒服的撒发是8', value: 90224 },
-        { label: '用例在撒发阿迪舒服的撒发是9', value: 90424 },
-        { label: '用例在撒发阿迪舒服的撒发是10', value: 90524 },
-        { label: '用例在撒发阿迪舒服的撒发11', value: 90364 },
-        { label: '用例在撒发阿迪舒服的撒发是12', value: 90366 },
-        { label: '用例在撒发阿迪舒服的撒发是13', value: 90328 }
-      ].sort((a, b) => {
-        return b.value - a.value
-      }),
+      usecaseBarData: [],
       // crm
       expand: false,
       crmSel: '1',
@@ -467,184 +456,15 @@ export default {
         { label: 'CRM成功购买率', value: '4' },
         { label: 'CRM实际达成率', value: '5' }
       ],
-      lineChartData: [
-        {
-          label: '9月第一批',
-          value: 90
-        },
-        {
-          label: '9月第二批',
-          value: 80
-        },
-        {
-          label: '9月第三批',
-          value: 75
-        },
-        {
-          label: '10月第一批',
-          value: 40
-        },
-        {
-          label: '10月第二批',
-          value: 55
-        },
-        {
-          label: '10月第三批',
-          value: 20
-        },
-        {
-          label: '11月第一批',
-          value: 77
-        },
-        {
-          label: '11月第二批',
-          value: 99
-        },
-        {
-          label: '11月第三批',
-          value: 88
-        },
-        {
-          label: '12月第一批',
-          value: 20
-        },
-        {
-          label: '12月第二批',
-          value: 33
-        },
-        {
-          label: '12月第三批',
-          value: 40
-        }
-      ],
+      lineChartData1: [],
+      lineChartData2: [],
+      lineChartData3: [],
+      lineChartData4: [],
       // crm5
-      lineChartData5: [
-        {
-          label: '9月第一批',
-          value: 90,
-          category: '执行组'
-        },
-        {
-          label: '9月第一批',
-          value: 80,
-          category: '对照组'
-        },
-        {
-          label: '9月第二批',
-          value: 80,
-          category: '执行组'
-        },
-        {
-          label: '9月第二批',
-          value: 60,
-          category: '对照组'
-        },
-        {
-          label: '9月第三批',
-          value: 75,
-          category: '执行组'
-        },
-        {
-          label: '9月第三批',
-          value: 55,
-          category: '对照组'
-        },
-        {
-          label: '10月第一批',
-          value: 40,
-          category: '执行组'
-        },
-        {
-          label: '10月第一批',
-          value: 55,
-          category: '对照组'
-        },
-        {
-          label: '10月第二批',
-          value: 55,
-          category: '执行组'
-        },
-        {
-          label: '10月第二批',
-          value: 55,
-          category: '对照组'
-        },
-        {
-          label: '10月第三批',
-          value: 20,
-          category: '执行组'
-        },
-        {
-          label: '10月第三批',
-          value: 35,
-          category: '对照组'
-        },
-        {
-          label: '11月第一批',
-          value: 77,
-          category: '执行组'
-        },
-        {
-          label: '11月第一批',
-          value: 45,
-          category: '对照组'
-        },
-        {
-          label: '11月第二批',
-          value: 99,
-          category: '执行组'
-        },
-        {
-          label: '11月第二批',
-          value: 65,
-          category: '对照组'
-        },
-        {
-          label: '11月第三批',
-          value: 88,
-          category: '执行组'
-        },
-        {
-          label: '11月第三批',
-          value: 55,
-          category: '对照组'
-        },
-        {
-          label: '12月第一批',
-          value: 20,
-          category: '执行组'
-        },
-        {
-          label: '12月第一批',
-          value: 55,
-          category: '对照组'
-        },
-        {
-          label: '12月第二批',
-          value: 33,
-          category: '执行组'
-        },
-        {
-          label: '12月第二批',
-          value: 55,
-          category: '对照组'
-        },
-        {
-          label: '12月第三批',
-          value: 40,
-          category: '执行组'
-        },
-        {
-          label: '12月第三批',
-          value: 85,
-          category: '对照组'
-        }
-      ],
-      statistics: DATA.map(n => {
-        return Object.assign({}, n, {
-          checkVal: n.chart_tabs[0].value
-        })
-      }),
+      lineChartData5: [],
+      // 短信
+      lineChartData6: [],
+      statistics: [],
       rankOpt: [
         {
           label: 'AUM提升',
@@ -667,37 +487,6 @@ export default {
           value: 5
         }
       ],
-      rankChartData: [{
-        label: 'xx1',
-        value: 100
-      }, {
-        label: 'xx2',
-        value: 90
-      }, {
-        label: 'xx3',
-        value: 80
-      }, {
-        label: 'xx4',
-        value: 70
-      }, {
-        label: 'xx5',
-        value: 60
-      }, {
-        label: 'xx6',
-        value: 50
-      }, {
-        label: 'xx7',
-        value: 40
-      }, {
-        label: 'xx8',
-        value: 30
-      }, {
-        label: 'xx9',
-        value: 20
-      }, {
-        label: 'xx10',
-        value: 10
-      }],
       postOpt: [{
         label: '岗位1',
         value: 1
@@ -723,6 +512,9 @@ export default {
         label: '岗位8',
         value: 8
       }],
+      rankChartData1: [],
+      rankChartData2: [],
+      rankChartData3: [],
       rankSelVal1: 1,
       rankSelVal2: 1,
       rankSelVal3: 1,
@@ -735,12 +527,97 @@ export default {
   },
   watch: {},
   created() {
-    // this.getStatistics()
+    this.render()
   },
   mounted() {
 
   },
   methods: {
+    render() {
+      this.getOverview()
+      this.getFunnel()
+      this.getPie()
+      this.getCluesUseCase()
+      this.getAchieveRate()
+      this.getAchieveRate(1, 1)
+      this.getAchieveRate(2, 2)
+      this.getAchieveRate(3, 3)
+      this.getAchieveRate(4, 4)
+      this.getAchieveRate(5, 5)
+      this.getAchieveRate(6, 6)
+      this.getPurchaseAmount()
+      this.getStatistics()
+      this.getRankOrg()
+      this.getRankBrancg()
+    },
+    getOverview() {
+      totalOverview().then(res => {
+        const data = res.data
+        this.baseInfo[0].value = data.total_use_case
+        this.baseInfo[1].value = data.total_event
+        this.baseInfo[2].value = data.active_event
+        this.baseInfo[3].value = data.total_aum
+        this.baseInfo[4].value = data.total_lum
+        this.baseInfo[5].value = data.total_credit_card
+      })
+    },
+    getFunnel() {
+      totalFunnel().then(res => {
+        const data = res.data
+        this.funnelData = [
+          { label: '线索数量', value: data.total_clues },
+          { label: '线索执行', value: data.executed_clues },
+          { label: '联系成功', value: data.success_clues },
+          { label: '成功购买', value: data.purchased_clues }
+        ]
+      })
+    },
+    getPie() {
+      totalPie().then(res => {
+        const data = res.data
+        this.channelPieData = res.data.map(n => {
+          return Object.assign({}, n, {
+            value: +n.value
+          })
+        })
+      })
+    },
+    getCluesUseCase() {
+      totalCluesUseCase().then(res => {
+        this.usecaseBarData = res.data.map(n => {
+          return Object.assign({}, n, {
+            value: +n.value
+          })
+        })
+      })
+    },
+    getAchieveRate(channel_id, unm) {
+      totalAchieveRate({ channel_id }).then(res => {
+        this['lineChartData' + unm] = [
+          ...(res.data.control || [])
+            .map(n => {
+              return {
+                label: n.label,
+                value: +n.value,
+                category: '执行组'
+              }
+            }),
+          ...(res.data.exec || [])
+            .map(n => {
+              return {
+                label: n.label,
+                value: +n.value,
+                category: '对照组'
+              }
+            })
+        ]
+      })
+    },
+    getPurchaseAmount() {
+      totalPurchaseAmount().then(res => {
+
+      })
+    },
     expandOpen() {
       this.expand = !this.expand
       if (this.expand && !this.renderOnce) {
@@ -755,9 +632,23 @@ export default {
     },
     getStatistics() {
       totalStatistics().then(res => {
-        this.statistics = res.data.map(n => {
+        this.statistics = res.data
+      })
+    },
+    getRankOrg() {
+      totalRankOrg().then(res => {
+        this.rankChartData1 = res.data.map(n => {
           return Object.assign({}, n, {
-            checkVal: n.chart_tabs[0].value
+            value: +n.value
+          })
+        }).slice(0, 10)
+      })
+    },
+    getRankBrancg() {
+      totalRankBrancg().then(res => {
+        this.rankChartData2 = res.data.map(n => {
+          return Object.assign({}, n, {
+            value: +n.value
           })
         })
       })

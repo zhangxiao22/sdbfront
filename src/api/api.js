@@ -490,9 +490,66 @@ export function deleteHateMarketingListById(params) {
 }
 
 /** ************************************************ 总看板 ************************************************************/
+export function totalOverview(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/overview',
+    method: 'get',
+    params
+  })
+}
+export function totalFunnel(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/funnel',
+    method: 'get',
+    params
+  })
+}
+export function totalPie(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/pie',
+    method: 'get',
+    params
+  })
+}
+export function totalCluesUseCase(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/clues_use_case',
+    method: 'get',
+    params
+  })
+}
+export function totalAchieveRate(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/achieve_rate',
+    method: 'get',
+    params
+  })
+}
+export function totalPurchaseAmount(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/purchase_amount',
+    method: 'get',
+    params
+  })
+}
 export function totalStatistics(params) {
   return request({
     url: 'http://10.5.12.233:8848/chart/mock',
+    method: 'get',
+    params
+  })
+}
+
+export function totalRankOrg(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/rank_org',
+    method: 'get',
+    params
+  })
+}
+export function totalRankBrancg(params) {
+  return request({
+    url: 'http://10.5.12.233:8848/rank_branch',
     method: 'get',
     params
   })
