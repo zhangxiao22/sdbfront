@@ -23,8 +23,8 @@
                    style="width:100%;flex:1;"
                    placeholder="请选择岗位"
                    @change="handleSelectLeftOpt">
-          <el-option v-for="item in leftOptions"
-                     :key="item.value"
+          <el-option v-for="(item,i) in leftOptions"
+                     :key="i"
                      :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />
@@ -37,8 +37,8 @@
                    style="width:100%;flex:1;"
                    placeholder="请选择岗位"
                    @change="handleSelectRightOpt">
-          <el-option v-for="item in rightOptions"
-                     :key="item.value"
+          <el-option v-for="(item,index) in rightOptions"
+                     :key="index"
                      :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />

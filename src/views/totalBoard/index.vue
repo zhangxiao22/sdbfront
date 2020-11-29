@@ -8,61 +8,61 @@
                :model="filterForm"
                class="shun-filter-container">
         <el-form-item label="营销用例：">
-          <el-select v-model="value"
+          <el-select v-model="filterForm.useCase"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="item in options"
-                       :key="item.value"
+            <el-option v-for="(item,i) in useCaseOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="营销事件：">
-          <el-select v-model="value"
+          <el-select v-model="filterForm.event"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="item in options"
-                       :key="item.value"
+            <el-option v-for="(item,i) in eventOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="机构：">
-          <el-select v-model="value"
+          <el-select v-model="filterForm.agency"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="item in options"
-                       :key="item.value"
+            <el-option v-for="(item,i) in agencyOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="渠道：">
-          <el-select v-model="value"
+          <el-select v-model="filterForm.channel"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="item in options"
-                       :key="item.value"
+            <el-option v-for="(item,i) in channelOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="批次：">
-          <el-select v-model="value"
+          <el-select v-model="filterForm.batch"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="item in options"
-                       :key="item.value"
+            <el-option v-for="(item,i) in batchOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
         </el-form-item>
         <el-form-item label="岗位：">
-          <el-select v-model="value"
+          <el-select v-model="filterForm.post"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="item in options"
-                       :key="item.value"
+            <el-option v-for="(item,i) in postOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
@@ -324,8 +324,8 @@
                   <el-select v-model="rankSelPostVal3"
                              style="margin-left:20px;"
                              placeholder="请选择">
-                    <el-option v-for="item in postOpt"
-                               :key="item.value"
+                    <el-option v-for="(item,index) in postOpt"
+                               :key="index"
                                :label="item.label"
                                :value="item.value" />
                   </el-select>
@@ -354,6 +354,7 @@
 
 <script>
 import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2, BarChart, AreaChart } from './components'
+<<<<<<< HEAD
 import {
   totalOverview,
   totalFunnel,
@@ -365,6 +366,9 @@ import {
   totalRankOrg,
   totalRankBrancg
 } from '@/api/api'
+=======
+import { totalStatistics, getAllJob, getUseCaseForEvent } from '@/api/api'
+>>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
 import { DATA } from './json'
 console.log(DATA)
 export default {
@@ -379,7 +383,26 @@ export default {
   },
   data() {
     return {
-      filterForm: {},
+      filterForm: {
+        useCase: '',
+        event: '',
+        agency: '',
+        channel: '',
+        batch: '',
+        post: ''
+      },
+      useCaseOpt: [],
+      eventOpt: [],
+      agencyOpt: [],
+      channelOpt: [{
+        value: 1,
+        label: 'CRM'
+      }, {
+        value: 2,
+        label: '短信'
+      }],
+      batchOpt: [],
+      postOpt: [],
       options: [{
         value: '选项1',
         label: '选项1'
@@ -487,6 +510,7 @@ export default {
           value: 5
         }
       ],
+<<<<<<< HEAD
       postOpt: [{
         label: '岗位1',
         value: 1
@@ -515,6 +539,39 @@ export default {
       rankChartData1: [],
       rankChartData2: [],
       rankChartData3: [],
+=======
+      rankChartData: [{
+        label: 'xx1',
+        value: 100
+      }, {
+        label: 'xx2',
+        value: 90
+      }, {
+        label: 'xx3',
+        value: 80
+      }, {
+        label: 'xx4',
+        value: 70
+      }, {
+        label: 'xx5',
+        value: 60
+      }, {
+        label: 'xx6',
+        value: 50
+      }, {
+        label: 'xx7',
+        value: 40
+      }, {
+        label: 'xx8',
+        value: 30
+      }, {
+        label: 'xx9',
+        value: 20
+      }, {
+        label: 'xx10',
+        value: 10
+      }],
+>>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
       rankSelVal1: 1,
       rankSelVal2: 1,
       rankSelVal3: 1,
@@ -527,12 +584,20 @@ export default {
   },
   watch: {},
   created() {
+<<<<<<< HEAD
     this.render()
+=======
+    // 获取岗位
+    this.getPostOpt()
+    this.getUseCase()
+    // this.getStatistics()
+>>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
   },
   mounted() {
 
   },
   methods: {
+<<<<<<< HEAD
     render() {
       this.getOverview()
       this.getFunnel()
@@ -578,10 +643,20 @@ export default {
         this.channelPieData = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
+=======
+    // 获取岗位列表
+    getPostOpt() {
+      getAllJob().then(res => {
+        res.data.forEach(n => {
+          this.postOpt.push({
+            value: n.id,
+            label: n.name
+>>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
           })
         })
       })
     },
+<<<<<<< HEAD
     getCluesUseCase() {
       totalCluesUseCase().then(res => {
         this.usecaseBarData = res.data.map(n => {
@@ -618,6 +693,19 @@ export default {
 
       })
     },
+=======
+    // 获取用例列表
+    getUseCase() {
+      getUseCaseForEvent().then(res => {
+        this.useCaseOpt = res.data.map(n => {
+          return {
+            label: n.name,
+            value: n.id
+          }
+        })
+      })
+    },
+>>>>>>> 3be1e09231c7aa117bc161a14e5405dd28199d02
     expandOpen() {
       this.expand = !this.expand
       if (this.expand && !this.renderOnce) {

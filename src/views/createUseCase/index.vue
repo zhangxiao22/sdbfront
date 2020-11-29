@@ -59,7 +59,21 @@
                      :value="item.value" />
         </el-select>
       </el-form-item>
-
+      <el-form-item label="线索优先级："
+                    :rules="[{
+                      required: true, message: '请选择线索优先级', trigger: 'change'
+                    }]"
+                    prop="cluePriority">
+        <el-select v-model="baseInfo.cluePriority"
+                   style="width:100%;"
+                   placeholder="请选择">
+          <el-option v-for="item in cluePriorityOptions"
+                     :key="item.value"
+                     :disabled="item.disabled"
+                     :label="item.label"
+                     :value="item.value" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="防打扰："
                     :rules="[{
                       required: true, message: '请选择是否防打扰', trigger: 'change'
@@ -145,7 +159,7 @@
 
 <script>
 import { MAX_NUMBER, translate } from '@/utils'
-import { getUseCaseType, getUseCaseParticipant, getTargetList, saveUseCase, getUseCaseDetailById, editUseCase } from '@/api/api'
+import { getUseCaseType, getUseCaseParticipant, getTargetList, saveUseCase, getUseCaseDetailById, editUseCase, getCluePriorityRuleEnums } from '@/api/api'
 
 export default {
   name: 'CreateUseCase',
@@ -162,6 +176,7 @@ export default {
         participants: [],
         isSwithOnUnDisturb: 1,
         ditributeMode: 1,
+        cluePriority: '',
         target: [
           {
             targetSelect: '',
@@ -198,7 +213,8 @@ export default {
         value: 6,
         label: '消贷挂靠-白名单-高频-主办-历史',
         disabled: true
-      }]
+      }],
+      cluePriorityOptions: []
     }
   },
   computed: {
@@ -214,6 +230,7 @@ export default {
       data.eventParticipants = this.baseInfo.participants
       data.isSwithOnUnDisturb = this.baseInfo.isSwithOnUnDisturb
       data.ditributeMode = this.baseInfo.ditributeMode
+      data.cluePriority = this.baseInfo.cluePriority
       // 目标
       data.useCaseAchieveList = this.baseInfo.target.map(n => {
         return {
@@ -231,6 +248,7 @@ export default {
   created() {
     this.getType()
     this.getParticipant()
+    this.getCluePriorityOpt()
     this.targetList().then(() => {
       if (this.id) {
         this.getUseCaseById()
@@ -272,6 +290,12 @@ export default {
         })
       })
     },
+    // 获取线索优先级
+    getCluePriorityOpt() {
+      getCluePriorityRuleEnums().then(res => {
+        this.cluePriorityOptions = res.data
+      })
+    },
     getUseCaseById() {
       getUseCaseDetailById({ id: this.id }).then(res => {
         this.baseInfo.name = res.data.name
@@ -279,6 +303,7 @@ export default {
         this.baseInfo.participants = res.data.eventParticipants
         this.baseInfo.isSwithOnUnDisturb = res.data.isSwithOnUnDisturb
         this.baseInfo.ditributeMode = res.data.ditributeMode
+        this.baseInfo.cluePriority = res.data.cluePriority
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
           let obj = this.targetOpt.find(n => {
