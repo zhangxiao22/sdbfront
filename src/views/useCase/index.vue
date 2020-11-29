@@ -105,13 +105,13 @@
                   新建事件
                 </div>
               </el-dropdown-item> -->
-              <el-dropdown-item v-if="scope.row.canModify">
+              <el-dropdown-item v-if="scope.row.userId === user.userId">
                 <div class="btn"
                      @click="handleEditEvent(scope.row)">
                   编辑
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="false">
+              <el-dropdown-item v-if="roleJudge.editPeople">
                 <div class="btn"
                      @click="editOwner(scope.row)">
                   修改归属人
@@ -123,14 +123,14 @@
                   线索分配
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item v-if="scope.row.userId === user.userId">
                 <div class="btn"
                      :class="{effect:scope.row.effect}"
                      @click="handleChangeStatus(scope.row)">
                   {{ scope.row.effect ? '下线':'上线' }}
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="scope.row.canDelete">
+              <el-dropdown-item v-if="scope.row.canDelete && scope.row.userId === user.userId">
                 <div class="btn"
                      style="color:#f56c6c;"
                      @click="handleDelete(scope.row)">删除</div>
@@ -289,7 +289,7 @@ export default {
           width: 180
         },
         {
-          prop: 'ownerId',
+          prop: 'userName',
           label: '归属人',
           width: 100
         },
@@ -339,7 +339,8 @@ export default {
       return data
     },
     ...mapGetters([
-      'roles'
+      'roles',
+      'user'
     ])
   },
 
@@ -393,6 +394,7 @@ export default {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.ownerDialog = true
       this.ownerData = row
+      this.form.ownerOpt = row.userId
     },
     // 编辑用例归属人
     ensureEditOwner() {
@@ -420,6 +422,8 @@ export default {
       this.$refs['formRef'] && this.$refs['formRef'].resetFields()
       this.clueDialog = true
       this.clueData = row
+      this.clueInfo.assignUpper_crm = row.crmWeekClueLimit
+      this.clueInfo.assignUpper_sms = row.smsWeekClueLimit
     },
     // 编辑线索分发
     ensureEditClue() {
@@ -464,8 +468,7 @@ export default {
       getUseCaseList(data).then(res => {
         this.tableData = res.data.resultList.map(n => {
           return Object.assign({}, n, {
-            showDelet: false,
-            ownerId: '张芸琳'
+            showDelet: false
           })
         })
         this.total = res.pagination.totalItemCount
