@@ -6,13 +6,50 @@
                         @back="goBack" />
         <el-divider class="header-divider" />
       </div>
-      <div v-if="mainStatus===2"
+      <div v-if="mainStatus===3"
            class="button-group">
         <el-button type="success"
                    @click="resolveForm.resolveText='',showResolve=true;">审批通过</el-button>
         <el-button type="danger"
                    style="margin-left:20px;"
                    @click="resolveForm.rejectText='',showReject=true;">审批驳回</el-button>
+      </div>
+      <div v-if="mainStatus===3"
+           class="timeline-container">
+        <div v-for="(item,i) of visibleList"
+             :key="i"
+             :class="{last:!copy_showHistory&&i === visibleList.length-1}"
+             class="item">
+          <div class="content-box">
+            <b class="title">{{ item.title }}</b>
+            <span class="user">{{ `（${item.user.join(',')}）` }}</span>
+            <span class="time">{{ item.timestamp }}</span>
+          </div>
+          <div class="desc">{{ item.desc }}</div>
+        </div>
+        <div>
+          <el-collapse-transition>
+            <div v-show="showHistory">
+              <div v-for="(item,i) of hiddenList"
+                   :key="i"
+                   :class="{last:copy_showHistory&&i === hiddenList.length-1}"
+                   class="item">
+                <div class="content-box">
+                  <b class="title">{{ item.title }}</b>
+                  <span class="user">{{ `（${item.user.join(',')}）` }}</span>
+                  <span class="time">{{ item.timestamp }}</span>
+                </div>
+                <div class="desc">{{ item.desc }}</div>
+              </div>
+            </div>
+          </el-collapse-transition>
+        </div>
+        <el-button class="more"
+                   type="text"
+                   @click="showHistory=!showHistory">{{ showHistory?'收起':'查看更多' }}
+          <i :class="showHistory?'el-icon-arrow-up':'el-icon-arrow-down'"
+             style="margin-left:5px;" />
+        </el-button>
       </div>
       <Preview :preview-data="previewData"
                not-auto-render />
@@ -78,8 +115,12 @@ export default {
   },
   data() {
     return {
+      showHistory: true,
+      copy_showHistory: true,
+      list: [],
       mainStatus: '',
       previewData: {},
+
       showResolve: false,
       showReject: false,
       resolveForm: {
@@ -93,17 +134,42 @@ export default {
   computed: {
     id() {
       return +this.$route.query.id
+    },
+    visibleList() {
+      return this.list.slice(0, 3)
+    },
+    hiddenList() {
+      return this.list.slice(3)
     }
   },
-  watch: {},
+  watch: {
+    showHistory() {
+      setTimeout(() => {
+        this.copy_showHistory = this.showHistory
+      }, this.showHistory ? 300 : 0)
+    }
+  },
   created() {
     this.getDetail()
+    this.getLinkList()
   },
   methods: {
     getDetail() {
       getEventPreview({ baseId: this.id }).then(res => {
         this.previewData = res.data
-        this.mainStatus = 2
+        this.mainStatus = res.data.eventBaseInfo.largeStatus.value
+      })
+    },
+    getLinkList() {
+      getEventApprovalLink({ baseId: this.id }).then(res => {
+        this.list = res.data.map(n => {
+          return {
+            title: n.status.label,
+            user: n.approverNameList,
+            desc: n.comment,
+            timestamp: n.modifyTime
+          }
+        })
       })
     },
     goBack() {
@@ -177,6 +243,64 @@ export default {
   }
   .preview-container {
     padding: 0;
+  }
+  .timeline-container {
+    position: relative;
+    padding-left: 20px;
+    .item {
+      width: 500px;
+      margin-bottom: 15px;
+      // border: 1px solid;
+      position: relative;
+      &::after {
+        position: absolute;
+        content: "";
+        left: -20px;
+        width: 1px;
+        top: 10px;
+        bottom: -25px;
+        background: $blue;
+        transform: translateX(4px);
+      }
+      &.last {
+        margin-bottom: 0;
+        &::after {
+          content: none;
+        }
+      }
+      .content-box {
+        display: flex;
+        height: 16px;
+        position: relative;
+        &::before {
+          position: absolute;
+          content: "";
+          left: -20px;
+          width: 10px;
+          height: 10px;
+          top: 50%;
+          background: $blue;
+          border-radius: 50%;
+          transform: translateY(-50%);
+        }
+        .title {
+          font-size: 14px;
+        }
+        .user {
+        }
+        .time {
+          margin-left: auto;
+        }
+      }
+      .desc {
+        font-size: 11px;
+        margin-top: 5px;
+        color: #888;
+      }
+    }
+    .more {
+      // position: absolute;
+    }
   }
 }
 </style>
