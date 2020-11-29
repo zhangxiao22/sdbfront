@@ -75,12 +75,12 @@ export default {
         loading: false,
         roles: ['线索统筹']
       },
-      {
-        label: '线索优先级',
-        component: 'CluePriority',
-        loading: false,
-        roles: ['用例管理']
-      },
+      // {
+      //   label: '线索优先级',
+      //   component: 'CluePriority',
+      //   loading: false,
+      //   roles: ['用例管理']
+      // },
       {
         label: '事件优先级',
         component: 'EventPriority',
