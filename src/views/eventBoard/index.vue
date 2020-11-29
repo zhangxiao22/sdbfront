@@ -117,7 +117,8 @@
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
-          <div class="btn"
+          <div v-if="roleJudge.downloadCustomer"
+               class="btn"
                style="color:#1890FF;"
                @click="handleDownload(scope.row)">下载客群名单</div>
           <el-dropdown trigger="click">
@@ -126,19 +127,19 @@
             </span>
             <el-dropdown-menu slot="dropdown"
                               class="operate-drop">
-              <el-dropdown-item>
+              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
                 <div class="btn"
                      style="color:#1890FF"
                      @click="handleEdit(scope.row)">
                   编辑
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5 && roleJudge.createEvent">
                 <div class="btn"
                      style="color:#1890FF;"
                      @click="handleCopy(scope.row)">复制</div>
               </el-dropdown-item>
-              <el-dropdown-item>
+              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
                 <div class="btn"
                      style="color:#f56c6c;"
                      @click="handleDelete(scope.row)">删除</div>
@@ -256,14 +257,23 @@ export default {
   created() {
     // 是否能新建事件
     this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === 'admin'
+    this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批' || this.roles === 'admin'
     this.eventCategoryList()
     this.getOwner()
     this.useCase()
     this.getStatus().then(res => {
       this.tabClick(0)
+      console.log('this.tabList', this.tabList)
     })
   },
   methods: {
+    judgeStatus(subId) {
+      return this.tabList.find(n => {
+        return n.id !== 'all' && n.children.find(m => {
+          return m.value === subId
+        })
+      }).id
+    },
     resetAll() {
       this.reset()
       this.$refs.table.resetSelection()
