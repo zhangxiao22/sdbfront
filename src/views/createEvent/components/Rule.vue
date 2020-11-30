@@ -258,11 +258,11 @@ export default {
               reject()
             }
           })
-        })
-        fn().then(() => {
-          resolve()
-        }).catch(() => {
-          reject()
+          fn().then(() => {
+            resolve()
+          }).catch(() => {
+            reject()
+          })
         })
       })
     },
