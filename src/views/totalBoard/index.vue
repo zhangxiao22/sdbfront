@@ -11,6 +11,7 @@
                       prop="useCase">
           <el-select v-model="filterForm.useCase"
                      clearable
+                     multiple
                      placeholder="请选择">
             <el-option v-for="(item,i) in useCaseOpt"
                        :key="i"
