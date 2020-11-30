@@ -4,22 +4,27 @@
       <div class="title">线索发布总览</div>
     </div>
     <div class="shun-filter-container-box shun-card">
-      <el-form :inline="true"
+      <el-form ref="filterRef"
+               :inline="true"
                :model="filterForm"
                class="shun-filter-container">
         <el-form-item label="营销用例："
                       prop="useCase">
           <el-select v-model="filterForm.useCase"
+                     class="long-text"
                      clearable
                      multiple
-                     placeholder="请选择">
+                     placeholder="请选择"
+                     @change="getEvent(filterForm.useCase)">
             <el-option v-for="(item,i) in useCaseOpt"
                        :key="i"
+                       :title="item.label"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="营销事件：">
+        <el-form-item label="营销事件："
+                      prop="event">
           <el-select v-model="filterForm.event"
                      clearable
                      placeholder="请选择">
@@ -29,7 +34,8 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="机构：">
+        <el-form-item label="机构："
+                      prop="agency">
           <el-select v-model="filterForm.agency"
                      clearable
                      placeholder="请选择">
@@ -50,7 +56,8 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="批次：">
+        <el-form-item label="批次："
+                      prop="batch">
           <el-select v-model="filterForm.batch"
                      clearable
                      placeholder="请选择">
@@ -60,7 +67,8 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="岗位：">
+        <el-form-item label="岗位："
+                      prop="post">
           <el-select v-model="filterForm.post"
                      clearable
                      placeholder="请选择">
@@ -72,10 +80,12 @@
         </el-form-item>
         <el-form-item class="filter-item-end">
           <el-button type="primary"
-                     icon="el-icon-search">
+                     icon="el-icon-search"
+                     @click="search">
             搜索
           </el-button>
-          <el-button icon="el-icon-refresh">
+          <el-button icon="el-icon-refresh"
+                     @click="reset">
             重置
           </el-button>
           <el-button type="primary"
@@ -368,7 +378,8 @@ import {
   totalRankOrg,
   totalRankBrancg,
   getAllJob,
-  getUseCaseForEvent
+  getUseCaseForEvent,
+  getEventList
 } from '@/api/api'
 // import { DATA } from './json'
 // console.log(DATA)
@@ -391,6 +402,8 @@ export default {
         channel: '',
         batch: '',
         post: ''
+      },
+      searchForm: {
       },
       useCaseOpt: [],
       eventOpt: [],
@@ -567,6 +580,13 @@ export default {
 
   },
   methods: {
+    search() {
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+    },
+    reset() {
+      this.$refs.filterRef.resetFields()
+      this.search()
+    },
     render() {
       this.getOverview()
       this.getFunnel()
@@ -665,14 +685,33 @@ export default {
     },
     // 获取用例列表
     getUseCase() {
-      getUseCaseForEvent().then(res => {
-        this.useCaseOpt = res.data.map(n => {
-          return {
-            label: n.name,
-            value: n.id
-          }
+      return new Promise((resolve) => {
+        getUseCaseForEvent().then(res => {
+          this.useCaseOpt = res.data.map(n => {
+            return {
+              label: n.name,
+              value: n.id
+            }
+          })
+          resolve()
         })
       })
+    },
+    // 获取事件
+    getEvent(useCase) {
+      if (this.filterForm.useCase) {
+        getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase }).then(res => {
+          this.eventOpt = res.data.resultList.map(n => {
+            return {
+              label: n.eventBaseInfo.name,
+              value: n.eventBaseInfo.id
+            }
+          })
+        })
+      } else {
+        this.eventOpt = []
+        this.filterForm.event = ''
+      }
     },
     expandOpen() {
       this.expand = !this.expand
@@ -715,6 +754,13 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
+.long-text {
+  width: 300px;
+  ::v-deep .el-select__tags-text {
+    max-width: 200px;
+  }
+}
+
 .title-container {
   display: flex;
   align-items: center;

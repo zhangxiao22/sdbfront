@@ -114,7 +114,7 @@
                       <el-option v-for="item in numberOptions"
                                  :key="item.value"
                                  style="max-width:300px;"
-                                 :title="item.value"
+                                 :title="item.label"
                                  :label="item.label"
                                  :value="item.value" />
                     </el-select>
@@ -159,7 +159,7 @@
                       <el-option v-for="item in stringOptions"
                                  :key="item.value"
                                  style="max-width:500px;"
-                                 :title="item.value"
+                                 :title="item.label"
                                  :label="item.label"
                                  :value="item.value" />
                     </el-select>

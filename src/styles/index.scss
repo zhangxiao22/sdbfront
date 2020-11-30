@@ -185,14 +185,16 @@ input[type="number"] {
   cursor: pointer;
   color: $blue;
 }
-
+// .long-text {
+//   width: 300px;
+// }
 .long-text .el-select__tags-text{
     display: inline-block;
-    max-width: 156px;
+    // max-width: 200px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
 .long-text.el-select .el-tag__close.el-icon-close {
-  top: -7px;
+  top: -6px;
 }

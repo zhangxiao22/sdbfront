@@ -24,7 +24,8 @@
           <div class="btn"
                style="color:#1890FF;"
                @click="handleEdit(scope.row)">编辑</div>
-          <div class="btn"
+          <div v-if="scope.row.people === 0"
+               class="btn"
                style="color:#f56c6c;"
                @click="handleDel(scope.row)">删除</div>
         </div>
