@@ -199,7 +199,8 @@ export default {
         },
         {
           prop: 'createTime',
-          label: '加入日期'
+          label: '加入日期',
+          minWidth: 150
         },
         {
           prop: 'remark',

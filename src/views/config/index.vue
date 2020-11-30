@@ -88,7 +88,7 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '角色权限配置',
+        label: '岗位管理',
         component: 'Assign',
         loading: false,
         roles: ['业务管理']
