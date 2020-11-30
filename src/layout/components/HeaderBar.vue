@@ -18,21 +18,20 @@
         </el-badge>
         <span class="message-text">未读信息</span>
       </div> -->
-
-      <el-dropdown trigger="click">
-        <span class="el-dropdown-link">
-          <!-- <img class="profile"
-               :src="user.avatar"> -->
+      <div class="name-group">
+        <el-tooltip class="item"
+                    effect="dark"
+                    placement="bottom">
+          <div slot="content">
+            <div v-for="(item,i) of user.orgInfoList"
+                 :key="i"
+                 style="margin:2px 0;">{{ item }}</div>
+          </div>
           <div class="user-name">{{ user.userName }}</div>
-          <div class="user-authority">{{ user.subBranchName }}</div>
-          <i class="el-icon-arrow-down el-icon--right" />
-        </span>
-        <el-dropdown-menu slot="dropdown"
-                          @command="handleCommand">
-          <el-dropdown-item @click.native="logout">切换用户</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-
+        </el-tooltip>
+        <!-- <div class="user-authority">{{ user.orgInfoList.join(',') }}</div> -->
+        <div class="user-authority">{{ user.jobName }}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -94,7 +93,7 @@ export default {
     }
 
     .text {
-      font-size: 20px;
+      font-size: 18px;
       color: $blue;
     }
   }
@@ -127,38 +126,18 @@ export default {
       }
     }
 
-    .el-dropdown {
+    .name-group {
+      display: flex;
       height: 100%;
-      transition: all 0.3s;
-      padding: 0 10px;
+      align-items: center;
 
-      &:hover {
-        background: #f0f2f5;
+      .user-name {
+        // margin-left: 8px;
+        // cursor: pointer;
       }
 
-      .el-dropdown-link {
-        height: 100%;
-
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        .profile {
-          // margin-left: 28px;
-          width: 28px;
-          height: 28px;
-          border-radius: 50%;
-          cursor: pointer;
-        }
-
-        .user-name {
-          // margin-left: 8px;
-          cursor: pointer;
-        }
-
-        .user-authority {
-          margin-left: 8px;
-          cursor: pointer;
-        }
+      .user-authority {
+        margin-left: 10px;
       }
     }
   }
