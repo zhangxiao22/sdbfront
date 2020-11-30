@@ -67,7 +67,7 @@
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
-                         :max="crmWeekClueLimit||100000000"
+                         :max="crmWeekClueLimit"
                          :step="1000"
                          :precision="0"
                          @blur="baseInfo.crmWeekClueLimit=$event.target.value||0" />
@@ -83,7 +83,7 @@
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
-                         :max="smsWeekClueLimit||100000000"
+                         :max="smsWeekClueLimit"
                          :step="1000"
                          :precision="0"
                          @blur="baseInfo.smsWeekClueLimit=$event.target.value||0" />
@@ -174,8 +174,8 @@ export default {
   },
   data() {
     return {
-      smsWeekClueLimit: '',
-      crmWeekClueLimit: '',
+      smsWeekClueLimit: 0,
+      crmWeekClueLimit: 0,
       baseInfoDetail: {},
       baseInfo: JSON.parse(JSON.stringify(DEFAULT_BASEINFO)),
       // 时间选择范围

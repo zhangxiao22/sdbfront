@@ -69,10 +69,7 @@ export default {
     return {
       defaultCheckedKeys: [],
       // 岗位
-      options: [{
-        label: '未分配',
-        value: null
-      }],
+      options: [],
       // 左边选的岗位
       leftPost: '',
       // 右边选的岗位
@@ -229,12 +226,16 @@ export default {
     // 获取岗位下拉
     getJobOpt() {
       getAllJob().then(res => {
-        this.options = res.data.map(n => {
-          return {
+        this.options = [{
+          label: '未分配',
+          value: null
+        }]
+        res.data.forEach(n => {
+          this.options.push({
             value: n.id,
             label: n.name,
             disabled: false
-          }
+          })
         })
       })
     },
@@ -253,6 +254,8 @@ export default {
       // console.log('fromData:', fromData)
       // console.log('toData:', toData)
       // console.log('obj:', obj)
+
+      this.$emit('update:loading', true)
       const users = obj.nodes.filter(n => {
         return !n.children.length
       }).map(m => m.userId)
@@ -260,7 +263,6 @@ export default {
       data.userIdList = users
       data.jobId = this.rightPost
       // console.log(data)
-      this.$emit('update:loading', true)
       occupyJob(data).then(res => {
         if (res.code === 200) {
           this.leftTotalCount -= this.leftCheckedTotalCount
@@ -280,6 +282,7 @@ export default {
     },
     // 监听穿梭框组件移除
     remove(fromData, toData, obj) {
+      this.$emit('update:loading', true)
       const users = obj.nodes.filter(n => {
         return !n.children.length
       }).map(m => m.userId)
@@ -287,7 +290,6 @@ export default {
       data.userIdList = users
       data.jobId = this.leftPost
       // console.log(data)
-      this.$emit('update:loading', true)
       occupyJob(data).then(res => {
         if (res.code === 200) {
           this.leftTotalCount += this.rightCheckedTotalCount

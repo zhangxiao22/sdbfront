@@ -33,6 +33,7 @@
                     prop="participants">
         <el-cascader v-model="baseInfo.participants"
                      style="width:100%"
+                     filterable
                      :show-all-levels="false"
                      :options="participantsOptions"
                      :props="{ multiple: true }">
