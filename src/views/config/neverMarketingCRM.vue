@@ -122,6 +122,15 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
+        <!-- <el-form-item label="备注："
+                      prop="remark">
+          <el-input v-model.trim="addInfo.remark"
+                    style="width:90%;"
+                    type="textarea"
+                    :rows="10"
+                    resize="none"
+                    placeholder="请输入内容" />
+        </el-form-item> -->
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -183,6 +192,7 @@ export default {
       addInfo: {
         customerAccount: '',
         name: ''
+        // remark: ''
       },
       searchForm: {
       },
@@ -202,11 +212,11 @@ export default {
           label: '加入日期',
           minWidth: 150
         },
-        {
-          prop: 'remark',
-          label: '备注',
-          minWidth: 150
-        },
+        // {
+        //   prop: 'remark',
+        //   label: '备注',
+        //   minWidth: 150
+        // },
         {
           prop: 'operate',
           label: '操作',
@@ -223,8 +233,9 @@ export default {
     },
     getData() {
       const data = {}
-      data.name = this.addInfo.name
       data.customerAccount = this.addInfo.customerAccount
+      data.name = this.addInfo.name
+      // data.remark = this.addInfo.remark
       data.category = this.category
       return data
     }
