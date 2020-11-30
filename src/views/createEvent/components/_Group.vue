@@ -134,7 +134,7 @@
                                 :rules="[{
                                   required: true, message: '请输入内容'
                                 }]">
-                    <el-input v-model="conditionItem.conditionValue.stringVal"
+                    <el-input v-model.trim="conditionItem.conditionValue.stringVal"
                               placeholder="请输入内容" />
                   </el-form-item>
                 </template>

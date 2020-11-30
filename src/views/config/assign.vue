@@ -32,7 +32,8 @@
       </template>
     </shun-table>
     <el-dialog :title="isEdit?'编辑岗位':'新增岗位'"
-               :visible.sync="showDialog">
+               :visible.sync="showDialog"
+               @open="dialogOpen">
       <el-form ref="formRef"
                :model="form">
         <el-form-item label="岗位名称："
@@ -41,7 +42,7 @@
                         required: true, message: '请输入岗位', trigger: 'blur'
                       }]"
                       label-width="110px">
-          <el-input v-model="form.name"
+          <el-input v-model.trim="form.name"
                     :disabled="isEdit"
                     style="width:90%;"
                     placeholder="请输入名称" />
@@ -167,9 +168,11 @@ export default {
         this.roleOpt = res.data
       })
     },
+    dialogOpen() {
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
+    },
     handleAdd() {
       this.isEdit = false
-      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
       this.form.id = ''
       this.showDialog = true
     },

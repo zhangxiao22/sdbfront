@@ -59,7 +59,7 @@
                :model="resolveForm">
         <el-form-item label="审批意见："
                       prop="resolveText">
-          <el-input v-model="resolveForm.resolveText"
+          <el-input v-model.trim="resolveForm.resolveText"
                     style="width:90%;"
                     type="textarea"
                     :rows="10"
@@ -85,7 +85,7 @@
                         required: true, message: '请输入驳回内容', trigger: 'blur'
                       }]"
                       prop="rejectText">
-          <el-input v-model="resolveForm.rejectText"
+          <el-input v-model.trim="resolveForm.rejectText"
                     style="width:90%;"
                     type="textarea"
                     :rows="10"

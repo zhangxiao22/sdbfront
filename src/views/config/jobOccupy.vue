@@ -229,12 +229,12 @@ export default {
     // 获取岗位下拉
     getJobOpt() {
       getAllJob().then(res => {
-        res.data.forEach(n => {
-          this.options.push({
+        this.options = res.data.map(n => {
+          return {
             value: n.id,
             label: n.name,
             disabled: false
-          })
+          }
         })
       })
     },
@@ -263,6 +263,10 @@ export default {
       this.$emit('update:loading', true)
       occupyJob(data).then(res => {
         if (res.code === 200) {
+          this.leftTotalCount -= this.leftCheckedTotalCount
+          this.rightTotalCount += this.leftCheckedTotalCount
+          this.leftCheckedTotalCount = 0
+          this.rightCheckedTotalCount = 0
           this.$message({
             message: '分配成功',
             type: 'success',
@@ -286,6 +290,10 @@ export default {
       this.$emit('update:loading', true)
       occupyJob(data).then(res => {
         if (res.code === 200) {
+          this.leftTotalCount += this.rightCheckedTotalCount
+          this.rightTotalCount -= this.rightCheckedTotalCount
+          this.leftCheckedTotalCount = 0
+          this.rightCheckedTotalCount = 0
           this.$message({
             message: '分配成功',
             type: 'success',

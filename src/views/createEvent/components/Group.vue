@@ -80,7 +80,7 @@
                           :rules="[{
                             required: true, message: '请填写'
                           }]">
-              <el-input v-model="conditionItem.conditionValue.stringVal"
+              <el-input v-model.trim="conditionItem.conditionValue.stringVal"
                         placeholder="请填写" />
             </el-form-item>
           </template>
