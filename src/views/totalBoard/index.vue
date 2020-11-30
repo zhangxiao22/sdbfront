@@ -114,76 +114,78 @@
         </div>
       </div>
       <div class="chart-container">
-        <!-- 执行情况 -->
-        <div class="chart-block">
-          <div class="block-title">执行情况</div>
-          <el-row :gutter="20">
-            <el-col :span="12">
-              <div class="chart-item funnel-chart">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-funnel" />销售漏斗
-                </div>
-                <FunnelChart id="funnel"
-                             :data="funnelData" />
-                <div class="chart-bottom">
-                  <div style="margin-right:20px;">有效执行数：<b>10000</b></div>
-                  <div style="margin-right:20px;">有效执行率：<b>67%</b></div>
-                  <div>实际达成率：<b>67%</b></div>
-                </div>
-              </div>
-            </el-col>
-            <el-col :span="12">
-              <div class="chart-item">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-pie" />渠道线索数
-                </div>
-                <PieChart id="channel-pie"
-                          unit="条"
-                          :data="channelPieData" />
-              </div>
+        <el-row :gutter="20">
+          <el-col :span="14">
+            <!-- 执行情况 -->
+            <div class="chart-block">
+              <div class="block-title">执行情况</div>
+              <el-row :gutter="20">
+                <el-col :span="12">
+                  <div class="chart-item funnel-chart">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-funnel" />销售漏斗
+                    </div>
+                    <FunnelChart id="funnel"
+                                 :data="funnelData" />
+                    <div class="chart-bottom">
+                      <div style="margin-right:20px;">有效执行数：<b>10000</b></div>
+                      <div style="margin-right:20px;">有效执行率：<b>67%</b></div>
+                      <div>实际达成率：<b>67%</b></div>
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :span="12">
+                  <div class="chart-item">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-pie" />渠道线索数
+                    </div>
+                    <PieChart id="channel-pie"
+                              unit="条"
+                              :data="channelPieData" />
+                  </div>
 
-            </el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="24"
-                    style="margin-top:20px;">
-              <div class="chart-item"
-                   style="height:600px;">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-bar" />用例线索数
-                  <el-select v-model="funnelSel"
-                             style="margin-left:20px;"
-                             placeholder="请选择">
-                    <el-option v-for="item in funnelOpt"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </div>
-                <!-- <PieChart id="usecase-pie"
+                </el-col>
+              </el-row>
+              <el-row>
+                <el-col :span="24"
+                        style="margin-top:20px;">
+                  <div class="chart-item"
+                       style="height:600px;">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-bar" />用例线索数
+                      <el-select v-model="funnelSel"
+                                 style="margin-left:20px;"
+                                 placeholder="请选择">
+                        <el-option v-for="item in funnelOpt"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
+                    </div>
+                    <!-- <PieChart id="usecase-pie"
                           unit="条"
                           :data="usecaseBarData" /> -->
-                <BarChart id="usecase-bar"
-                          unit="条"
-                          :data="usecaseBarData" />
-                <!-- <ColumnChart id="usecase-bar"
+                    <BarChart id="usecase-bar"
+                              unit="条"
+                              :data="usecaseBarData" />
+                    <!-- <ColumnChart id="usecase-bar"
                              meta-value="线索数量"
                              tooltip-title="线索数"
                              :data="usecaseBarData" /> -->
-              </div>
-            </el-col>
-          </el-row>
-          <div class="crm-line-container">
-            <div class="sub-title">
-              CRM
-              <el-button type="primary"
-                         style="margin-left:20px;"
-                         size="mini"
-                         @click="expandOpen">{{ expand?'折叠':'展开' }}
-                <i :class="expand?'el-icon-arrow-up':'el-icon-arrow-down'"
-                   class="el-icon--right" />
-              </el-button>
-              <!-- <el-select v-show="!expand"
+                  </div>
+                </el-col>
+              </el-row>
+              <div class="crm-line-container">
+                <div class="sub-title">
+                  CRM
+                  <el-button type="primary"
+                             style="margin-left:20px;"
+                             size="mini"
+                             @click="expandOpen">{{ expand?'折叠':'展开' }}
+                    <i :class="expand?'el-icon-arrow-up':'el-icon-arrow-down'"
+                       class="el-icon--right" />
+                  </el-button>
+                  <!-- <el-select v-show="!expand"
                          v-model="crmSel"
                          style="margin-left:20px;"
                          placeholder="请选择">
@@ -192,173 +194,178 @@
                            :label="item.label"
                            :value="item.value" />
               </el-select> -->
+                </div>
+                <div class="chart-item line-chart">
+                  <div class="chart-title">
+                    <svg-icon icon-class="chart-line" />CRM实际达成率
+                  </div>
+                  <LineChart2 id="crm-line-5"
+                              :data="lineChartData5" />
+                </div>
+
+                <el-collapse-transition>
+                  <div v-show="expand">
+                    <div class="chart-item line-chart">
+                      <div class="chart-title">
+                        <svg-icon icon-class="chart-line" />CRM执行率
+                      </div>
+                      <LineChart id="crm-line-1"
+                                 ref="crmLineRef1"
+                                 :data="lineChartData1" />
+                    </div>
+                    <div class="chart-item line-chart">
+                      <div class="chart-title">
+                        <svg-icon icon-class="chart-line" />CRM联系成功率
+                      </div>
+                      <LineChart id="crm-line-2"
+                                 ref="crmLineRef2"
+                                 :data="lineChartData2" />
+                    </div>
+                    <div class="chart-item line-chart">
+                      <div class="chart-title">
+                        <svg-icon icon-class="chart-line" />CRM有效执行率
+                      </div>
+                      <LineChart id="crm-line-3"
+                                 ref="crmLineRef3"
+                                 :data="lineChartData3" />
+                    </div>
+                    <div class="chart-item line-chart">
+                      <div class="chart-title">
+                        <svg-icon icon-class="chart-line" />CRM成功购买率
+                      </div>
+                      <LineChart id="crm-line-4"
+                                 ref="crmLineRef4"
+                                 :data="lineChartData4" />
+                    </div>
+                  </div>
+
+                </el-collapse-transition>
+
+              </div>
+              <el-row class="crm-line-container"
+                      style="border-left-color:rgb(103, 194, 58);">
+                <div class="sub-title">短信</div>
+                <el-col :span="24"
+                        class="chart-item line-chart">
+                  <div class="chart-title">
+                    <svg-icon icon-class="chart-line" />短信实际达成率
+                  </div>
+                  <LineChart2 id="crm-line-6"
+                              :data="lineChartData6" />
+                </el-col>
+              </el-row>
             </div>
-            <div class="chart-item line-chart">
-              <div class="chart-title">
-                <svg-icon icon-class="chart-line" />CRM实际达成率
-              </div>
-              <LineChart2 id="crm-line-5"
-                          :data="lineChartData5" />
+            <!-- 成效统计 -->
+            <div class="chart-block">
+              <div class="block-title">成效统计</div>
+              <el-row>
+                <el-col v-for="(item,i) of statistics"
+                        :key="i"
+                        :span="24"
+                        class="chart-item statistics">
+                  <div class="chart-title">
+                    <svg-icon :icon-class="item.chart_type===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
+                    <el-radio-group v-if="item.chart_tabs.length > 1"
+                                    v-model="item.checkVal"
+                                    class="radio-box">
+                      <el-radio-button v-for="(radio,ri) of item.chart_tabs"
+                                       :key="ri"
+                                       :label="radio.value">
+                        {{ radio.label }}
+                      </el-radio-button>
+                    </el-radio-group>
+                  </div>
+                  <template v-if="item.chart_type===1">
+                    <BarChart :id="'statistics'+i"
+                              :unit="item.chart_unit"
+                              :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+                  </template>
+                  <template v-else>
+                    <AreaChart :id="'statistics'+i"
+                               :unit="item.chart_unit"
+                               :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+                  </template>
+                </el-col>
+              </el-row>
             </div>
-
-            <el-collapse-transition>
-              <div v-show="expand">
-                <div class="chart-item line-chart">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-line" />CRM执行率
+          </el-col>
+          <el-col :span="10">
+            <!-- 排名情况 -->
+            <div class="chart-block">
+              <div class="block-title">排名情况</div>
+              <el-row>
+                <el-col :span="24">
+                  <div class="chart-item rank">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-bar" />支行排名
+                      <el-select v-model="rankSelVal1"
+                                 style="margin-left:20px;"
+                                 placeholder="请选择">
+                        <el-option v-for="item in rankOpt"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
+                    </div>
+                    <BarChart id="rank1"
+                              unit="万元"
+                              :data="rankChartData1" />
                   </div>
-                  <LineChart id="crm-line-1"
-                             ref="crmLineRef1"
-                             :data="lineChartData1" />
-                </div>
-                <div class="chart-item line-chart">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-line" />CRM联系成功率
+                </el-col>
+                <el-col :span="24"
+                        style="margin-top:20px;">
+                  <div class="chart-item rank">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-bar" />
+                      网点排名（前10名）
+                      <el-select v-model="rankSelVal2"
+                                 style="margin-left:20px;"
+                                 placeholder="请选择">
+                        <el-option v-for="item in rankOpt"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
+                    </div>
+                    <BarChart id="rank2"
+                              unit="万元"
+                              :data="rankChartData2" />
                   </div>
-                  <LineChart id="crm-line-2"
-                             ref="crmLineRef2"
-                             :data="lineChartData2" />
-                </div>
-                <div class="chart-item line-chart">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-line" />CRM有效执行率
+                </el-col>
+                <el-col :span="24"
+                        style="margin-top:20px;">
+                  <div class="chart-item rank">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-bar" />
+                      员工排名（前10名）
+                      <el-select v-model="rankSelPostVal3"
+                                 style="margin-left:20px;"
+                                 placeholder="请选择">
+                        <el-option v-for="(item,index) in postOpt"
+                                   :key="index"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
+                      <el-select v-model="rankSelVal3"
+                                 style="margin-left:20px;"
+                                 placeholder="请选择">
+                        <el-option v-for="item in rankOpt"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
+                    </div>
+                    <BarChart id="rank3"
+                              unit="万元"
+                              :data="rankChartData3" />
                   </div>
-                  <LineChart id="crm-line-3"
-                             ref="crmLineRef3"
-                             :data="lineChartData3" />
-                </div>
-                <div class="chart-item line-chart">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-line" />CRM成功购买率
-                  </div>
-                  <LineChart id="crm-line-4"
-                             ref="crmLineRef4"
-                             :data="lineChartData4" />
-                </div>
-              </div>
+                </el-col>
+              </el-row>
 
-            </el-collapse-transition>
+            </div>
+          </el-col>
+        </el-row>
 
-          </div>
-          <el-row class="crm-line-container"
-                  style="border-left-color:rgb(103, 194, 58);">
-            <div class="sub-title">短信</div>
-            <el-col :span="24"
-                    class="chart-item line-chart">
-              <div class="chart-title">
-                <svg-icon icon-class="chart-line" />短信实际达成率
-              </div>
-              <LineChart2 id="crm-line-6"
-                          :data="lineChartData6" />
-            </el-col>
-          </el-row>
-        </div>
-        <!-- 成效统计 -->
-        <div class="chart-block">
-          <div class="block-title">成效统计</div>
-          <el-row>
-            <el-col v-for="(item,i) of statistics"
-                    :key="i"
-                    :span="24"
-                    class="chart-item statistics">
-              <div class="chart-title">
-                <svg-icon :icon-class="item.chart_type===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
-                <el-radio-group v-if="item.chart_tabs.length > 1"
-                                v-model="item.checkVal"
-                                class="radio-box">
-                  <el-radio-button v-for="(radio,ri) of item.chart_tabs"
-                                   :key="ri"
-                                   :label="radio.value">
-                    {{ radio.label }}
-                  </el-radio-button>
-                </el-radio-group>
-              </div>
-              <template v-if="item.chart_type===1">
-                <BarChart :id="'statistics'+i"
-                          :unit="item.chart_unit"
-                          :data="item.chart_data.find(n => n.key===item.checkVal).data" />
-              </template>
-              <template v-else>
-                <AreaChart :id="'statistics'+i"
-                           :unit="item.chart_unit"
-                           :data="item.chart_data.find(n => n.key===item.checkVal).data" />
-              </template>
-            </el-col>
-          </el-row>
-        </div>
-        <!-- 排名情况 -->
-        <div class="chart-block">
-          <div class="block-title">排名情况</div>
-          <el-row>
-            <el-col :span="24">
-              <div class="chart-item rank">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-bar" />支行排名
-                  <el-select v-model="rankSelVal1"
-                             style="margin-left:20px;"
-                             placeholder="请选择">
-                    <el-option v-for="item in rankOpt"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </div>
-                <BarChart id="rank1"
-                          unit="万元"
-                          :data="rankChartData1" />
-              </div>
-            </el-col>
-            <el-col :span="24"
-                    style="margin-top:20px;">
-              <div class="chart-item rank">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-bar" />
-                  网点排名（前10名）
-                  <el-select v-model="rankSelVal2"
-                             style="margin-left:20px;"
-                             placeholder="请选择">
-                    <el-option v-for="item in rankOpt"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </div>
-                <BarChart id="rank2"
-                          unit="万元"
-                          :data="rankChartData2" />
-              </div>
-            </el-col>
-            <el-col :span="24"
-                    style="margin-top:20px;">
-              <div class="chart-item rank">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-bar" />
-                  员工排名（前10名）
-                  <el-select v-model="rankSelPostVal3"
-                             style="margin-left:20px;"
-                             placeholder="请选择">
-                    <el-option v-for="(item,index) in postOpt"
-                               :key="index"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                  <el-select v-model="rankSelVal3"
-                             style="margin-left:20px;"
-                             placeholder="请选择">
-                    <el-option v-for="item in rankOpt"
-                               :key="item.value"
-                               :label="item.label"
-                               :value="item.value" />
-                  </el-select>
-                </div>
-                <BarChart id="rank3"
-                          unit="万元"
-                          :data="rankChartData3" />
-              </div>
-            </el-col>
-          </el-row>
-
-        </div>
       </div>
     </div>
   </div>
@@ -891,6 +898,7 @@ export default {
           display: flex;
           align-items: center;
           position: relative;
+          flex-wrap: wrap;
           .svg-icon {
             margin-right: 5px;
           }
