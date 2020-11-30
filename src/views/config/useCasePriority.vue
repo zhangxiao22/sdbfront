@@ -79,7 +79,7 @@ export default {
   methods: {
     init() {
       this.getList()
-      this.sortable()
+      this.renderSortable()
     },
     handleChange(val) {
       this.sortable.options.disabled = !val
@@ -91,7 +91,7 @@ export default {
     reset() {
       this.getList()
     },
-    sortable() {
+    renderSortable() {
       const _this = this
       const el = document.querySelector('#use-case-table tbody')
       this.sortable = Sortable.create(el, {
