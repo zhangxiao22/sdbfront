@@ -699,8 +699,8 @@ export default {
     },
     // 获取事件
     getEvent(useCase) {
-      if (this.filterForm.useCase) {
-        getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase }).then(res => {
+      if (this.filterForm.useCase.length === 1) {
+        getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0] }).then(res => {
           this.eventOpt = res.data.resultList.map(n => {
             return {
               label: n.eventBaseInfo.name,
