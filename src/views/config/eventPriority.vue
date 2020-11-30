@@ -22,6 +22,7 @@
     </div>
     <el-table id="event-table"
               v-loading="tableLoading"
+              :class="{move:canMove}"
               :data="tableData"
               size="medium"
               stripe
@@ -47,6 +48,21 @@
                        show-overflow-tooltip
                        label="所属用例" />
     </el-table>
+    <div class="button-group">
+      能否排序：
+      <el-tooltip :content="canMove?'允许排序':'禁止排序'"
+                  placement="top">
+        <el-switch v-model="canMove"
+                   @change="handleEdit" />
+      </el-tooltip>
+      <el-button type="primary"
+                 style="width:100px;margin-left:20px;"
+                 icon="el-icon-document"
+                 @click="onSubmit">保存</el-button>
+      <el-button icon="el-icon-refresh"
+                 style="width:100px;"
+                 @click="reset">重置</el-button>
+    </div>
   </div>
 </template>
 
@@ -66,6 +82,7 @@ export default {
 
   data() {
     return {
+      canMove: false,
       filterForm: {
         category: ''
       },
@@ -87,23 +104,33 @@ export default {
 
   },
   methods: {
+    handleEdit(val) {
+      this.sortable.options.disabled = !val
+    },
+    onSubmit() {
+      this.saveData()
+    },
+    reset() {
+      this.getList()
+    },
     init() {
       this.tableLoading = true
       this.useCase().then(res => {
         this.getList()
       })
-      this.sortable()
+      this.renderSortable()
     },
-    sortable() {
+    renderSortable() {
       const _this = this
       const el = document.querySelector('#event-table tbody')
-      Sortable.create(el, {
+      this.sortable = Sortable.create(el, {
+        disabled: true,
         onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
           const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
           _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
-          if (newIndex !== oldIndex) {
-            _this.saveData()
-          }
+          // if (newIndex !== oldIndex) {
+          // _this.saveData()
+          // }
         }
       })
     },
@@ -152,6 +179,8 @@ export default {
       }).finally(() => {
         this.getList()
         this.$emit('update:loading', false)
+        this.sortable.options.disabled = true
+        this.canMove = false
       })
     }
   }
@@ -160,11 +189,22 @@ export default {
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 .container {
-  ::v-deep .el-table tr {
-    cursor: move;
+  #event-table {
+    &.move.el-table {
+      ::v-deep tr {
+        cursor: move;
+      }
+
+      ::v-deep tr.sortable-chosen.sortable-ghost td {
+        background: #ccffff;
+      }
+    }
   }
-  ::v-deep .el-table tr.sortable-chosen.sortable-ghost td {
-    background: #ccffff;
-  }
+  // ::v-deep .el-table tr {
+  //   cursor: move;
+  // }
+  // ::v-deep .el-table tr.sortable-chosen.sortable-ghost td {
+  //   background: #ccffff;
+  // }
 }
 </style>
