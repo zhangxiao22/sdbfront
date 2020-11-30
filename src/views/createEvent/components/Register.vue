@@ -21,7 +21,8 @@
         <el-select v-model="baseInfo.useCaseId"
                    :disabled="!!id&&baseInfo.statusValue!==1"
                    style="width:100%"
-                   placeholder="请选择所属用例">
+                   placeholder="请选择所属用例"
+                   @change="handleUseCaseChange">
           <el-option v-for="item in useCaseOpt"
                      :key="item.value"
                      :label="item.label"
@@ -66,10 +67,11 @@
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
-                         :max="10000000"
+                         :max="crmWeekClueLimit||100000000"
                          :step="1000"
                          :precision="0"
                          @blur="baseInfo.crmWeekClueLimit=$event.target.value||0" />
+        （当前可设置上限：{{ crmWeekClueLimit }}）
       </el-form-item>
       <el-form-item required
                     label="每周线索分配上限（短信）："
@@ -81,10 +83,11 @@
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
-                         :max="10000000"
+                         :max="smsWeekClueLimit||100000000"
                          :step="1000"
                          :precision="0"
                          @blur="baseInfo.smsWeekClueLimit=$event.target.value||0" />
+        （当前可设置上限：{{ smsWeekClueLimit }}）
       </el-form-item>
       <el-form-item prop="trial">
         <div slot="label">
@@ -171,6 +174,8 @@ export default {
   },
   data() {
     return {
+      smsWeekClueLimit: '',
+      crmWeekClueLimit: '',
       baseInfoDetail: {},
       baseInfo: JSON.parse(JSON.stringify(DEFAULT_BASEINFO)),
       // 时间选择范围
@@ -195,6 +200,7 @@ export default {
     id() {
       return +this.$route.query.id
     },
+
     // useid() {
     //   return +this.$route.query.useid || ''
     // },
@@ -248,13 +254,14 @@ export default {
     }
   },
   created() {
-    this.useCase().then(() => {
-      // this.useid && (this.baseInfo.useCaseId = this.useid)
-    })
     // this.eventCategoryList()
     this.sampleList()
     if (this.id) {
-      this.getDetail()
+      Promise.all([this.useCase(), this.getDetail()]).then((values) => {
+        this.handleUseCaseChange()
+      })
+    } else {
+      this.useCase()
     }
   },
   mounted() {
@@ -277,23 +284,26 @@ export default {
     // 获取详情
     getDetail() {
       this.mainLoading = true
-      getEventBaseInfo({ id: this.id }).then(res => {
-        this.mainLoading = false
-        const data = res.data
-        this.baseInfo.name = data.name
-        this.baseInfo.useCaseId = data.useCaseId
-        this.baseInfo.statusValue = data.status.value
-        this.baseInfo.category = data.category.value
-        this.baseInfo.date = [data.startDate, data.endDate]
-        this.baseInfo.crmWeekClueLimit = data.crmWeekClueLimit
-        this.baseInfo.smsWeekClueLimit = data.smsWeekClueLimit
+      return new Promise(resolve => {
+        getEventBaseInfo({ id: this.id }).then(res => {
+          this.mainLoading = false
+          const data = res.data
+          this.baseInfo.name = data.name
+          this.baseInfo.useCaseId = data.useCaseId
+          this.baseInfo.statusValue = data.status.value
+          // this.baseInfo.category = data.category.value
+          this.baseInfo.date = [data.startDate, data.endDate]
+          this.baseInfo.crmWeekClueLimit = data.crmWeekClueLimit
+          this.baseInfo.smsWeekClueLimit = data.smsWeekClueLimit
 
-        this.baseInfo.trial = data.trial
-        this.baseInfo.sample = data.sample.value
-        this.baseInfo.control = data.control
-        this.baseInfo.desc = data.desc
-      }).catch(() => {
-        this.mainLoading = false
+          this.baseInfo.trial = data.trial
+          this.baseInfo.sample = data.sample.value
+          this.baseInfo.control = data.control
+          this.baseInfo.desc = data.desc
+        }).finally(() => {
+          this.mainLoading = false
+          resolve()
+        })
       })
     },
     // 获取用例
@@ -303,11 +313,22 @@ export default {
           this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,
-              value: n.id
+              value: n.id,
+              crmWeekClueLimit: n.crmWeekClueLimit,
+              smsWeekClueLimit: n.smsWeekClueLimit
             }
           })
           resolve()
         })
+      })
+    },
+    handleUseCaseChange() {
+      this.useCaseOpt.find(n => {
+        if (n.value === this.baseInfo.useCaseId) {
+          this.crmWeekClueLimit = n.crmWeekClueLimit
+          this.smsWeekClueLimit = n.smsWeekClueLimit
+          return true
+        }
       })
     },
     // 获取类型

@@ -29,16 +29,17 @@
                  style="display:flex;align-items:center;">
               <i class="el-icon-time"
                  style="margin-right:5px;" />
-              <div class="time">{{ baseInfoDetail.startDate }} 至 {{ baseInfoDetail.endDate }}</div>
+              <div class="time"
+                   style="font-size:12px;">{{ baseInfoDetail.startDate }} 至 {{ baseInfoDetail.endDate }}</div>
             </div>
             <!-- 每周线索分配上限（CRM） -->
-            <div v-show="baseInfoDetail.crmWeekClueLimit"
+            <div v-show="baseInfoDetail.crmWeekClueLimit!==null"
                  class="shun-sibling-box item">
               <div class="value">周上限 (CRM)</div>
               <div class="value">{{ baseInfoDetail.crmWeekClueLimit | formatMoney }}</div>
             </div>
             <!-- 每周线索分配上限（短信） -->
-            <div v-show="baseInfoDetail.smsWeekClueLimit"
+            <div v-show="baseInfoDetail.smsWeekClueLimit!==null"
                  class="shun-sibling-box item">
               <div class="value">周上限 (短信)</div>
               <div class="value">{{ baseInfoDetail.smsWeekClueLimit | formatMoney }}</div>
@@ -166,9 +167,9 @@ const DEFAULT_DATA = {
     // 结束日期
     endDate: '',
     // 每周线索分配上限（CRM）
-    crmWeekClueLimit: '',
+    crmWeekClueLimit: 0,
     // 每周线索分配上限（短信）
-    smsWeekClueLimit: '',
+    smsWeekClueLimit: 0,
     // 是否对照组
     trial: false,
     // 试点比例
