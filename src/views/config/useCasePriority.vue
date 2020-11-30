@@ -1,9 +1,8 @@
 <template>
   <!-- 用例优先级 -->
   <div class="container">
-    {{ disabled }}
     <el-table id="use-case-table"
-              :class="{move:!disabled}"
+              :class="{move:canMove}"
               :data="tableData"
               size="medium"
               stripe
@@ -29,12 +28,14 @@
                        label="描述" />
     </el-table>
     <div class="button-group">
-      <el-button type="success"
-                 style="width:100px;"
-                 icon="el-icon-rank"
-                 @click="handleEdit">修改排序</el-button>
+      能否排序：
+      <el-tooltip :content="canMove?'允许排序':'禁止排序'"
+                  placement="top">
+        <el-switch v-model="canMove"
+                   @change="handleChange" />
+      </el-tooltip>
       <el-button type="primary"
-                 style="width:100px;"
+                 style="width:100px;margin-left:20px;"
                  icon="el-icon-document"
                  @click="onSubmit">保存</el-button>
       <el-button icon="el-icon-refresh"
@@ -61,7 +62,7 @@ export default {
 
   data() {
     return {
-      disabled: true,
+      canMove: false,
       tableData: []
     }
   },
@@ -80,10 +81,10 @@ export default {
       this.getList()
       this.sortable()
     },
-    handleEdit() {
-      this.sortable.options.disabled = false
-      this.disabled = false
+    handleChange(val) {
+      this.sortable.options.disabled = !val
     },
+
     onSubmit() {
       this.saveData()
     },
@@ -133,7 +134,7 @@ export default {
         this.getList()
         this.$emit('update:loading', false)
         this.sortable.options.disabled = true
-        this.disabled = true
+        this.canMove = false
       })
     }
   }
