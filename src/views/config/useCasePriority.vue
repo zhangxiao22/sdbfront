@@ -1,29 +1,49 @@
 <template>
   <!-- 用例优先级 -->
   <div class="container">
-    <el-table id="use-case-table"
-              :data="tableData"
-              size="medium"
-              stripe
-              :row-key="rowKey"
-              style="width: 100%">
-      <el-table-column type="index" />
-      <el-table-column prop="id"
-                       width="100"
-                       label="ID" />
-      <el-table-column prop="name"
-                       show-overflow-tooltip
-                       label="用例名称" />
-      <el-table-column prop="createTime"
-                       show-overflow-tooltip
-                       label="创建时间" />
-      <el-table-column prop="modifyTime"
-                       show-overflow-tooltip
-                       label="修改时间" />
-      <el-table-column prop="description"
-                       show-overflow-tooltip
-                       label="描述" />
-    </el-table>
+    <el-form>
+      <el-form-item>
+        <el-table id="use-case-table"
+                  :data="tableData"
+                  size="medium"
+                  stripe
+                  :row-key="rowKey"
+                  style="width: 100%">
+          <el-table-column type="index"
+                           width="100"
+                           label="优先级" />
+          <el-table-column prop="priority"
+                           width="100"
+                           label="原优先级" />
+          <el-table-column prop="name"
+                           show-overflow-tooltip
+                           label="用例名称" />
+          <el-table-column prop="createTime"
+                           show-overflow-tooltip
+                           label="创建时间" />
+          <el-table-column prop="modifyTime"
+                           show-overflow-tooltip
+                           label="修改时间" />
+          <el-table-column prop="description"
+                           show-overflow-tooltip
+                           label="描述" />
+        </el-table>
+      </el-form-item>
+      <!-- <el-form-item /> -->
+      <el-form-item>
+        <el-button type="warning"
+                   style="width:100px;"
+                   icon="el-icon-edit"
+                   @click="handleEdit">修改排序</el-button>
+        <el-button type="primary"
+                   style="width:100px;"
+                   icon="el-icon-document"
+                   @click="onSubmit">保存</el-button>
+        <el-button icon="el-icon-refresh"
+                   style="width:100px;"
+                   @click="reset">重置</el-button>
+      </el-form-item>
+    </el-form>
   </div>
 </template>
 
@@ -59,7 +79,16 @@ export default {
   methods: {
     init() {
       this.getList()
+      // this.sortable()
+    },
+    handleEdit() {
       this.sortable()
+    },
+    onSubmit() {
+      this.saveData()
+    },
+    reset() {
+      this.getList()
     },
     sortable() {
       const _this = this
@@ -69,7 +98,8 @@ export default {
           const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
           _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
           if (newIndex !== oldIndex) {
-            _this.saveData()
+            // _this.saveData()
+            // _this.onSubmit()
           }
         }
       })

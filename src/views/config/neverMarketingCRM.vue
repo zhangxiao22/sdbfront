@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="不营销人员名单"
+                title="特定免打扰客户名单"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -200,6 +200,11 @@ export default {
         {
           prop: 'createTime',
           label: '加入日期'
+        },
+        {
+          prop: 'remark',
+          label: '备注',
+          minWidth: 150
         },
         {
           prop: 'operate',

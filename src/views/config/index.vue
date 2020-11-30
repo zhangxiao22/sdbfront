@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '0',
+      tabIndex: '3',
       tabList: [{
         label: '防打扰',
         component: 'NotDisturb',
@@ -88,7 +88,7 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '岗位管理',
+        label: '角色权限配置',
         component: 'Assign',
         loading: false,
         roles: ['业务管理']
@@ -107,7 +107,7 @@ export default {
         roles: ['事件注册', '用例管理']
       },
       {
-        label: '不营销人员名单（CRM）',
+        label: '特定免打扰客户名单（CRM）',
         component: 'NeverMarketingCRM',
         loading: false,
         roles: ['事件注册', '用例管理']
