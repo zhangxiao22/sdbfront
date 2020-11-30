@@ -152,7 +152,7 @@
           <el-select v-model="form.ownerOpt"
                      style="width:90%;"
                      placeholder="请选择">
-            <el-option v-for="item in ownerOpt"
+            <el-option v-for="item in candidateList"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
@@ -211,7 +211,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner, modifyUseCaseUser, setDistributeLimit } from '@/api/api'
+import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner, modifyUseCaseUser, setDistributeLimit, getUseCaseBelongerCandidateList } from '@/api/api'
 import { MAX_NUMBER } from '@/utils'
 import { mapGetters } from 'vuex'
 
@@ -255,9 +255,9 @@ export default {
         assignUpper_sms: 0
       },
       // 归属人选项
-      ownerOpt: [],
-      // 归属人的数据(id,subBranchId)
-      ownerData: {},
+      candidateList: [],
+      // 归属人的数据(id)
+      ownerData: '',
       // 归属人所选值
       form: {
         ownerOpt: []
@@ -325,11 +325,10 @@ export default {
     parentRef() {
       return this.$refs.table
     },
-    getOwnerData() {
+    getCandidateData() {
       const data = {}
       data.userId = this.form.ownerOpt
-      data.id = this.ownerData.id
-      data.subBranchId = this.ownerData.subBranchId
+      data.id = this.ownerData
       return data
     },
     getClueData() {
@@ -349,7 +348,6 @@ export default {
   },
   created() {
     this.search()
-    this.getOwner()
     this.roleJudge.createUseCase = this.roles === '用例管理' || this.roles === 'admin'
     this.roleJudge.editClue = this.roles === '线索统筹' || this.roles === 'admin'
     this.roleJudge.editPeople = this.roles === '业务管理' || this.roles === 'admin'
@@ -392,17 +390,19 @@ export default {
 
     // 打开编辑用例归属人窗口
     editOwner(row) {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-      this.ownerDialog = true
-      this.ownerData = row
-      this.form.ownerOpt = row.userId
+      this.getCandidateList(row.id).then(() => {
+        this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+        this.ownerDialog = true
+        this.ownerData = row.id
+        this.form.ownerOpt = row.userId
+      })
     },
     // 编辑用例归属人
     ensureEditOwner() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          modifyUseCaseUser(this.getOwnerData).then(res => {
+          modifyUseCaseUser(this.getCandidateData).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -448,13 +448,16 @@ export default {
       })
     },
     // 获取创建人
-    getOwner() {
-      getEventOwner().then(res => {
-        this.ownerOpt = res.data.map(n => {
-          return {
-            value: n.userId,
-            label: n.userName
-          }
+    getCandidateList(id) {
+      return new Promise((resolve, reject) => {
+        getUseCaseBelongerCandidateList({ useCaseId: id }).then(res => {
+          this.candidateList = res.data.map(n => {
+            return {
+              value: n.empCode,
+              label: n.empName
+            }
+          })
+          resolve()
         })
       })
     },

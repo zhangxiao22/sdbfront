@@ -264,7 +264,7 @@ export default {
     this.useCase()
     this.getStatus().then(res => {
       this.tabClick(0)
-      console.log('this.tabList', this.tabList)
+      // console.log('this.tabList', this.tabList)
     })
   },
   methods: {

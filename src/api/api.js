@@ -380,8 +380,16 @@ export function delUseCase(data) {
     data
   })
 }
+// 获取用例归属人
+export function getUseCaseBelongerCandidateList(params) {
+  return request({
+    url: '/event/getUseCaseBelongerCandidateList',
+    method: 'get',
+    params
+  })
+}
 
-// 用例创建人修改
+// 用例归属人修改
 export function modifyUseCaseUser(data) {
   return request({
     url: '/event/modifyUseCaseUser',
@@ -422,6 +430,14 @@ export function getUseCaseParticipant(params) {
     url: '/event/geteALLEventParticipant',
     method: 'get',
     params
+  })
+}
+
+// 获取审批人
+export function getALLEventApprover() {
+  return request({
+    url: '/event/getALLEventApprover',
+    method: 'get'
   })
 }
 
