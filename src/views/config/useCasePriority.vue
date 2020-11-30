@@ -28,7 +28,7 @@
                        label="描述" />
     </el-table>
     <div class="button-group">
-      能否排序：
+      拖拽排序：
       <el-tooltip :content="canMove?'允许排序':'禁止排序'"
                   placement="top">
         <el-switch v-model="canMove"

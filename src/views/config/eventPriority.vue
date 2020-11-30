@@ -28,10 +28,12 @@
               stripe
               :row-key="rowKey"
               style="width: 100%">
-      <el-table-column type="index" />
-      <el-table-column prop="id"
+      <el-table-column type="index"
                        width="100"
-                       label="ID" />
+                       label="现优先级" />
+      <el-table-column prop="oldIndex"
+                       width="100"
+                       label="原优先级" />
       <el-table-column prop="name"
                        show-overflow-tooltip
                        label="事件名称" />
@@ -49,7 +51,7 @@
                        label="所属用例" />
     </el-table>
     <div class="button-group">
-      能否排序：
+      拖拽排序：
       <el-tooltip :content="canMove?'允许排序':'禁止排序'"
                   placement="top">
         <el-switch v-model="canMove"
@@ -154,10 +156,11 @@ export default {
     },
     getList(usecase) {
       getEventList({ pageNo: 1, pageSize: 1000, useCaseId: this.filterForm.useCaseId }).then(res => {
-        this.tableData = res.data.resultList.map(n => {
+        this.tableData = res.data.resultList.map((n, i) => {
           return Object.assign({}, n.eventBaseInfo, {
             group: n.customerInfoRespList,
-            useCase: n.useCase
+            useCase: n.useCase,
+            oldIndex: i + 1
           })
         })
       }).finally(() => {
@@ -199,6 +202,9 @@ export default {
         background: #ccffff;
       }
     }
+  }
+  .button-group {
+    margin-top: 20px;
   }
   // ::v-deep .el-table tr {
   //   cursor: move;
