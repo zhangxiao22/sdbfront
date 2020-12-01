@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '3',
+      tabIndex: '0',
       tabList: [{
         label: '防打扰',
         component: 'NotDisturb',

@@ -142,6 +142,8 @@
 </template>
 
 <script>
+const _ = require('lodash')
+
 import { getCustomerLabel, getPeopleCount, getGroup } from '@/api/api'
 import Info from '@/components/Info'
 import { MAX_NUMBER } from '@/utils'
@@ -197,7 +199,6 @@ export default {
       // condition: [],
       group: [],
       groupAll: [],
-      // totalDetail: [],
       // groupDetail: [],
       totalCondition: [],
       groupCondition: [],
@@ -205,6 +206,8 @@ export default {
       stringOptions: [],
       MAX_NUMBER,
       originData: [],
+      originOptData: [],
+      ruleOpt: [],
       numberFlat: {}
       // totalPeople: 0
     }
@@ -217,21 +220,7 @@ export default {
       return +this.$route.query.id
     },
     tags() {
-      return this.originData.map((n) => {
-        return {
-          label: n.tagCtgryNm,
-          value: n.id,
-          children: [{
-            label: n.tagScdClNm,
-            value: n.id,
-            children: [{
-              label: n.name,
-              value: n.id
-            }]
-          }
-          ]
-        }
-      })
+      return this.ruleOpt
     },
     rules() {
       return [{
@@ -248,8 +237,15 @@ export default {
     // console.log('parent', this.$parent.$parent)
     this.getRuleList().then(() => {
       setTimeout(() => {
-        // console.log('abcddddd', this.valDetail)
-        // this.delayRun(this.getTagId(), 1000)
+        // console.log('aaaaaaaaaa', this.originOptData)
+        // ruleOpt
+        this.ruleOpt = this.listToTree(
+          _.uniqBy(
+            this.getList(),
+            'value', 'pid', 'label'
+          )
+        )
+        // console.log('ruleOpt=======', this.ruleOpt)
         this.delayRun(this.getAllData(), 1000)
       }, 500)
     })
@@ -262,6 +258,47 @@ export default {
     reset() {
       // console.log('aaaaa')
       // this.$parent.getDetail()
+    },
+    // 列表转tree
+    listToTree(oldArr) {
+      oldArr.forEach(element => {
+        // console.log(element)
+        const pid = element.pid
+        if (pid !== 0) {
+          oldArr.forEach(ele => {
+            if (ele.value === pid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+              if (!ele.children) {
+                ele.children = []
+              }
+              ele.children.push(element)
+            }
+          })
+        }
+      })
+      //   console.log(oldArr) //此时的数组是在原基础上补充了children;
+      oldArr = oldArr.filter(ele => ele.pid === 0) // 这一步是过滤，按树展开，将多余的数组剔除；
+      return oldArr
+    },
+    // 整理数据
+    getList() {
+      var tempList = []
+      this.originOptData.forEach((n, i) => {
+        tempList.push({
+          value: n.first,
+          pid: 0,
+          label: n.first
+        }, {
+          value: n.second,
+          pid: n.first,
+          label: n.second
+        }, {
+          value: n.id,
+          pid: n.second,
+          label: n.third
+        })
+      })
+      return tempList
+      // console.log(tempList)
     },
     validateNumber(rule, value, callback) {
       const index = rule.field.split('.')[1]
@@ -292,7 +329,7 @@ export default {
     //   }
     // },
     validate(cb) {
-      console.log('cb??????????????', cb)
+      // console.log('cb??????????????', cb)
       this.$refs.form.validate((valid) => {
         cb(valid)
       })
@@ -312,12 +349,25 @@ export default {
       // })
     },
     // 获取页面规则信息
+    // todo
     getAllData() {
       if (this.totalDetail) {
-        // console.log('this.totalDetal++++++++++++++', this.totalDetail)
         let vals = []
         for (let i = 0; i < this.totalDetail.length; i++) {
-          vals = [this.totalDetail[i].tagId, this.totalDetail[i].tagId, this.totalDetail[i].tagId]
+          // this.selection.find((n, i) => {
+          //   if (n.id === row.id) {
+          //     this.selection.splice(i, 1)
+          //     return true
+          //   }
+          // })
+          // console.log(this.totalDetail)
+          this.originOptData.find((n) => {
+            if (n.id === this.totalDetail[i].tagId) {
+              vals = [n.first, n.second, this.totalDetail[i].tagId]
+              return true
+            }
+          })
+          // vals = [this.totalDetail[i].tagId, this.totalDetail[i].tagId, this.totalDetail[i].tagId]
           this.condition.splice(i, 1, this.setOpt(this.totalDetail[i], vals, this.valDetail[i]))
         }
       }
@@ -329,6 +379,14 @@ export default {
       return new Promise((resolve, reject) => {
         getCustomerLabel().then(res => {
           this.originData = res.data
+          this.originOptData = res.data.map(n => {
+            return {
+              first: n.tagCtgryNm,
+              second: n.tagPrimClNm,
+              third: n.tagScdClNm,
+              id: n.id
+            }
+          })
           resolve()
         })
       })
