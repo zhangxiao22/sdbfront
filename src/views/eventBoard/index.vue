@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="事件看板"
+                title="事件列表"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
