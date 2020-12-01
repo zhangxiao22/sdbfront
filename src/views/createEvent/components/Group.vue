@@ -210,6 +210,9 @@ export default {
     }
   },
   computed: {
+    $form() {
+      return this.$refs.form
+    },
     id() {
       return +this.$route.query.id
     },
@@ -289,10 +292,12 @@ export default {
     //   }
     // },
     validate(cb) {
+      console.log('cb??????????????', cb)
       this.$refs.form.validate((valid) => {
         cb(valid)
       })
     },
+
     check() {
       this.$refs.form.validate((valid) => {
         if (valid) {
