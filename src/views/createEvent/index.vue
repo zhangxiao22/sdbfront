@@ -35,13 +35,13 @@
             <!-- 每周线索分配上限（CRM） -->
             <div v-show="baseInfoDetail.crmWeekClueLimit!==null"
                  class="shun-sibling-box item">
-              <div class="value">周上限 (CRM)</div>
+              <div class="value">周上限(CRM)</div>
               <div class="value">{{ baseInfoDetail.crmWeekClueLimit | formatMoney }}</div>
             </div>
             <!-- 每周线索分配上限（短信） -->
             <div v-show="baseInfoDetail.smsWeekClueLimit!==null"
                  class="shun-sibling-box item">
-              <div class="value">周上限 (短信)</div>
+              <div class="value">周上限(短信)</div>
               <div class="value">{{ baseInfoDetail.smsWeekClueLimit | formatMoney }}</div>
             </div>
             <!-- 目标设置 -->
