@@ -359,7 +359,7 @@ export function getScatter() {
 // 获取用例
 export function getUseCaseList(data) {
   return request({
-    url: '/event/getUseCase',
+    url: '/useCase/getUseCase',
     method: 'post',
     data
   })
@@ -367,7 +367,7 @@ export function getUseCaseList(data) {
 // 获取用例（我的）
 export function getUseCaseForEvent() {
   return request({
-    url: '/event/getMyUseCase',
+    url: '/useCase/getMyUseCase',
     method: 'get'
   })
 }
@@ -375,7 +375,7 @@ export function getUseCaseForEvent() {
 // 删除用例
 export function delUseCase(data) {
   return request({
-    url: '/event/delUseCase',
+    url: '/useCase/delUseCase',
     method: 'post',
     data
   })
@@ -383,7 +383,7 @@ export function delUseCase(data) {
 // 获取用例归属人
 export function getUseCaseBelongerCandidateList(params) {
   return request({
-    url: '/event/getUseCaseBelongerCandidateList',
+    url: '/useCase/getUseCaseBelongerCandidateList',
     method: 'get',
     params
   })
@@ -392,7 +392,7 @@ export function getUseCaseBelongerCandidateList(params) {
 // 用例归属人修改
 export function modifyUseCaseUser(data) {
   return request({
-    url: '/event/modifyUseCaseUser',
+    url: '/useCase/modifyUseCaseUser',
     method: 'post',
     data
   })
@@ -401,7 +401,7 @@ export function modifyUseCaseUser(data) {
 // 用例线索分发数修改
 export function setDistributeLimit(data) {
   return request({
-    url: '/event/setDistributeLimit',
+    url: '/useCase/setDistributeLimit',
     method: 'post',
     data
   })
@@ -410,7 +410,7 @@ export function setDistributeLimit(data) {
 // 切换上下线
 export function changeStatusUseCase(data) {
   return request({
-    url: '/event/offlineUseCase',
+    url: '/useCase/offlineUseCase',
     method: 'post',
     data
   })
@@ -427,7 +427,7 @@ export function getUseCaseType(params) {
 // 获取用例参与人
 export function getUseCaseParticipant(params) {
   return request({
-    url: '/event/geteALLEventParticipant',
+    url: '/useCase/getAllEventParticipant',
     method: 'get',
     params
   })
@@ -444,7 +444,7 @@ export function getALLEventApprover() {
 // 新建用例
 export function saveUseCase(data) {
   return request({
-    url: '/event/saveUseCase',
+    url: '/useCase/insertUseCase',
     method: 'post',
     data
   })
@@ -453,7 +453,7 @@ export function saveUseCase(data) {
 // 修改用例
 export function editUseCase(data) {
   return request({
-    url: '/event/changeUseCase',
+    url: '/useCase/changeUseCase',
     method: 'post',
     data
   })
@@ -462,7 +462,7 @@ export function editUseCase(data) {
 // 根据id获取用例详情
 export function getUseCaseDetailById(params) {
   return request({
-    url: '/event/getUseCaseDetailById',
+    url: '/useCase/getUseCaseDetailById',
     method: 'get',
     params
   })
@@ -619,7 +619,7 @@ export function insertOutletAllotBatch(data) {
 // 获取用例优先级
 export function setUseCasePriority(data) {
   return request({
-    url: '/event/setUseCasePriority',
+    url: '/useCase/setUseCasePriority',
     method: 'post',
     data
   })
@@ -628,7 +628,7 @@ export function setUseCasePriority(data) {
 // 获取线索
 export function checkCluePriorityList() {
   return request({
-    url: '/event/checkCluePriorityList',
+    url: '/useCase/checkCluePriorityList',
     method: 'get'
   })
 }
@@ -636,7 +636,7 @@ export function checkCluePriorityList() {
 // 获取优先级列表
 export function getCluePriorityRuleEnums() {
   return request({
-    url: '/event/getCluePriorityRuleEnums',
+    url: '/useCase/getCluePriorityRuleEnums',
     method: 'get'
   })
 }

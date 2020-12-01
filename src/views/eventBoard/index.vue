@@ -219,17 +219,18 @@ export default {
           columnKey: 'status'
         },
         {
-          prop: 'category.label',
-          label: '事件类型'
+          prop: 'modifyTime',
+          label: '更新时间',
+          minWidth: 150
+        },
+        {
+          prop: 'desc',
+          label: '事件描述',
+          minWidth: 150
         },
         {
           prop: 'useCase.name',
           label: '所属用例'
-        },
-        {
-          prop: 'modifyTime',
-          label: '更新时间',
-          minWidth: 150
         },
         {
           prop: 'operate',
