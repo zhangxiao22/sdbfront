@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="厌恶营销名单"
+                title="防打扰名单"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -281,8 +281,8 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/CRM厌恶营销名单模板.xlsx', '_blank')
-      // window.open('http://10.5.14.149:8080/static/CRM厌恶营销名单模板.xlsx', '_blank')
+      window.open('/static/CRM防打扰名单模板.xlsx', '_blank')
+      // window.open('http://10.5.14.149:8080/static/CRM防打扰名单模板.xlsx', '_blank')
     },
     downloadAll() {
       const data = {

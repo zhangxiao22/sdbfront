@@ -1,113 +1,157 @@
 <template>
   <div class="container">
-    <el-dropdown>
-      <span class="el-dropdown-link">
-        下拉菜单<i class="el-icon-arrow-down el-icon--right" />
-      </span>
-      <el-dropdown-menu slot="dropdown">
-        <!-- <el-dropdown-item>黄金糕</el-dropdown-item> -->
-        <el-dropdown-item />
-        <el-dropdown-item />
-      </el-dropdown-menu>
-    </el-dropdown>
+    {{ value }}
+    <el-cascader v-model="value"
+                 placeholder="试试搜索：指南"
+                 :options="options"
+                 filterable />
   </div>
 </template>
 
 <script>
+const _ = require('lodash')
+var ARRAY = [
+  {
+    first: 'aaa',
+    second: 'aa',
+    three: 'a',
+    id: '1'
+  }, {
+    first: 'bbb',
+    second: 'bb',
+    three: 'b',
+    id: '2'
+  }, {
+    first: 'ccc',
+    second: 'cc',
+    three: 'c',
+    id: '3'
+  }, {
+    first: 'ddd',
+    second: 'dd',
+    three: 'd',
+    id: '4'
+  }, {
+    first: 'eee',
+    second: 'ee',
+    id: '5',
+    three: 'e'
+  }, {
+    first: 'fff',
+    second: 'ff',
+    id: '6',
+    three: 'f'
+  }, {
+    first: 'ggg',
+    second: 'gg',
+    three: 'g',
+    id: '7'
+  },
+  // /////////////////
+  {
+    first: 'aaa',
+    second: 'hh',
+    three: 'h',
+    id: '8'
+  }, {
+    first: 'aaa',
+    second: 'aa',
+    three: 'i',
+    id: '9'
+  }, {
+    first: 'aaa',
+    second: 'aa',
+    three: 'a',
+    id: '10'
+  },
+  // {
+  //   first: 'bbb',
+  //   second: 'aa',
+  //   three: 'a',
+  //   id: '11'
 
+  // },
+  {
+    first: 'bbb',
+    second: 'aa',
+    three: 'l',
+    id: '12'
+  },
+  {
+    first: 'bbb',
+    second: 'aa',
+    three: 'l',
+    id: '12'
+  }
+]
 export default {
   components: {
   },
 
   data() {
     return {
-      showHistory: true,
-      copy_showHistory: true,
-      list: [{
-        title: '活动按期开始',
-        desc: '大法的 aside大撒发大法的 aside大撒',
-        timestamp: '2018-04-15',
-        user: ['dasfdas', 'asdfdasf']
-      }, {
-        title: '通过审核',
-        desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-        user: ['dasfdas'],
-        timestamp: '2018-04-13'
-      }, {
-        desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-        title: '创建成功',
-        timestamp: '2018-04-11'
-      },
-      {
-        desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-        title: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-        title: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-        title: '创建成功',
-        timestamp: '2018-04-11'
-      }, {
-        desc: '大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的 aside大撒发大法的',
-        title: '创建成功',
-        timestamp: '2018-04-11'
-      }]
+      options: [],
+      value: []
     }
   },
   computed: {
-    visibleList() {
-      return this.list.slice(0, 3)
-    },
-    hiddenList() {
-      return this.list.slice(3)
-    }
 
   },
 
   watch: {
-    showHistory() {
-      setTimeout(() => {
-        this.copy_showHistory = this.showHistory
-      }, this.showHistory ? 300 : 0)
-    }
+
   },
   created() {
-    setTimeout(() => {
-      // this.form.name = 'aaaaa'
-    }, 3000)
+    this.options = this.listToTree(
+      _.uniqBy(
+        this.getList(),
+        'value', 'pid', 'label'
+      )
+    )
+    console.log(this.options)
   },
   mounted() {
 
   },
   methods: {
-    click() {
-      // this.form.id = '11'
-      // this.form.name = '22'
-      // this.form.role = '333'
-      // this.form = {
-      //   name: '222'
-      // }
-      console.log(this.$refs['formRef'])
-      this.showDialog = !this.showDialog
-      setTimeout(() => {
-        this.form.name = 'aaaaa'
+    listToTree(oldArr) {
+      oldArr.forEach(element => {
+        console.log(element)
+        const pid = element.pid
+        if (pid !== 0) {
+          oldArr.forEach(ele => {
+            if (ele.value === pid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+              if (!ele.children) {
+                ele.children = []
+              }
+              ele.children.push(element)
+            }
+          })
+        }
       })
+      //   console.log(oldArr) //此时的数组是在原基础上补充了children;
+      oldArr = oldArr.filter(ele => ele.pid === 0) // 这一步是过滤，按树展开，将多余的数组剔除；
+      return oldArr
     },
-    change(aa) {
-      // console.log(aa)
-      // this.form.name = 'aaaaa'
-    },
-    cancelAddList() {
-      console.log(this.$refs['formRef'])
-      this.$refs['formRef'].resetFields()
-      // this.showDialog = false
-    },
-    cancelAddList111() {
-      console.log(this.$refs['formRef'])
-      this.$refs['formRef'].resetFields()
+    getList() {
+      var tempList = []
+      ARRAY.forEach((n, i) => {
+        tempList.push({
+          value: n.first,
+          pid: 0,
+          label: n.first
+        }, {
+          value: n.second,
+          pid: n.first,
+          label: n.second
+        }, {
+          value: n.id,
+          pid: n.second,
+          label: n.three
+        })
+      })
+      return tempList
+      // console.log(tempList)
     }
   }
 }

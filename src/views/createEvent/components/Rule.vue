@@ -241,29 +241,28 @@ export default {
         })
       }
       return new Promise((resolve, reject) => {
-        // 校验整体规则
-        this.$refs.totalRuleRef.validate((valid) => {
-          if (!valid) reject()
-        })
-        // 校验客群
-        this.$refs.form.validate((valid) => {
-          if (!valid) reject()
-        })
-        // 校验客群中的规则
-        let index = 0
-        let flaf = false
-        this.labelTabs.forEach((n, i) => {
-          this.$refs.groupRuleRef[i].validate((valid) => {
-            if (!valid && !flaf) {
-              index = i
-              flaf = true
-              this.labelIndex = i + 1 + ''
-              reject()
-            }
+        const promiseArray = [
+          // 校验整体规则
+          this.$refs.totalRuleRef.$form.validate(),
+          // 校验客群
+          this.$refs.form.validate(),
+          // 校验客群中的规则
+          ...this.labelTabs.map((n, i) => {
+            return this.$refs.groupRuleRef[i].$form.validate()
           })
-        })
-        fn().then(() => {
-          resolve()
+        ]
+        Promise.allSettled(promiseArray).then((result) => {
+          if (result.every(n => n.status === 'fulfilled')) {
+            fn().then(() => {
+              resolve()
+            }).catch(() => {
+              reject()
+            })
+          } else {
+            const index = result.slice(2).findIndex(r => r.status === 'rejected')
+            this.labelIndex = index + 1 + ''
+            reject()
+          }
         }).catch(() => {
           reject()
         })

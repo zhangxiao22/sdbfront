@@ -65,7 +65,7 @@ export const asyncRoutes = [
         path: 'eventBoard',
         name: 'EventBoard',
         component: () => import('@/views/eventBoard/index'),
-        meta: { title: '事件看板', icon: 'eventList' }
+        meta: { title: '事件列表', icon: 'eventList' }
       },
       {
         // 事件详情

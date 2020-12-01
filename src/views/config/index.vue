@@ -101,7 +101,7 @@ export default {
         roles: ['业务管理']
       },
       {
-        label: '厌恶营销名单（CRM）',
+        label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
         loading: false,
         roles: ['事件注册', '用例管理']
