@@ -22,7 +22,7 @@
                    :disabled="!!id&&baseInfo.statusValue!==1"
                    style="width:100%"
                    placeholder="请选择所属用例"
-                   @change="handleUseCaseChange">
+                   @change="handleUseCaseChange();baseInfo.crmWeekClueLimit=0;baseInfo.smsWeekClueLimit=0">
           <el-option v-for="item in useCaseOpt"
                      :key="item.value"
                      :label="item.label"
@@ -67,7 +67,7 @@
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
-                         :max="crmWeekClueLimit"
+                         :max="crmWeekClueLimit===null?100000000:crmWeekClueLimit"
                          :step="1000"
                          :precision="0"
                          @blur="baseInfo.crmWeekClueLimit=$event.target.value||0" />
@@ -83,7 +83,7 @@
                          style="width:200px;"
                          controls-position="right"
                          :min="0"
-                         :max="smsWeekClueLimit"
+                         :max="smsWeekClueLimit===null?100000000:smsWeekClueLimit"
                          :step="1000"
                          :precision="0"
                          @blur="baseInfo.smsWeekClueLimit=$event.target.value||0" />
@@ -174,8 +174,8 @@ export default {
   },
   data() {
     return {
-      smsWeekClueLimit: 0,
-      crmWeekClueLimit: 0,
+      smsWeekClueLimit: null,
+      crmWeekClueLimit: null,
       baseInfoDetail: {},
       baseInfo: JSON.parse(JSON.stringify(DEFAULT_BASEINFO)),
       // 时间选择范围

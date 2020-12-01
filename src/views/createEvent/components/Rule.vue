@@ -81,6 +81,7 @@ import Group from './Group'
 import bus from '../bus'
 import Sortable from 'sortablejs'
 import { getPeopleCount, saveGroup, getGroup } from '@/api/api'
+import { valid } from 'mockjs'
 
 export default {
   name: 'WhiteList',
@@ -167,37 +168,39 @@ export default {
     getDetail() {
       // todo
       getGroup({ baseId: this.id }).then(res => {
-        this.labelTabs = res.data.infoDetailList.map((n) => {
-          return {
-            title: n.name,
-            name: ++this.labelTabsCounts + '',
-            desc: n.desc,
-            people: n.count,
-            closable: true,
-            condition: [],
-            // 传递客群规则ID以及且或符号
-            groupDetail: n.tagList.map((m) => {
-              return { tagId: m.tagId, combineRelation: m.combineRelation }
-            }),
-            // 传递客群规则比较符号和值
-            valDetail: n.tagList.map((m) => {
-              return m.tagContentUnitVOList.map((k) => {
-                return { content: k.content, compare: k.tagRelation }
+        if (res.data.abstractDetail.lodeType.value === 2) {
+          this.labelTabs = res.data.infoDetailList.map((n) => {
+            return {
+              title: n.name,
+              name: ++this.labelTabsCounts + '',
+              desc: n.desc,
+              people: n.count,
+              closable: true,
+              condition: [],
+              // 传递客群规则ID以及且或符号
+              groupDetail: n.tagList.map((m) => {
+                return { tagId: m.tagId, combineRelation: m.combineRelation }
+              }),
+              // 传递客群规则比较符号和值
+              valDetail: n.tagList.map((m) => {
+                return m.tagContentUnitVOList.map((k) => {
+                  return { content: k.content, compare: k.tagRelation }
+                })
               })
-            })
-          }
-        })
-        this.labelIndex = '1'
-        // 传递整体规则ID以及且或符号
-        this.totalDetail = res.data.abstractDetail.tagList.map(n => {
-          return { tagId: n.tagId, combineRelation: n.combineRelation }
-        })
-        // 传递整体规则比较符号和值
-        this.valDetail = res.data.abstractDetail.tagList.map(n => {
-          return n.tagContentUnitVOList.map((m) => {
-            return { content: m.content, compare: m.tagRelation }
+            }
           })
-        })
+          this.labelIndex = '1'
+          // 传递整体规则ID以及且或符号
+          this.totalDetail = res.data.abstractDetail.tagList.map(n => {
+            return { tagId: n.tagId, combineRelation: n.combineRelation }
+          })
+          // 传递整体规则比较符号和值
+          this.valDetail = res.data.abstractDetail.tagList.map(n => {
+            return n.tagContentUnitVOList.map((m) => {
+              return { content: m.content, compare: m.tagRelation }
+            })
+          })
+        }
         // console.log('testtesttesttesttesttesttesttest', this.labelTabs)
       }).catch(() => {
       })
@@ -258,11 +261,11 @@ export default {
               reject()
             }
           })
-          fn().then(() => {
-            resolve()
-          }).catch(() => {
-            reject()
-          })
+        })
+        fn().then(() => {
+          resolve()
+        }).catch(() => {
+          reject()
         })
       })
     },

@@ -247,7 +247,7 @@ export default {
       data.category = this.baseInfo.type
       data.eventParticipants = this.baseInfo.participants
       data.isSwithOnUnDisturb = this.baseInfo.isSwithOnUnDisturb
-      data.ditributeMode = this.baseInfo.ditributeMode
+      data.distributeMode = this.baseInfo.ditributeMode
       data.cluePriorityRule = this.baseInfo.cluePriority
       // data.approvalUserId = this.baseInfo.approver
       // 目标
@@ -332,8 +332,8 @@ export default {
         this.baseInfo.type = res.data.category.value
         this.baseInfo.participants = res.data.eventParticipants
         this.baseInfo.isSwithOnUnDisturb = res.data.isSwithOnUnDisturb
-        this.baseInfo.ditributeMode = res.data.ditributeMode
-        this.baseInfo.cluePriority = res.data.cluePriorityRule
+        this.baseInfo.ditributeMode = res.data.distributeMode.value
+        this.baseInfo.cluePriority = res.data.cluePriorityRule.value
         // this.baseInfo.approver = res.data.approvalUserId
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {

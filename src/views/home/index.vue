@@ -151,6 +151,8 @@ export default {
               return n.roles ? n.roles.includes(this.roles) : true
             }
           })
+        }, {
+          mainTitle: m.mainTitle
         })
       })
     }

@@ -214,7 +214,7 @@ export default {
       useCaseListOpt: [],
       productListOpt: [],
       filterForm: {
-        name: '',
+        content: '',
         attributionUseCaseList: [],
         productFirstCategoryList: []
       },
