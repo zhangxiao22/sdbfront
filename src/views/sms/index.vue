@@ -193,8 +193,8 @@ import UploadButton from '@/components/UploadButton'
 export default {
   name: 'Sms',
   components: {
-    ShunTable,
-    UploadButton
+    ShunTable
+    // UploadButton
   },
   props: {
     showSelection: {
