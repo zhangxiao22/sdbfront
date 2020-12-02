@@ -52,6 +52,7 @@
 import { postPeopleList, getAllJob, occupyJob } from '@/api/api'
 import { translate } from '@/utils'
 import treeTransfer from 'el-tree-transfer' // 引入
+import { Notification } from 'element-ui'
 
 export default {
   name: 'JobOccupy',
@@ -261,20 +262,33 @@ export default {
       data.userIdList = users
       data.jobId = this.rightPost
       // console.log(data)
+      Notification.closeAll()
       occupyJob(data).then(res => {
         if (res.code === 200) {
-          this.leftTotalCount -= this.leftCheckedTotalCount
-          this.rightTotalCount += this.leftCheckedTotalCount
-          this.leftCheckedTotalCount = 0
-          this.rightCheckedTotalCount = 0
-          this.$message({
-            message: '分配成功',
-            type: 'success',
-            duration: '3000'
-          })
+          if (res.data.length) {
+            this.$notify({
+              title: '数据错误',
+              message: res.data.join('<br/>'),
+              dangerouslyUseHTMLString: true,
+              type: 'warning',
+              duration: 0
+            })
+          } else {
+            this.leftTotalCount -= this.leftCheckedTotalCount
+            this.rightTotalCount += this.leftCheckedTotalCount
+            this.leftCheckedTotalCount = 0
+            this.rightCheckedTotalCount = 0
+            this.$message({
+              message: '分配成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
         }
       }).finally(() => {
         this.$emit('update:loading', false)
+        this.resetLeft()
+        this.resetRight()
       })
       // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
@@ -288,19 +302,32 @@ export default {
       data.userIdList = users
       data.jobId = this.leftPost
       // console.log(data)
+      Notification.closeAll()
       occupyJob(data).then(res => {
         if (res.code === 200) {
-          this.leftTotalCount += this.rightCheckedTotalCount
-          this.rightTotalCount -= this.rightCheckedTotalCount
-          this.leftCheckedTotalCount = 0
-          this.rightCheckedTotalCount = 0
-          this.$message({
-            message: '分配成功',
-            type: 'success',
-            duration: '3000'
-          })
+          if (res.data.length) {
+            this.$notify({
+              title: '数据错误',
+              message: res.data.join('<br/>'),
+              dangerouslyUseHTMLString: true,
+              type: 'warning',
+              duration: 0
+            })
+          } else {
+            this.leftTotalCount += this.rightCheckedTotalCount
+            this.rightTotalCount -= this.rightCheckedTotalCount
+            this.leftCheckedTotalCount = 0
+            this.rightCheckedTotalCount = 0
+            this.$message({
+              message: '分配成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
         }
       }).finally(() => {
+        this.resetLeft()
+        this.resetRight()
         this.$emit('update:loading', false)
       })
       // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')

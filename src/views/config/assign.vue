@@ -43,7 +43,6 @@
                       }]"
                       label-width="110px">
           <el-input v-model.trim="form.name"
-                    :disabled="isEdit"
                     style="width:90%;"
                     placeholder="请输入名称" />
         </el-form-item>
@@ -54,6 +53,7 @@
                       }]"
                       label-width="110px">
           <el-select v-model="form.role"
+                     :disabled="isEdit"
                      style="width:90%;"
                      placeholder="请选择">
             <el-option v-for="item in roleOpt"
