@@ -42,9 +42,8 @@
               <el-cascader v-model="conditionItem.conditionSelect"
                            filterable
                            :show-all-levels="false"
-                           :options="tags"
+                           :options="ruleOpt"
                            @change="selectCondition($event,ci)" />
-
             </el-tooltip>
           </el-form-item>
           <!-- 比较符 -->
@@ -219,9 +218,9 @@ export default {
     id() {
       return +this.$route.query.id
     },
-    tags() {
-      return this.ruleOpt
-    },
+    // tags() {
+    //   return this.ruleOpt
+    // },
     rules() {
       return [{
         required: this.required, message: '请选择规则', type: 'array'
@@ -544,9 +543,10 @@ export default {
       this.condition.splice(ci, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
-      // console.log(val[2], 'i===========', i)
-      for (let j = 0; j < this.tags.length; j++) {
-        if (this.tags[j].value === val[2]) {
+      // console.log(val[2], 'i===========', i, val)
+      for (let j = 0; j < this.originOptData.length; j++) {
+        if (this.originOptData[j].id === val[2]) {
+          // this.condition.splice(i, 1, this.resetOpt(val[2], val))
           this.condition.splice(i, 1, this.resetOpt(val[2], val))
           break
         }
