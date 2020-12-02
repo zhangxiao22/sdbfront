@@ -286,9 +286,9 @@ export default {
           }
         }
       }).finally(() => {
+        this.handleSelectLeftOpt()
+        this.handleSelectRightOpt()
         this.$emit('update:loading', false)
-        this.resetLeft()
-        this.resetRight()
       })
       // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
     },
@@ -326,8 +326,8 @@ export default {
           }
         }
       }).finally(() => {
-        this.resetLeft()
-        this.resetRight()
+        this.handleSelectLeftOpt()
+        this.handleSelectRightOpt()
         this.$emit('update:loading', false)
       })
       // console.log('users>>>>>>>>>>>>>>>>>>>>>>>', users, '<<<<<<<<<<<<<<<<<<<<<users')
