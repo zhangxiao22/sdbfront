@@ -262,9 +262,10 @@ export default {
           })
         }
       }).finally(() => {
-        this.buttonLoadingResolve = false
-        this.showResolve = false
-        this.getDetail()
+        // this.buttonLoadingResolve = false
+        // this.showResolve = false
+        // this.getDetail()
+        this.$router.push('/eventBoard')
       })
     },
     ensureReject() {
@@ -285,9 +286,10 @@ export default {
               })
             }
           }).finally(() => {
-            this.buttonLoadingReject = false
-            this.showReject = false
-            this.getDetail()
+            // this.buttonLoadingReject = false
+            // this.showReject = false
+            // this.getDetail()
+            this.$router.push('/eventBoard')
           })
         }
       })
