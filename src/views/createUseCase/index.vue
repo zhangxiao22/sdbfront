@@ -75,7 +75,7 @@
                      :value="item.value" />
         </el-select>
       </el-form-item>
-      <!-- <el-form-item label="审批人："
+      <el-form-item label="审批人："
                     :rules="[{
                       required: true, message: '请选择审批人', trigger: 'change'
                     }]"
@@ -89,7 +89,7 @@
                      :label="item.label"
                      :value="item.value" />
         </el-select>
-      </el-form-item> -->
+      </el-form-item>
       <el-form-item label="防打扰："
                     :rules="[{
                       required: true, message: '请选择是否防打扰', trigger: 'change'
@@ -175,7 +175,7 @@
 
 <script>
 import { MAX_NUMBER, translate } from '@/utils'
-import { getUseCaseType, getUseCaseParticipant, getTargetList, saveUseCase, getUseCaseDetailById, editUseCase, getCluePriorityRuleEnums, getALLEventApprover } from '@/api/api'
+import { getUseCaseType, getUseCaseParticipant, getTargetList, saveUseCase, getUseCaseDetailById, editUseCase, getCluePriorityRuleEnums, getApproverList } from '@/api/api'
 
 export default {
   name: 'CreateUseCase',
@@ -193,7 +193,7 @@ export default {
         isSwithOnUnDisturb: 1,
         ditributeMode: 1,
         cluePriority: '',
-        // approver: '',
+        approver: '',
         target: [
           {
             targetSelect: '',
@@ -249,7 +249,7 @@ export default {
       data.isSwithOnUnDisturb = this.baseInfo.isSwithOnUnDisturb
       data.distributeMode = this.baseInfo.ditributeMode
       data.cluePriorityRule = this.baseInfo.cluePriority
-      // data.approvalUserId = this.baseInfo.approver
+      data.approverId = this.baseInfo.approver
       // 目标
       data.useCaseAchieveList = this.baseInfo.target.map(n => {
         return {
@@ -266,7 +266,7 @@ export default {
   },
   created() {
     this.getType()
-    // this.getApproverOpt()
+    this.getApproverOpt()
     this.getParticipant()
     this.getCluePriorityOpt()
     this.targetList().then(() => {
@@ -317,7 +317,7 @@ export default {
       })
     },
     getApproverOpt() {
-      getALLEventApprover().then(res => {
+      getApproverList().then(res => {
         this.approverOptions = res.data.map(n => {
           return {
             label: n.empName,
@@ -334,7 +334,7 @@ export default {
         this.baseInfo.isSwithOnUnDisturb = res.data.isSwithOnUnDisturb
         this.baseInfo.ditributeMode = res.data.distributeMode.value
         this.baseInfo.cluePriority = res.data.cluePriorityRule.value
-        // this.baseInfo.approver = res.data.approvalUserId
+        this.baseInfo.approver = res.data.approverId
         // 目标
         this.baseInfo.target = res.data.achieveList.map(item => {
           let obj = this.targetOpt.find(n => {

@@ -434,9 +434,9 @@ export function getUseCaseParticipant(params) {
 }
 
 // 获取审批人
-export function getALLEventApprover() {
+export function getApproverList() {
   return request({
-    url: '/event/getALLEventApprover',
+    url: '/useCase/getApproverList ',
     method: 'get'
   })
 }
