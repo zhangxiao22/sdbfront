@@ -103,9 +103,7 @@
             </div>
             <el-tooltip :content="scope.row.name"
                         placement="top-start">
-              <div class="name elip bold"
-                   :class="{link:scope.row.status.value!==1}"
-                   @click="scope.row.status.value!==1 && eventDetail(scope.row.id)">
+              <div class="name elip bold">
                 {{ scope.row.name }}
               </div>
             </el-tooltip>
@@ -130,15 +128,22 @@
               <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
                 <div class="btn"
                      style="color:#1890FF"
+                     @click="eventDetail(scope.row.id)">
+                  查看
+                </div>
+              </el-dropdown-item>
+              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
+                <div class="btn"
+                     style="color:#1890FF"
                      @click="handleEdit(scope.row)">
                   编辑
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5 && roleJudge.createEvent">
+              <!-- <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5 && roleJudge.createEvent">
                 <div class="btn"
                      style="color:#1890FF;"
                      @click="handleCopy(scope.row)">复制</div>
-              </el-dropdown-item>
+              </el-dropdown-item> -->
               <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
                 <div class="btn"
                      style="color:#f56c6c;"
