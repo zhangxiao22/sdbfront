@@ -7,13 +7,20 @@
         <el-divider class="header-divider" />
       </div>
       <div class="button-group">
-        <el-button type="success"
+        <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
+                   type="success"
                    @click="resolveForm.resolveText='',showResolve=true;">审批通过</el-button>
-        <el-button type="danger"
+        <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
+                   type="danger"
                    style="margin-left:20px;"
                    @click="resolveForm.rejectText='',showReject=true;">审批驳回</el-button>
+        <el-button v-if="roleJudge.showCopyButton"
+                   type="primary"
+                   :loading="buttonLoadingCopy"
+                   @click="handleCopy">复制事件</el-button>
       </div>
-      <div class="timeline-container">
+      <div v-if="roleJudge.showApproveList"
+           class="timeline-container">
         <div v-for="(item,i) of visibleList"
              :key="i"
              :class="{last:!copy_showHistory&&i === visibleList.length-1}"
@@ -106,30 +113,44 @@
 
 <script>
 import Preview from '@/views/createEvent/components/Preview'
-import { getEventPreview, isPass, getEventApprovalLink } from '@/api/api'
+import { getEventPreview, isPass, getEventApprovalLink, copyEvent } from '@/api/api'
+import { mapGetters } from 'vuex'
+
 export default {
   components: {
     Preview
   },
   data() {
     return {
+      // 权限判断
+      roleJudge: {
+        showApproveButton: '',
+        showCopyButton: '',
+        showApproveList: '',
+        canApprove: ''
+      },
+      showButton: true,
       showHistory: false,
       copy_showHistory: false,
       list: [],
       mainStatus: '',
       previewData: {},
-
+      eventName: '',
       showResolve: false,
       showReject: false,
       resolveForm: {
         resolveText: '',
         rejectText: ''
       },
+      buttonLoadingCopy: false,
       buttonLoadingResolve: false,
       buttonLoadingReject: false
     }
   },
   computed: {
+    ...mapGetters([
+      'roles'
+    ]),
     id() {
       return +this.$route.query.id
     },
@@ -148,14 +169,47 @@ export default {
     }
   },
   created() {
-    this.getDetail()
-    this.getLinkList()
+    this.getDetail().then(() => {
+      console.log(this.mainStatus)
+      this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === 'admin'
+      this.roleJudge.showApproveButton = this.mainStatus === 3
+      this.roleJudge.showCopyButton = this.mainStatus === 4 || this.mainStatus === 5
+      this.roleJudge.showApproveList = this.mainStatus === 3 || this.mainStatus === 4 || this.mainStatus === 5
+      if (this.roleJudge.showApproveList) {
+        this.getLinkList()
+      }
+    })
+  },
+  mounted() {
   },
   methods: {
+    handleCopy() {
+      this.$confirm(`确定复制事件（${this.eventName}）？`)
+        .then(() => {
+          this.buttonLoadingCopy = true
+          copyEvent({ baseId: this.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          })
+        })
+        .catch(() => { })
+        .finally(() => {
+          this.buttonLoadingCopy = false
+        })
+    },
     getDetail() {
-      getEventPreview({ baseId: this.id }).then(res => {
-        this.previewData = res.data
-        this.mainStatus = res.data.eventBaseInfo.largeStatus.value
+      return new Promise((resolve) => {
+        getEventPreview({ baseId: this.id }).then(res => {
+          this.previewData = res.data
+          this.mainStatus = res.data.eventBaseInfo.largeStatus.value
+          this.eventName = res.data.eventBaseInfo.name
+          resolve()
+        })
       })
     },
     getLinkList() {

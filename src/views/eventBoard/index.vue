@@ -125,7 +125,7 @@
             </span>
             <el-dropdown-menu slot="dropdown"
                               class="operate-drop">
-              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
+              <el-dropdown-item v-if="true">
                 <div class="btn"
                      style="color:#1890FF"
                      @click="eventDetail(scope.row.id)">
