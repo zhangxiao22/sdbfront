@@ -25,7 +25,9 @@
              :key="i"
              :class="{last:!copy_showHistory&&i === visibleList.length-1}"
              class="item">
+          <div class="border-line" />
           <div class="content-box">
+            <div class="circle" />
             <b class="title">{{ item.title }}</b>
             <span class="user">{{ `（${item.user.join(',')}）` }}</span>
             <span class="time">{{ item.timestamp }}</span>
@@ -34,14 +36,26 @@
         </div>
         <div>
           <el-collapse-transition>
-            <div v-show="showHistory">
+            <div v-show="showHistory"
+                 class="hide-list-group"
+                 :class="{show:showHistory}">
               <div v-for="(item,i) of hiddenList"
                    :key="i"
                    :class="{last:copy_showHistory&&i === hiddenList.length-1}"
                    class="item">
+                <transition name="el-fade-in-linear">
+                  <div v-show="copy_showHistory"
+                       class="border-line" />
+                </transition>
+                <!-- <div class="border-line" /> -->
+
                 <div class="content-box">
+                  <transition name="el-fade-in-linear">
+                    <div v-show="copy_showHistory"
+                         class="circle" />
+                  </transition>
                   <b class="title">{{ item.title }}</b>
-                  <span class="user">{{ `（${item.user.join(',')}）` }}</span>
+                  <span class="user">({{ item.user.join(',') }})</span>
                   <span class="time">{{ item.timestamp }}</span>
                 </div>
                 <div class="desc">{{ item.desc }}</div>
@@ -49,7 +63,8 @@
             </div>
           </el-collapse-transition>
         </div>
-        <el-button class="more"
+        <el-button v-show="hiddenList.length"
+                   class="more"
                    type="text"
                    @click="showHistory=!showHistory">{{ showHistory?'收起':'查看更多' }}
           <i :class="showHistory?'el-icon-arrow-up':'el-icon-arrow-down'"
@@ -163,9 +178,13 @@ export default {
   },
   watch: {
     showHistory() {
-      setTimeout(() => {
+      if (this.showHistory) {
+        setTimeout(() => {
+          this.copy_showHistory = this.showHistory
+        }, 300)
+      } else {
         this.copy_showHistory = this.showHistory
-      }, this.showHistory ? 300 : 0)
+      }
     }
   },
   created() {
@@ -300,12 +319,13 @@ export default {
     position: relative;
     padding-left: 20px;
     margin: 0 20px 10px;
+
     .item {
-      width: 500px;
+      width: 300px;
       margin-bottom: 15px;
       // border: 1px solid;
       position: relative;
-      &::after {
+      .border-line {
         position: absolute;
         content: "";
         left: -20px;
@@ -317,16 +337,16 @@ export default {
         transform: translateX(4px);
       }
       &.last {
-        margin-bottom: 0;
-        &::after {
-          content: none;
+        // margin-bottom: 0;
+        .border-line {
+          display: none;
         }
       }
       .content-box {
         display: flex;
         height: 16px;
         position: relative;
-        &::before {
+        .circle {
           position: absolute;
           content: "";
           left: -20px;
@@ -345,6 +365,7 @@ export default {
         }
         .time {
           margin-left: auto;
+          color: #888;
         }
       }
       .desc {
@@ -354,6 +375,7 @@ export default {
       }
     }
     .more {
+      padding-top: 0;
       // position: absolute;
     }
   }
