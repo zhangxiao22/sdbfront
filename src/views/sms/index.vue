@@ -66,10 +66,10 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <UploadButton :upload-method="uploadSmsFile"
+        <!-- <UploadButton :upload-method="uploadSmsFile"
                       class="button"
                       button-name="批量上传"
-                      @afterUploadSuccess="resetAll" />
+                      @afterUploadSuccess="resetAll" /> -->
         <!-- <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
