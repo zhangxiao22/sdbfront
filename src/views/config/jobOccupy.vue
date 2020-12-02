@@ -9,7 +9,6 @@
                    :default-props="{label:'label'}"
                    height="100%"
                    filter
-                   :default-checked-keys="defaultCheckedKeys"
                    :render-content-left="renderContent"
                    :render-content-right="renderContent"
                    @left-check-change="leftCheckChange"
@@ -67,7 +66,6 @@ export default {
   },
   data() {
     return {
-      defaultCheckedKeys: [],
       // 岗位
       options: [],
       // 左边选的岗位
