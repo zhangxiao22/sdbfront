@@ -260,12 +260,12 @@ export default {
             type: 'success',
             duration: '3000'
           })
+          this.$router.push('/eventBoard')
         }
       }).finally(() => {
-        // this.buttonLoadingResolve = false
+        this.buttonLoadingResolve = false
         // this.showResolve = false
         // this.getDetail()
-        this.$router.push('/eventBoard')
       })
     },
     ensureReject() {
@@ -284,12 +284,12 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
+              this.$router.push('/eventBoard')
             }
           }).finally(() => {
-            // this.buttonLoadingReject = false
+            this.buttonLoadingReject = false
             // this.showReject = false
             // this.getDetail()
-            this.$router.push('/eventBoard')
           })
         }
       })
