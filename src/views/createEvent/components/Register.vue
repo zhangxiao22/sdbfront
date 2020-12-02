@@ -270,6 +270,9 @@ export default {
     reset() {
       if (this.id) {
         this.getDetail()
+        this.$nextTick(() => {
+          this.$refs['regFormRef'].clearValidate()
+        })
       } else {
         this.baseInfo = JSON.parse(JSON.stringify(DEFAULT_BASEINFO))
         // console.log(DEFAULT_BASEINFO.target)
