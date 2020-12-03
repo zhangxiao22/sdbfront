@@ -107,7 +107,7 @@ export const asyncRoutes = [
         path: 'model',
         name: 'Model',
         component: () => import('@/views/model/index'),
-        meta: { title: '模型库', icon: 'model', roles: ['事件注册', '用例管理'] }
+        meta: { title: '模型库', icon: 'cpu', roles: ['事件注册', '用例管理'] }
       },
       {
         // 总看板
