@@ -18,6 +18,7 @@
                           required: true, message: '请选择网点', trigger: 'change'
                         }">
             <el-select v-model="outletItem.item"
+                       filterable
                        placeholder="请选择网点"
                        class="item-input"
                        @change="handleSelectOutlet($event,outletItem)">

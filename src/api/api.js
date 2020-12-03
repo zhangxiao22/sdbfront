@@ -372,6 +372,14 @@ export function getUseCaseForEvent() {
   })
 }
 
+// 事件注册第一步获取用例接口
+export function getUseCaseICanChoose() {
+  return request({
+    url: '/event/getUseCaseICanChoose',
+    method: 'get'
+  })
+}
+
 // 删除用例
 export function delUseCase(data) {
   return request({
