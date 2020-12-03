@@ -39,7 +39,7 @@
                       prefix-icon="el-icon-search" />
           </el-form-item>
           <el-form-item label="所属用例："
-                        prop="category">
+                        prop="useCaseId">
             <el-select v-model="filterForm.useCaseId"
                        clearable
                        placeholder="请选择">
@@ -49,7 +49,7 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="事件类型："
+          <!-- <el-form-item label="事件类型："
                         prop="category">
             <el-select v-model="filterForm.category"
                        clearable
@@ -59,7 +59,7 @@
                          :label="item.label"
                          :value="item.value" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="创建人："
                         prop="userId">
             <el-select v-model="filterForm.userId"
@@ -196,7 +196,7 @@ export default {
       total: 0,
       filterForm: {
         name: '',
-        category: '',
+        // category: '',
         userId: '',
         useCaseId: +this.$route.query.id || '',
         dateRange: []
@@ -207,7 +207,7 @@ export default {
       statusValue: [],
       searchForm: {},
       useCaseOpt: [],
-      categoryOpt: [],
+      // categoryOpt: [],
       ownerOpt: [],
       totalColor: '#224191',
       colors: ['#ff9900', '#1890FF', '#67c23a', '#aaaaaa'],
@@ -265,7 +265,7 @@ export default {
     // 是否能新建事件
     this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === 'admin'
     this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批' || this.roles === 'admin'
-    this.eventCategoryList()
+    // this.eventCategoryList()
     this.getOwner()
     this.useCase()
     this.getStatus().then(res => {
@@ -305,11 +305,11 @@ export default {
       })
     },
     // 获取类型
-    eventCategoryList() {
-      getEventCategory().then(res => {
-        this.categoryOpt = res.data.eventCategoryEnumList
-      })
-    },
+    // eventCategoryList() {
+    //   getEventCategory().then(res => {
+    //     this.categoryOpt = res.data.eventCategoryEnumList
+    //   })
+    // },
     // 获取创建人
     getOwner() {
       getEventOwner().then(res => {
@@ -385,7 +385,7 @@ export default {
         name: this.filterForm.name,
         useCaseId: this.filterForm.useCaseId || null,
         userId: this.filterForm.userId || null,
-        category: this.filterForm.category || null,
+        // category: this.filterForm.category || null,
         dateRange: this.filterForm.dateRange
       }
       this.getList(1)
