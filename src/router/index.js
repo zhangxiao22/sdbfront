@@ -103,6 +103,13 @@ export const asyncRoutes = [
         meta: { title: '短信库', icon: 'shortmessage', roles: ['事件注册', '用例管理'] }
       },
       {
+        // 模型库
+        path: 'model',
+        name: 'Model',
+        component: () => import('@/views/model/index'),
+        meta: { title: '模型库', icon: 'product', roles: ['事件注册', '用例管理'] }
+      },
+      {
         // 总看板
         path: 'totalBoard',
         name: 'TotalBoard',
