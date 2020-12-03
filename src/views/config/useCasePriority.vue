@@ -17,15 +17,24 @@
       <el-table-column prop="name"
                        show-overflow-tooltip
                        label="用例名称" />
-      <el-table-column prop="createTime"
+      <el-table-column prop="crmWeekClueLimit"
                        show-overflow-tooltip
-                       label="创建时间" />
-      <el-table-column prop="modifyTime"
+                       label="每周线索分配上限（CRM）" />
+      <el-table-column prop="smsWeekClueLimit"
                        show-overflow-tooltip
-                       label="修改时间" />
+                       label="每周线索分配上限（短信）" />
       <el-table-column prop="description"
                        show-overflow-tooltip
                        label="描述" />
+      <el-table-column fixed="right"
+                       label="操作"
+                       width="100">
+        <template slot-scope="scope">
+          <el-button class="btn"
+                     style="color:#1890FF"
+                     @click="handleEditClue(scope.row)">线索分配</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="button-group">
       拖拽排序：
@@ -42,13 +51,52 @@
                  style="width:100px;"
                  @click="reset">重置</el-button>
     </div>
-
+    <el-dialog title="每周线索分配上限设置"
+               :visible.sync="clueDialog">
+      <el-form ref="formRef"
+               style="width:500px;margin:0 auto;"
+               label-width="220px"
+               :model="clueInfo">
+        <el-form-item required
+                      label="每周线索分配上限（CRM）："
+                      prop="assignUpper_crm">
+          <el-input-number v-model="clueInfo.assignUpper_crm"
+                           style="width:200px;"
+                           controls-position="right"
+                           :min="0"
+                           :max="MAX_NUMBER"
+                           :step="1000"
+                           :precision="0"
+                           @blur="handleBlurCRM" />
+        </el-form-item>
+        <el-form-item required
+                      label="每周线索分配上限（短信）："
+                      prop="assignUpper_sms">
+          <el-input-number v-model="clueInfo.assignUpper_sms"
+                           style="width:200px;"
+                           controls-position="right"
+                           :min="0"
+                           :max="MAX_NUMBER"
+                           :step="1000"
+                           :precision="0"
+                           @blur="handleBlurSMS" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="clueDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   :loading="buttonLoading"
+                   @click="ensureEditClue()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getUseCaseList, setUseCasePriority } from '@/api/api'
+import { getUseCaseList, setUseCasePriority, setDistributeLimit } from '@/api/api'
 import Sortable from 'sortablejs'
+import { MAX_NUMBER } from '@/utils'
 
 export default {
   components: {
@@ -62,12 +110,28 @@ export default {
 
   data() {
     return {
+      MAX_NUMBER,
       canMove: false,
-      tableData: []
+      tableData: [],
+      // 用例线索的数据(id,subBranchId)
+      clueData: {},
+      // 用例线索分配值
+      clueInfo: {
+        assignUpper_crm: 0,
+        assignUpper_sms: 0
+      },
+      clueDialog: false,
+      buttonLoading: false
     }
   },
   computed: {
-
+    getClueData() {
+      const data = {}
+      data.crmWeekClueLimit = this.clueInfo.assignUpper_crm
+      data.smsWeekClueLimit = this.clueInfo.assignUpper_sms
+      data.id = this.clueData.id
+      return data
+    }
   },
 
   watch: {},
@@ -84,7 +148,45 @@ export default {
     handleChange(val) {
       this.sortable.options.disabled = !val
     },
-
+    // 打开用例线索分发编辑框
+    handleEditClue(row) {
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
+      this.clueDialog = true
+      this.clueData = row
+      this.clueInfo.assignUpper_crm = row.crmWeekClueLimit
+      this.clueInfo.assignUpper_sms = row.smsWeekClueLimit
+    },
+    // 编辑用例线索分发
+    ensureEditClue() {
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          setDistributeLimit(this.getClueData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+            this.clueDialog = false
+            this.getList()
+          })
+        }
+      })
+    },
+    handleBlurCRM() {
+      if (!this.clueInfo.assignUpper_crm) {
+        this.clueInfo.assignUpper_crm = 0
+      }
+    },
+    handleBlurSMS() {
+      if (!this.clueInfo.assignUpper_sms) {
+        this.clueInfo.assignUpper_sms = 0
+      }
+    },
     onSubmit() {
       this.saveData()
     },

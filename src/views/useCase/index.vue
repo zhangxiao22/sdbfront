@@ -117,12 +117,12 @@
                   修改归属人
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="roleJudge.editClue">
+              <!-- <el-dropdown-item v-if="roleJudge.editClue">
                 <div class="btn"
                      @click="editClue(scope.row)">
                   线索分配
                 </div>
-              </el-dropdown-item>
+              </el-dropdown-item> -->
               <el-dropdown-item v-if="scope.row.userId === user.userId">
                 <div class="btn"
                      :class="{effect:scope.row.effect}"
@@ -167,7 +167,7 @@
                    @click="ensureEditOwner()">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog title="每周线索分配上限设置"
+    <!-- <el-dialog title="每周线索分配上限设置"
                :before-close="closeClueDialog"
                :visible.sync="clueDialog">
       <el-form ref="formRef"
@@ -203,9 +203,10 @@
            class="dialog-footer">
         <el-button @click="closeClueDialog">取 消</el-button>
         <el-button type="primary"
+                   :loading="buttonLoading"
                    @click="ensureEditClue()">确 定</el-button>
       </div>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
