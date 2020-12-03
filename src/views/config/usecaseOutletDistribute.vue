@@ -33,6 +33,7 @@
                                  {validator: validateSame}]">
             <el-select v-model="caseOutletItem.outlet"
                        placeholder="请选择网点"
+                       filterable
                        class="item-input"
                        @change="handleSelectUseCaseOutlet($event,i)">
               <el-option v-for="optItem of useCaseOutletOpt"

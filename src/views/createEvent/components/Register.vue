@@ -146,7 +146,7 @@ import bus from '../bus'
 import Info from '@/components/Info'
 import { mapGetters } from 'vuex'
 import { parseTime } from '@/utils'
-import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList, getUseCaseForEvent, getUseCaseDetailById } from '@/api/api'
+import { getEventCategory, getSampleList, saveEventBaseInfo, getEventBaseInfo, getTargetList, getUseCaseICanChoose, getUseCaseDetailById } from '@/api/api'
 
 const DEFAULT_BASEINFO = {
   name: '',
@@ -312,7 +312,7 @@ export default {
     // 获取用例
     useCase() {
       return new Promise((resolve, reject) => {
-        getUseCaseForEvent().then(res => {
+        getUseCaseICanChoose().then(res => {
           this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,
