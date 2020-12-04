@@ -143,7 +143,7 @@ export default {
     transferDataByType(val) {
       const data = val.map((n) => {
         return {
-          tagId: n.conditionSelect[2],
+          tagId: n.conditionSelect[3],
           // contentWithRelation: n.conditionSelect
           contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.stringVal || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
           combineRelation: n.andOrText.value

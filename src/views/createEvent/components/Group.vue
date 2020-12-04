@@ -283,17 +283,21 @@ export default {
       var tempList = []
       this.originOptData.forEach((n, i) => {
         tempList.push({
-          value: n.first,
+          value: n.first + '&' + n.second,
           pid: 0,
           label: n.first
         }, {
-          value: n.second,
-          pid: n.first,
+          value: n.first + '&' + n.second + '&' + n.third,
+          pid: n.first + '&' + n.second,
           label: n.second
         }, {
-          value: n.id,
-          pid: n.second,
+          value: n.first + '&' + n.second + '&' + n.third + '&' + n.fourth,
+          pid: n.first + '&' + n.second + '&' + n.third,
           label: n.third
+        }, {
+          value: n.id,
+          pid: n.first + '&' + n.second + '&' + n.third + '&' + n.fourth,
+          label: n.fourth
         })
       })
       return tempList
@@ -359,10 +363,10 @@ export default {
           //     return true
           //   }
           // })
-          // console.log(this.totalDetail)
+          // console.log('aaaaaaaaaa', this.valDetail)
           this.originOptData.find((n) => {
             if (n.id === this.totalDetail[i].tagId) {
-              vals = [n.first, n.second, this.totalDetail[i].tagId]
+              vals = [n.first + '&' + n.second, n.first + '&' + n.second + '&' + n.third, n.first + '&' + n.second + '&' + n.third + '&' + n.fourth, this.totalDetail[i].tagId]
               return true
             }
           })
@@ -383,6 +387,7 @@ export default {
               first: n.tagCtgryNm,
               second: n.tagPrimClNm,
               third: n.tagScdClNm,
+              fourth: n.name,
               id: n.id
             }
           })
@@ -543,11 +548,11 @@ export default {
       this.condition.splice(ci, 1, this.resetOpt(optValue))
     },
     selectCondition(val, i) {
-      // console.log(val[2], 'i===========', i, val)
+      // console.log(val[3], 'i===========', i, val)
       for (let j = 0; j < this.originOptData.length; j++) {
-        if (this.originOptData[j].id === val[2]) {
+        if (this.originOptData[j].id === val[3]) {
           // this.condition.splice(i, 1, this.resetOpt(val[2], val))
-          this.condition.splice(i, 1, this.resetOpt(val[2], val))
+          this.condition.splice(i, 1, this.resetOpt(val[3], val))
           break
         }
       }
