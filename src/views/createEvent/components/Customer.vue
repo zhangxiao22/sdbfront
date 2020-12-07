@@ -10,6 +10,8 @@
                    name="2">
         <Rule ref="rule" />
       </el-tab-pane>
+      <el-tab-pane label="模型导入"
+                   name="3" />
     </el-tabs>
   </div>
 </template>
@@ -41,7 +43,11 @@ export default {
     // }
   },
   watch: {
-
+    activeName() {
+      if (this.activeName === '3') {
+        this.$router.push('/model')
+      }
+    }
   },
   mounted() {
   },

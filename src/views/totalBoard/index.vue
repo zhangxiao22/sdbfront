@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="title-container">
-      <div class="title">线索发布总览</div>
+      <div class="title">成效看板</div>
     </div>
     {{ filterForm.useCase }}
     <div class="shun-filter-container-box shun-card">
@@ -279,6 +279,11 @@
             <div class="chart-block">
               <div class="block-title">成效统计</div>
               <el-row>
+<<<<<<< HEAD
+                <el-col v-for="(item,i) of statistics"
+                        :key="i"
+                        :span="12"
+=======
                 <el-col :span="12">
                   <div class="chart-item rank">
                     <AreaChart id="rank11"
@@ -294,6 +299,7 @@
                   </div>
                 </el-col>
                 <!-- <el-col :span="24"
+>>>>>>> dd2e9c5c4dfca96b78a9f0b83ebe97485f78bc9b
                         class="chart-item statistics">
                   <div class="chart-title">
                     <svg-icon :icon-class="Math.round(Math.random())===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
