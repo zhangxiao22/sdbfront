@@ -3,6 +3,7 @@
     <div class="title-container">
       <div class="title">线索发布总览</div>
     </div>
+    {{ filterForm.useCase }}
     <div class="shun-filter-container-box shun-card">
       <el-form ref="filterRef"
                :inline="true"
@@ -107,7 +108,7 @@
               {{ item.name }}
             </div>
             <div class="value">
-              {{ item.value }}
+              {{ item.value | formatMoney }}
               <div class="unit">{{ item.unit }}</div>
             </div>
           </div>
@@ -128,9 +129,9 @@
                     <FunnelChart id="funnel"
                                  :data="funnelData" />
                     <div class="chart-bottom">
-                      <div style="margin-right:20px;">有效执行数：<b>10000</b></div>
-                      <div style="margin-right:20px;">有效执行率：<b>67%</b></div>
-                      <div>实际达成率：<b>67%</b></div>
+                      <div style="margin-right:20px;">有效执行数：<b>{{ funnelResult.effective_count }}条</b></div>
+                      <div style="margin-right:20px;">有效执行率：<b>{{ (funnelResult.effective_rate * 100).toFixed(2) }}%</b></div>
+                      <div>实际达成率：<b>{{ funnelResult.actual_achievement * 100 }}%</b></div>
                     </div>
                   </div>
                 </el-col>
@@ -138,6 +139,15 @@
                   <div class="chart-item">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-pie" />渠道线索数
+                      <el-select v-model="channelCluePieChart"
+                                 style="margin-left:20px;width:140px;"
+                                 placeholder="请选择"
+                                 @change="getPie">
+                        <el-option v-for="item in channelClueOpt"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
                     </div>
                     <PieChart id="channel-pie"
                               unit="条"
@@ -153,9 +163,19 @@
                        style="height:600px;">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />用例线索数
+                      <el-select v-model="channelOptVal"
+                                 style="margin-left:20px;"
+                                 placeholder="请选择"
+                                 @change="handleChangeChannel(channelOptVal)">
+                        <el-option v-for="item in channelOpt"
+                                   :key="item.value"
+                                   :label="item.label"
+                                   :value="item.value" />
+                      </el-select>
                       <el-select v-model="funnelSel"
                                  style="margin-left:20px;"
-                                 placeholder="请选择">
+                                 placeholder="请选择"
+                                 @change="getCluesUseCase">
                         <el-option v-for="item in funnelOpt"
                                    :key="item.value"
                                    :label="item.label"
@@ -259,9 +279,46 @@
             <div class="chart-block">
               <div class="block-title">成效统计</div>
               <el-row>
-                <el-col v-for="(item,i) of statistics"
-                        :key="i"
-                        :span="24"
+                <el-col :span="12">
+                  <div class="chart-item rank">
+                    <AreaChart id="rank11"
+                               unit="万元"
+                               :data="statistics" />
+                  </div>
+                </el-col>
+                <el-col :span="12">
+                  <div class="chart-item rank">
+                    <BarChart id="rank12"
+                              unit="万元"
+                              :data="statistics" />
+                  </div>
+                </el-col>
+                <!-- <el-col :span="24"
+                        class="chart-item statistics">
+                  <div class="chart-title">
+                    <svg-icon :icon-class="Math.round(Math.random())===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
+                    <el-radio-group v-if="item.chart_tabs.length > 1"
+                                    v-model="item.checkVal"
+                                    class="radio-box">
+                      <el-radio-button v-for="(radio,ri) of item.chart_tabs"
+                                       :key="ri"
+                                       :label="radio.value">
+                        {{ radio.label }}
+                      </el-radio-button>
+                    </el-radio-group>
+                  </div>
+                  <template v-if="Math.round(Math.random())===1">
+                    <BarChart :id="'statistics'+i"
+                              :unit="item.chart_unit"
+                              :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+                  </template>
+                  <template v-else>
+                    <AreaChart :id="'statistics'+i"
+                               :unit="item.chart_unit"
+                               :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+                  </template>
+                </el-col> -->
+                <!-- <el-col :span="12"
                         class="chart-item statistics">
                   <div class="chart-title">
                     <svg-icon :icon-class="item.chart_type===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
@@ -275,17 +332,12 @@
                       </el-radio-button>
                     </el-radio-group>
                   </div>
-                  <template v-if="item.chart_type===1">
-                    <BarChart :id="'statistics'+i"
-                              :unit="item.chart_unit"
-                              :data="item.chart_data.find(n => n.key===item.checkVal).data" />
+                  <template>
+                    <BarChart :id="'statisticsRight'+i"
+                              :unit="条"
+                              :data="statistics" />
                   </template>
-                  <template v-else>
-                    <AreaChart :id="'statistics'+i"
-                               :unit="item.chart_unit"
-                               :data="item.chart_data.find(n => n.key===item.checkVal).data" />
-                  </template>
-                </el-col>
+                </el-col> -->
               </el-row>
             </div>
           </el-col>
@@ -300,7 +352,8 @@
                       <svg-icon icon-class="chart-bar" />支行排名
                       <el-select v-model="rankSelVal1"
                                  style="margin-left:20px;"
-                                 placeholder="请选择">
+                                 placeholder="请选择"
+                                 @change="getRankOrg">
                         <el-option v-for="item in rankOpt"
                                    :key="item.value"
                                    :label="item.label"
@@ -320,7 +373,8 @@
                       网点排名（前10名）
                       <el-select v-model="rankSelVal2"
                                  style="margin-left:20px;"
-                                 placeholder="请选择">
+                                 placeholder="请选择"
+                                 @change="getRankBrancg">
                         <el-option v-for="item in rankOpt"
                                    :key="item.value"
                                    :label="item.label"
@@ -340,7 +394,8 @@
                       员工排名（前10名）
                       <el-select v-model="rankSelPostVal3"
                                  style="margin-left:20px;"
-                                 placeholder="请选择">
+                                 placeholder="请选择"
+                                 @change="getRankEmp">
                         <el-option v-for="(item,index) in postOpt"
                                    :key="index"
                                    :label="item.label"
@@ -380,12 +435,14 @@ import {
   totalPie,
   totalCluesUseCase,
   totalAchieveRate,
-  totalStatistics,
+  totalStatisticsOne,
+  totalStatisticsMul,
   totalPurchaseAmount,
-  totalRankOrg,
-  totalRankBrancg,
+  // totalRankOrg,
+  // totalRankBrancg,
+  totalRank,
   getAllJob,
-  getUseCaseForEvent,
+  getAllUseCase,
   getEventList
 } from '@/api/api'
 // import { DATA } from './json'
@@ -403,7 +460,7 @@ export default {
   data() {
     return {
       filterForm: {
-        useCase: '',
+        useCase: [2241884],
         event: '',
         agency: '',
         channel: '',
@@ -415,6 +472,7 @@ export default {
       useCaseOpt: [],
       eventOpt: [],
       agencyOpt: [],
+      channelOptVal: 1,
       channelOpt: [{
         value: 1,
         label: 'CRM'
@@ -473,13 +531,21 @@ export default {
         // { label: '联系成功', value: 7000 },
         // { label: '成功购买', value: 5500 }
       ],
+      funnelResult: {
+        effective_count: '',
+        effective_rate: '',
+        actual_achievement: ''
+      },
       // 渠道线索数据
-      funnelSel: '1',
+      funnelSel: '0',
       funnelOpt: [
-        { label: '线索数量', value: '1' },
-        { label: '线索执行', value: '2' },
-        { label: '联系成功', value: '3' },
-        { label: '成功购买', value: '4' }
+        { label: '线索数量', value: '0' },
+        { label: '线索执行数量', value: '1' },
+        { label: '联络成功数', value: '2' },
+        { label: '有效执行数', value: '3' },
+        { label: '成功购买数', value: '4' },
+        { label: '成功购买金额', value: '5' },
+        { label: 'AUM提升', value: '6' }
       ],
       channelPieData: [
         // { label: '分类一', value: 10 },
@@ -509,26 +575,58 @@ export default {
       // 短信
       lineChartData6: [],
       statistics: [],
-      rankOpt: [
+      // 渠道线索饼图传的值
+      channelCluePieChart: 0,
+      channelClueOpt: [
         {
-          label: 'AUM提升',
+          label: '线索数量',
+          value: 0
+        },
+        {
+          label: '成功购买数',
           value: 1
         },
         {
-          label: 'LUM提升',
+          label: '成功购买金额',
           value: 2
         },
         {
-          label: '新开信用卡',
+          label: 'AUM提升',
           value: 3
+        }
+      ],
+      rankOpt: [
+        {
+          label: 'AUM提升',
+          value: 0
+        },
+        {
+          label: 'LUM提升',
+          value: 1
+        },
+        {
+          label: '有效信用卡增量',
+          value: 2
         },
         {
           label: '执行率',
+          value: 3
+        },
+        {
+          label: '联络成功率',
           value: 4
         },
         {
-          label: '执行率22',
+          label: '成功购买率',
           value: 5
+        },
+        {
+          label: '实际达成率',
+          value: 6
+        },
+        {
+          label: '有效执行率',
+          value: 7
         }
       ],
       rankChartData1: [],
@@ -565,9 +663,9 @@ export default {
         label: 'xx10',
         value: 10
       }],
-      rankSelVal1: 1,
-      rankSelVal2: 1,
-      rankSelVal3: 1,
+      rankSelVal1: 0,
+      rankSelVal2: 0,
+      rankSelVal3: 0,
       rankSelPostVal3: 1
 
     }
@@ -578,9 +676,7 @@ export default {
   watch: {},
   created() {
     this.render()
-    // 获取岗位
-    this.getPostOpt()
-    this.getUseCase()
+
     // this.getStatistics()
   },
   mounted() {
@@ -597,19 +693,25 @@ export default {
     render() {
       this.getOverview()
       this.getFunnel()
-      this.getPie()
+      this.getPie(0)
       this.getCluesUseCase()
-      this.getAchieveRate()
-      this.getAchieveRate(1, 1)
-      this.getAchieveRate(2, 2)
-      this.getAchieveRate(3, 3)
-      this.getAchieveRate(4, 4)
-      this.getAchieveRate(5, 5)
-      this.getAchieveRate(6, 6)
-      this.getPurchaseAmount()
+      // 旧接口
+      // this.getAchieveRate()
+      // this.getAchieveRate(1, 1)
+      // this.getAchieveRate(2, 2)
+      // this.getAchieveRate(3, 3)
+      // this.getAchieveRate(4, 4)
+      // this.getAchieveRate(5, 5)
+      // this.getAchieveRate(6, 6)
+      // this.getPurchaseAmount()
+      // 成效统计
       this.getStatistics()
       this.getRankOrg()
       this.getRankBrancg()
+      this.getRankEmp()
+      // 获取岗位
+      this.getPostOpt()
+      this.getUseCase()
     },
     getOverview() {
       totalOverview().then(res => {
@@ -617,8 +719,8 @@ export default {
         this.baseInfo[0].value = data.total_use_case
         this.baseInfo[1].value = data.total_event
         this.baseInfo[2].value = data.active_event
-        this.baseInfo[3].value = data.total_aum
-        this.baseInfo[4].value = data.total_lum
+        this.baseInfo[3].value = data.total_aum / 1000
+        this.baseInfo[4].value = data.total_lum / 1000
         this.baseInfo[5].value = data.total_credit_card
       })
     },
@@ -631,10 +733,13 @@ export default {
           { label: '联系成功', value: data.success_clues },
           { label: '成功购买', value: data.purchased_clues }
         ]
+        this.funnelResult.effective_count = res.data.effective_count
+        this.funnelResult.effective_rate = res.data.effective_rate
+        this.funnelResult.actual_achievement = res.data.actual_achievement
       })
     },
     getPie() {
-      totalPie().then(res => {
+      totalPie({ type: this.channelCluePieChart }).then(res => {
         const data = res.data
         this.channelPieData = res.data.map(n => {
           return Object.assign({}, n, {
@@ -642,6 +747,27 @@ export default {
           })
         })
       })
+    },
+    handleChangeChannel(index) {
+      if (index === 2) {
+        this.funnelOpt =
+          [
+            { label: '线索数量', value: '0' },
+            { label: '成功购买数', value: '4' },
+            { label: '成功购买金额', value: '5' },
+            { label: 'AUM提升', value: '6' }
+          ]
+      } else {
+        this.funnelOpt = [
+          { label: '线索数量', value: '0' },
+          { label: '线索执行数量', value: '1' },
+          { label: '联络成功数', value: '2' },
+          { label: '有效执行数', value: '3' },
+          { label: '成功购买数', value: '4' },
+          { label: '成功购买金额', value: '5' },
+          { label: 'AUM提升', value: '6' }
+        ]
+      }
     },
     // 获取岗位列表
     getPostOpt() {
@@ -655,7 +781,7 @@ export default {
       })
     },
     getCluesUseCase() {
-      totalCluesUseCase().then(res => {
+      totalCluesUseCase({ type: this.funnelSel, channel: this.channelOptVal }).then(res => {
         this.usecaseBarData = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
@@ -693,7 +819,7 @@ export default {
     // 获取用例列表
     getUseCase() {
       return new Promise((resolve) => {
-        getUseCaseForEvent().then(res => {
+        getAllUseCase().then(res => {
           this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,
@@ -706,7 +832,7 @@ export default {
     },
     // 获取事件
     getEvent(useCase) {
-      if (this.filterForm.useCase.length === 1) {
+      if (this.filterForm.useCase?.length === 1) {
         getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0] }).then(res => {
           this.eventOpt = res.data.resultList.map(n => {
             return {
@@ -733,12 +859,18 @@ export default {
       }
     },
     getStatistics() {
-      totalStatistics().then(res => {
-        this.statistics = res.data
-      })
+      if (this.filterForm.useCase.length === 1) {
+        totalStatisticsOne({ case: this.filterForm.useCase.join(',') }).then(res => {
+          this.statistics = res.data
+        })
+      } else {
+        totalStatisticsMul({ cases: this.filterForm.useCase.join(',') }).then(res => {
+          this.statistics = res.data
+        })
+      }
     },
     getRankOrg() {
-      totalRankOrg().then(res => {
+      totalRank({ content: 0, type: this.rankSelVal1 }).then(res => {
         this.rankChartData1 = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
@@ -747,8 +879,17 @@ export default {
       })
     },
     getRankBrancg() {
-      totalRankBrancg().then(res => {
+      totalRank({ content: 1, type: this.rankSelVal2 }).then(res => {
         this.rankChartData2 = res.data.map(n => {
+          return Object.assign({}, n, {
+            value: +n.value
+          })
+        })
+      })
+    },
+    getRankEmp() {
+      totalRank({ content: 2, type: this.rankSelVal3 }).then(res => {
+        this.rankChartData3 = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
