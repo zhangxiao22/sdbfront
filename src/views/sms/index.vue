@@ -66,10 +66,10 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <!-- <UploadButton :upload-method="uploadSmsFile"
+        <UploadButton :upload-method="uploadSmsFile"
                       class="button"
                       button-name="批量上传"
-                      @afterUploadSuccess="resetAll" /> -->
+                      @afterUploadSuccess="resetAll" />
         <!-- <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -89,8 +89,8 @@
             全部下载
           </el-button>
         </el-tooltip> -->
-        <!-- <el-link type="primary"
-                 @click="download">模版下载</el-link> -->
+        <el-link type="primary"
+                 @click="download">模版下载</el-link>
 
       </template>
       <template v-slot:paramsSlot="props">
@@ -193,8 +193,8 @@ import UploadButton from '@/components/UploadButton'
 export default {
   name: 'Sms',
   components: {
-    ShunTable
-    // UploadButton
+    ShunTable,
+    UploadButton
   },
   props: {
     showSelection: {
@@ -320,7 +320,7 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/template.xlsx', '_blank')
+      window.open('/static/短信库模板.xlsx', '_blank')
     },
     downloadAll() {
       // const data = {

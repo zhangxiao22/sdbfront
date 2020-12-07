@@ -65,6 +65,14 @@
         </el-button>
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
+                      button-name="全量更新"
+                      :upload-params="{
+                        category: 3,
+                        updateType: 0
+                      }"
+                      @afterUploadSuccess="resetAll" />
+        <UploadButton :upload-method="batchUploadFile"
+                      class="button"
                       button-name="批量更新"
                       :upload-params="{
                         category: 3,
@@ -122,15 +130,15 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
-        <!-- <el-form-item label="备注："
-                      prop="remark">
-          <el-input v-model.trim="addInfo.remark"
+        <el-form-item label="备注："
+                      prop="remarks">
+          <el-input v-model.trim="addInfo.remarks"
                     style="width:90%;"
                     type="textarea"
                     :rows="10"
                     resize="none"
                     placeholder="请输入内容" />
-        </el-form-item> -->
+        </el-form-item>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -191,8 +199,8 @@ export default {
       },
       addInfo: {
         customerAccount: '',
-        name: ''
-        // remark: ''
+        name: '',
+        remarks: ''
       },
       searchForm: {
       },
@@ -212,11 +220,11 @@ export default {
           label: '加入日期',
           minWidth: 150
         },
-        // {
-        //   prop: 'remark',
-        //   label: '备注',
-        //   minWidth: 150
-        // },
+        {
+          prop: 'remarks',
+          label: '备注',
+          minWidth: 150
+        },
         {
           prop: 'operate',
           label: '操作',
@@ -235,7 +243,7 @@ export default {
       const data = {}
       data.customerAccount = this.addInfo.customerAccount
       data.name = this.addInfo.name
-      // data.remark = this.addInfo.remark
+      data.remarks = this.addInfo.remarks
       data.category = this.category
       return data
     }

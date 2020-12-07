@@ -101,7 +101,7 @@ export function getSmsList(data) {
 // 批量上传短信
 export function uploadSmsFile(data) {
   return request({
-    url: '/script/uploadScript',
+    url: '/material/uploadSMS',
     method: 'post',
     data
   })
