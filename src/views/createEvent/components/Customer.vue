@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div v-loading="mainLoading"
+       class="container">
     <el-tabs v-model="activeName">
       <el-tab-pane label="白名单上传"
                    name="1">
@@ -17,6 +18,7 @@
 import { } from '@/api/api'
 import WhiteList from './WhiteList'
 import Rule from './Rule'
+import { getGroup } from '@/api/api'
 
 export default {
   name: 'Customer',
@@ -26,6 +28,7 @@ export default {
   },
   data() {
     return {
+      mainLoading: false,
       activeName: '1'
     }
   },
@@ -43,8 +46,30 @@ export default {
   mounted() {
   },
   created() {
+    this.getDetail()
   },
   methods: {
+    // 获取详情
+    getDetail() {
+      this.mainLoading = true
+      getGroup({ baseId: this.id }).then(res => {
+        // this.activeName = res.data.abstractDetail.lodeType.value + ''
+        if (res.code === 200) {
+          const lodeType = res.data.abstractDetail.lodeType.value
+          if (lodeType === 1) {
+            // 白名单
+            this.activeName = '1'
+            this.$refs['whiteList'].init(res.data)
+          } else if (lodeType === 2) {
+            // 规则
+            this.activeName = '2'
+            this.$refs['rule'].init(res.data)
+          }
+        }
+      }).finally(() => {
+        this.mainLoading = false
+      })
+    },
     validateAndNext() {
       if (this.activeName === '1') {
         return this.$refs['whiteList'].validateAndNext()

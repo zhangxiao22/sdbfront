@@ -222,7 +222,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: 1
     }
   },
   computed: {

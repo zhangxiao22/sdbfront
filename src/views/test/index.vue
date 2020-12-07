@@ -91,7 +91,7 @@ export default {
   data() {
     return {
       options: [],
-      value: []
+      value: ['aaa', 'aa', '1']
     }
   },
   computed: {
@@ -102,13 +102,15 @@ export default {
 
   },
   created() {
-    this.options = this.listToTree(
-      _.uniqBy(
-        this.getList(),
-        'value', 'pid', 'label'
+    setTimeout(() => {
+      this.options = this.listToTree(
+        _.uniqBy(
+          this.getList(),
+          'value', 'pid', 'label'
+        )
       )
-    )
-    console.log(this.options)
+    }, 3000)
+    // console.log(this.options)
   },
   mounted() {
 

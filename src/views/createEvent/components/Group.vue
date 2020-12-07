@@ -17,6 +17,7 @@
              :class="{single:condition.length===1}">
           <!-- {{ ci }}  -->
           <!-- {{ conditionItem.conditionSelect }} -->
+
           <el-form-item :prop="'condition.' + ci + '.conditionSelect'"
                         class="item"
                         :rules="[{
@@ -38,7 +39,6 @@
                 </el-option>
                 {{ tags }}
               </el-select> -->
-
               <el-cascader v-model="conditionItem.conditionSelect"
                            filterable
                            :show-all-levels="false"
@@ -160,7 +160,7 @@
 <script>
 const _ = require('lodash')
 
-import { getCustomerLabel, getPeopleCount, getGroup } from '@/api/api'
+import { getCustomerLabel } from '@/api/api'
 import Info from '@/components/Info'
 import { MAX_NUMBER } from '@/utils'
 export default {
@@ -181,6 +181,12 @@ export default {
       }
     },
     groupDetail: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    ruleOpt: {
       type: Array,
       default() {
         return []
@@ -223,7 +229,7 @@ export default {
       MAX_NUMBER,
       originData: [],
       originOptData: [],
-      ruleOpt: [],
+      // ruleOpt: [],
       numberFlat: {}
       // totalPeople: 0
     }
@@ -245,37 +251,24 @@ export default {
     }
   },
   watch: {
-    // value() {
-    //   this.$emit('update:condition', this.value)
-    // }
+
   },
   mounted() {
-    // console.log('parent', this.$parent.$parent)
-    this.getRuleList().then(() => {
-      setTimeout(() => {
-        // console.log('aaaaaaaaaa', this.originData)
-        // ruleOpt
-        // this.ruleOpt = this.listToTree(
-        //   _.uniqBy(
-        //     this.getList(),
-        //     // 'value', 'pid', 'label'
-        //     'pid'
-        //   )
-        // )
-        this.listChange = _.uniqWith(
-          this.getList(),
-          _.isEqual
-          // ('value', 'pid', 'label')
-        )
-        this.listChangeAgain = _.uniqBy(
-          this.listChange, 'pid'
-        )
-        this.ruleOpt = this.listToTree(this.listChangeAgain)
+    // this.getRuleList().then(() => {
+    //   setTimeout(() => {
+    //     this.listChange = _.uniqWith(
+    //       this.getList(),
+    //       _.isEqual
+    //     )
+    //     this.listChangeAgain = _.uniqBy(
+    //       this.listChange, 'pid'
+    //     )
+    //     this.ruleOpt = this.listToTree(this.listChangeAgain)
 
-        // console.log('ruleOpt=======', this.ruleOpt)
-        this.delayRun(this.getAllData(), 1000)
-      }, 500)
-    })
+    //     // console.log('ruleOpt=======', this.ruleOpt)
+    //     this.getAllData()
+    //   }, 500)
+    // })
   },
   created() {
     // this.tagsInit(0, 0)

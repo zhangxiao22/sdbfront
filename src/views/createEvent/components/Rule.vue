@@ -1,10 +1,12 @@
 <template>
-  <div class="container">
+  <div v-loading="mainLoading"
+       class="container">
     <el-form>
       <Group ref="totalRuleRef"
              :condition="totalCondition"
              :total-detail="totalDetail"
              :val-detail="valDetail"
+             :rule-opt="ruleOpt"
              required
              :min-length="0"
              label="整体规则"
@@ -67,6 +69,7 @@
                  :condition="item.condition"
                  :val-detail="item.valDetail"
                  :total-detail="item.groupDetail"
+                 :rule-opt="ruleOpt"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
         </el-tab-pane>
@@ -92,6 +95,8 @@ export default {
   },
   data() {
     return {
+      mainLoading: false,
+      ruleOpt: [],
       totalDetail: [],
       valDetail: [],
       totalPeople: '',
@@ -125,21 +130,64 @@ export default {
   mounted() {
     this.tabDrop()
   },
-  beforeCreate() {
-    // if (this.id) {
-    //   this.getDetail()
-    // }
-  },
   created() {
-    if (this.id) {
-      this.getDetail()
-    }
+    // this.getDetail()
   },
   methods: {
+    init(data) {
+      this.render(data)
+      this.getRuleOpt()
+    },
     reset() {
-      // return this.$refs['totalRuleRef'].reset()
       this.labelTabsCounts = 0
       this.getDetail()
+    },
+    render(data) {
+      this.labelTabs = data.infoDetailList.map((n) => {
+        return {
+          title: n.name,
+          name: ++this.labelTabsCounts + '',
+          desc: n.desc,
+          people: n.count,
+          closable: true,
+          condition: [],
+          // 传递客群规则ID以及且或符号
+          groupDetail: n.tagList.map((m) => {
+            return { tagId: m.tagId, combineRelation: m.combineRelation }
+          }),
+          // 传递客群规则比较符号和值
+          valDetail: n.tagList.map((m) => {
+            return m.tagContentUnitVOList.map((k) => {
+              return { content: k.content, compare: k.tagRelation }
+            })
+          })
+        }
+      })
+      this.labelIndex = '1'
+      // 传递整体规则ID以及且或符号
+      this.totalDetail = data.abstractDetail.tagList.map(n => {
+        return { tagId: n.tagId, combineRelation: n.combineRelation }
+      })
+      // 传递整体规则比较符号和值
+      this.valDetail = data.abstractDetail.tagList.map(n => {
+        return n.tagContentUnitVOList.map((m) => {
+          return { content: m.content, compare: m.tagRelation }
+        })
+      })
+    },
+    // 获取规则信息
+    getDetail() {
+      this.mainLoading = true
+      getGroup({ baseId: this.id }).then(res => {
+        this.render(res.data)
+      }).finally(() => {
+        this.mainLoading = false
+      })
+    },
+    getRuleOpt() {
+      // todo
+      this.ruleOpt = [1, 2, 3]
+      // console.log(this.ruleOpt)
     },
     transferDataByType(val) {
       const data = val.map((n) => {
@@ -163,47 +211,7 @@ export default {
         this.labelTabs[ti].people = res.data.count
       })
     },
-    // 获取规则信息
-    getDetail() {
-      // todo
-      getGroup({ baseId: this.id }).then(res => {
-        if (res.data.abstractDetail.lodeType.value === 2) {
-          this.labelTabs = res.data.infoDetailList.map((n) => {
-            return {
-              title: n.name,
-              name: ++this.labelTabsCounts + '',
-              desc: n.desc,
-              people: n.count,
-              closable: true,
-              condition: [],
-              // 传递客群规则ID以及且或符号
-              groupDetail: n.tagList.map((m) => {
-                return { tagId: m.tagId, combineRelation: m.combineRelation }
-              }),
-              // 传递客群规则比较符号和值
-              valDetail: n.tagList.map((m) => {
-                return m.tagContentUnitVOList.map((k) => {
-                  return { content: k.content, compare: k.tagRelation }
-                })
-              })
-            }
-          })
-          this.labelIndex = '1'
-          // 传递整体规则ID以及且或符号
-          this.totalDetail = res.data.abstractDetail.tagList.map(n => {
-            return { tagId: n.tagId, combineRelation: n.combineRelation }
-          })
-          // 传递整体规则比较符号和值
-          this.valDetail = res.data.abstractDetail.tagList.map(n => {
-            return n.tagContentUnitVOList.map((m) => {
-              return { content: m.content, compare: m.tagRelation }
-            })
-          })
-        }
-        // console.log('testtesttesttesttesttesttesttest', this.labelTabs)
-      }).catch(() => {
-      })
-    },
+
     validateAndNext() {
       const fn = () => {
         const data = {

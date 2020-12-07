@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <div v-loading="mainLoading"
+       class="container">
     <div class="whitelist">
       <el-upload ref="uploadRef"
                  class="upload"
@@ -118,6 +119,7 @@ export default {
   },
   data() {
     return {
+      mainLoading: false,
       groupDetail: {},
       originFileId: null,
       fileId: null,
@@ -161,39 +163,46 @@ export default {
   mounted() {
   },
   created() {
-    this.getParamOpt()
-    this.reset()
+    // this.getParamOpt()
+    // this.reset()
   },
   methods: {
+    init(data) {
+      // 获取维度补充options
+      this.getParamOpt()
+      this.render(data)
+    },
     reset() {
       this.getDetail()
+    },
+    render(data) {
+      const base = data.abstractDetail
+      this.originFileId = base.fileId
+      this.fileId = base.fileId
+      this.fileName = base.fileName
+      this.customerCount = base.recordNum
+      this.updateTime = base.uploadTime
+      this.paramValue = data.supplyDetailList.map(n => n.id)
+      this.tableData = data.infoDetailList.map(n => {
+        return Object.assign({}, n, {
+          // desc: '',
+          _desc: n.desc,
+          isEdit: false,
+          isHover: false
+        })
+      })
+      this.realPeopleNum = 0
+      data.infoDetailList.forEach(item => {
+        this.realPeopleNum += item.count
+      })
+      this.compareCount = this.customerCount - this.realPeopleNum
     },
     // 获取详情
     getDetail() {
       this.mainLoading = true
       getGroup({ baseId: this.id }).then(res => {
-        this.mainLoading = false
-        const base = res.data.abstractDetail
-        this.originFileId = base.fileId
-        this.fileId = base.fileId
-        this.fileName = base.fileName
-        this.customerCount = base.recordNum
-        this.updateTime = base.uploadTime
-        this.paramValue = res.data.supplyDetailList.map(n => n.id)
-        this.tableData = res.data.infoDetailList.map(n => {
-          return Object.assign({}, n, {
-            // desc: '',
-            _desc: n.desc,
-            isEdit: false,
-            isHover: false
-          })
-        })
-        this.realPeopleNum = 0
-        res.data.infoDetailList.forEach(item => {
-          this.realPeopleNum += item.count
-        })
-        this.compareCount = this.customerCount - this.realPeopleNum
-      }).catch(() => {
+        this.render(res.data)
+      }).finally(() => {
         this.mainLoading = false
       })
     },
