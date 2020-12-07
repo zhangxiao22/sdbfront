@@ -116,7 +116,7 @@
       </div>
       <div class="chart-container">
         <el-row :gutter="20">
-          <el-col :span="14">
+          <el-col :span="24">
             <!-- 执行情况 -->
             <div class="chart-block">
               <div class="block-title">执行情况</div>
@@ -278,12 +278,7 @@
             <!-- 成效统计 -->
             <div class="chart-block">
               <div class="block-title">成效统计</div>
-              <el-row>
-<<<<<<< HEAD
-                <el-col v-for="(item,i) of statistics"
-                        :key="i"
-                        :span="12"
-=======
+              <el-row :gutter="20">
                 <el-col :span="12">
                   <div class="chart-item rank">
                     <AreaChart id="rank11"
@@ -299,7 +294,6 @@
                   </div>
                 </el-col>
                 <!-- <el-col :span="24"
->>>>>>> dd2e9c5c4dfca96b78a9f0b83ebe97485f78bc9b
                         class="chart-item statistics">
                   <div class="chart-title">
                     <svg-icon :icon-class="Math.round(Math.random())===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
@@ -347,7 +341,7 @@
               </el-row>
             </div>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="24">
             <!-- 排名情况 -->
             <div class="chart-block">
               <div class="block-title">排名情况</div>
@@ -398,7 +392,7 @@
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />
                       员工排名（前10名）
-                      <el-select v-model="rankSelPostVal3"
+                      <!-- <el-select v-model="rankSelPostVal3"
                                  style="margin-left:20px;"
                                  placeholder="请选择"
                                  @change="getRankEmp">
@@ -406,7 +400,7 @@
                                    :key="index"
                                    :label="item.label"
                                    :value="item.value" />
-                      </el-select>
+                      </el-select> -->
                       <el-select v-model="rankSelVal3"
                                  style="margin-left:20px;"
                                  placeholder="请选择">
@@ -906,8 +900,16 @@ export default {
 }
 </script>
 
+<style>
+/* @media screen and (max-width: 1000px) {
+  body {
+    color: red;
+  }
+} */
+</style>
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
+
 .long-text {
   width: 300px;
   ::v-deep .el-select__tags-text {
@@ -937,7 +939,7 @@ export default {
     background: #f4f9ff;
     border-radius: 10px;
     font-size: 20px;
-    max-width: 1200px;
+    // max-width: 1200px;
     margin: 0 auto;
     // box-sizing: 0 2px 10px rgba(0, 0, 0, 0.1);
 
@@ -948,7 +950,7 @@ export default {
       width: 30%;
       margin: 1% 1.5%;
       .main-icon {
-        font-size: 34px;
+        font-size: 32px;
         margin-right: 15px;
       }
       .text {
