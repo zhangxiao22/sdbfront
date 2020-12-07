@@ -163,6 +163,7 @@
         <el-button icon="el-icon-document"
                    type="primary"
                    style="width:100px;"
+                   :loading="loading"
                    @click="save">提交</el-button>
         <el-button icon="el-icon-refresh"
                    style="width:100px;"
@@ -175,7 +176,16 @@
 
 <script>
 import { MAX_NUMBER, translate } from '@/utils'
-import { getUseCaseType, getUseCaseParticipant, getTargetList, saveUseCase, getUseCaseDetailById, editUseCase, getCluePriorityRuleEnums, getApproverList } from '@/api/api'
+import {
+  getUseCaseType,
+  getUseCaseParticipant,
+  getTargetList,
+  saveUseCase,
+  getUseCaseDetailById,
+  editUseCase,
+  getCluePriorityRuleEnums,
+  getApproverList
+} from '@/api/api'
 
 export default {
   name: 'CreateUseCase',
@@ -361,6 +371,7 @@ export default {
           } else {
             ajax = saveUseCase
           }
+          this.loading = true
           ajax(this.getData).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -370,6 +381,8 @@ export default {
               })
               this.goBack()
             }
+          }).finally(() => {
+            this.loading = false
           })
         }
       })

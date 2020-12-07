@@ -53,8 +53,8 @@ export default {
               desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
             },
             {
-              img: require('../../assets/home/1-2.png'),
-              title: '线索发布总览',
+              img: require('../../assets/home/1-3.png'),
+              title: '成效看板',
               path: '/totalBoard',
               desc: '线索发布总览的综合分析、反馈数据收集、为策略调整提供依据'
             }
@@ -64,7 +64,7 @@ export default {
           mainTitle: '营销资源管理',
           list: [
             {
-              img: require('../../assets/home/1-2.png'),
+              img: require('../../assets/home/2-1.png'),
               title: '用例库',
               desc: '',
               path: '/useCase',
@@ -72,7 +72,7 @@ export default {
 
             },
             {
-              img: require('../../assets/home/1-2.png'),
+              img: require('../../assets/home/2-2.png'),
               title: '产品库',
               desc: '',
               path: '/product',
@@ -80,7 +80,7 @@ export default {
 
             },
             {
-              img: require('../../assets/home/1-2.png'),
+              img: require('../../assets/home/2-3.png'),
               title: '话术库',
               desc: '',
               path: '/word',
@@ -88,7 +88,7 @@ export default {
 
             },
             {
-              img: require('../../assets/home/1-2.png'),
+              img: require('../../assets/home/2-4.png'),
               title: '权益库',
               desc: '',
               path: '/interest',
@@ -96,7 +96,7 @@ export default {
 
             },
             {
-              img: require('../../assets/home/1-2.png'),
+              img: require('../../assets/home/2-5.png'),
               title: '短信库',
               desc: '',
               path: '/sms',
@@ -108,7 +108,7 @@ export default {
           mainTitle: '系统参数设置',
           list: [
             {
-              img: require('../../assets/home/1-2.png'),
+              img: require('../../assets/home/3-1.png'),
               title: '系统设置',
               desc: '',
               path: '/config',

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <div class="title-container">
-      <div class="title">线索发布总览</div>
+      <div class="title">成效看板</div>
     </div>
     <div class="shun-filter-container-box shun-card">
       <el-form ref="filterRef"
@@ -261,7 +261,7 @@
               <el-row>
                 <el-col v-for="(item,i) of statistics"
                         :key="i"
-                        :span="24"
+                        :span="12"
                         class="chart-item statistics">
                   <div class="chart-title">
                     <svg-icon :icon-class="item.chart_type===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
