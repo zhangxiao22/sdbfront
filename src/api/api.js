@@ -364,11 +364,28 @@ export function getUseCaseList(data) {
     data
   })
 }
-// 获取用例（我的）
+// 获取用例（我的）[事件优先级]
 export function getUseCaseForEvent() {
   return request({
     url: '/useCase/getMyUseCase',
     method: 'get'
+  })
+}
+
+// 事件看板页面，用例网点分配页面 获取用例
+export function getAllUseCase() {
+  return request({
+    url: '/useCase/getAllUseCase',
+    method: 'get'
+  })
+}
+
+// 事件优先级页面 根据用例获取事件
+export function getEventPriorityList(params) {
+  return request({
+    url: '/event/getEventPriorityList',
+    method: 'get',
+    params
   })
 }
 

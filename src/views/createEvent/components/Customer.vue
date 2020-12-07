@@ -7,7 +7,8 @@
       </el-tab-pane>
       <el-tab-pane label="规则导入"
                    name="2">
-        <Rule ref="rule" />
+        <Rule ref="rule"
+              :active-name.sync="activeName" />
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -43,7 +44,6 @@ export default {
   mounted() {
   },
   created() {
-
   },
   methods: {
     validateAndNext() {

@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import { getEventList, getUseCaseForEvent, setEventPriority } from '@/api/api'
+import { getEventPriorityList, getUseCaseForEvent, setEventPriority } from '@/api/api'
 import Sortable from 'sortablejs'
 
 export default {
@@ -149,13 +149,13 @@ export default {
               value: n.id
             }
           })
-          this.filterForm.useCaseId = res.data[0].id
+          this.filterForm.useCaseId = res.data[0]?.id
           resolve()
         })
       })
     },
     getList(usecase) {
-      getEventList({ pageNo: 1, pageSize: 1000, useCaseId: this.filterForm.useCaseId }).then(res => {
+      getEventPriorityList({ useCaseId: this.filterForm.useCaseId }).then(res => {
         this.tableData = res.data.resultList.map((n, i) => {
           return Object.assign({}, n.eventBaseInfo, {
             group: n.customerInfoRespList,

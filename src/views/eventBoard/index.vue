@@ -91,7 +91,6 @@
               重置
             </el-button>
           </el-form-item>
-
         </el-form>
       </template>
       <template v-slot:nameSlot="scope">
@@ -160,7 +159,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventList, getEventOwner, getEventCategory, getEventStatus, getUseCaseForEvent, copyEvent, deleteEvent } from '@/api/api'
+import { getEventList, getEventOwner, getEventCategory, getEventStatus, getAllUseCase, copyEvent, deleteEvent } from '@/api/api'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -295,7 +294,7 @@ export default {
     },
     // 获取用例
     useCase() {
-      getUseCaseForEvent().then(res => {
+      getAllUseCase().then(res => {
         this.useCaseOpt = res.data.map(n => {
           return {
             label: n.name,

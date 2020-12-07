@@ -237,7 +237,7 @@ export default {
   },
   computed: {
     id() {
-      return this.$route.query.id
+      return +this.$route.query.id
     },
     // 获取数据
     getData() {

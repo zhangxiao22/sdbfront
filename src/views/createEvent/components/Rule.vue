@@ -5,6 +5,7 @@
              :condition="totalCondition"
              :total-detail="totalDetail"
              :val-detail="valDetail"
+             required
              :min-length="0"
              label="整体规则"
              @check="checkAll" />
@@ -143,9 +144,9 @@ export default {
     transferDataByType(val) {
       const data = val.map((n) => {
         return {
-          tagId: n.conditionSelect[2],
+          tagId: n.conditionSelect[3],
           // contentWithRelation: n.conditionSelect
-          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.stringVal || n.conditionValue.selectVal || n.conditionValue.dateVal || 0, tagRelation: n.compare }],
+          contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.stringVal || n.conditionValue.selectVal || n.conditionValue.dateVal || n.conditionValue.booleanVal || 0, tagRelation: n.compare }],
           combineRelation: n.andOrText.value
         }
       })
@@ -154,12 +155,10 @@ export default {
     checkAll(val) {
       getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(val) }).then(res => {
         this.totalPeople = res.data.count
-        // console.log('people==============', this.totalPeople)
       })
-      // console.log(JSON.stringify(val))
     },
     checkGroup(item, ti) {
-      // console.log(item, ti)
+      console.log(item, ti)
       getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition) }).then(res => {
         this.labelTabs[ti].people = res.data.count
       })
@@ -200,6 +199,7 @@ export default {
               return { content: m.content, compare: m.tagRelation }
             })
           })
+          this.$emit('update:activeName', '2')
         }
         // console.log('testtesttesttesttesttesttesttest', this.labelTabs)
       }).catch(() => {

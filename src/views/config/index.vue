@@ -85,7 +85,7 @@ export default {
         label: '事件优先级',
         component: 'EventPriority',
         loading: false,
-        roles: ['线索统筹']
+        roles: ['用例管理']
       },
       {
         label: '岗位管理',
@@ -104,19 +104,19 @@ export default {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
         loading: false,
-        roles: ['事件注册', '用例管理']
+        roles: ['线索统筹']
       },
       {
         label: '特定免打扰客户名单（CRM）',
         component: 'NeverMarketingCRM',
         loading: false,
-        roles: ['事件注册', '用例管理']
+        roles: ['线索统筹']
       },
       {
         label: '黑名单（短信）',
         component: 'BlackListSMS',
         loading: false,
-        roles: ['事件注册', '用例管理']
+        roles: ['线索统筹']
       }
       ]
     }

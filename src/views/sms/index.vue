@@ -89,8 +89,8 @@
             全部下载
           </el-button>
         </el-tooltip> -->
-        <el-link type="primary"
-                 @click="download">模版下载</el-link>
+        <!-- <el-link type="primary"
+                 @click="download">模版下载</el-link> -->
 
       </template>
       <template v-slot:paramsSlot="props">
@@ -128,7 +128,7 @@
               </div>
             </div>
             <div>
-              {{ scope.row.productFirstCategoryList.length }}个产品
+              {{ scope.row.productFirstCategoryList.length }}类产品
             </div>
           </el-tooltip>
         </template>
