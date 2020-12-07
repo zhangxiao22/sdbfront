@@ -84,8 +84,9 @@ import Info from '@/components/Info'
 import Group from './Group'
 import bus from '../bus'
 import Sortable from 'sortablejs'
-import { getPeopleCount, saveGroup, getGroup } from '@/api/api'
+import { getPeopleCount, saveGroup, getGroup, getCustomerLabel } from '@/api/api'
 import { valid } from 'mockjs'
+const _ = require('lodash')
 
 export default {
   name: 'WhiteList',
@@ -184,9 +185,79 @@ export default {
         this.mainLoading = false
       })
     },
+    getOriginOptData() {
+      return new Promise((resolve, reject) => {
+        getCustomerLabel().then(res => {
+          this.originOptData = res.data.map(n => {
+            return {
+              first: n.tagCtgryNm,
+              second: n.tagPrimClNm,
+              third: n.tagScdClNm,
+              fourth: n.name,
+              id: n.id
+            }
+          })
+          resolve()
+        })
+      })
+    },
+    // 整理数据
+    getList() {
+      var tempList = []
+      this.originOptData.forEach((n, i) => {
+        tempList.push({
+          value: n.first,
+          pid: { Fid: '', Cid: n.first, FFid: '', FFFid: '' },
+          label: n.first
+        }, {
+          value: n.second,
+          pid: { Fid: n.first, Cid: n.second, FFid: '', FFFid: '' },
+          label: n.second
+        }, {
+          value: n.third,
+          pid: { Fid: n.second, Cid: n.third, FFid: n.first, FFFid: '' },
+          label: n.third
+        }, {
+          value: n.id,
+          pid: { Fid: n.third, Cid: n.fourth, FFid: n.second, FFFid: n.first },
+          label: n.fourth
+        })
+      })
+      return tempList
+      // console.log(tempList)
+    },
+    // 列表转tree
+    listToTree(oldArr) {
+      oldArr.forEach(element => {
+        // console.log(element)
+        const pid = element.pid
+        if (pid.Fid !== '') {
+          oldArr.forEach(ele => {
+            if (ele.value === pid.Fid && ele.pid.Fid === pid.FFid && ele.pid.FFid === pid.FFFid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+              if (!ele.children) {
+                ele.children = []
+              }
+              ele.children.push(element)
+            }
+          })
+        }
+      })
+      //   console.log(oldArr) //此时的数组是在原基础上补充了children;
+      oldArr = oldArr.filter(ele => ele.pid.Fid === '') // 这一步是过滤，按树展开，将多余的数组剔除；
+      return oldArr
+    },
     getRuleOpt() {
+      this.getOriginOptData().then(() => {
+        this.listChange = _.uniqWith(
+          this.getList(),
+          _.isEqual
+        )
+        this.listChangeAgain = _.uniqBy(
+          this.listChange, 'pid'
+        )
+        this.ruleOpt = this.listToTree(this.listChangeAgain)
+      })
       // todo
-      this.ruleOpt = [1, 2, 3]
       // console.log(this.ruleOpt)
     },
     transferDataByType(val) {

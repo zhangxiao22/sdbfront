@@ -228,7 +228,7 @@ export default {
       stringOptions: [],
       MAX_NUMBER,
       originData: [],
-      originOptData: [],
+      // originOptData: [],
       // ruleOpt: [],
       numberFlat: {}
       // totalPeople: 0
@@ -269,9 +269,15 @@ export default {
     //     this.getAllData()
     //   }, 500)
     // })
+    this.getRuleList().then(() => {
+      setTimeout(() => {
+        this.getAllData()
+      }, 500)
+    })
   },
   created() {
     // this.tagsInit(0, 0)
+
   },
 
   methods: {
@@ -280,50 +286,50 @@ export default {
       // this.$parent.getDetail()
     },
     // 列表转tree
-    listToTree(oldArr) {
-      oldArr.forEach(element => {
-        // console.log(element)
-        const pid = element.pid
-        if (pid.Fid !== '') {
-          oldArr.forEach(ele => {
-            if (ele.value === pid.Fid && ele.pid.Fid === pid.FFid && ele.pid.FFid === pid.FFFid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
-              if (!ele.children) {
-                ele.children = []
-              }
-              ele.children.push(element)
-            }
-          })
-        }
-      })
-      //   console.log(oldArr) //此时的数组是在原基础上补充了children;
-      oldArr = oldArr.filter(ele => ele.pid.Fid === '') // 这一步是过滤，按树展开，将多余的数组剔除；
-      return oldArr
-    },
+    // listToTree(oldArr) {
+    //   oldArr.forEach(element => {
+    //     // console.log(element)
+    //     const pid = element.pid
+    //     if (pid.Fid !== '') {
+    //       oldArr.forEach(ele => {
+    //         if (ele.value === pid.Fid && ele.pid.Fid === pid.FFid && ele.pid.FFid === pid.FFFid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+    //           if (!ele.children) {
+    //             ele.children = []
+    //           }
+    //           ele.children.push(element)
+    //         }
+    //       })
+    //     }
+    //   })
+    //   //   console.log(oldArr) //此时的数组是在原基础上补充了children;
+    //   oldArr = oldArr.filter(ele => ele.pid.Fid === '') // 这一步是过滤，按树展开，将多余的数组剔除；
+    //   return oldArr
+    // },
     // 整理数据
-    getList() {
-      var tempList = []
-      this.originOptData.forEach((n, i) => {
-        tempList.push({
-          value: n.first,
-          pid: { Fid: '', Cid: n.first, FFid: '', FFFid: '' },
-          label: n.first
-        }, {
-          value: n.second,
-          pid: { Fid: n.first, Cid: n.second, FFid: '', FFFid: '' },
-          label: n.second
-        }, {
-          value: n.third,
-          pid: { Fid: n.second, Cid: n.third, FFid: n.first, FFFid: '' },
-          label: n.third
-        }, {
-          value: n.id,
-          pid: { Fid: n.third, Cid: n.fourth, FFid: n.second, FFFid: n.first },
-          label: n.fourth
-        })
-      })
-      return tempList
-      // console.log(tempList)
-    },
+    // getList() {
+    //   var tempList = []
+    //   this.originOptData.forEach((n, i) => {
+    //     tempList.push({
+    //       value: n.first,
+    //       pid: { Fid: '', Cid: n.first, FFid: '', FFFid: '' },
+    //       label: n.first
+    //     }, {
+    //       value: n.second,
+    //       pid: { Fid: n.first, Cid: n.second, FFid: '', FFFid: '' },
+    //       label: n.second
+    //     }, {
+    //       value: n.third,
+    //       pid: { Fid: n.second, Cid: n.third, FFid: n.first, FFFid: '' },
+    //       label: n.third
+    //     }, {
+    //       value: n.id,
+    //       pid: { Fid: n.third, Cid: n.fourth, FFid: n.second, FFFid: n.first },
+    //       label: n.fourth
+    //     })
+    //   })
+    //   return tempList
+    //   // console.log(tempList)
+    // },
     validateNumber(rule, value, callback) {
       const index = rule.field.split('.')[1]
       if (this.condition[index].conditionValue.minVal === undefined && this.condition[index].conditionValue.maxVal === undefined) {
@@ -385,9 +391,15 @@ export default {
           //   }
           // })
           // console.log('aaaaaaaaaa', this.valDetail)
-          this.originOptData.find((n) => {
+          // this.originOptData.find((n) => {
+          //   if (n.id === this.totalDetail[i].tagId) {
+          //     vals = [n.first, n.second, n.third, this.totalDetail[i].tagId]
+          //     return true
+          //   }
+          // })
+          this.originData.find((n) => {
             if (n.id === this.totalDetail[i].tagId) {
-              vals = [n.first, n.second, n.third, this.totalDetail[i].tagId]
+              vals = [n.tagCtgryNm, n.tagPrimClNm, n.tagScdClNm, this.totalDetail[i].tagId]
               return true
             }
           })
@@ -413,15 +425,15 @@ export default {
               }]
             })
           })
-          this.originOptData = res.data.map(n => {
-            return {
-              first: n.tagCtgryNm,
-              second: n.tagPrimClNm,
-              third: n.tagScdClNm,
-              fourth: n.name,
-              id: n.id
-            }
-          })
+          // this.originOptData = res.data.map(n => {
+          //   return {
+          //     first: n.tagCtgryNm,
+          //     second: n.tagPrimClNm,
+          //     third: n.tagScdClNm,
+          //     fourth: n.name,
+          //     id: n.id
+          //   }
+          // })
           resolve()
         })
       })
@@ -636,8 +648,15 @@ export default {
     },
     selectCondition(val, i) {
       // console.log(val[3], 'i===========', i, val)
-      for (let j = 0; j < this.originOptData.length; j++) {
-        if (this.originOptData[j].id === val[3]) {
+      // for (let j = 0; j < this.originOptData.length; j++) {
+      //   if (this.originOptData[j].id === val[3]) {
+      //     // this.condition.splice(i, 1, this.resetOpt(val[2], val))
+      //     this.condition.splice(i, 1, this.resetOpt(val[3], val))
+      //     break
+      //   }
+      // }
+      for (let j = 0; j < this.originData.length; j++) {
+        if (this.originData[j].id === val[3]) {
           // this.condition.splice(i, 1, this.resetOpt(val[2], val))
           this.condition.splice(i, 1, this.resetOpt(val[3], val))
           break
