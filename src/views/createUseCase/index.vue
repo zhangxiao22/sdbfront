@@ -279,7 +279,7 @@ export default {
   },
   methods: {
     goBack() {
-      this.$router.push('/useCase')
+      this.$router.replace('/useCase')
     },
     reset() {
       if (this.id) {
