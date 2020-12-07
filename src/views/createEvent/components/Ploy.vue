@@ -170,11 +170,11 @@
                     </template>
                   </el-table-column>
                 </el-table>
-                <el-form-item label="推荐权益："
-                              :prop="'group.' + gi + '.ployTabs.' + pi + '.interest'"
-                              :rules="[{
+                <!-- :rules="[{
                                 required: true, message: '请选择权益', type: 'array'
-                              }]">
+                              }]" -->
+                <el-form-item label="推荐权益："
+                              :prop="'group.' + gi + '.ployTabs.' + pi + '.interest'">
                   <el-button icon="el-icon-plus"
                              type="primary"
                              plain
@@ -1109,7 +1109,7 @@ export default {
     deleteInterest(item, i) {
       item.interest.splice(i, 1)
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
     },
     // 选择权益-确定
     submitInterest() {
@@ -1118,7 +1118,7 @@ export default {
         this.showInterest = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+        // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
       } else {
         Message({
           message: '请选择至少一项',

@@ -199,7 +199,6 @@ export default {
               return { content: m.content, compare: m.tagRelation }
             })
           })
-          this.$emit('update:activeName', '2')
         }
         // console.log('testtesttesttesttesttesttesttest', this.labelTabs)
       }).catch(() => {

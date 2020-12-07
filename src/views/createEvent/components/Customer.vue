@@ -7,8 +7,7 @@
       </el-tab-pane>
       <el-tab-pane label="规则导入"
                    name="2">
-        <Rule ref="rule"
-              :active-name.sync="activeName" />
+        <Rule ref="rule" />
       </el-tab-pane>
     </el-tabs>
   </div>
