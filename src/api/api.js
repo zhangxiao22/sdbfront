@@ -101,7 +101,7 @@ export function getSmsList(data) {
 // 批量上传短信
 export function uploadSmsFile(data) {
   return request({
-    url: '/script/uploadScript',
+    url: '/material/uploadSMS',
     method: 'post',
     data
   })
@@ -533,68 +533,94 @@ export function deleteHateMarketingListById(params) {
 /** ************************************************ 总看板 ************************************************************/
 export function totalOverview(params) {
   return request({
-    url: api2 + '/overview',
+    url: api2 + '/head/overview',
     method: 'get',
     params
   })
 }
 export function totalFunnel(params) {
   return request({
-    url: api2 + '/funnel',
+    url: api2 + '/head/funnel',
     method: 'get',
     params
   })
 }
 export function totalPie(params) {
   return request({
-    url: api2 + '/pie',
+    url: api2 + '/head/pie',
     method: 'get',
     params
   })
 }
 export function totalCluesUseCase(params) {
   return request({
-    url: api2 + '/clues_use_case',
+    url: api2 + '/head/case_rank',
     method: 'get',
     params
   })
 }
-export function totalAchieveRate(params) {
+// export function totalAchieveRate(params) {
+//   return request({
+//     url: api2 + '/achieve_rate',
+//     method: 'get',
+//     params
+//   })
+// }
+// export function totalPurchaseAmount(params) {
+//   return request({
+//     url: api2 + '/purchase_amount',
+//     method: 'get',
+//     params
+//   })
+// }
+// export function totalStatistics(params) {
+//   return request({
+//     url: api2 + '/chart/mock',
+//     method: 'get',
+//     params
+//   })
+// }
+
+// 单用例获取成效统计
+export function totalStatisticsOne(params) {
   return request({
-    url: api2 + '/achieve_rate',
-    method: 'get',
-    params
-  })
-}
-export function totalPurchaseAmount(params) {
-  return request({
-    url: api2 + '/purchase_amount',
-    method: 'get',
-    params
-  })
-}
-export function totalStatistics(params) {
-  return request({
-    url: api2 + '/chart/mock',
+    url: api2 + '/head/single_case',
     method: 'get',
     params
   })
 }
 
-export function totalRankOrg(params) {
+// /head/multi_cases/case
+export function totalStatisticsMul(params) {
   return request({
-    url: api2 + '/rank_org',
+    url: api2 + '/head/multi_cases/case',
     method: 'get',
     params
   })
 }
-export function totalRankBrancg(params) {
+
+export function totalRank(params) {
   return request({
-    url: api2 + '/rank_branch',
+    url: api2 + '/head/rank',
     method: 'get',
     params
   })
 }
+
+// export function totalRankOrg(params) {
+//   return request({
+//     url: api2 + '/rank_org',
+//     method: 'get',
+//     params
+//   })
+// }
+// export function totalRankBrancg(params) {
+//   return request({
+//     url: api2 + '/rank_branch',
+//     method: 'get',
+//     params
+//   })
+// }
 
 /** ************************************************ 系统配置 ************************************************************/
 // 防打扰修改
