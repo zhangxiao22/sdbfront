@@ -101,6 +101,23 @@
             </el-form-item>
 
           </template>
+          <!-------------------------- 布尔型 -------------------------->
+          <template v-if="conditionItem.type==='布尔型'">
+            <el-form-item :prop="'condition.' + ci + '.conditionValue.booleanVal'"
+                          class="item"
+                          :rules="[{
+                            required: true, message: '请选择选项'
+                          }]">
+              <el-select v-model="conditionItem.conditionValue.booleanVal"
+                         placeholder="请选择">
+                <el-option v-for="item of conditionItem.booleanOpt"
+                           :key="item.value"
+                           :label="item.label"
+                           :value="item.value" />
+              </el-select>
+            </el-form-item>
+
+          </template>
           <!-------------------------- 日期型 -------------------------->
           <template v-if="conditionItem.type==='日期型'">
             <el-form-item :prop="'condition.' + ci + '.conditionValue.dateVal'"
@@ -236,14 +253,25 @@ export default {
     // console.log('parent', this.$parent.$parent)
     this.getRuleList().then(() => {
       setTimeout(() => {
-        // console.log('aaaaaaaaaa', this.originOptData)
+        // console.log('aaaaaaaaaa', this.originData)
         // ruleOpt
-        this.ruleOpt = this.listToTree(
-          _.uniqBy(
-            this.getList(),
-            'value', 'pid', 'label'
-          )
+        // this.ruleOpt = this.listToTree(
+        //   _.uniqBy(
+        //     this.getList(),
+        //     // 'value', 'pid', 'label'
+        //     'pid'
+        //   )
+        // )
+        this.listChange = _.uniqWith(
+          this.getList(),
+          _.isEqual
+          // ('value', 'pid', 'label')
         )
+        this.listChangeAgain = _.uniqBy(
+          this.listChange, 'pid'
+        )
+        this.ruleOpt = this.listToTree(this.listChangeAgain)
+
         // console.log('ruleOpt=======', this.ruleOpt)
         this.delayRun(this.getAllData(), 1000)
       }, 500)
@@ -263,9 +291,9 @@ export default {
       oldArr.forEach(element => {
         // console.log(element)
         const pid = element.pid
-        if (pid !== 0) {
+        if (pid.Fid !== '') {
           oldArr.forEach(ele => {
-            if (ele.value === pid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
+            if (ele.value === pid.Fid && ele.pid.Fid === pid.FFid && ele.pid.FFid === pid.FFFid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
               if (!ele.children) {
                 ele.children = []
               }
@@ -275,7 +303,7 @@ export default {
         }
       })
       //   console.log(oldArr) //此时的数组是在原基础上补充了children;
-      oldArr = oldArr.filter(ele => ele.pid === 0) // 这一步是过滤，按树展开，将多余的数组剔除；
+      oldArr = oldArr.filter(ele => ele.pid.Fid === '') // 这一步是过滤，按树展开，将多余的数组剔除；
       return oldArr
     },
     // 整理数据
@@ -283,20 +311,20 @@ export default {
       var tempList = []
       this.originOptData.forEach((n, i) => {
         tempList.push({
-          value: n.first + '&' + n.second,
-          pid: 0,
+          value: n.first,
+          pid: { Fid: '', Cid: n.first, FFid: '', FFFid: '' },
           label: n.first
         }, {
-          value: n.first + '&' + n.second + '&' + n.third,
-          pid: n.first + '&' + n.second,
+          value: n.second,
+          pid: { Fid: n.first, Cid: n.second, FFid: '', FFFid: '' },
           label: n.second
         }, {
-          value: n.first + '&' + n.second + '&' + n.third + '&' + n.fourth,
-          pid: n.first + '&' + n.second + '&' + n.third,
+          value: n.third,
+          pid: { Fid: n.second, Cid: n.third, FFid: n.first, FFFid: '' },
           label: n.third
         }, {
           value: n.id,
-          pid: n.first + '&' + n.second + '&' + n.third + '&' + n.fourth,
+          pid: { Fid: n.third, Cid: n.fourth, FFid: n.second, FFFid: n.first },
           label: n.fourth
         })
       })
@@ -366,7 +394,7 @@ export default {
           // console.log('aaaaaaaaaa', this.valDetail)
           this.originOptData.find((n) => {
             if (n.id === this.totalDetail[i].tagId) {
-              vals = [n.first + '&' + n.second, n.first + '&' + n.second + '&' + n.third, n.first + '&' + n.second + '&' + n.third + '&' + n.fourth, this.totalDetail[i].tagId]
+              vals = [n.first, n.second, n.third, this.totalDetail[i].tagId]
               return true
             }
           })
@@ -381,7 +409,17 @@ export default {
     getRuleList() {
       return new Promise((resolve, reject) => {
         getCustomerLabel().then(res => {
-          this.originData = res.data
+          this.originData = res.data.map(n => {
+            return Object.assign({}, n, {
+              booleanOpt: [{
+                label: '是',
+                vlaue: 1
+              }, {
+                label: '否',
+                vlaue: 0
+              }]
+            })
+          })
           this.originOptData = res.data.map(n => {
             return {
               first: n.tagCtgryNm,
@@ -433,25 +471,44 @@ export default {
           return n.id === optValue.tagId
         })
         let conditionValue
+        let conditionCompare
         if (item.type === '数值型') {
           conditionValue = {
             numberVal: valDetail[0].content
           }
+          conditionCompare = item.relations
         }
         if (item.type === '字符串型') {
           conditionValue = {
             stringVal: valDetail[0].content
           }
+          conditionCompare = item.relations
         }
         if (item.type === '枚举型') {
           conditionValue = {
             selectVal: valDetail[0].content.value
           }
+          conditionCompare = [
+            {
+              value: 1,
+              label: '是'
+            }
+          ]
         }
         if (item.type === '日期型') {
           conditionValue = {
             dateVal: valDetail[0].content
           }
+          conditionCompare = item.relations
+        }
+        if (item.type === '布尔型') {
+          conditionValue = {
+            booleanVal: valDetail[0].content.value
+          }
+          conditionCompare = [{
+            value: 1,
+            label: '请选择'
+          }]
         }
         const data = {
           // 规则选中选项的值
@@ -461,11 +518,13 @@ export default {
           // 类型
           type: item.type,
           // 比较符号的选项
-          compareOpt: item.relations,
+          compareOpt: conditionCompare,
           // 比较符号的值
           compare: valDetail[0].compare.value,
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
+          // 布尔型可选项
+          booleanOpt: item.booleanOpt,
           // 数字型-单位
           unit: item.unit,
           // 规则的值
@@ -493,25 +552,52 @@ export default {
           return n.id === optValue
         })
         let conditionValue
+        let conditionCompare
+        let compareDefault
         if (item.type === '数值型') {
           conditionValue = {
             numberVal: null
           }
+          conditionCompare = item.relations
+          compareDefault = item.relations[0].value
         }
         if (item.type === '字符串型') {
           conditionValue = {
             stringVal: ''
           }
+          conditionCompare = item.relations
+          compareDefault = item.relations[0].value
         }
         if (item.type === '枚举型') {
           conditionValue = {
             selectVal: ''
           }
+          conditionCompare = [
+            {
+              value: 1,
+              label: '是'
+            }
+          ]
+          compareDefault = 1
         }
         if (item.type === '日期型') {
           conditionValue = {
             dateVal: ''
           }
+          conditionCompare = item.relations
+          compareDefault = item.relations[0].value
+        }
+        if (item.type === '布尔型') {
+          conditionValue = {
+            booleanVal: ''
+          }
+          conditionCompare = [
+            {
+              value: 1,
+              label: '请选择'
+            }
+          ]
+          compareDefault = 1
         }
         const data = {
           // 规则选中选项的值
@@ -521,11 +607,19 @@ export default {
           // 类型
           type: item.type,
           // 比较符号的选项
-          compareOpt: item.relations,
+          compareOpt: conditionCompare,
           // 比较符号的值
-          compare: 0,
+          compare: compareDefault,
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
+          // 布尔型可选项
+          booleanOpt: [{
+            label: '是',
+            vlaue: 1
+          }, {
+            label: '否',
+            vlaue: 0
+          }],
           // 数字型-单位
           unit: item.unit,
           // 规则的值
@@ -579,7 +673,7 @@ export default {
     getVal() {
       return this.condition
       // const data = this.condition.map((n, i) => {
-      //   console.log(this.condition)
+      // console.log(this.condition)
       // })
       // return data
     }

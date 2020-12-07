@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { getUseCaseForEvent, getOutletList, insertOutletAllotBatch, getOutletAllot } from '@/api/api'
+import { getAllUseCase, getOutletList, insertOutletAllotBatch, getOutletAllot } from '@/api/api'
 import Info from '@/components/Info'
 
 export default {
@@ -183,7 +183,7 @@ export default {
     // 获取用例
     useCaseList() {
       return new Promise((resolve, reject) => {
-        getUseCaseForEvent().then(res => {
+        getAllUseCase().then(res => {
           this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,

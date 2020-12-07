@@ -290,8 +290,8 @@ export default {
     },
     // 下载模版
     download() {
-      window.open('/static/不营销人员名单模板.xlsx', '_blank')
-      // window.open('http://10.5.14.149:8080/static/不营销人员名单模板.xlsx', '_blank')
+      window.open('/static/特定免打扰客户名单模板.xlsx', '_blank')
+      // window.open('http://10.5.14.149:8080/static/特定免打扰客户名单模板.xlsx', '_blank')
     },
     downloadAll() {
       const data = {

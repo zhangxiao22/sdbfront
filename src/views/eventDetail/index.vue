@@ -189,8 +189,8 @@ export default {
   },
   created() {
     this.getDetail().then(() => {
-      console.log(this.mainStatus)
-      this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === 'admin'
+      console.log(this.roles)
+      this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === '用例管理' || this.roles === 'admin'
       this.roleJudge.showApproveButton = this.mainStatus === 3
       this.roleJudge.showCopyButton = this.mainStatus === 4 || this.mainStatus === 5
       this.roleJudge.showApproveList = this.previewData.eventBaseInfo.status.value !== 1
