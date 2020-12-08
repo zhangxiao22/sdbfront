@@ -303,6 +303,15 @@ export function setEventPriority(data) {
   })
 }
 
+// 设置事件线索分发上限
+export function setEventDistributeLimit(data) {
+  return request({
+    url: 'event/setDistributeLimit',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件审批 ************************************************************/
 // 事件审批
 export function isPass(data) {
@@ -559,13 +568,13 @@ export function totalCluesUseCase(params) {
     params
   })
 }
-// export function totalAchieveRate(params) {
-//   return request({
-//     url: api2 + '/achieve_rate',
-//     method: 'get',
-//     params
-//   })
-// }
+export function totalAchieveRate(params) {
+  return request({
+    url: api2 + '/achieve_rate',
+    method: 'get',
+    params
+  })
+}
 // export function totalPurchaseAmount(params) {
 //   return request({
 //     url: api2 + '/purchase_amount',

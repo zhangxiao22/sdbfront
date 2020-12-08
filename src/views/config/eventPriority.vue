@@ -8,7 +8,7 @@
                :model="filterForm"
                class="filter-container">
         <el-form-item label="所属用例："
-                      prop="category">
+                      prop="useCaseId">
           <el-select v-model="filterForm.useCaseId"
                      placeholder="请选择"
                      @change="getList(filterForm.useCaseId)">
@@ -40,15 +40,24 @@
       <el-table-column prop="status.label"
                        show-overflow-tooltip
                        label="事件状态" />
-      <el-table-column prop="startDate"
+      <el-table-column prop="crmWeekClueLimit"
                        show-overflow-tooltip
-                       label="开始日期" />
-      <el-table-column prop="endDate"
+                       label="每周线索分配上限（CRM）" />
+      <el-table-column prop="smsWeekClueLimit"
                        show-overflow-tooltip
-                       label="结束日期" />
+                       label="每周线索分配上限（短信）" />
       <el-table-column prop="useCase.name"
                        show-overflow-tooltip
                        label="所属用例" />
+      <el-table-column fixed="right"
+                       label="操作"
+                       width="100">
+        <template slot-scope="scope">
+          <el-button class="btn"
+                     style="color:#1890FF"
+                     @click="handleEditClue(scope.row)">线索分配</el-button>
+        </template>
+      </el-table-column>
     </el-table>
     <div class="button-group">
       拖拽排序：
@@ -65,12 +74,52 @@
                  style="width:100px;"
                  @click="reset">重置</el-button>
     </div>
+    <el-dialog title="每周线索分配上限设置"
+               :visible.sync="clueDialog">
+      <el-form ref="formRef"
+               style="width:500px;margin:0 auto;"
+               label-width="220px"
+               :model="clueInfo">
+        <el-form-item required
+                      label="每周线索分配上限（CRM）："
+                      prop="assignUpper_crm">
+          <el-input-number v-model="clueInfo.assignUpper_crm"
+                           style="width:200px;"
+                           controls-position="right"
+                           :min="0"
+                           :max="MAX_NUMBER"
+                           :step="1000"
+                           :precision="0"
+                           @blur="handleBlurCRM" />
+        </el-form-item>
+        <el-form-item required
+                      label="每周线索分配上限（短信）："
+                      prop="assignUpper_sms">
+          <el-input-number v-model="clueInfo.assignUpper_sms"
+                           style="width:200px;"
+                           controls-position="right"
+                           :min="0"
+                           :max="MAX_NUMBER"
+                           :step="1000"
+                           :precision="0"
+                           @blur="handleBlurSMS" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="clueDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   :loading="buttonLoading"
+                   @click="ensureEditClue()">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getEventPriorityList, getUseCaseForEvent, setEventPriority } from '@/api/api'
+import { getEventPriorityList, getUseCaseForEvent, setEventPriority, setEventDistributeLimit } from '@/api/api'
 import Sortable from 'sortablejs'
+import { MAX_NUMBER } from '@/utils'
 
 export default {
   components: {
@@ -86,16 +135,32 @@ export default {
     return {
       canMove: false,
       filterForm: {
-        category: ''
+        useCaseId: ''
       },
       tableLoading: false,
       useCaseOpt: [],
 
-      tableData: []
+      tableData: [],
+      MAX_NUMBER,
+      // 事件线索的数据(id,subBranchId)
+      clueData: {},
+      // 事件线索分配值
+      clueInfo: {
+        assignUpper_crm: 0,
+        assignUpper_sms: 0
+      },
+      clueDialog: false,
+      buttonLoading: false
     }
   },
   computed: {
-
+    getClueData() {
+      const data = {}
+      data.crmWeekClueLimit = this.clueInfo.assignUpper_crm
+      data.smsWeekClueLimit = this.clueInfo.assignUpper_sms
+      data.id = this.clueData.id
+      return data
+    }
   },
 
   watch: {},
@@ -106,6 +171,46 @@ export default {
 
   },
   methods: {
+    // 打开事件线索分发编辑框
+    handleEditClue(row) {
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
+      this.clueDialog = true
+      this.clueData = row
+      this.clueInfo.assignUpper_crm = row.crmWeekClueLimit
+      this.clueInfo.assignUpper_sms = row.smsWeekClueLimit
+    },
+    // 编辑事件线索分发
+    ensureEditClue() {
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          setEventDistributeLimit(this.getClueData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+            this.clueDialog = false
+            this.getList()
+          })
+        }
+      })
+    },
+    handleBlurCRM() {
+      if (!this.clueInfo.assignUpper_crm) {
+        this.clueInfo.assignUpper_crm = 0
+      }
+    },
+    handleBlurSMS() {
+      if (!this.clueInfo.assignUpper_sms) {
+        this.clueInfo.assignUpper_sms = 0
+      }
+    },
+    // 开启拖拽排序
     handleEdit(val) {
       this.sortable.options.disabled = !val
     },
@@ -149,17 +254,17 @@ export default {
               value: n.id
             }
           })
-          this.filterForm.useCaseId = res.data[0]?.id
+          this.filterForm.useCaseId = res.data[0].id
           resolve()
         })
       })
     },
     getList(usecase) {
-      getEventPriorityList({ useCaseId: this.filterForm.useCaseId }).then(res => {
-        this.tableData = res.data.resultList.map((n, i) => {
-          return Object.assign({}, n.eventBaseInfo, {
-            group: n.customerInfoRespList,
-            useCase: n.useCase,
+      getEventPriorityList({ pageNo: 1, pageSize: 1000, useCaseId: this.filterForm.useCaseId }).then(res => {
+        this.tableData = res.data.map((n, i) => {
+          return Object.assign({}, n, {
+            // group: n.customerInfoRespList,
+            // useCase: n.useCase,
             oldIndex: i + 1
           })
         })
