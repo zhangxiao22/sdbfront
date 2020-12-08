@@ -3,7 +3,6 @@
     <div class="title-container">
       <div class="title">成效看板</div>
     </div>
-    {{ filterForm.useCase }}
     <div class="shun-filter-container-box shun-card">
       <el-form ref="filterRef"
                :inline="true"
@@ -278,9 +277,12 @@
             <!-- 成效统计 -->
             <div class="chart-block">
               <div class="block-title">成效统计</div>
-              <el-row>
+              <el-row :gutter="20">
                 <el-col :span="12">
                   <div class="chart-item rank">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-line" />排名
+                    </div>
                     <AreaChart id="rank11"
                                unit="万元"
                                :data="statistics" />
@@ -288,9 +290,12 @@
                 </el-col>
                 <el-col :span="12">
                   <div class="chart-item rank">
+                    <div class="chart-title">
+                      <svg-icon icon-class="chart-bar" />排名
+                    </div>
                     <BarChart id="rank12"
                               unit="万元"
-                              :data="statistics" />
+                              :data="statistics2" />
                   </div>
                 </el-col>
                 <!-- <el-col :span="24"
@@ -576,6 +581,7 @@ export default {
       // 短信
       lineChartData6: [],
       statistics: [],
+      statistics2: [],
       // 渠道线索饼图传的值
       channelCluePieChart: 0,
       channelClueOpt: [
@@ -916,6 +922,9 @@ export default {
               value: +n.value / 1000
             })
           })
+          this.statistics2 = this.statistics.sort((a, b) => {
+
+          })
         })
       } else {
         totalStatisticsMul({ cases: this.filterForm.useCase.join(',') }).then(res => {
@@ -1094,7 +1103,7 @@ export default {
           }
         }
         &.rank {
-          height: 600px;
+          height: 400px;
         }
         .chart-title {
           margin-bottom: 20px;

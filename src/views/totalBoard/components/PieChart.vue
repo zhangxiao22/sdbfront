@@ -5,6 +5,7 @@
 
 <script>
 import { Pie } from '@antv/g2plot'
+import { formatMoney } from '@/utils'
 
 export default {
   props: {
@@ -58,7 +59,7 @@ export default {
           formatter: (datum) => {
             return {
               name: datum.label,
-              value: datum.value + '条'
+              value: formatMoney(datum.value)
             }
           }
         },
