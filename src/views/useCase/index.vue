@@ -3,12 +3,10 @@
     <shun-table ref="table"
                 title="用例库"
                 :loading="loading"
-                :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
                 :stripe="false"
-                :multiple="multiple"
                 :table-data="tableData"
                 :row-style="rowStyle"
                 :table-column-list="tableColumnList"
@@ -74,18 +72,6 @@
         <div v-else>
           无
         </div>
-        <!-- <el-tooltip placement="top-start">
-          <div slot="content">
-            <div v-for="(item,i) of scope.row.achieveList"
-                 :key="i"
-                 style="margin:5px 0;">
-              {{ item.name }} {{ item.relation.label }} {{ item.value }} {{ item.unit.label }}
-            </div>
-          </div>
-          <div class="hover-text">
-            {{ scope.row.achieveList.length }}个目标
-          </div>
-        </el-tooltip> -->
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
@@ -117,12 +103,6 @@
                   修改归属人
                 </div>
               </el-dropdown-item>
-              <!-- <el-dropdown-item v-if="roleJudge.editClue">
-                <div class="btn"
-                     @click="editClue(scope.row)">
-                  线索分配
-                </div>
-              </el-dropdown-item> -->
               <el-dropdown-item v-if="scope.row.userId === user.userId">
                 <div class="btn"
                      :class="{effect:scope.row.effect}"
@@ -152,7 +132,7 @@
           <el-select v-model="form.ownerOpt"
                      style="width:90%;"
                      placeholder="请选择">
-            <el-option v-for="item in candidateList"
+            <el-option v-for="item in candidateOpts"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
@@ -167,52 +147,18 @@
                    @click="ensureEditOwner()">确 定</el-button>
       </div>
     </el-dialog>
-    <!-- <el-dialog title="每周线索分配上限设置"
-               :before-close="closeClueDialog"
-               :visible.sync="clueDialog">
-      <el-form ref="formRef"
-               style="width:500px;margin:0 auto;"
-               label-width="220px"
-               :model="clueInfo">
-        <el-form-item required
-                      label="每周线索分配上限（CRM）："
-                      prop="assignUpper_crm">
-          <el-input-number v-model="clueInfo.assignUpper_crm"
-                           style="width:200px;"
-                           controls-position="right"
-                           :min="0"
-                           :max="MAX_NUMBER"
-                           :step="1000"
-                           :precision="0"
-                           @blur="handleBlurCRM" />
-        </el-form-item>
-        <el-form-item required
-                      label="每周线索分配上限（短信）："
-                      prop="assignUpper_sms">
-          <el-input-number v-model="clueInfo.assignUpper_sms"
-                           style="width:200px;"
-                           controls-position="right"
-                           :min="0"
-                           :max="MAX_NUMBER"
-                           :step="1000"
-                           :precision="0"
-                           @blur="handleBlurSMS" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button @click="closeClueDialog">取 消</el-button>
-        <el-button type="primary"
-                   @click="ensureEditClue()">确 定</el-button>
-      </div>
-    </el-dialog> -->
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getUseCaseList, delUseCase, changeStatusUseCase, getEventOwner, modifyUseCaseUser, setDistributeLimit, getUseCaseBelongerCandidateList } from '@/api/api'
-import { MAX_NUMBER } from '@/utils'
+import {
+  getUseCaseList,
+  delUseCase,
+  changeStatusUseCase,
+  modifyUseCaseUser,
+  getUseCaseBelongerCandidateList
+} from '@/api/api'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -221,46 +167,25 @@ export default {
     ShunTable
   },
   props: {
-    showSelection: {
-      type: Boolean,
-      default: false
-    },
-    // 是否多选
-    multiple: {
-      type: Boolean,
-      default: true
-    },
-    // 表格已选中项
-    selectedItems: {
-      type: Array,
-      default() {
-        return []
-      }
-    }
+
   },
   data() {
     return {
       // 权限判断
-      roleJudge: {},
+      roleJudge: {
+        createUseCase: false,
+        editPeople: false
+      },
       buttonLoading: false,
       ownerDialog: false,
-      clueDialog: false,
       loading: false,
-      MAX_NUMBER,
-      // 线索的数据(id,subBranchId)
-      clueData: {},
-      // 线索分配值
-      clueInfo: {
-        assignUpper_crm: 0,
-        assignUpper_sms: 0
-      },
       // 归属人选项
-      candidateList: [],
+      candidateOpts: [],
       // 归属人的数据(id)
-      ownerData: '',
+      ownerId: '',
       // 归属人所选值
       form: {
-        ownerOpt: []
+        ownerOpt: ''
       },
       currentPage: 1,
       pageSize: 10,
@@ -317,26 +242,12 @@ export default {
           fixed: 'right'
         }
       ],
-      tableData: [],
-      selection: []
+      tableData: []
     }
   },
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    getCandidateData() {
-      const data = {}
-      data.userId = this.form.ownerOpt
-      data.id = this.ownerData
-      return data
-    },
-    getClueData() {
-      const data = {}
-      data.crmWeekClueLimit = this.clueInfo.assignUpper_crm
-      data.smsWeekClueLimit = this.clueInfo.assignUpper_sms
-      data.id = this.clueData.id
-      return data
     },
     ...mapGetters([
       'roles',
@@ -349,7 +260,6 @@ export default {
   created() {
     this.search()
     this.roleJudge.createUseCase = this.roles === '用例管理' || this.roles === 'admin'
-    this.roleJudge.editClue = this.roles === '线索统筹' || this.roles === 'admin'
     this.roleJudge.editPeople = this.roles === '业务管理' || this.roles === 'admin'
   },
   methods: {
@@ -360,7 +270,6 @@ export default {
     },
     resetAll() {
       this.reset()
-      this.$refs.table.resetSelection()
     },
     reset() {
       // this.$refs.filterRef.resetFields()
@@ -370,30 +279,12 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-    handleBlurCRM() {
-      if (!this.clueInfo.assignUpper_crm) {
-        this.clueInfo.assignUpper_crm = 0
-      }
-    },
-    handleBlurSMS() {
-      if (!this.clueInfo.assignUpper_sms) {
-        this.clueInfo.assignUpper_sms = 0
-      }
-    },
-    // 关闭对话框
-    closeOwnerDialog() {
-      this.ownerDialog = false
-    },
-    closeClueDialog() {
-      this.clueDialog = false
-    },
-
     // 打开编辑用例归属人窗口
     editOwner(row) {
       this.getCandidateList(row.id).then(() => {
         this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
         this.ownerDialog = true
-        this.ownerData = row.id
+        this.ownerId = row.id
         this.form.ownerOpt = row.userId
       })
     },
@@ -402,7 +293,11 @@ export default {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          modifyUseCaseUser(this.getCandidateData).then(res => {
+          const data = {
+            userId: this.form.ownerOpt,
+            id: this.ownerId
+          }
+          modifyUseCaseUser(data).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -418,40 +313,12 @@ export default {
         }
       })
     },
-    // 打开编辑线索分发窗口
-    editClue(row) {
-      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
-      this.clueDialog = true
-      this.clueData = row
-      this.clueInfo.assignUpper_crm = row.crmWeekClueLimit
-      this.clueInfo.assignUpper_sms = row.smsWeekClueLimit
-    },
-    // 编辑线索分发
-    ensureEditClue() {
-      this.$refs['formRef'].validate((valid) => {
-        if (valid) {
-          this.buttonLoading = true
-          setDistributeLimit(this.getClueData).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-            this.clueDialog = false
-            this.resetAll()
-          })
-        }
-      })
-    },
+
     // 获取创建人
     getCandidateList(id) {
       return new Promise((resolve, reject) => {
         getUseCaseBelongerCandidateList({ useCaseId: id }).then(res => {
-          this.candidateList = res.data.map(n => {
+          this.candidateOpts = res.data.map(n => {
             return {
               value: n.empCode,
               label: n.empName
@@ -501,11 +368,12 @@ export default {
     },
     handleChangeStatus(row) {
       this.$confirm(`是否确认【${row.effect ? '下线' : '上线'}】用例（${row.name}）？`)
-        .then(_ => {
+        .then(() => {
           const data = {
             id: row.id,
             effect: !row.effect
           }
+          this.loading = true
           changeStatusUseCase(data).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -517,12 +385,15 @@ export default {
             }
           })
         })
-        .catch(() => { })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     handleDelete(row) {
       this.$confirm(`是否确认删除用例（${row.name}）？`)
-        .then(_ => {
+        .then(() => {
+          this.loading = true
           delUseCase({ id: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -534,7 +405,9 @@ export default {
             }
           })
         })
-        .catch(() => { })
+        .finally(() => {
+          this.loading = false
+        })
     },
 
     handleView(row) {
