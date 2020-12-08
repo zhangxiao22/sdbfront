@@ -133,11 +133,12 @@ export default {
   },
   created() {
     // this.getDetail()
+    this.getRuleOpt()
   },
   methods: {
     init(data) {
       this.render(data)
-      this.getRuleOpt()
+      // this.getRuleOpt()
     },
     reset() {
       this.labelTabsCounts = 0
@@ -258,7 +259,7 @@ export default {
         this.ruleOpt = this.listToTree(this.listChangeAgain)
       })
       // todo
-      // console.log(this.ruleOpt)
+      console.log(this.ruleOpt)
     },
     transferDataByType(val) {
       const data = val.map((n) => {

@@ -425,6 +425,7 @@ export default {
               }]
             })
           })
+          // console.log(this.originData)
           // this.originOptData = res.data.map(n => {
           //   return {
           //     first: n.tagCtgryNm,
@@ -618,13 +619,7 @@ export default {
           // 枚举型可选项
           selectOpt: item.enumCandidateList,
           // 布尔型可选项
-          booleanOpt: [{
-            label: '是',
-            vlaue: 1
-          }, {
-            label: '否',
-            vlaue: 0
-          }],
+          booleanOpt: item.booleanOpt,
           // 数字型-单位
           unit: item.unit,
           // 规则的值
