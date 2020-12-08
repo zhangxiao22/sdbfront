@@ -116,7 +116,7 @@
       </div>
       <div class="chart-container">
         <el-row :gutter="20">
-          <el-col :span="14">
+          <el-col :span="24">
             <!-- 执行情况 -->
             <div class="chart-block">
               <div class="block-title">执行情况</div>
@@ -341,7 +341,7 @@
               </el-row>
             </div>
           </el-col>
-          <el-col :span="10">
+          <el-col :span="24">
             <!-- 排名情况 -->
             <div class="chart-block">
               <div class="block-title">排名情况</div>
@@ -392,7 +392,7 @@
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />
                       员工排名（前10名）
-                      <el-select v-model="rankSelPostVal3"
+                      <!-- <el-select v-model="rankSelPostVal3"
                                  style="margin-left:20px;"
                                  placeholder="请选择"
                                  @change="getRankEmp">
@@ -400,7 +400,7 @@
                                    :key="index"
                                    :label="item.label"
                                    :value="item.value" />
-                      </el-select>
+                      </el-select> -->
                       <el-select v-model="rankSelVal3"
                                  style="margin-left:20px;"
                                  placeholder="请选择">
@@ -437,7 +437,8 @@ import {
   totalAchieveRate,
   totalStatisticsOne,
   totalStatisticsMul,
-  totalPurchaseAmount,
+  getActualRate,
+  // totalPurchaseAmount,
   // totalRankOrg,
   // totalRankBrancg,
   totalRank,
@@ -693,7 +694,7 @@ export default {
     render() {
       this.getOverview()
       this.getFunnel()
-      this.getPie(0)
+      this.getPie()
       this.getCluesUseCase()
       // 旧接口
       // this.getAchieveRate()
@@ -704,6 +705,14 @@ export default {
       // this.getAchieveRate(5, 5)
       // this.getAchieveRate(6, 6)
       // this.getPurchaseAmount()
+      // 实际达成率
+      this.getLineChartData(0)
+      this.getLineChartData(1)
+      this.getLineChartData(2)
+      this.getLineChartData(3)
+      this.getLineChartData(4)
+      this.getLineChartData(5)
+
       // 成效统计
       this.getStatistics()
       this.getRankOrg()
@@ -811,11 +820,11 @@ export default {
         ]
       })
     },
-    getPurchaseAmount() {
-      totalPurchaseAmount().then(res => {
+    // getPurchaseAmount() {
+    //   totalPurchaseAmount().then(res => {
 
-      })
-    },
+    //   })
+    // },
     // 获取用例列表
     getUseCase() {
       return new Promise((resolve) => {
@@ -858,14 +867,63 @@ export default {
         })
       }
     },
+    getLineChartData(key) {
+      getActualRate({ type: key }).then(res => {
+        if (key === 0) {
+          this.lineChartData1 = res.data?.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value * 100
+            })
+          })
+        } else if (key === 1) {
+          this.lineChartData2 = res.data?.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value * 100
+            })
+          })
+        } else if (key === 2) {
+          this.lineChartData3 = res.data?.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value * 100
+            })
+          })
+        } else if (key === 3) {
+          this.lineChartData4 = res.data?.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value * 100
+            })
+          })
+        } else if (key === 4) {
+          this.lineChartData5 = res.data?.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value * 100
+            })
+          })
+        } else if (key === 5) {
+          this.lineChartData6 = res.data?.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value * 100
+            })
+          })
+        }
+      })
+    },
     getStatistics() {
       if (this.filterForm.useCase.length === 1) {
         totalStatisticsOne({ case: this.filterForm.useCase.join(',') }).then(res => {
-          this.statistics = res.data
+          this.statistics = res.data.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value / 1000
+            })
+          })
         })
       } else {
         totalStatisticsMul({ cases: this.filterForm.useCase.join(',') }).then(res => {
-          this.statistics = res.data
+          this.statistics = res.data.map(n => {
+            return Object.assign({}, n, {
+              value: +n.value / 1000
+            })
+          })
         })
       }
     },
@@ -900,8 +958,16 @@ export default {
 }
 </script>
 
+<style>
+/* @media screen and (max-width: 1000px) {
+  body {
+    color: red;
+  }
+} */
+</style>
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
+
 .long-text {
   width: 300px;
   ::v-deep .el-select__tags-text {
@@ -931,7 +997,7 @@ export default {
     background: #f4f9ff;
     border-radius: 10px;
     font-size: 20px;
-    max-width: 1200px;
+    // max-width: 1200px;
     margin: 0 auto;
     // box-sizing: 0 2px 10px rgba(0, 0, 0, 0.1);
 
@@ -942,7 +1008,7 @@ export default {
       width: 30%;
       margin: 1% 1.5%;
       .main-icon {
-        font-size: 34px;
+        font-size: 32px;
         margin-right: 15px;
       }
       .text {
