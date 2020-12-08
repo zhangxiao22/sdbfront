@@ -581,6 +581,15 @@ export function totalCluesUseCase(params) {
 //   })
 // }
 
+// 获取实际达成率折线图
+export function getActualRate(params) {
+  return request({
+    url: api2 + '/head/line',
+    method: 'get',
+    params
+  })
+}
+
 // 单用例获取成效统计
 export function totalStatisticsOne(params) {
   return request({
