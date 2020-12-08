@@ -128,7 +128,7 @@
                     <FunnelChart id="funnel"
                                  :data="funnelData" />
                     <div class="chart-bottom">
-                      <div style="margin-right:20px;">有效执行数：<b>{{ funnelResult.effective_count }}条</b></div>
+                      <div style="margin-right:20px;">有效执行数：<b>{{ funnelResult.effective_count | formatMoney }}条</b></div>
                       <div style="margin-right:20px;">有效执行率：<b>{{ (funnelResult.effective_rate * 100).toFixed(2) }}%</b></div>
                       <div>实际达成率：<b>{{ funnelResult.actual_achievement * 100 }}%</b></div>
                     </div>
@@ -281,7 +281,7 @@
                 <el-col :span="12">
                   <div class="chart-item rank">
                     <div class="chart-title">
-                      <svg-icon icon-class="chart-line" />排名
+                      <svg-icon icon-class="chart-line" />走势
                     </div>
                     <AreaChart id="rank11"
                                unit="万元"
@@ -400,7 +400,7 @@
                       <!-- <el-select v-model="rankSelPostVal3"
                                  style="margin-left:20px;"
                                  placeholder="请选择"
-                                 @change="getRankEmp">
+                                 >
                         <el-option v-for="(item,index) in postOpt"
                                    :key="index"
                                    :label="item.label"
@@ -408,7 +408,8 @@
                       </el-select> -->
                       <el-select v-model="rankSelVal3"
                                  style="margin-left:20px;"
-                                 placeholder="请选择">
+                                 placeholder="请选择"
+                                 @change="getRankEmp">
                         <el-option v-for="item in rankOpt"
                                    :key="item.value"
                                    :label="item.label"
@@ -466,7 +467,8 @@ export default {
   data() {
     return {
       filterForm: {
-        useCase: [2241884],
+        // 2241884
+        useCase: [],
         event: '',
         agency: '',
         channel: '',
@@ -477,7 +479,22 @@ export default {
       },
       useCaseOpt: [],
       eventOpt: [],
-      agencyOpt: [],
+      agencyOpt: [{
+        value: 1,
+        label: '机构1'
+      }, {
+        value: 2,
+        label: '机构2'
+      }, {
+        value: 3,
+        label: '机构3'
+      }, {
+        value: 4,
+        label: '机构4'
+      }, {
+        value: 5,
+        label: '机构5'
+      }],
       channelOptVal: 1,
       channelOpt: [{
         value: 1,
@@ -486,7 +503,15 @@ export default {
         value: 2,
         label: '短信'
       }],
-      batchOpt: [],
+      batchOpt: [
+        {
+          value: 1,
+          label: '第一批次'
+        }, {
+          value: 2,
+          label: '第二批次'
+        }
+      ],
       postOpt: [],
       options: [{
         value: '选项1',
@@ -698,6 +723,10 @@ export default {
       this.search()
     },
     render() {
+      // 获取岗位
+      this.getPostOpt()
+      this.getUseCase()
+      //
       this.getOverview()
       this.getFunnel()
       this.getPie()
@@ -720,13 +749,13 @@ export default {
       this.getLineChartData(5)
 
       // 成效统计
+
       this.getStatistics()
+
+      // 支行网点员工排名
       this.getRankOrg()
       this.getRankBrancg()
       this.getRankEmp()
-      // 获取岗位
-      this.getPostOpt()
-      this.getUseCase()
     },
     getOverview() {
       totalOverview().then(res => {
@@ -848,7 +877,7 @@ export default {
     // 获取事件
     getEvent(useCase) {
       if (this.filterForm.useCase?.length === 1) {
-        getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0] }).then(res => {
+        getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0], status: [4, 6, 11, 13] }).then(res => {
           this.eventOpt = res.data.resultList.map(n => {
             return {
               label: n.eventBaseInfo.name,
@@ -927,20 +956,41 @@ export default {
           })
         })
       } else {
-        totalStatisticsMul({ cases: this.filterForm.useCase.join(',') }).then(res => {
+        totalStatisticsOne({ case: 2241884 }).then(res => {
           this.statistics = res.data.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
             })
           })
+          this.statistics2 = this.statistics.sort((a, b) => {
+
+          })
         })
+        // if (this.filterForm.useCase.length === 0) {
+        //   // this.useCaseOpt.forEach((n) => {
+        //   //   this.filterForm.useCase.push(...n.vlaue)
+        //   // })
+        //   this.filterForm.useCase = []
+
+        //   console.log(this.useCaseOpt)
+        // }
+        // totalStatisticsMul({ cases: this.filterForm.useCase.join(',') }).then(res => {
+        //   this.statistics = res.data.map(n => {
+        //     return Object.assign({}, n, {
+        //       value: +n.value / 1000
+        //     })
+        //   })
+        //   this.statistics2 = this.statistics.sort((a, b) => {
+
+        //   })
+        // })
       }
     },
     getRankOrg() {
       totalRank({ content: 0, type: this.rankSelVal1 }).then(res => {
         this.rankChartData1 = res.data.map(n => {
           return Object.assign({}, n, {
-            value: +n.value
+            value: (+n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
       })
@@ -949,7 +999,7 @@ export default {
       totalRank({ content: 1, type: this.rankSelVal2 }).then(res => {
         this.rankChartData2 = res.data.map(n => {
           return Object.assign({}, n, {
-            value: +n.value
+            value: (+n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
       })
