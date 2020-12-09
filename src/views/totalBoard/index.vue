@@ -741,12 +741,13 @@ export default {
       // this.getAchieveRate(6, 6)
       // this.getPurchaseAmount()
       // 实际达成率
-      this.getLineChartData(0)
-      this.getLineChartData(1)
-      this.getLineChartData(2)
-      this.getLineChartData(3)
-      this.getLineChartData(4)
-      this.getLineChartData(5)
+
+      this.getLineChartData(0, 1)
+      this.getLineChartData(1, 2)
+      this.getLineChartData(2, 3)
+      this.getLineChartData(3, 4)
+      this.getLineChartData(4, 5)
+      this.getLineChartData(5, 6)
 
       // 成效统计
 
@@ -902,45 +903,13 @@ export default {
         })
       }
     },
-    getLineChartData(key) {
-      getActualRate({ type: key }).then(res => {
-        if (key === 0) {
-          this.lineChartData1 = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value * 100
-            })
+    getLineChartData(typeKey, i) {
+      getActualRate({ type: typeKey }).then(res => {
+        this['lineChartData' + i] = res.data?.map(n => {
+          return Object.assign({}, n, {
+            value: +n.value * 100
           })
-        } else if (key === 1) {
-          this.lineChartData2 = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value * 100
-            })
-          })
-        } else if (key === 2) {
-          this.lineChartData3 = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value * 100
-            })
-          })
-        } else if (key === 3) {
-          this.lineChartData4 = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value * 100
-            })
-          })
-        } else if (key === 4) {
-          this.lineChartData5 = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value * 100
-            })
-          })
-        } else if (key === 5) {
-          this.lineChartData6 = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value * 100
-            })
-          })
-        }
+        })
       })
     },
     getStatistics() {
