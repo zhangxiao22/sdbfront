@@ -130,6 +130,15 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
+        <el-form-item label="备注："
+                      prop="remarks">
+          <el-input v-model.trim="addInfo.remarks"
+                    style="width:90%;"
+                    type="textarea"
+                    :rows="10"
+                    resize="none"
+                    placeholder="请输入内容" />
+        </el-form-item>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -191,7 +200,8 @@ export default {
       },
       addInfo: {
         customerAccount: '',
-        name: ''
+        name: '',
+        remarks: ''
       },
       searchForm: {
       },
@@ -211,6 +221,11 @@ export default {
           label: '加入日期'
         },
         {
+          prop: 'remarks',
+          label: '备注',
+          minWidth: 200
+        },
+        {
           prop: 'operate',
           label: '操作',
           slot: true
@@ -223,13 +238,6 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    getData() {
-      const data = {}
-      data.name = this.addInfo.name
-      data.customerAccount = this.addInfo.customerAccount
-      data.category = this.category
-      return data
     }
   },
   watch: {},
@@ -263,7 +271,13 @@ export default {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          addCustomerToBlackList([this.getData]).then(res => {
+          const data = {
+            name: this.addInfo.name,
+            customerAccount: this.addInfo.customerAccount,
+            remarks: this.addInfo.remarks,
+            category: this.category
+          }
+          addCustomerToBlackList([data]).then(res => {
             this.buttonLoading = false
             if (res.code === 200) {
               this.$message({

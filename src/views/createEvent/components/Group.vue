@@ -418,10 +418,10 @@ export default {
             return Object.assign({}, n, {
               booleanOpt: [{
                 label: '是',
-                vlaue: 1
+                value: 1
               }, {
                 label: '否',
-                vlaue: 0
+                value: 0
               }]
             })
           })

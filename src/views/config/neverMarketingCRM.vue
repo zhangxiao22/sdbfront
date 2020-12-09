@@ -223,7 +223,7 @@ export default {
         {
           prop: 'remarks',
           label: '备注',
-          minWidth: 150
+          minWidth: 200
         },
         {
           prop: 'operate',
@@ -238,14 +238,6 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    getData() {
-      const data = {}
-      data.customerAccount = this.addInfo.customerAccount
-      data.name = this.addInfo.name
-      data.remarks = this.addInfo.remarks
-      data.category = this.category
-      return data
     }
   },
   watch: {},
@@ -279,7 +271,13 @@ export default {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          addCustomerToBlackList([this.getData]).then(res => {
+          const data = {
+            name: this.addInfo.name,
+            customerAccount: this.addInfo.customerAccount,
+            remarks: this.addInfo.remarks,
+            category: this.category
+          }
+          addCustomerToBlackList([data]).then(res => {
             this.buttonLoading = false
             if (res.code === 200) {
               this.$message({

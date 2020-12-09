@@ -279,6 +279,9 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
+    closeOwnerDialog() {
+      this.ownerDialog = false
+    },
     // 打开编辑用例归属人窗口
     editOwner(row) {
       this.getCandidateList(row.id).then(() => {
