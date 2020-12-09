@@ -7,6 +7,7 @@
              :total-detail="totalDetail"
              :val-detail="valDetail"
              :rule-opt="ruleOpt"
+             :origin-data="originData"
              required
              :min-length="0"
              label="整体规则"
@@ -70,6 +71,7 @@
                  :val-detail="item.valDetail"
                  :total-detail="item.groupDetail"
                  :rule-opt="ruleOpt"
+                 :origin-data="originData"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
         </el-tab-pane>
@@ -98,6 +100,7 @@ export default {
     return {
       mainLoading: false,
       ruleOpt: [],
+      originData: [],
       totalDetail: [],
       valDetail: [],
       totalPeople: '',
@@ -189,6 +192,17 @@ export default {
     getOriginOptData() {
       return new Promise((resolve, reject) => {
         getCustomerLabel().then(res => {
+          this.originData = res.data.map(n => {
+            return Object.assign({}, n, {
+              booleanOpt: [{
+                label: '是',
+                value: 1
+              }, {
+                label: '否',
+                value: 0
+              }]
+            })
+          })
           this.originOptData = res.data.map(n => {
             return {
               first: n.tagCtgryNm,

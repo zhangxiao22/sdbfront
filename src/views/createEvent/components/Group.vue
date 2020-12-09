@@ -160,7 +160,7 @@
 <script>
 const _ = require('lodash')
 
-import { getCustomerLabel } from '@/api/api'
+import { } from '@/api/api'
 import Info from '@/components/Info'
 import { MAX_NUMBER } from '@/utils'
 export default {
@@ -187,6 +187,12 @@ export default {
       }
     },
     ruleOpt: {
+      type: Array,
+      default() {
+        return []
+      }
+    },
+    originData: {
       type: Array,
       default() {
         return []
@@ -227,7 +233,7 @@ export default {
       numberOptions: [],
       stringOptions: [],
       MAX_NUMBER,
-      originData: [],
+      // originData: [],
       // originOptData: [],
       // ruleOpt: [],
       numberFlat: {}
@@ -269,11 +275,14 @@ export default {
     //     this.getAllData()
     //   }, 500)
     // })
-    this.getRuleList().then(() => {
-      setTimeout(() => {
-        this.getAllData()
-      }, 500)
-    })
+    // this.getRuleList().then(() => {
+    //   setTimeout(() => {
+    //     this.getAllData()
+    //   }, 500)
+    // })
+    setTimeout(() => {
+      this.getAllData()
+    }, 500)
   },
   created() {
     // this.tagsInit(0, 0)
@@ -410,34 +419,6 @@ export default {
     },
     delayRun(code, time) {
       var t = setTimeout(code, time)
-    },
-    getRuleList() {
-      return new Promise((resolve, reject) => {
-        getCustomerLabel().then(res => {
-          this.originData = res.data.map(n => {
-            return Object.assign({}, n, {
-              booleanOpt: [{
-                label: '是',
-                value: 1
-              }, {
-                label: '否',
-                value: 0
-              }]
-            })
-          })
-          // console.log(this.originData)
-          // this.originOptData = res.data.map(n => {
-          //   return {
-          //     first: n.tagCtgryNm,
-          //     second: n.tagPrimClNm,
-          //     third: n.tagScdClNm,
-          //     fourth: n.name,
-          //     id: n.id
-          //   }
-          // })
-          resolve()
-        })
-      })
     },
     // 数字型-非区间输入
     handleChangeNumberInput(val) {
