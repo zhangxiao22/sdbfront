@@ -6,8 +6,6 @@
         <div class="status"
              :style="{background:colors[detail.largeStatus.value-2]}">{{ detail.status.label }}</div>
         {{ detail.name }}
-        <!-- <el-tag effect="dark"
-                style="margin-left:10px;">{{ detail.category.label }}</el-tag> -->
         <div v-show="detail.trial"
              class="main-info-box">
           <div class="label">对照组</div>
@@ -19,16 +17,6 @@
         <i class="el-icon-time" />
         {{ detail.startDate }} 至 {{ detail.endDate }}
       </div>
-      <!-- <div class="block">
-        <div class="shun-sibling-box item">
-          <div class="value">每周线索分配上限 (CRM)</div>
-          <div class="value">{{ detail.crmWeekClueLimit | formatMoney }}</div>
-        </div>
-        <div class="shun-sibling-box item">
-          <div class="value">每周线索分配上限 (短信)</div>
-          <div class="value">{{ detail.crmWeekClueLimit | formatMoney }}</div>
-        </div>
-      </div> -->
       <div class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
              :key="i"
