@@ -1207,7 +1207,7 @@ export default {
       this.showCRMWord = true
       this.$nextTick(() => {
         this.$refs.wordRef.reset()
-        this.$refs.wordRef.parentRef.setSelection([])
+        this.$refs.wordRef.parentRef.setSelection(item.model)
       })
       this.channelIndex = ci
     },

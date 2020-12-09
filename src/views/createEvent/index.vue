@@ -33,17 +33,17 @@
                    style="font-size:12px;">{{ baseInfoDetail.startDate }} 至 {{ baseInfoDetail.endDate }}</div>
             </div>
             <!-- 每周线索分配上限（CRM） -->
-            <div v-show="baseInfoDetail.crmWeekClueLimit!==null"
+            <!-- <div v-show="baseInfoDetail.crmWeekClueLimit!==null"
                  class="shun-sibling-box item">
               <div class="value">周上限(CRM)</div>
               <div class="value">{{ baseInfoDetail.crmWeekClueLimit | formatMoney }}</div>
-            </div>
+            </div> -->
             <!-- 每周线索分配上限（短信） -->
-            <div v-show="baseInfoDetail.smsWeekClueLimit!==null"
+            <!-- <div v-show="baseInfoDetail.smsWeekClueLimit!==null"
                  class="shun-sibling-box item">
               <div class="value">周上限(短信)</div>
               <div class="value">{{ baseInfoDetail.smsWeekClueLimit | formatMoney }}</div>
-            </div>
+            </div> -->
             <!-- 目标设置 -->
             <!-- <el-tag v-show="baseInfoDetail.targetCount"
                     class="item"
@@ -167,9 +167,9 @@ const DEFAULT_DATA = {
     // 结束日期
     endDate: '',
     // 每周线索分配上限（CRM）
-    crmWeekClueLimit: 0,
+    // crmWeekClueLimit: 0,
     // 每周线索分配上限（短信）
-    smsWeekClueLimit: 0,
+    // smsWeekClueLimit: 0,
     // 是否对照组
     trial: false,
     // 试点比例
@@ -278,8 +278,8 @@ export default {
         this.baseInfoDetail.useCaseName = baseInfo.useCaseName
         this.baseInfoDetail.startDate = baseInfo.startDate
         this.baseInfoDetail.endDate = baseInfo.endDate
-        this.baseInfoDetail.crmWeekClueLimit = baseInfo.crmWeekClueLimit
-        this.baseInfoDetail.smsWeekClueLimit = baseInfo.smsWeekClueLimit
+        // this.baseInfoDetail.crmWeekClueLimit = baseInfo.crmWeekClueLimit
+        // this.baseInfoDetail.smsWeekClueLimit = baseInfo.smsWeekClueLimit
         this.baseInfoDetail.trial = baseInfo.trial
         this.baseInfoDetail.sampleValue = baseInfo.sample.label
         this.baseInfoDetail.control = baseInfo.control

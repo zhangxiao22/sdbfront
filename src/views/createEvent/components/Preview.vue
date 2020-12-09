@@ -19,7 +19,7 @@
         <i class="el-icon-time" />
         {{ detail.startDate }} 至 {{ detail.endDate }}
       </div>
-      <div class="block">
+      <!-- <div class="block">
         <div class="shun-sibling-box item">
           <div class="value">每周线索分配上限 (CRM)</div>
           <div class="value">{{ detail.crmWeekClueLimit | formatMoney }}</div>
@@ -28,7 +28,7 @@
           <div class="value">每周线索分配上限 (短信)</div>
           <div class="value">{{ detail.crmWeekClueLimit | formatMoney }}</div>
         </div>
-      </div>
+      </div> -->
       <div class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
              :key="i"
