@@ -30,26 +30,31 @@
                        label="操作"
                        width="100">
         <template slot-scope="scope">
-          <el-button class="btn"
-                     style="color:#1890FF"
-                     @click="handleEditClue(scope.row)">线索分配</el-button>
+          <div class="operate-btns">
+            <div class="btn"
+                 style="color:#1890FF;"
+                 @click="handleEditClue(scope.row)">线索分配</div>
+          </div>
         </template>
       </el-table-column>
     </el-table>
     <div class="button-group">
+      <Info content="开启后，可拖拽列表排列优先级" />
       拖拽排序：
-      <el-tooltip :content="canMove?'允许排序':'禁止排序'"
+      <el-tooltip :content="canMove?'已开启':'已关闭'"
                   placement="top">
         <el-switch v-model="canMove"
                    @change="handleChange" />
       </el-tooltip>
       <el-button type="primary"
-                 style="width:100px;margin-left:20px;"
+                 plain
+                 size="mini"
+                 style="margin-left:20px;"
                  icon="el-icon-document"
-                 @click="onSubmit">保存</el-button>
+                 @click="onSubmit">保存排序</el-button>
       <el-button icon="el-icon-refresh"
-                 style="width:100px;"
-                 @click="reset">重置</el-button>
+                 size="mini"
+                 @click="reset">重置排序</el-button>
     </div>
     <el-dialog title="每周线索分配上限设置"
                :visible.sync="clueDialog">
@@ -94,12 +99,14 @@
 </template>
 
 <script>
+import Info from '@/components/Info'
 import { getUseCaseList, setUseCasePriority, setDistributeLimit } from '@/api/api'
 import Sortable from 'sortablejs'
 import { MAX_NUMBER } from '@/utils'
 
 export default {
   components: {
+    Info
   },
   props: {
     loading: {
@@ -168,11 +175,11 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
+              this.getList()
             }
           }).finally(() => {
             this.buttonLoading = false
             this.clueDialog = false
-            this.getList()
           })
         }
       })
@@ -253,6 +260,22 @@ export default {
 
       ::v-deep tr.sortable-chosen.sortable-ghost td {
         background: #ccffff;
+      }
+    }
+
+    ::v-deep .operate-btns {
+      display: flex;
+      flex-wrap: wrap;
+      .btn {
+        // width: 40px;
+        padding: 0 4px;
+        height: 30px;
+        cursor: pointer;
+        @include center-center;
+        margin-right: 10px;
+        &:hover {
+          opacity: 0.8;
+        }
       }
     }
   }

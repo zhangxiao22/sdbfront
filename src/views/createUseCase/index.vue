@@ -163,7 +163,7 @@
         <el-button icon="el-icon-document"
                    type="primary"
                    style="width:100px;"
-                   :loading="loading"
+                   :loading="buttonLoading"
                    @click="save">提交</el-button>
         <el-button icon="el-icon-refresh"
                    style="width:100px;"
@@ -193,6 +193,7 @@ export default {
   },
   data() {
     return {
+      buttonLoading: false,
       MAX_NUMBER,
       types: [],
       participantsOptions: [],
@@ -371,7 +372,7 @@ export default {
           } else {
             ajax = saveUseCase
           }
-          this.loading = true
+          this.buttonLoading = true
           ajax(this.getData).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -382,7 +383,7 @@ export default {
               this.goBack()
             }
           }).finally(() => {
-            this.loading = false
+            this.buttonLoading = false
           })
         }
       })
