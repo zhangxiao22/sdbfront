@@ -96,7 +96,8 @@
       </el-form>
     </div>
     <div class="main-container shun-card">
-      <div class="base-info">
+      <div v-loading="loading.baseInfoLoading"
+           class="base-info">
         <div v-for="(item,i) of baseInfo"
              :key="i"
              class="item">
@@ -121,7 +122,8 @@
               <div class="block-title">执行情况</div>
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <div class="chart-item funnel-chart">
+                  <div v-loading="loading.funnelChartLoading"
+                       class="chart-item funnel-chart">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-funnel" />销售漏斗
                     </div>
@@ -135,7 +137,8 @@
                   </div>
                 </el-col>
                 <el-col :span="12">
-                  <div class="chart-item">
+                  <div v-loading="loading.chartPieLoading"
+                       class="chart-item">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-pie" />渠道线索数
                       <el-select v-model="channelCluePieChart"
@@ -158,7 +161,8 @@
               <el-row>
                 <el-col :span="24"
                         style="margin-top:20px;">
-                  <div class="chart-item"
+                  <div v-loading="loading.usecaseBarLoading"
+                       class="chart-item"
                        style="height:600px;">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />用例线索数
@@ -214,7 +218,8 @@
                            :value="item.value" />
               </el-select> -->
                 </div>
-                <div class="chart-item line-chart">
+                <div v-loading="lineChartLoading5"
+                     class="chart-item line-chart">
                   <div class="chart-title">
                     <svg-icon icon-class="chart-line" />CRM实际达成率
                   </div>
@@ -224,7 +229,8 @@
 
                 <el-collapse-transition>
                   <div v-show="expand">
-                    <div class="chart-item line-chart">
+                    <div v-loading="lineChartLoading1"
+                         class="chart-item line-chart">
                       <div class="chart-title">
                         <svg-icon icon-class="chart-line" />CRM执行率
                       </div>
@@ -232,7 +238,8 @@
                                  ref="crmLineRef1"
                                  :data="lineChartData1" />
                     </div>
-                    <div class="chart-item line-chart">
+                    <div v-loading="lineChartLoading2"
+                         class="chart-item line-chart">
                       <div class="chart-title">
                         <svg-icon icon-class="chart-line" />CRM联系成功率
                       </div>
@@ -240,7 +247,8 @@
                                  ref="crmLineRef2"
                                  :data="lineChartData2" />
                     </div>
-                    <div class="chart-item line-chart">
+                    <div v-loading="lineChartLoading3"
+                         class="chart-item line-chart">
                       <div class="chart-title">
                         <svg-icon icon-class="chart-line" />CRM有效执行率
                       </div>
@@ -248,7 +256,8 @@
                                  ref="crmLineRef3"
                                  :data="lineChartData3" />
                     </div>
-                    <div class="chart-item line-chart">
+                    <div v-loading="lineChartLoading4"
+                         class="chart-item line-chart">
                       <div class="chart-title">
                         <svg-icon icon-class="chart-line" />CRM成功购买率
                       </div>
@@ -261,7 +270,8 @@
                 </el-collapse-transition>
 
               </div>
-              <el-row class="crm-line-container"
+              <el-row v-loading="lineChartLoading6"
+                      class="crm-line-container"
                       style="border-left-color:rgb(103, 194, 58);">
                 <div class="sub-title">短信</div>
                 <el-col :span="24"
@@ -279,7 +289,8 @@
               <div class="block-title">成效统计</div>
               <el-row :gutter="20">
                 <el-col :span="12">
-                  <div class="chart-item rank">
+                  <div v-loading="loading.chartLineLoading"
+                       class="chart-item rank">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-line" />走势
                     </div>
@@ -289,7 +300,8 @@
                   </div>
                 </el-col>
                 <el-col :span="12">
-                  <div class="chart-item rank">
+                  <div v-loading="loading.chartBarLoading"
+                       class="chart-item rank">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />排名
                     </div>
@@ -352,7 +364,8 @@
               <div class="block-title">排名情况</div>
               <el-row>
                 <el-col :span="24">
-                  <div class="chart-item rank">
+                  <div v-loading="loading.orgRankLoading"
+                       class="chart-item rank">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />支行排名
                       <el-select v-model="rankSelVal1"
@@ -372,14 +385,15 @@
                 </el-col>
                 <el-col :span="24"
                         style="margin-top:20px;">
-                  <div class="chart-item rank">
+                  <div v-loading="loading.branchRankLoading"
+                       class="chart-item rank">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />
                       网点排名（前10名）
                       <el-select v-model="rankSelVal2"
                                  style="margin-left:20px;"
                                  placeholder="请选择"
-                                 @change="getRankBrancg">
+                                 @change="getRankBranch">
                         <el-option v-for="item in rankOpt"
                                    :key="item.value"
                                    :label="item.label"
@@ -393,7 +407,8 @@
                 </el-col>
                 <el-col :span="24"
                         style="margin-top:20px;">
-                  <div class="chart-item rank">
+                  <div v-loading="loading.empRankLoading"
+                       class="chart-item rank">
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />
                       员工排名（前10名）
@@ -466,6 +481,25 @@ export default {
   },
   data() {
     return {
+      loading: {
+        baseInfoLoading: false,
+        funnelChartLoading: false,
+        chartPieLoading: false,
+        usecaseBarLoading: false,
+        // 成效统计loading
+        chartLineLoading: false,
+        chartBarLoading: false,
+        // 支行网点员工排名loading
+        orgRankLoading: false,
+        branchRankLoading: false,
+        empRankLoading: false
+      },
+      lineChartLoading1: false,
+      lineChartLoading2: false,
+      lineChartLoading3: false,
+      lineChartLoading4: false,
+      lineChartLoading5: false,
+      lineChartLoading6: false,
       filterForm: {
         // 2241884
         useCase: [],
@@ -755,10 +789,11 @@ export default {
 
       // 支行网点员工排名
       this.getRankOrg()
-      this.getRankBrancg()
+      this.getRankBranch()
       this.getRankEmp()
     },
     getOverview() {
+      this.loading.baseInfoLoading = true
       totalOverview().then(res => {
         const data = res.data
         this.baseInfo[0].value = data.total_use_case
@@ -767,9 +802,11 @@ export default {
         this.baseInfo[3].value = data.total_aum / 1000
         this.baseInfo[4].value = data.total_lum / 1000
         this.baseInfo[5].value = data.total_credit_card
+        this.loading.baseInfoLoading = false
       })
     },
     getFunnel() {
+      this.loading.funnelChartLoading = true
       totalFunnel().then(res => {
         const data = res.data
         this.funnelData = [
@@ -781,9 +818,11 @@ export default {
         this.funnelResult.effective_count = res.data.effective_count
         this.funnelResult.effective_rate = res.data.effective_rate
         this.funnelResult.actual_achievement = res.data.actual_achievement
+        this.loading.funnelChartLoading = false
       })
     },
     getPie() {
+      this.loading.chartPieLoading = true
       totalPie({ type: this.channelCluePieChart }).then(res => {
         const data = res.data
         this.channelPieData = res.data.map(n => {
@@ -791,6 +830,7 @@ export default {
             value: +n.value
           })
         })
+        this.loading.chartPieLoading = false
       })
     },
     handleChangeChannel(index) {
@@ -826,12 +866,14 @@ export default {
       })
     },
     getCluesUseCase() {
+      this.loading.usecaseBarLoading = true
       totalCluesUseCase({ type: this.funnelSel, channel: this.channelOptVal }).then(res => {
         this.usecaseBarData = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
         })
+        this.loading.usecaseBarLoading = false
       })
     },
     getAchieveRate(channel_id, unm) {
@@ -904,15 +946,19 @@ export default {
       }
     },
     getLineChartData(typeKey, i) {
+      this['lineChartLoading' + i] = true
       getActualRate({ type: typeKey }).then(res => {
         this['lineChartData' + i] = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value * 100
           })
         })
+        this['lineChartLoading' + i] = false
       })
     },
     getStatistics() {
+      this.loading.chartBarLoading = true
+      this.loading.chartLineLoading = true
       if (this.filterForm.useCase.length === 1) {
         totalStatisticsOne({ case: this.filterForm.useCase.join(',') }).then(res => {
           this.statistics = res.data.map(n => {
@@ -920,9 +966,13 @@ export default {
               value: +n.value / 1000
             })
           })
-          this.statistics2 = this.statistics.sort((a, b) => {
-
+          this.statistics2 = this.statistics.concat([]).sort((a, b) => {
+            const aRank = a.value
+            const bRank = b.value
+            return (bRank - aRank)
           })
+          this.loading.chartBarLoading = false
+          this.loading.chartLineLoading = false
         })
       } else {
         totalStatisticsOne({ case: 2241884 }).then(res => {
@@ -931,9 +981,13 @@ export default {
               value: +n.value / 1000
             })
           })
-          this.statistics2 = this.statistics.sort((a, b) => {
-
+          this.statistics2 = this.statistics.concat([]).sort((a, b) => {
+            const aRank = a.value
+            const bRank = b.value
+            return (bRank - aRank)
           })
+          this.loading.chartBarLoading = false
+          this.loading.chartLineLoading = false
         })
         // if (this.filterForm.useCase.length === 0) {
         //   // this.useCaseOpt.forEach((n) => {
@@ -956,31 +1010,61 @@ export default {
       }
     },
     getRankOrg() {
+      this.loading.orgRankLoading = true
       totalRank({ content: 0, type: this.rankSelVal1 }).then(res => {
         this.rankChartData1 = res.data.map(n => {
           return Object.assign({}, n, {
             value: (+n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
+      }).catch(() => {
+        this.$message({
+          message: '无数据',
+          type: 'error',
+          duration: '5000'
+        })
       })
+        .finally(() => {
+          this.loading.orgRankLoading = false
+        })
     },
-    getRankBrancg() {
+    getRankBranch() {
+      this.loading.branchRankLoading = true
       totalRank({ content: 1, type: this.rankSelVal2 }).then(res => {
         this.rankChartData2 = res.data.map(n => {
           return Object.assign({}, n, {
             value: (+n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
+      }).catch(() => {
+        this.$message({
+          message: '无数据',
+          type: 'error',
+          duration: '5000'
+        })
       })
+        .finally(() => {
+          this.loading.branchRankLoading = false
+        })
     },
     getRankEmp() {
+      this.loading.empRankLoading = true
       totalRank({ content: 2, type: this.rankSelVal3 }).then(res => {
         this.rankChartData3 = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
         }).slice(0, 10)
+      }).catch(() => {
+        this.$message({
+          message: '无数据',
+          type: 'error',
+          duration: '5000'
+        })
       })
+        .finally(() => {
+          this.loading.empRankLoading = false
+        })
     }
   }
 }
