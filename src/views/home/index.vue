@@ -1,6 +1,7 @@
 <template>
   <div class="container shun-card">
     <div v-for="(box,pi) of realTabList"
+         v-show="box.list.length"
          :key="pi"
          class="box">
       <div class="box-title">{{ box.mainTitle }}</div>
@@ -13,17 +14,6 @@
           <div class="title">{{ item.title }}</div>
           <div class="desc">{{ item.desc }}</div>
         </div>
-      </div>
-    </div>
-    <div class="button-box">
-      <div class="box-title">常用工具</div>
-      <div class="button-container">
-        <el-button v-for="(item,i) of buttonList"
-                   :key="i"
-                   type="primary"
-                   class="button">
-          {{ item.name }}
-        </el-button>
       </div>
     </div>
   </div>
@@ -39,13 +29,13 @@ export default {
         {
           mainTitle: '营销事件管理',
           list: [
-            {
-              img: require('../../assets/home/1-1.png'),
-              title: '',
-              desc: '',
-              path: '/createEvent',
-              roles: ['事件注册']
-            },
+            // {
+            //   img: require('../../assets/home/1-1.png'),
+            //   title: '',
+            //   desc: '',
+            //   path: '/createEvent',
+            //   roles: ['事件注册']
+            // },
             {
               img: require('../../assets/home/1-2.png'),
               title: '事件列表',
@@ -112,27 +102,9 @@ export default {
               title: '系统设置',
               desc: '',
               path: '/config',
-              roles: ['事件注册', '用例管理', '线索统筹', '业务管理']
+              roles: ['用例管理', '线索统筹', '业务管理']
             }
           ]
-        }
-      ],
-      buttonList: [
-        {
-          name: 'CRM',
-          path: ''
-        },
-        {
-          name: '数据中台',
-          path: ''
-        },
-        {
-          name: '大零售系统',
-          path: ''
-        },
-        {
-          name: '其他',
-          path: ''
         }
       ]
     }
@@ -189,9 +161,22 @@ export default {
 
   .box {
     margin-bottom: 28px;
-
-    &:nth-of-type(3) {
-      @include top-line;
+    position: relative;
+    padding-top: 28px;
+    &:before {
+      content: "";
+      position: absolute;
+      height: 0;
+      border-bottom: 1px solid #f0f2f5;
+      top: 0;
+      left: 0;
+      right: 0;
+    }
+    &:first-of-type {
+      padding-top: 0;
+      &:before {
+        content: none;
+      }
     }
 
     .box-title {
@@ -249,14 +234,6 @@ export default {
           display: none;
         }
       }
-    }
-  }
-
-  .button-box {
-    @include top-line;
-
-    .button-container {
-      margin-top: 15px;
     }
   }
 }
