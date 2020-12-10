@@ -802,6 +802,7 @@ export default {
         this.baseInfo[3].value = data.total_aum / 1000
         this.baseInfo[4].value = data.total_lum / 1000
         this.baseInfo[5].value = data.total_credit_card
+      }).finally(() => {
         this.loading.baseInfoLoading = false
       })
     },
@@ -818,6 +819,7 @@ export default {
         this.funnelResult.effective_count = res.data.effective_count
         this.funnelResult.effective_rate = res.data.effective_rate
         this.funnelResult.actual_achievement = res.data.actual_achievement
+      }).finally(() => {
         this.loading.funnelChartLoading = false
       })
     },
@@ -830,6 +832,7 @@ export default {
             value: +n.value
           })
         })
+      }).finally(() => {
         this.loading.chartPieLoading = false
       })
     },
@@ -873,8 +876,8 @@ export default {
             value: +n.value
           })
         })
-        this.loading.usecaseBarLoading = false
-      })
+      }).finally(() => { })
+      this.loading.usecaseBarLoading = false
     },
     getAchieveRate(channel_id, unm) {
       totalAchieveRate({ channel_id }).then(res => {
@@ -953,6 +956,7 @@ export default {
             value: +n.value * 100
           })
         })
+      }).finally(() => {
         this['lineChartLoading' + i] = false
       })
     },
@@ -971,6 +975,7 @@ export default {
             const bRank = b.value
             return (bRank - aRank)
           })
+        }).finally(() => {
           this.loading.chartBarLoading = false
           this.loading.chartLineLoading = false
         })
@@ -986,6 +991,7 @@ export default {
             const bRank = b.value
             return (bRank - aRank)
           })
+        }).finally(() => {
           this.loading.chartBarLoading = false
           this.loading.chartLineLoading = false
         })
