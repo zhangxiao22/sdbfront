@@ -40,7 +40,7 @@ export default {
               img: require('../../assets/home/1-2.png'),
               title: '事件列表',
               path: '/eventBoard',
-              desc: '营销结果的综合分析、反馈数据收集、为策略调整提供依据'
+              desc: '事件管理人员进行事件的创建、修改、审批、下线'
             },
             {
               img: require('../../assets/home/1-3.png'),

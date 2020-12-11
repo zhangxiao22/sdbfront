@@ -112,13 +112,14 @@
                :model="addInfo">
         <el-form-item label="客户号："
                       :rules="[{
-                        required: true, message: '请输入客户号', trigger: 'blur'
-                      }]"
+                                 required: true, message: '请输入客户号', trigger: 'blur'
+                               },{pattern: /^[0-9]*$/, message: '客户号应为数字', trigger: 'blur'},
+                               {min:11 , max: 11, message: '客户号为11位数字', trigger: 'blur'}]"
                       prop="customerAccount">
           <el-input v-model.trim="addInfo.customerAccount"
                     show-word-limit
                     style="width:90%;"
-                    maxlength="50" />
+                    maxlength="11" />
         </el-form-item>
         <el-form-item label="客户名称："
                       :rules="[{

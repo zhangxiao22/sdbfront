@@ -463,7 +463,7 @@ import {
   // totalRankOrg,
   // totalRankBrancg,
   totalRank,
-  getAllJob,
+  // getAllJob,
   getAllUseCase,
   getEventList
 } from '@/api/api'
@@ -758,7 +758,7 @@ export default {
     },
     render() {
       // 获取岗位
-      this.getPostOpt()
+      // this.getPostOpt()
       this.getUseCase()
       //
       this.getOverview()
@@ -858,16 +858,16 @@ export default {
       }
     },
     // 获取岗位列表
-    getPostOpt() {
-      getAllJob().then(res => {
-        res.data.forEach(n => {
-          this.postOpt.push({
-            value: n.id,
-            label: n.name
-          })
-        })
-      })
-    },
+    // getPostOpt() {
+    //   getAllJob().then(res => {
+    //     res.data.forEach(n => {
+    //       this.postOpt.push({
+    //         value: n.id,
+    //         label: n.name
+    //       })
+    //     })
+    //   })
+    // },
     getCluesUseCase() {
       this.loading.usecaseBarLoading = true
       totalCluesUseCase({ type: this.funnelSel, channel: this.channelOptVal }).then(res => {
@@ -1027,7 +1027,7 @@ export default {
         this.$message({
           message: '无数据',
           type: 'error',
-          duration: '5000'
+          duration: '2000'
         })
       })
         .finally(() => {
@@ -1042,13 +1042,14 @@ export default {
             value: (+n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
-      }).catch(() => {
-        this.$message({
-          message: '无数据',
-          type: 'error',
-          duration: '5000'
-        })
       })
+        .catch(() => {
+          this.$message({
+            message: '无数据',
+            type: 'error',
+            duration: '2000'
+          })
+        })
         .finally(() => {
           this.loading.branchRankLoading = false
         })
@@ -1065,7 +1066,7 @@ export default {
         this.$message({
           message: '无数据',
           type: 'error',
-          duration: '5000'
+          duration: '2000'
         })
       })
         .finally(() => {

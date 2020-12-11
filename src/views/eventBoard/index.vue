@@ -138,7 +138,7 @@
                   编辑
                 </div>
               </el-dropdown-item>
-              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5 && roleJudge.createEvent">
+              <el-dropdown-item v-if="roleJudge.createEvent && judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5">
                 <div class="btn"
                      style="color:#1890FF;"
                      @click="handleCopy(scope.row)">复制</div>
