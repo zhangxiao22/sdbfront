@@ -73,7 +73,7 @@ export default {
               this.$refs['rule'].init(res.data)
             }
           } else {
-            // 白名单
+            // 默认白名单
             this.activeName = '1'
             this.$refs['whiteList'].init(res.data)
             this.$refs['rule'].init(res.data)

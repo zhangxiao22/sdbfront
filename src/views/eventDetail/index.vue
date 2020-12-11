@@ -9,11 +9,11 @@
       <div class="button-group">
         <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
                    type="success"
-                   @click="resolveForm.resolveText='';showResolve=true;">{{ roleJudge.empOrBoss ? '审核通过': '审批通过' }}</el-button>
+                   @click="resolveForm.resolveText='';showResolve=true;">{{ subStatus&&subStatus === 9 ? '审核通过': '审批通过' }}</el-button>
         <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
                    type="danger"
                    style="margin-left:20px;"
-                   @click="resolveForm.rejectText='';showReject=true;">{{ roleJudge.empOrBoss ? '审核驳回': '审批驳回' }}</el-button>
+                   @click="resolveForm.rejectText='';showReject=true;">{{ subStatus&&subStatus === 9 ? '审核驳回': '审批驳回' }}</el-button>
         <el-button v-if="roleJudge.showCopyButton"
                    type="primary"
                    :loading="buttonLoadingCopy"
@@ -149,6 +149,7 @@ export default {
       copy_showHistory: false,
       list: [],
       mainStatus: '',
+      subStatus: '',
       previewData: {},
       eventName: '',
       showResolve: false,
@@ -192,10 +193,8 @@ export default {
       console.log(this.roles)
       this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === '用例管理' || this.roles === 'admin'
       this.roleJudge.showApproveButton = this.mainStatus === 3
-      // 用例管理员为true 领导为false 小状态9为 正式审核中
-      this.roleJudge.empOrBoss = this.previewData.eventBaseInfo.status.value === 9
       this.roleJudge.showCopyButton = this.roles === '事件注册' || this.roles === 'admin' && this.mainStatus === 4 || this.mainStatus === 5
-      this.roleJudge.showApproveList = this.previewData.eventBaseInfo.status.value !== 1
+      this.roleJudge.showApproveList = this.subStatus !== 1
       if (this.roleJudge.showApproveList) {
         this.getLinkList()
       }
@@ -228,6 +227,7 @@ export default {
         getEventPreview({ baseId: this.id }).then(res => {
           this.previewData = res.data
           this.mainStatus = res.data.eventBaseInfo.largeStatus.value
+          this.subStatus = res.data.eventBaseInfo.status.value
           this.eventName = res.data.eventBaseInfo.name
           resolve()
         })
