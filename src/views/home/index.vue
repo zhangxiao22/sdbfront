@@ -216,6 +216,8 @@ export default {
 
           .desc {
             display: block;
+            opacity: 1;
+            transition: opacity 1s;
           }
         }
 
@@ -231,7 +233,8 @@ export default {
           font-weight: light;
           font-size: 12px;
           line-height: 1.5;
-          display: none;
+          // display: none;
+          opacity: 0;
         }
       }
     }
