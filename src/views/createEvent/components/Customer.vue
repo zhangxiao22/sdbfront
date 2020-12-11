@@ -61,14 +61,21 @@ export default {
       getGroup({ baseId: this.id }).then(res => {
         // this.activeName = res.data.abstractDetail.lodeType.value + ''
         if (res.code === 200) {
-          const lodeType = res.data.abstractDetail.lodeType.value
-          if (lodeType === 1) {
+          if (res.data.abstractDetail.lodeType) {
+            const lodeType = res.data.abstractDetail.lodeType.value
+            if (lodeType === 1) {
+              // 白名单
+              this.activeName = '1'
+              this.$refs['whiteList'].init(res.data)
+            } else if (lodeType === 2) {
+              // 规则
+              this.activeName = '2'
+              this.$refs['rule'].init(res.data)
+            }
+          } else {
             // 白名单
             this.activeName = '1'
             this.$refs['whiteList'].init(res.data)
-          } else if (lodeType === 2) {
-            // 规则
-            this.activeName = '2'
             this.$refs['rule'].init(res.data)
           }
         }

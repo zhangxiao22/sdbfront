@@ -4,11 +4,9 @@
     <el-form>
       <Group ref="totalRuleRef"
              :condition="totalCondition"
-             :total-detail="totalDetail"
-             :val-detail="valDetail"
              :rule-opt="ruleOpt"
              :origin-data="originData"
-             :button-loading="buttonLoading"
+             :button-loading="totalButtonLoading"
              required
              :min-length="0"
              label="整体规则"
@@ -69,11 +67,9 @@
                  ref="groupRuleRef"
                  required
                  :condition="item.condition"
-                 :val-detail="item.valDetail"
-                 :total-detail="item.groupDetail"
                  :rule-opt="ruleOpt"
                  :origin-data="originData"
-                 :button-loading="buttonLoading"
+                 :button-loading="groupButtonLoading"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
         </el-tab-pane>
@@ -100,7 +96,9 @@ export default {
   },
   data() {
     return {
-      buttonLoading: false,
+      beforeCondition: [],
+      totalButtonLoading: false,
+      groupButtonLoading: false,
       mainLoading: false,
       ruleOpt: [],
       originData: [],
@@ -109,13 +107,6 @@ export default {
       totalPeople: '',
       fileId: null,
       labelTabs: [
-        //   {
-        //   title: '其他客群',
-        //   desc: '该客群为未被分入任何客群的客户集合，默认为全部，不可修改或删除。',
-        //   name: '1',
-        //   closable: false,
-        //   people: ''
-        // }
       ],
       // 值
       labelIndex: '0',
@@ -138,17 +129,115 @@ export default {
     this.tabDrop()
   },
   created() {
-    // this.getDetail()
-    this.getRuleOpt()
   },
   methods: {
     init(data) {
-      this.render(data)
-      // this.getRuleOpt()
+      this.getRuleOpt().then(() => {
+        if (data.abstractDetail.lodeType?.value === 2) {
+          this.render(data)
+        }
+      })
     },
     reset() {
       this.labelTabsCounts = 0
       this.getDetail()
+    },
+    getAllData(totoalDetail, valDetail) {
+      let vals = []
+      this.beforeCondition = []
+      for (let i = 0; i < totoalDetail.length; i++) {
+        this.originData.find((n) => {
+          if (n.id === totoalDetail[i].tagId) {
+            vals = [n.tagCtgryNm, n.tagPrimClNm, n.tagScdClNm, totoalDetail[i].tagId]
+            return true
+          }
+        })
+        this.beforeCondition.splice(i, 1, this.setOpt(totoalDetail[i], vals, valDetail[i]))
+      }
+    },
+    setOpt(optValue, conditionSelectVal, valDetail) {
+      if (!optValue) {
+        return {
+          conditionSelect: [],
+          andOrText: {
+            value: 1,
+            label: '且'
+          }
+        }
+      } else {
+        const item = this.originData.find((n) => {
+          return n.id === optValue.tagId
+        })
+        let conditionValue
+        let conditionCompare
+        if (item.type === '数值型') {
+          conditionValue = {
+            numberVal: valDetail[0].content
+          }
+          conditionCompare = item.relations
+        }
+        if (item.type === '字符串型') {
+          conditionValue = {
+            stringVal: valDetail[0].content
+          }
+          conditionCompare = item.relations
+        }
+        if (item.type === '枚举型') {
+          conditionValue = {
+            selectVal: valDetail[0].content.value
+          }
+          conditionCompare = [
+            {
+              value: 1,
+              label: '是'
+            }
+          ]
+        }
+        if (item.type === '日期型') {
+          conditionValue = {
+            dateVal: valDetail[0].content
+          }
+          conditionCompare = item.relations
+        }
+        if (item.type === '布尔型') {
+          conditionValue = {
+            booleanVal: valDetail[0].content
+          }
+          conditionCompare = [{
+            value: 1,
+            label: '请选择'
+          }]
+        }
+        const data = {
+          // 规则选中选项的值
+          conditionSelect: conditionSelectVal,
+          // 规则选中的名称
+          conditionLabel: item.name,
+          // 类型
+          type: item.type,
+          // 比较符号的选项
+          compareOpt: conditionCompare,
+          // 比较符号的值
+          compare: valDetail[0].compare.value,
+          // 枚举型可选项
+          selectOpt: item.enumCandidateList,
+          // 布尔型可选项
+          booleanOpt: item.booleanOpt,
+          // 数字型-单位
+          unit: item.unit,
+          // 规则的值
+          conditionValue,
+          // andOrText: '且'
+          andOrText: this.englishAndOr(optValue.combineRelation)
+          // andOrText: optValue.combineRelation
+        }
+        return data
+      }
+    },
+    englishAndOr(value) {
+      if (value) {
+        return value.value === 1 ? { value: 1, label: '且' } : { value: 2, label: '或' }
+      } else return null
     },
     render(data) {
       this.labelTabs = data.infoDetailList.map((n) => {
@@ -171,6 +260,10 @@ export default {
           })
         }
       })
+      for (let i = 0; i < this.labelTabs.length; i++) {
+        this.getAllData(this.labelTabs[i].groupDetail, this.labelTabs[i].valDetail)
+        this.labelTabs[i].condition = this.beforeCondition
+      }
       this.labelIndex = '1'
       // 传递整体规则ID以及且或符号
       this.totalDetail = data.abstractDetail.tagList.map(n => {
@@ -182,12 +275,19 @@ export default {
           return { content: m.content, compare: m.tagRelation }
         })
       })
+      this.getAllData(this.totalDetail, this.valDetail)
+      this.totalCondition = this.beforeCondition
     },
     // 获取规则信息
     getDetail() {
       this.mainLoading = true
       getGroup({ baseId: this.id }).then(res => {
-        this.render(res.data)
+        if (res.data.abstractDetail.lodeType?.value === 2) {
+          this.render(res.data)
+        } else {
+          this.labelTabs = []
+          this.totalCondition = []
+        }
       }).finally(() => {
         this.mainLoading = false
       })
@@ -242,12 +342,10 @@ export default {
         })
       })
       return tempList
-      // console.log(tempList)
     },
     // 列表转tree
     listToTree(oldArr) {
       oldArr.forEach(element => {
-        // console.log(element)
         const pid = element.pid
         if (pid.Fid !== '') {
           oldArr.forEach(ele => {
@@ -260,29 +358,30 @@ export default {
           })
         }
       })
-      //   console.log(oldArr) //此时的数组是在原基础上补充了children;
       oldArr = oldArr.filter(ele => ele.pid.Fid === '') // 这一步是过滤，按树展开，将多余的数组剔除；
       return oldArr
     },
     getRuleOpt() {
-      this.getOriginOptData().then(() => {
-        this.listChange = _.uniqWith(
-          this.getList(),
-          _.isEqual
-        )
-        this.listChangeAgain = _.uniqBy(
-          this.listChange, 'pid'
-        )
-        this.ruleOpt = this.listToTree(this.listChangeAgain)
+      return new Promise((resolve, reject) => {
+        this.getOriginOptData().then(() => {
+          this.listChange = _.uniqWith(
+            this.getList(),
+            _.isEqual
+          )
+          this.listChangeAgain = _.uniqBy(
+            this.listChange, 'pid'
+          )
+          this.ruleOpt = this.listToTree(this.listChangeAgain)
+          resolve()
+        })
+        // todo
+        // console.log(this.ruleOpt)
       })
-      // todo
-      console.log(this.ruleOpt)
     },
     transferDataByType(val) {
       const data = val.map((n) => {
         return {
           tagId: n.conditionSelect[3],
-          // contentWithRelation: n.conditionSelect
           contentWithRelation: [{ content: JSON.stringify(n.conditionValue.numberVal) || n.conditionValue.stringVal || n.conditionValue.selectVal || n.conditionValue.dateVal || n.conditionValue.booleanVal || 0, tagRelation: n.compare }],
           combineRelation: n.andOrText.value
         }
@@ -290,20 +389,19 @@ export default {
       return data
     },
     checkAll(val) {
-      this.buttonLoading = true
+      this.totalButtonLoading = true
       getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(val) }).then(res => {
         this.totalPeople = res.data.count
       }).finally(() => {
-        this.buttonLoading = false
+        this.totalButtonLoading = false
       })
     },
     checkGroup(item, ti) {
-      this.buttonLoading = true
-      // console.log(item, ti)
+      this.groupButtonLoading = true
       getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition), searchRuleList: this.transferDataByType(this.totalCondition) }).then(res => {
         this.labelTabs[ti].people = res.data.count
       }).finally(() => {
-        this.buttonLoading = false
+        this.groupButtonLoading = false
       })
     },
 
@@ -329,7 +427,6 @@ export default {
             }
           })
         }
-        // console.log(data)
         return new Promise((resolve, reject) => {
           saveGroup(data).then(res => {
             if (res.code === 200) {
@@ -373,10 +470,8 @@ export default {
     // tab拖拽
     tabDrop() {
       const el = document.querySelector('#group-tabs .el-tabs__nav')
-      // console.log(el)
       const _this = this
       var sortable = Sortable.create(el, {
-        // filter: '#tab-1',
         onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
           const currRow = _this.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
           _this.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组

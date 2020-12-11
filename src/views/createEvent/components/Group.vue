@@ -15,9 +15,6 @@
              :key="ci"
              class="condition-item"
              :class="{single:condition.length===1}">
-          <!-- {{ ci }}  -->
-          <!-- {{ conditionItem.conditionSelect }} -->
-
           <el-form-item :prop="'condition.' + ci + '.conditionSelect'"
                         class="item"
                         :rules="[{
@@ -25,20 +22,6 @@
                         }]">
             <el-tooltip :content="conditionItem.conditionLabel||'请选择'"
                         placement="left">
-              <!-- <el-select v-model="conditionItem.conditionSelect"
-                         filterable
-                         class="condition-item-input"
-                         @change="selectCondition($event,ci)">
-                <el-option v-for="optItem of tags"
-                           :key="optItem.value"
-                           :label="optItem.label"
-                           :value="optItem.value">
-                  <svg-icon class="type-icon"
-                            :icon-class="optItem.type" />
-                  {{ optItem.label }}
-                </el-option>
-                {{ tags }}
-              </el-select> -->
               <el-cascader v-model="conditionItem.conditionSelect"
                            filterable
                            :show-all-levels="false"
@@ -175,18 +158,6 @@ export default {
         return []
       }
     },
-    totalDetail: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    // groupDetail: {
-    //   type: Array,
-    //   default() {
-    //     return []
-    //   }
-    // },
     ruleOpt: {
       type: Array,
       default() {
@@ -208,12 +179,6 @@ export default {
       type: Number,
       default: 1
     },
-    valDetail: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
     label: {
       type: String,
       default: '分群规则'
@@ -229,20 +194,9 @@ export default {
   },
   data() {
     return {
-      // condition: [],
       group: [],
-      groupAll: [],
-      // groupDetail: [],
-      totalCondition: [],
-      groupCondition: [],
-      numberOptions: [],
       stringOptions: [],
-      MAX_NUMBER,
-      // originData: [],
-      // originOptData: [],
-      // ruleOpt: [],
-      numberFlat: {}
-      // totalPeople: 0
+      MAX_NUMBER
     }
   },
   computed: {
@@ -252,9 +206,6 @@ export default {
     id() {
       return +this.$route.query.id
     },
-    // tags() {
-    //   return this.ruleOpt
-    // },
     rules() {
       return [{
         required: this.required, message: '请选择规则', type: 'array'
@@ -262,98 +213,15 @@ export default {
     }
   },
   watch: {
-    totalDetail() {
-      this.$nextTick(() => {
-        this.getAllData()
-      })
-    }
   },
   mounted() {
-    // this.getRuleList().then(() => {
-    //   setTimeout(() => {
-    //     this.listChange = _.uniqWith(
-    //       this.getList(),
-    //       _.isEqual
-    //     )
-    //     this.listChangeAgain = _.uniqBy(
-    //       this.listChange, 'pid'
-    //     )
-    //     this.ruleOpt = this.listToTree(this.listChangeAgain)
-
-    //     // console.log('ruleOpt=======', this.ruleOpt)
-    //     this.getAllData()
-    //   }, 500)
-    // })
-    // this.getRuleList().then(() => {
-    //   setTimeout(() => {
-    //     this.getAllData()
-    //   }, 500)
-    // })
-    // totalDetail() {
-    //   this.$nextTick(() => {
-    //     this.getAllData()
-    //   })
-    // }
-
-    setTimeout(() => {
-      this.getAllData()
-    }, 1000)
   },
   created() {
-    // this.tagsInit(0, 0)
-    // this.getAllData()
   },
 
   methods: {
     reset() {
-      // console.log('aaaaa')
-      // this.$parent.getDetail()
     },
-    // 列表转tree
-    // listToTree(oldArr) {
-    //   oldArr.forEach(element => {
-    //     // console.log(element)
-    //     const pid = element.pid
-    //     if (pid.Fid !== '') {
-    //       oldArr.forEach(ele => {
-    //         if (ele.value === pid.Fid && ele.pid.Fid === pid.FFid && ele.pid.FFid === pid.FFFid) { // 当内层循环的ID== 外层循环的parendId时，（说明有children），需要往该内层id里建个children并push对应的数组；
-    //           if (!ele.children) {
-    //             ele.children = []
-    //           }
-    //           ele.children.push(element)
-    //         }
-    //       })
-    //     }
-    //   })
-    //   //   console.log(oldArr) //此时的数组是在原基础上补充了children;
-    //   oldArr = oldArr.filter(ele => ele.pid.Fid === '') // 这一步是过滤，按树展开，将多余的数组剔除；
-    //   return oldArr
-    // },
-    // 整理数据
-    // getList() {
-    //   var tempList = []
-    //   this.originOptData.forEach((n, i) => {
-    //     tempList.push({
-    //       value: n.first,
-    //       pid: { Fid: '', Cid: n.first, FFid: '', FFFid: '' },
-    //       label: n.first
-    //     }, {
-    //       value: n.second,
-    //       pid: { Fid: n.first, Cid: n.second, FFid: '', FFFid: '' },
-    //       label: n.second
-    //     }, {
-    //       value: n.third,
-    //       pid: { Fid: n.second, Cid: n.third, FFid: n.first, FFFid: '' },
-    //       label: n.third
-    //     }, {
-    //       value: n.id,
-    //       pid: { Fid: n.third, Cid: n.fourth, FFid: n.second, FFFid: n.first },
-    //       label: n.fourth
-    //     })
-    //   })
-    //   return tempList
-    //   // console.log(tempList)
-    // },
     validateNumber(rule, value, callback) {
       const index = rule.field.split('.')[1]
       if (this.condition[index].conditionValue.minVal === undefined && this.condition[index].conditionValue.maxVal === undefined) {
@@ -361,7 +229,6 @@ export default {
       } else if (this.condition[index].conditionValue.minVal >= this.condition[index].conditionValue.maxVal) {
         callback('区间的最小值必须小于最大值')
       } else {
-        // this.$refs.form.clearValidate(`condition.${index}.conditionValue.minVal`)
         callback()
       }
     },
@@ -370,20 +237,7 @@ export default {
     chcekNumber(index) {
       this.$refs.form.validateField(`condition.${index}.conditionValue.minVal`)
     },
-    // validateDate(rule, value, callback) {
-    //   const index = rule.field.split('.')[1]
-    //   if (!this.condition[index].conditionValue.startDate && !this.condition[index].conditionValue.endDate) {
-    //     callback('请选择开始时间或结束时间')
-    //   } else if (this.condition[index].conditionValue.startDate &&
-    //     this.condition[index].conditionValue.endDate &&
-    //     this.condition[index].conditionValue.startDate >= this.condition[index].conditionValue.endDate) {
-    //     callback('开始时间不能早于结束时间')
-    //   } else {
-    //     callback()
-    //   }
-    // },
     validate(cb) {
-      // console.log('cb??????????????', cb)
       this.$refs.form.validate((valid) => {
         cb(valid)
       })
@@ -392,45 +246,10 @@ export default {
     check() {
       this.$refs.form.validate((valid) => {
         if (valid) {
+          console.log('this.condition', this.condition)
           this.$emit('check', this.condition)
         }
       })
-      // this.$refs.form.validate((valid) => {
-      //   if (valid) {
-      //     this.$emit('check', this.transfer())
-      //     this.filter()
-      //   }
-      // })
-    },
-    // 获取页面规则信息
-    // todo
-    getAllData() {
-      if (this.totalDetail) {
-        let vals = []
-        for (let i = 0; i < this.totalDetail.length; i++) {
-          // this.selection.find((n, i) => {
-          //   if (n.id === row.id) {
-          //     this.selection.splice(i, 1)
-          //     return true
-          //   }
-          // })
-          // console.log('aaaaaaaaaa', this.valDetail)
-          // this.originOptData.find((n) => {
-          //   if (n.id === this.totalDetail[i].tagId) {
-          //     vals = [n.first, n.second, n.third, this.totalDetail[i].tagId]
-          //     return true
-          //   }
-          // })
-          this.originData.find((n) => {
-            if (n.id === this.totalDetail[i].tagId) {
-              vals = [n.tagCtgryNm, n.tagPrimClNm, n.tagScdClNm, this.totalDetail[i].tagId]
-              return true
-            }
-          })
-          // vals = [this.totalDetail[i].tagId, this.totalDetail[i].tagId, this.totalDetail[i].tagId]
-          this.condition.splice(i, 1, this.setOpt(this.totalDetail[i], vals, this.valDetail[i]))
-        }
-      }
     },
     delayRun(code, time) {
       var t = setTimeout(code, time)
@@ -442,13 +261,6 @@ export default {
           val.splice(i, 1)
         }
       }
-      // console.log(val)
-      // this.numberOptions = val.map(n => {
-      //   return {
-      //     value: n,
-      //     label: n
-      //   }
-      // })
     },
     handleChangeStringInput(val) {
       this.stringOptions = val.map(n => {
@@ -458,87 +270,6 @@ export default {
         }
       })
     },
-
-    setOpt(optValue, conditionSelectVal, valDetail) {
-      if (!optValue) {
-        return {
-          conditionSelect: [],
-          andOrText: {
-            value: 1,
-            label: '且'
-          }
-        }
-      } else {
-        const item = this.originData.find((n) => {
-          return n.id === optValue.tagId
-        })
-        let conditionValue
-        let conditionCompare
-        if (item.type === '数值型') {
-          conditionValue = {
-            numberVal: valDetail[0].content
-          }
-          conditionCompare = item.relations
-        }
-        if (item.type === '字符串型') {
-          conditionValue = {
-            stringVal: valDetail[0].content
-          }
-          conditionCompare = item.relations
-        }
-        if (item.type === '枚举型') {
-          conditionValue = {
-            selectVal: valDetail[0].content.value
-          }
-          conditionCompare = [
-            {
-              value: 1,
-              label: '是'
-            }
-          ]
-        }
-        if (item.type === '日期型') {
-          conditionValue = {
-            dateVal: valDetail[0].content
-          }
-          conditionCompare = item.relations
-        }
-        if (item.type === '布尔型') {
-          conditionValue = {
-            booleanVal: valDetail[0].content
-          }
-          conditionCompare = [{
-            value: 1,
-            label: '请选择'
-          }]
-        }
-        const data = {
-          // 规则选中选项的值
-          conditionSelect: conditionSelectVal,
-          // 规则选中的名称
-          conditionLabel: item.name,
-          // 类型
-          type: item.type,
-          // 比较符号的选项
-          compareOpt: conditionCompare,
-          // 比较符号的值
-          compare: valDetail[0].compare.value,
-          // 枚举型可选项
-          selectOpt: item.enumCandidateList,
-          // 布尔型可选项
-          booleanOpt: item.booleanOpt,
-          // 数字型-单位
-          unit: item.unit,
-          // 规则的值
-          conditionValue,
-          // andOrText: '且'
-          andOrText: this.englishAndOr(optValue.combineRelation)
-          // andOrText: optValue.combineRelation
-        }
-        return data
-      }
-    },
-
     // 通过规则选中的值，返回一条规则应该展示的数据
     resetOpt(optValue, conditionSelectVal) {
       if (!optValue) {
@@ -630,25 +361,9 @@ export default {
       }
     },
 
-    tagsInit(ci, optValue) {
-      /**
-       * ci: condition的index
-         optValue: 选项的值
-       */
-      this.condition.splice(ci, 1, this.resetOpt(optValue))
-    },
     selectCondition(val, i) {
-      // console.log(val[3], 'i===========', i, val)
-      // for (let j = 0; j < this.originOptData.length; j++) {
-      //   if (this.originOptData[j].id === val[3]) {
-      //     // this.condition.splice(i, 1, this.resetOpt(val[2], val))
-      //     this.condition.splice(i, 1, this.resetOpt(val[3], val))
-      //     break
-      //   }
-      // }
       for (let j = 0; j < this.originData.length; j++) {
         if (this.originData[j].id === val[3]) {
-          // this.condition.splice(i, 1, this.resetOpt(val[2], val))
           this.condition.splice(i, 1, this.resetOpt(val[3], val))
           break
         }
@@ -665,20 +380,7 @@ export default {
       this.$refs.form.clearValidate('condition')
     },
     andOr(i) {
-      // this.condition[i].andOrText = this.condition[i].andOrText === '且' ? '或' : '且'
       this.condition[i].andOrText = this.condition[i].andOrText.label === '且' ? { value: 2, label: '或' } : { value: 1, label: '且' }
-    },
-    englishAndOr(value) {
-      if (value) {
-        return value.value === 1 ? { value: 1, label: '且' } : { value: 2, label: '或' }
-      } else return null
-    },
-    getVal() {
-      return this.condition
-      // const data = this.condition.map((n, i) => {
-      // console.log(this.condition)
-      // })
-      // return data
     }
   }
 }
