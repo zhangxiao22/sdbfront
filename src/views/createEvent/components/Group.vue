@@ -150,6 +150,7 @@
         </el-button>
         <el-button type="primary"
                    plain
+                   :loading="buttonLoading"
                    @click="check">筛选客户</el-button>
       </el-form-item>
 
@@ -180,12 +181,12 @@ export default {
         return []
       }
     },
-    groupDetail: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
+    // groupDetail: {
+    //   type: Array,
+    //   default() {
+    //     return []
+    //   }
+    // },
     ruleOpt: {
       type: Array,
       default() {
@@ -218,6 +219,10 @@ export default {
       default: '分群规则'
     },
     required: {
+      type: Boolean,
+      default: false
+    },
+    buttonLoading: {
       type: Boolean,
       default: false
     }
@@ -257,7 +262,11 @@ export default {
     }
   },
   watch: {
-
+    totalDetail() {
+      this.$nextTick(() => {
+        this.getAllData()
+      })
+    }
   },
   mounted() {
     // this.getRuleList().then(() => {
@@ -280,13 +289,19 @@ export default {
     //     this.getAllData()
     //   }, 500)
     // })
+    // totalDetail() {
+    //   this.$nextTick(() => {
+    //     this.getAllData()
+    //   })
+    // }
+
     setTimeout(() => {
       this.getAllData()
-    }, 500)
+    }, 1000)
   },
   created() {
     // this.tagsInit(0, 0)
-
+    // this.getAllData()
   },
 
   methods: {
@@ -490,7 +505,7 @@ export default {
         }
         if (item.type === '布尔型') {
           conditionValue = {
-            booleanVal: valDetail[0].content.value
+            booleanVal: valDetail[0].content
           }
           conditionCompare = [{
             value: 1,

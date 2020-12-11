@@ -8,6 +8,7 @@
              :val-detail="valDetail"
              :rule-opt="ruleOpt"
              :origin-data="originData"
+             :button-loading="buttonLoading"
              required
              :min-length="0"
              label="整体规则"
@@ -72,6 +73,7 @@
                  :total-detail="item.groupDetail"
                  :rule-opt="ruleOpt"
                  :origin-data="originData"
+                 :button-loading="buttonLoading"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
         </el-tab-pane>
@@ -98,6 +100,7 @@ export default {
   },
   data() {
     return {
+      buttonLoading: false,
       mainLoading: false,
       ruleOpt: [],
       originData: [],
@@ -287,14 +290,20 @@ export default {
       return data
     },
     checkAll(val) {
+      this.buttonLoading = true
       getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(val) }).then(res => {
         this.totalPeople = res.data.count
+      }).finally(() => {
+        this.buttonLoading = false
       })
     },
     checkGroup(item, ti) {
-      console.log(item, ti)
-      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition) }).then(res => {
+      this.buttonLoading = true
+      // console.log(item, ti)
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition), searchRuleList: this.transferDataByType(this.totalCondition) }).then(res => {
         this.labelTabs[ti].people = res.data.count
+      }).finally(() => {
+        this.buttonLoading = false
       })
     },
 
