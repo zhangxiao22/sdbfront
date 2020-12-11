@@ -74,12 +74,12 @@
       <Preview :preview-data="previewData"
                not-auto-render />
     </div>
-    <el-dialog :title="roleJudge.empOrBoss ? '审核通过': '审批通过'"
+    <el-dialog title="通过"
                :visible.sync="showResolve">
       <el-form ref="regFormRef"
                label-width="110px"
                :model="resolveForm">
-        <el-form-item :label="roleJudge.empOrBoss ? '审核意见：': '审批意见：'"
+        <el-form-item label="意见："
                       prop="resolveText">
           <el-input v-model.trim="resolveForm.resolveText"
                     style="width:90%;"
@@ -97,12 +97,12 @@
                    @click="ensureResolve">确 定</el-button>
       </div>
     </el-dialog>
-    <el-dialog :title="roleJudge.empOrBoss ? '审核驳回': '审批驳回'"
+    <el-dialog title="驳回"
                :visible.sync="showReject">
       <el-form ref="formRef"
                label-width="110px"
                :model="resolveForm">
-        <el-form-item :label="roleJudge.empOrBoss ? '审核意见：': '审批意见：'"
+        <el-form-item label="意见："
                       :rules="[{
                         required: true, message: '请输入驳回内容', trigger: 'blur'
                       }]"
@@ -192,8 +192,8 @@ export default {
       console.log(this.roles)
       this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === '用例管理' || this.roles === 'admin'
       this.roleJudge.showApproveButton = this.mainStatus === 3
-      // 用例管理员为true 领导为false
-      this.roleJudge.empOrBoss = this.roles === '用例管理'
+      // 用例管理员为true 领导为false 小状态9为 正式审核中
+      this.roleJudge.empOrBoss = this.previewData.eventBaseInfo.status.value === 9
       this.roleJudge.showCopyButton = this.roles === '事件注册' || this.roles === 'admin' && this.mainStatus === 4 || this.mainStatus === 5
       this.roleJudge.showApproveList = this.previewData.eventBaseInfo.status.value !== 1
       if (this.roleJudge.showApproveList) {
