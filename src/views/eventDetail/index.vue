@@ -9,11 +9,11 @@
       <div class="button-group">
         <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
                    type="success"
-                   @click="resolveForm.resolveText='',showResolve=true;">{{ roleJudge.empOrBoss ? '审核通过': '审批通过' }}</el-button>
+                   @click="resolveForm.resolveText='';showResolve=true;">{{ roleJudge.empOrBoss ? '审核通过': '审批通过' }}</el-button>
         <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
                    type="danger"
                    style="margin-left:20px;"
-                   @click="resolveForm.rejectText='',showReject=true;">{{ roleJudge.empOrBoss ? '审核驳回': '审批驳回' }}</el-button>
+                   @click="resolveForm.rejectText='';showReject=true;">{{ roleJudge.empOrBoss ? '审核驳回': '审批驳回' }}</el-button>
         <el-button v-if="roleJudge.showCopyButton"
                    type="primary"
                    :loading="buttonLoadingCopy"

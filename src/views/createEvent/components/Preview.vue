@@ -122,7 +122,8 @@
               </el-table>
             </div>
             <!-- 权益 -->
-            <div class="preview-table-contaiber">
+            <div v-show="item.interest.length"
+                 class="preview-table-contaiber">
               <el-table :data="item.interest"
                         class="preview-table"
                         size="mini"
