@@ -1,5 +1,5 @@
 <template>
-  <!-- 防打扰 -->
+  <!-- 分发规则参数 -->
   <div class="container">
     <el-form ref="fromRef"
              :model="form"
