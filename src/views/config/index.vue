@@ -70,7 +70,7 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '用例优先级',
+        label: '用例管理',
         component: 'UseCasePriority',
         loading: false,
         roles: ['线索统筹']
@@ -82,7 +82,7 @@ export default {
       //   roles: ['用例管理']
       // },
       {
-        label: '事件优先级',
+        label: '事件管理',
         component: 'EventPriority',
         loading: false,
         roles: ['用例管理']
