@@ -52,7 +52,7 @@ export default {
     return {
       tabIndex: '0',
       tabList: [{
-        label: '防打扰',
+        label: '分发规则参数',
         component: 'NotDisturb',
         loading: false,
         roles: ['线索统筹']
