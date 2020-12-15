@@ -430,11 +430,7 @@ export default {
           })
         }
         return new Promise((resolve, reject) => {
-          let max = 0
-          for (let i = 0; i < this.labelTabs.length; i++) {
-            max = max < this.labelTabs[i].condition.length ? this.labelTabs[i].condition.length : max
-          }
-          if (max + this.totalCondition.length < 6) {
+          if (Math.max(...this.labelTabs.map(n => { return n.condition.length })) + this.totalCondition.length < 6) {
             saveGroup(data).then(res => {
               if (res.code === 200) {
                 resolve()
