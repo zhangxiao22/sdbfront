@@ -2,74 +2,82 @@
   <div class="container">
     <div class="main-container shun-card">
       <div class="header">
-        <el-page-header content="事件详情"
-                        @back="goBack" />
-        <el-divider class="header-divider" />
-      </div>
-      <div class="button-group">
-        <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
-                   type="success"
-                   @click="resolveForm.resolveText='';showResolve=true;">{{ subStatus&&subStatus === 9 ? '审核通过': '审批通过' }}</el-button>
-        <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
-                   type="danger"
-                   style="margin-left:20px;"
-                   @click="resolveForm.rejectText='';showReject=true;">{{ subStatus&&subStatus === 9 ? '审核驳回': '审批驳回' }}</el-button>
-        <el-button v-if="roleJudge.showCopyButton"
-                   type="primary"
-                   :loading="buttonLoadingCopy"
-                   @click="handleCopy">复制事件</el-button>
-      </div>
-      <div v-if="roleJudge.showApproveList"
-           class="timeline-container">
-        <div v-for="(item,i) of visibleList"
-             :key="i"
-             :class="{last:!copy_showHistory&&i === visibleList.length-1}"
-             class="item">
-          <div class="border-line" />
-          <div class="content-box">
-            <div class="circle" />
-            <b class="title">{{ item.title }}</b>
-            <span class="user">{{ `（${item.user.join(',')}）` }}</span>
-            <span class="time">{{ item.timestamp }}</span>
-          </div>
-          <div class="desc">{{ item.desc }}</div>
+        <div class="header-left"
+             @click="goBack">
+          <i class="el-icon-back" />
+          <span class="title">返回</span>
         </div>
-        <div>
-          <el-collapse-transition>
-            <div v-show="showHistory"
-                 class="hide-list-group"
-                 :class="{show:showHistory}">
-              <div v-for="(item,i) of hiddenList"
-                   :key="i"
-                   :class="{last:copy_showHistory&&i === hiddenList.length-1}"
-                   class="item">
-                <transition name="el-fade-in-linear">
-                  <div v-show="copy_showHistory"
-                       class="border-line" />
-                </transition>
-                <!-- <div class="border-line" /> -->
-
-                <div class="content-box">
-                  <transition name="el-fade-in-linear">
-                    <div v-show="copy_showHistory"
-                         class="circle" />
-                  </transition>
-                  <b class="title">{{ item.title }}</b>
-                  <span class="user">({{ item.user.join(',') }})</span>
-                  <span class="time">{{ item.timestamp }}</span>
+        <div class="header-right">
+          <div class="content-title">事件详情</div>
+          <div class="button-group">
+            <el-popover v-model="visible"
+                        width="400"
+                        trigger="click">
+              <div class="timeline-container">
+                <div v-for="(item,i) of visibleList"
+                     :key="i"
+                     :class="{last:!copy_showHistory&&i === visibleList.length-1}"
+                     class="item">
+                  <div class="border-line" />
+                  <div class="content-box">
+                    <div class="circle" />
+                    <b class="title">{{ item.title }}</b>
+                    <span class="user">{{ `（${item.user.join(',')}）` }}</span>
+                    <span class="time">{{ item.timestamp }}</span>
+                  </div>
+                  <div class="desc">{{ item.desc }}</div>
                 </div>
-                <div class="desc">{{ item.desc }}</div>
+                <div>
+                  <el-collapse-transition>
+                    <div v-show="showHistory"
+                         class="hide-list-group"
+                         :class="{show:showHistory}">
+                      <div v-for="(item,i) of hiddenList"
+                           :key="i"
+                           :class="{last:copy_showHistory&&i === hiddenList.length-1}"
+                           class="item">
+                        <transition name="el-fade-in-linear">
+                          <div v-show="copy_showHistory"
+                               class="border-line" />
+                        </transition>
+                        <div class="content-box">
+                          <transition name="el-fade-in-linear">
+                            <div v-show="copy_showHistory"
+                                 class="circle" />
+                          </transition>
+                          <b class="title">{{ item.title }}</b>
+                          <span class="user">({{ item.user.join(',') }})</span>
+                          <span class="time">{{ item.timestamp }}</span>
+                        </div>
+                        <div class="desc">{{ item.desc }}</div>
+                      </div>
+                    </div>
+                  </el-collapse-transition>
+                </div>
+                <el-button v-show="hiddenList.length"
+                           class="more"
+                           type="text"
+                           @click="showHistory=!showHistory">{{ showHistory?'收起':'查看更多' }}
+                  <i :class="showHistory?'el-icon-arrow-up':'el-icon-arrow-down'"
+                     style="margin-left:5px;" />
+                </el-button>
               </div>
-            </div>
-          </el-collapse-transition>
+              <el-button slot="reference"
+                         type="text">审批动态<i class="el-icon-arrow-down el-icon--right" /></el-button>
+            </el-popover>
+            <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
+                       type="success"
+                       style="margin-left:20px;"
+                       @click="resolveForm.resolveText='';showResolve=true;">{{ subStatus&&subStatus === 9 ? '审核通过': '审批通过' }}</el-button>
+            <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
+                       type="danger"
+                       @click="resolveForm.rejectText='';showReject=true;">{{ subStatus&&subStatus === 9 ? '审核驳回': '审批驳回' }}</el-button>
+            <el-button v-if="roleJudge.showCopyButton"
+                       type="primary"
+                       :loading="buttonLoadingCopy"
+                       @click="handleCopy">复制事件</el-button>
+          </div>
         </div>
-        <el-button v-show="hiddenList.length"
-                   class="more"
-                   type="text"
-                   @click="showHistory=!showHistory">{{ showHistory?'收起':'查看更多' }}
-          <i :class="showHistory?'el-icon-arrow-up':'el-icon-arrow-down'"
-             style="margin-left:5px;" />
-        </el-button>
       </div>
       <Preview :preview-data="previewData"
                not-auto-render />
@@ -308,81 +316,132 @@ export default {
     min-height: 100%;
   }
   .header {
-    padding: 16px 16px 0;
-    .header-divider {
-      margin: 15px 0;
+    padding: 15px;
+    display: flex;
+    position: relative;
+    &:after {
+      content: "";
+      position: absolute;
+      height: 1px;
+      left: 15px;
+      right: 15px;
+      bottom: 0;
+      background-color: #dcdfe6;
+    }
+    .header-left {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      margin-right: 40px;
+      position: relative;
+      color: #888;
+
+      &:hover {
+        color: $blue;
+      }
+      &:after {
+        content: "";
+        position: absolute;
+        width: 1px;
+        height: 20px;
+        right: -20px;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #dcdfe6;
+      }
+      .el-icon-back {
+        font-size: 18px;
+        margin-right: 6px;
+      }
+      .title {
+        font-size: 16px;
+        font-weight: 500;
+      }
+    }
+    .header-right {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .content-title {
+        font-size: 16px;
+      }
     }
   }
-  .button-group {
-    padding: 0 16px;
-    margin-bottom: 16px;
-  }
+
   .preview-container {
+    margin-top: 20px;
     padding: 0;
   }
-  .timeline-container {
-    position: relative;
-    padding-left: 20px;
-    margin: 0 20px 10px;
+}
+.timeline-container {
+  position: relative;
+  padding-left: 30px;
+  padding-top: 10px;
+  padding-right: 20px;
+  max-height: 600px;
+  overflow: auto;
+  // width: 320px;
+  margin: 0 auto;
+  // margin: 0 20px 10px;
 
-    .item {
-      width: 300px;
-      margin-bottom: 15px;
-      // border: 1px solid;
-      position: relative;
+  .item {
+    // width: 300px;
+    margin-bottom: 15px;
+    // border: 1px solid;
+    position: relative;
+    .border-line {
+      position: absolute;
+      content: "";
+      left: -20px;
+      width: 1px;
+      top: 10px;
+      bottom: -25px;
+      background: #cdd7f5;
+      opacity: 0.5;
+      transform: translateX(4px);
+    }
+    &.last {
+      // margin-bottom: 0;
       .border-line {
+        display: none;
+      }
+    }
+    .content-box {
+      display: flex;
+      height: 16px;
+      position: relative;
+      .circle {
         position: absolute;
         content: "";
         left: -20px;
-        width: 1px;
-        top: 10px;
-        bottom: -25px;
-        background: #93a1c9;
-        opacity: 0.5;
-        transform: translateX(4px);
+        width: 10px;
+        height: 10px;
+        top: 50%;
+        background: #cdd7f5;
+        border-radius: 50%;
+        transform: translateY(-50%);
       }
-      &.last {
-        // margin-bottom: 0;
-        .border-line {
-          display: none;
-        }
+      .title {
+        font-size: 14px;
       }
-      .content-box {
-        display: flex;
-        height: 16px;
-        position: relative;
-        .circle {
-          position: absolute;
-          content: "";
-          left: -20px;
-          width: 10px;
-          height: 10px;
-          top: 50%;
-          background: #93a1c9;
-          border-radius: 50%;
-          transform: translateY(-50%);
-        }
-        .title {
-          font-size: 14px;
-        }
-        .user {
-          color: #888;
-        }
-        .time {
-          margin-left: auto;
-          color: #888;
-        }
+      .user {
+        color: #888;
       }
-      .desc {
-        font-size: 11px;
-        margin-top: 5px;
+      .time {
+        margin-left: auto;
         color: #888;
       }
     }
-    .more {
-      padding-top: 0;
-      // position: absolute;
+    .desc {
+      font-size: 11px;
+      margin-top: 5px;
+      color: #888;
     }
+  }
+  .more {
+    padding-top: 0;
+    // position: absolute;
   }
 }
 </style>

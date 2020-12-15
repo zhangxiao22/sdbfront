@@ -49,17 +49,6 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <!-- <el-form-item label="事件类型："
-                        prop="category">
-            <el-select v-model="filterForm.category"
-                       clearable
-                       placeholder="请选择">
-              <el-option v-for="item in categoryOpt"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="创建人："
                         prop="userId">
             <el-select v-model="filterForm.userId"
@@ -102,7 +91,8 @@
             </div>
             <el-tooltip :content="scope.row.name"
                         placement="top-start">
-              <div class="name elip bold">
+              <div class="name elip bold"
+                   @click="eventDetail(scope.row.id)">
                 {{ scope.row.name }}
               </div>
             </el-tooltip>
@@ -114,52 +104,29 @@
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
-          <!-- <div v-if="roleJudge.downloadCustomer"
-               class="btn"
-               style="color:#1890FF;"
-               @click="handleDownload(scope.row)">下载客群名单</div> -->
-          <div class="btn"
+          <!-- <div class="btn"
                style="color:#1890FF"
                @click="eventDetail(scope.row.id)">
             查看
+          </div> -->
+          <div v-if="roleJudge.downloadCustomer && scope.row.loadType && scope.row.loadType.value === 1"
+               class="btn"
+               style="color:#1890FF;"
+               @click="handleDownload(scope.row)">下载名单</div>
+          <div v-if="judgeStatus(scope.row.status.value) === 2"
+               class="btn"
+               style="color:#1890FF"
+               @click="handleEdit(scope.row)">
+            编辑
           </div>
-          <el-dropdown trigger="click">
-            <span class="el-dropdown-link center-center">
-              ...
-            </span>
-            <el-dropdown-menu slot="dropdown"
-                              class="operate-drop">
-              <!-- loadType === 1 表示白名单上传 可下载客群名单 -->
-              <el-dropdown-item v-if="roleJudge.downloadCustomer && scope.row.loadType && scope.row.loadType.value === 1">
-                <!-- <div class="btn"
-                     style="color:#1890FF"
-                     @click="eventDetail(scope.row.id)">
-                  查看
-                </div> -->
-                <div class="btn"
-                     style="color:#1890FF;"
-                     @click="handleDownload(scope.row)">下载客群名单</div>
-              </el-dropdown-item>
-              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
-                <div class="btn"
-                     style="color:#1890FF"
-                     @click="handleEdit(scope.row)">
-                  编辑
-                </div>
-              </el-dropdown-item>
-              <el-dropdown-item v-if="roleJudge.createEvent && judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5">
-                <div class="btn"
-                     style="color:#1890FF;"
-                     @click="handleCopy(scope.row)">复制</div>
-              </el-dropdown-item>
-              <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
-                <div class="btn"
-                     style="color:#f56c6c;"
-                     @click="handleDelete(scope.row)">删除</div>
-              </el-dropdown-item>
-              <el-dropdown-item />
-            </el-dropdown-menu>
-          </el-dropdown>
+          <div v-if="roleJudge.createEvent && judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5"
+               class="btn"
+               style="color:#1890FF;"
+               @click="handleCopy(scope.row)">复制</div>
+          <div v-if="judgeStatus(scope.row.status.value) === 2"
+               class="btn"
+               style="color:#f56c6c;"
+               @click="handleDelete(scope.row)">删除</div>
         </div>
       </template>
     </shun-table>
@@ -518,10 +485,8 @@ export default {
       }
       .name {
         flex: 1;
-        &.link {
-          color: $blue;
-          cursor: pointer;
-        }
+        color: $blue;
+        cursor: pointer;
       }
     }
   }

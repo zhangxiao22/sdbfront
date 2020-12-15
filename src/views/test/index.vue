@@ -1,13 +1,12 @@
 <template>
   <div class="container">
-    <div class="box">
-      <div class="item" />
-      <span class="item" />
-      <span class="item" />
-      <span class="item" />
-      <span class="item" />
-      <span class="item aaa" />
-    </div>
+    <el-page-header content="详情页面">
+      <div slot="content"
+           class="page-header">
+        <div>事件详情</div>
+      </div>
+
+    </el-page-header>
   </div>
 </template>
 
