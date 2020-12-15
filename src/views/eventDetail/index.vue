@@ -67,7 +67,6 @@
             </el-popover>
             <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
                        type="success"
-                       style="margin-left:20px;"
                        @click="resolveForm.resolveText='';showResolve=true;">{{ subStatus&&subStatus === 9 ? '审核通过': '审批通过' }}</el-button>
             <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
                        type="danger"
@@ -365,6 +364,11 @@ export default {
       justify-content: space-between;
       .content-title {
         font-size: 16px;
+      }
+      .button-group {
+        .el-button {
+          margin-left: 20px;
+        }
       }
     }
   }
