@@ -114,22 +114,31 @@
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
-          <div v-if="roleJudge.downloadCustomer"
+          <!-- <div v-if="roleJudge.downloadCustomer"
                class="btn"
                style="color:#1890FF;"
-               @click="handleDownload(scope.row)">下载客群名单</div>
+               @click="handleDownload(scope.row)">下载客群名单</div> -->
+          <div class="btn"
+               style="color:#1890FF"
+               @click="eventDetail(scope.row.id)">
+            查看
+          </div>
           <el-dropdown trigger="click">
             <span class="el-dropdown-link center-center">
               ...
             </span>
             <el-dropdown-menu slot="dropdown"
                               class="operate-drop">
-              <el-dropdown-item v-if="scope.row.status.value !== 1">
-                <div class="btn"
+              <!-- loadType === 1 表示白名单上传 可下载客群名单 -->
+              <el-dropdown-item v-if="roleJudge.downloadCustomer && scope.row.loadType && scope.row.loadType.value === 1">
+                <!-- <div class="btn"
                      style="color:#1890FF"
                      @click="eventDetail(scope.row.id)">
                   查看
-                </div>
+                </div> -->
+                <div class="btn"
+                     style="color:#1890FF;"
+                     @click="handleDownload(scope.row)">下载客群名单</div>
               </el-dropdown-item>
               <el-dropdown-item v-if="judgeStatus(scope.row.status.value) === 2">
                 <div class="btn"
@@ -339,7 +348,7 @@ export default {
               count: 0
             }))
           })
-          this.tabList.unshift(total)
+          // this.tabList.unshift(total)
           resolve()
         })
       })

@@ -191,9 +191,10 @@ export default {
   created() {
     this.getDetail().then(() => {
       console.log(this.roles)
+      console.log(this.mainStatus)
       this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === '用例管理' || this.roles === 'admin'
       this.roleJudge.showApproveButton = this.mainStatus === 3
-      this.roleJudge.showCopyButton = this.roles === '事件注册' || this.roles === 'admin' && this.mainStatus === 4 || this.mainStatus === 5
+      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && this.roles === '事件注册' || this.roles === 'admin'
       this.roleJudge.showApproveList = this.subStatus !== 1
       if (this.roleJudge.showApproveList) {
         this.getLinkList()
