@@ -228,7 +228,7 @@ export default {
     init() {
       // this.tableLoading = true
       this.useCase().then(res => {
-        // this.getList()
+        this.getList()
       })
       this.renderSortable()
     },
@@ -253,13 +253,13 @@ export default {
     useCase() {
       return new Promise((resolve) => {
         getUseCaseForEvent().then(res => {
-          this.useCaseOpt = res.data?.map(n => {
+          this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,
               value: n.id
             }
           })
-          // this.filterForm.useCaseId = res.data[0].id
+          this.filterForm.useCaseId = res.data[0]?.id
           resolve()
         })
       })
@@ -267,7 +267,7 @@ export default {
     getList(usecase) {
       this.tableLoading = true
       getEventPriorityList({ pageNo: 1, pageSize: 1000, useCaseId: this.filterForm.useCaseId }).then(res => {
-        this.tableData = res.data?.map((n, i) => {
+        this.tableData = res.data.map((n, i) => {
           return Object.assign({}, n, {
             // group: n.customerInfoRespList,
             // useCase: n.useCase,
