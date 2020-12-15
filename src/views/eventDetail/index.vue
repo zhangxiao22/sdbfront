@@ -10,7 +10,7 @@
         <div class="header-right">
           <div class="content-title">事件详情</div>
           <div class="button-group">
-            <el-popover v-model="visible"
+            <el-popover v-if="roleJudge.showApproveList"
                         width="400"
                         trigger="click">
               <div class="timeline-container">

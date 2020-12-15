@@ -759,11 +759,19 @@ export default {
     render() {
       // 获取岗位
       // this.getPostOpt()
-      this.getUseCase()
       //
       this.getOverview()
       this.getFunnel()
       this.getPie()
+      // 实际达成率
+      this.getLineChartData(0, 1)
+      this.getLineChartData(1, 2)
+      this.getLineChartData(2, 3)
+      this.getLineChartData(3, 4)
+      this.getLineChartData(4, 5)
+      this.getLineChartData(5, 6)
+
+      this.getUseCase()
       this.getCluesUseCase()
       // 旧接口
       // this.getAchieveRate()
@@ -774,14 +782,6 @@ export default {
       // this.getAchieveRate(5, 5)
       // this.getAchieveRate(6, 6)
       // this.getPurchaseAmount()
-      // 实际达成率
-
-      this.getLineChartData(0, 1)
-      this.getLineChartData(1, 2)
-      this.getLineChartData(2, 3)
-      this.getLineChartData(3, 4)
-      this.getLineChartData(4, 5)
-      this.getLineChartData(5, 6)
 
       // 成效统计
 
@@ -901,6 +901,18 @@ export default {
         ]
       })
     },
+    getLineChartData(typeKey, i) {
+      this['lineChartLoading' + i] = true
+      getActualRate({ type: typeKey }).then(res => {
+        this['lineChartData' + i] = res.data?.map(n => {
+          return Object.assign({}, n, {
+            value: +n.value * 100
+          })
+        })
+      }).finally(() => {
+        this['lineChartLoading' + i] = false
+      })
+    },
     // getPurchaseAmount() {
     //   totalPurchaseAmount().then(res => {
 
@@ -948,18 +960,7 @@ export default {
         })
       }
     },
-    getLineChartData(typeKey, i) {
-      this['lineChartLoading' + i] = true
-      getActualRate({ type: typeKey }).then(res => {
-        this['lineChartData' + i] = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +n.value * 100
-          })
-        })
-      }).finally(() => {
-        this['lineChartLoading' + i] = false
-      })
-    },
+
     getStatistics() {
       this.loading.chartBarLoading = true
       this.loading.chartLineLoading = true
@@ -1023,12 +1024,6 @@ export default {
             value: (+n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
-      }).catch(() => {
-        this.$message({
-          message: '无数据',
-          type: 'error',
-          duration: '2000'
-        })
       })
         .finally(() => {
           this.loading.orgRankLoading = false
@@ -1043,13 +1038,6 @@ export default {
           })
         }).slice(0, 10)
       })
-        .catch(() => {
-          this.$message({
-            message: '无数据',
-            type: 'error',
-            duration: '2000'
-          })
-        })
         .finally(() => {
           this.loading.branchRankLoading = false
         })
@@ -1062,12 +1050,6 @@ export default {
             value: +n.value
           })
         }).slice(0, 10)
-      }).catch(() => {
-        this.$message({
-          message: '无数据',
-          type: 'error',
-          duration: '2000'
-        })
       })
         .finally(() => {
           this.loading.empRankLoading = false
