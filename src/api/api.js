@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-const api2 = process.env.VUE_APP_BASE_API_2
+const api2 = process.env.VUE_APP_BASE_API_2 + '/odsEffect'
 // const api3 = process.env.VUE_APP_BASE_API_3
 // 获取用户信息
 export function getUserInfo(params) {
