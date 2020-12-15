@@ -125,7 +125,7 @@
                  @click="andOr(ci)">{{ conditionItem.andOrText.label }}</div>
           </div>
         </div>
-        <el-button v-if="condition.length < maxLength"
+        <el-button v-if="totalGroupLength < maxLength"
                    class="add"
                    icon="el-icon-plus"
                    @click="addItem">
@@ -174,6 +174,14 @@ export default {
     maxLength: {
       type: Number,
       default: 5
+    },
+    // totalLength: {
+    //   type: Number,
+    //   default: 0
+    // },
+    totalGroupLength: {
+      type: Number,
+      default: 0
     },
     minLength: {
       type: Number,

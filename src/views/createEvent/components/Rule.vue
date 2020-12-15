@@ -7,6 +7,7 @@
              :rule-opt="ruleOpt"
              :origin-data="originData"
              :button-loading="totalButtonLoading"
+             :total-group-length="totalCondition.length+ Math.max(...labelTabs.map(n => {return n.condition.length}))"
              required
              :min-length="0"
              label="整体规则"
@@ -69,6 +70,7 @@
                  :condition="item.condition"
                  :rule-opt="ruleOpt"
                  :origin-data="originData"
+                 :total-group-length="totalCondition.length + item.condition.length"
                  :button-loading="groupButtonLoading"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
@@ -123,7 +125,6 @@ export default {
     }
   },
   watch: {
-
   },
   mounted() {
     this.tabDrop()
@@ -201,7 +202,7 @@ export default {
         }
         if (item.type === '布尔型') {
           conditionValue = {
-            booleanVal: valDetail[0].content
+            booleanVal: +valDetail[0].content
           }
           conditionCompare = [{
             value: 1,
@@ -234,6 +235,7 @@ export default {
         return data
       }
     },
+    // 将andOr转换为中文
     englishAndOr(value) {
       if (value) {
         return value.value === 1 ? { value: 1, label: '且' } : { value: 2, label: '或' }
@@ -428,15 +430,29 @@ export default {
           })
         }
         return new Promise((resolve, reject) => {
-          saveGroup(data).then(res => {
-            if (res.code === 200) {
-              resolve()
-            } else {
+          let max = 0
+          for (let i = 0; i < this.labelTabs.length; i++) {
+            max = max < this.labelTabs[i].condition.length ? this.labelTabs[i].condition.length : max
+          }
+          if (max + this.totalCondition.length < 6) {
+            saveGroup(data).then(res => {
+              if (res.code === 200) {
+                resolve()
+              } else {
+                reject()
+              }
+            }).catch(() => {
               reject()
-            }
-          }).catch(() => {
+            })
+          } else {
+            this.$message({
+              message: '整体和分群规则总和不能超过5个',
+              type: 'warning',
+              duration: '3000'
+            })
             reject()
-          })
+            return
+          }
         })
       }
       return new Promise((resolve, reject) => {
