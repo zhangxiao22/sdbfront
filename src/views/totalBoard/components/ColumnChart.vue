@@ -75,9 +75,9 @@ export default {
           //   alias: this.metaValue
           // },
           label: {
-            formatter(val) {
-              return val.slice(0, 5) + '...' + '21'
-            }
+            // formatter(val) {
+            //   return val.slice(0, 5) + '...'
+            // }
           }
         },
         tooltip: {
@@ -85,7 +85,7 @@ export default {
           formatter: (datum) => {
             return {
               name: datum.label,
-              value: formatMoney(datum.value) + '条'
+              value: formatMoney(datum.value)
             }
           }
         }

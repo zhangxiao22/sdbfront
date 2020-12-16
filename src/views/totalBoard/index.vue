@@ -127,8 +127,8 @@
                     <div class="chart-title">
                       <svg-icon icon-class="chart-funnel" />销售漏斗
                     </div>
-                    <!-- <FunnelChart id="funnel"
-                                 :data="funnelData" /> -->
+                    <FunnelChart id="funnel"
+                                 :data="funnelData" />
                     <div class="chart-bottom">
                       <div style="margin-right:20px;">有效执行数：<b>{{ funnelResult.effective_count | formatMoney }}条</b></div>
                       <div style="margin-right:20px;">有效执行率：<b>{{ (funnelResult.effective_rate * 100).toFixed(2) }}%</b></div>
@@ -367,7 +367,7 @@
                   <div v-loading="loading.orgRankLoading"
                        class="chart-item rank">
                     <div class="chart-title">
-                      <svg-icon icon-class="chart-bar" />支行排名
+                      <svg-icon icon-class="chart-column" />支行排名
                       <el-select v-model="rankSelVal1"
                                  style="margin-left:20px;"
                                  placeholder="请选择"
@@ -378,9 +378,9 @@
                                    :value="item.value" />
                       </el-select>
                     </div>
-                    <BarChart id="rank1"
-                              unit="万元"
-                              :data="rankChartData1" />
+                    <ColumnChart id="rank1"
+                                 unit="万元"
+                                 :data="rankChartData1" />
                   </div>
                 </el-col>
                 <el-col :span="24"
@@ -388,7 +388,7 @@
                   <div v-loading="loading.branchRankLoading"
                        class="chart-item rank">
                     <div class="chart-title">
-                      <svg-icon icon-class="chart-bar" />
+                      <svg-icon icon-class="chart-column" />
                       网点排名（前10名）
                       <el-select v-model="rankSelVal2"
                                  style="margin-left:20px;"
@@ -400,9 +400,9 @@
                                    :value="item.value" />
                       </el-select>
                     </div>
-                    <BarChart id="rank2"
-                              unit="万元"
-                              :data="rankChartData2" />
+                    <ColumnChart id="rank2"
+                                 unit="万元"
+                                 :data="rankChartData2" />
                   </div>
                 </el-col>
                 <el-col :span="24"
@@ -410,7 +410,7 @@
                   <div v-loading="loading.empRankLoading"
                        class="chart-item rank">
                     <div class="chart-title">
-                      <svg-icon icon-class="chart-bar" />
+                      <svg-icon icon-class="chart-column" />
                       员工排名（前10名）
                       <el-select v-model="rankSelVal3"
                                  style="margin-left:20px;"
@@ -422,9 +422,9 @@
                                    :value="item.value" />
                       </el-select>
                     </div>
-                    <BarChart id="rank3"
-                              unit="万元"
-                              :data="rankChartData3" />
+                    <ColumnChart id="rank3"
+                                 unit="万元"
+                                 :data="rankChartData3" />
                   </div>
                 </el-col>
               </el-row>
@@ -464,7 +464,7 @@ export default {
   components: {
     FunnelChart,
     PieChart,
-    // ColumnChart,
+    ColumnChart,
     LineChart,
     LineChart2,
     BarChart,
@@ -582,10 +582,10 @@ export default {
       }],
       // 漏斗图数据
       funnelData: [
-        // { label: '线索数量', value: 10000 },
-        // { label: '线索执行', value: 9000 },
-        // { label: '联系成功', value: 7000 },
-        // { label: '成功购买', value: 5500 }
+        { label: '线索数量', value: 10000 },
+        { label: '线索执行', value: 9000 },
+        { label: '联系成功', value: 7000 },
+        { label: '成功购买', value: 5500 }
       ],
       funnelResult: {
         effective_count: '',
@@ -801,12 +801,12 @@ export default {
       this.loading.funnelChartLoading = true
       totalFunnel().then(res => {
         const data = res.data
-        this.funnelData = [
-          { label: '线索数量', value: data.total_clues },
-          { label: '线索执行', value: data.executed_clues },
-          { label: '联系成功', value: data.success_clues },
-          { label: '成功购买', value: data.purchased_clues }
-        ]
+        // this.funnelData = [
+        //   { label: '线索数量', value: data.total_clues },
+        //   { label: '线索执行', value: data.executed_clues },
+        //   { label: '联系成功', value: data.success_clues },
+        //   { label: '成功购买', value: data.purchased_clues }
+        // ]
         this.funnelResult.effective_count = res.data.effective_count
         this.funnelResult.effective_rate = res.data.effective_rate
         this.funnelResult.actual_achievement = res.data.actual_achievement
@@ -963,9 +963,7 @@ export default {
             })
           })
           this.statistics2 = this.statistics.concat([]).sort((a, b) => {
-            const aRank = a.value
-            const bRank = b.value
-            return (bRank - aRank)
+            return b.value - a.value
           })
         }).finally(() => {
           this.loading.chartBarLoading = false
@@ -979,9 +977,7 @@ export default {
             })
           })
           this.statistics2 = this.statistics.concat([]).sort((a, b) => {
-            const aRank = a.value
-            const bRank = b.value
-            return (bRank - aRank)
+            return b.value - a.value
           })
         }).finally(() => {
           this.loading.chartBarLoading = false
@@ -1012,9 +1008,10 @@ export default {
       totalRank({ content: 0, type: this.rankSelVal1 }).then(res => {
         this.rankChartData1 = res.data.map(n => {
           return Object.assign({}, n, {
-            value: (+n.value / 1000).toFixed(2)
+            value: +(n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
+        console.log(this.rankChartData1)
       })
         .finally(() => {
           this.loading.orgRankLoading = false
@@ -1025,7 +1022,7 @@ export default {
       totalRank({ content: 1, type: this.rankSelVal2 }).then(res => {
         this.rankChartData2 = res.data.map(n => {
           return Object.assign({}, n, {
-            value: (+n.value / 1000).toFixed(2)
+            value: +(n.value / 1000).toFixed(2)
           })
         }).slice(0, 10)
       })
