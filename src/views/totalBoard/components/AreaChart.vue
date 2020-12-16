@@ -53,13 +53,21 @@ export default {
     render() {
       this.chart = new Area(this.id, {
         data: this.data,
-        xField: 'label',
-        yField: 'value',
+        smooth: true,
+        xAxis: {
+          range: [0, 1],
+          tickCount: 5
+        },
         yAxis: {
           label: {
             formatter: (v) => v + this.unit
-          }
+          },
+          // line: null,
+          range: [0, 1],
+          tickCount: 5
         },
+        xField: 'label',
+        yField: 'value',
         tooltip: {
           showTitle: false,
           formatter: (datum) => {
