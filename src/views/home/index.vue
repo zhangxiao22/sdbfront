@@ -230,8 +230,8 @@ export default {
         }
 
         .desc {
-          font-weight: light;
-          font-size: 12px;
+          font-size: 14px;
+          font-weight: 300;
           line-height: 1.5;
           // display: none;
           opacity: 0;
