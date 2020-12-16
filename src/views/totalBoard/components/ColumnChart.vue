@@ -64,7 +64,6 @@ export default {
             formatter: (v) => formatMoney(v)
           }
         },
-        xAxis: null,
         label: {
           formatter: ({ value }) => formatMoney(value),
           // 可手动配置 label 数据标签位置
