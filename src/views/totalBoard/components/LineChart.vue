@@ -83,6 +83,13 @@ export default {
       // })
 
       this.chart.axis('value', {
+        grid: {
+          line: {
+            style: {
+              lineDash: [2, 2]
+            }
+          }
+        },
         label: {
           formatter: (val) => {
             return val + '%'

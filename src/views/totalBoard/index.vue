@@ -204,17 +204,9 @@
                   <i :class="expand?'el-icon-arrow-up':'el-icon-arrow-down'"
                      class="el-icon--right" />
                 </el-button>
-                <!-- <el-select v-show="!expand"
-                         v-model="crmSel"
-                         style="margin-left:20px;"
-                         placeholder="请选择">
-                <el-option v-for="item in crmOpt"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select> -->
               </div>
               <div v-loading="lineChartLoading5"
+                   style="padding-top:0;"
                    class="chart-item line-chart">
                 <div class="chart-title">
                   <svg-icon icon-class="chart-line" />CRM实际达成率
@@ -271,6 +263,7 @@
                     style="border-left-color:rgb(103, 194, 58);">
               <div class="sub-title">短信</div>
               <el-col :span="24"
+                      style="padding-top:0;"
                       class="chart-item line-chart">
                 <div class="chart-title">
                   <svg-icon icon-class="chart-line" />短信实际达成率
@@ -302,6 +295,7 @@
                     <svg-icon icon-class="chart-bar" />排名
                   </div>
                   <ColumnChart id="rank12"
+                               hide-x-axis
                                unit="万元"
                                :data="statistics2" />
                 </div>
@@ -356,7 +350,8 @@
         </el-col>
         <el-col :span="24">
           <!-- 排名情况 -->
-          <div class="chart-block shun-card">
+          <div class="chart-block shun-card"
+               style="margin-bottom:0;">
             <div class="block-title">排名情况</div>
             <el-row>
               <el-col :span="24">
@@ -1095,6 +1090,7 @@ export default {
     .chart-block {
       text-align: center;
       margin-bottom: 16px;
+
       .block-title {
         font-size: 20px;
         font-weight: bold;
@@ -1148,7 +1144,7 @@ export default {
         &.line-chart {
           height: 300px;
           border: none;
-          padding-top: 0;
+          // padding-top: 0;
         }
         &.statistics {
           margin-bottom: 20px;
@@ -1156,9 +1152,9 @@ export default {
             margin-bottom: 0;
           }
         }
-        &.rank {
-          height: 400px;
-        }
+        // &.rank {
+        //   height: 400px;
+        // }
         .chart-title {
           margin-bottom: 20px;
           width: 100%;

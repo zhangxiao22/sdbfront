@@ -26,8 +26,11 @@ export default {
     tooltipTitle: {
       type: String,
       default: ''
+    },
+    hideXAxis: {
+      type: Boolean,
+      default: false
     }
-
   },
   data() {
     return {
@@ -64,19 +67,7 @@ export default {
             formatter: (v) => formatMoney(v)
           }
         },
-        label: {
-          formatter: ({ value }) => formatMoney(value),
-          // 可手动配置 label 数据标签位置
-          position: 'middle',
-          // 配置样式
-          style: {
-            fill: '#FFFFFF',
-            shadowColor: 'black',
-            shadowBlur: 3
-            // opacity: 0.6
-          },
-          autoRotate: true
-        },
+        xAxis: !this.hideXAxis,
         meta: {
           // value: {
           //   alias: this.metaValue

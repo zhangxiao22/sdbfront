@@ -63,14 +63,7 @@ export default {
             }
           }
         },
-        // yAxis: {
-        //   label: {
-        //     formatter: (v) => v + this.unit
-        //   },
-        //   // line: null,
-        //   range: [0, 1],
-        //   tickCount: 5
-        // },
+        xAxis: false,
         xField: 'label',
         yField: 'value',
         tooltip: {
