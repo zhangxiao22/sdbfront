@@ -127,8 +127,8 @@
                     <div class="chart-title">
                       <svg-icon icon-class="chart-funnel" />销售漏斗
                     </div>
-                    <FunnelChart id="funnel"
-                                 :data="funnelData" />
+                    <!-- <FunnelChart id="funnel"
+                                 :data="funnelData" /> -->
                     <div class="chart-bottom">
                       <div style="margin-right:20px;">有效执行数：<b>{{ funnelResult.effective_count | formatMoney }}条</b></div>
                       <div style="margin-right:20px;">有效执行率：<b>{{ (funnelResult.effective_rate * 100).toFixed(2) }}%</b></div>
@@ -412,15 +412,6 @@
                     <div class="chart-title">
                       <svg-icon icon-class="chart-bar" />
                       员工排名（前10名）
-                      <!-- <el-select v-model="rankSelPostVal3"
-                                 style="margin-left:20px;"
-                                 placeholder="请选择"
-                                 >
-                        <el-option v-for="(item,index) in postOpt"
-                                   :key="index"
-                                   :label="item.label"
-                                   :value="item.value" />
-                      </el-select> -->
                       <el-select v-model="rankSelVal3"
                                  style="margin-left:20px;"
                                  placeholder="请选择"

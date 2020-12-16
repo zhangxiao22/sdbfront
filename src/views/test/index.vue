@@ -1,16 +1,11 @@
 <template>
   <div class="container">
-    <el-page-header content="详情页面">
-      <div slot="content"
-           class="page-header">
-        <div>事件详情</div>
-      </div>
-
-    </el-page-header>
+    <div id="test" />
   </div>
 </template>
 
 <script>
+import { Funnel } from '@antv/g2plot'
 
 export default {
   components: {
@@ -32,7 +27,23 @@ export default {
 
   },
   mounted() {
+    const data = [
+      { stage: '简历筛选', number: 253 },
+      { stage: '初试人数', number: 151 },
+      { stage: '复试人数', number: 113 },
+      { stage: '录取人数', number: 87 },
+      { stage: '入职人数', number: 59 }
+    ]
 
+    const funnelPlot = new Funnel('test', {
+      data: data,
+      xField: 'stage',
+      yField: 'number',
+      dynamicHeight: true,
+      legend: false
+    })
+
+    funnelPlot.render()
   },
   methods: {
 
@@ -44,29 +55,9 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  .box {
-    display: flex;
-    width: 1000px;
+  #test {
+    width: 500px;
     height: 500px;
-    border: 1px solid;
-    // position: relative;
-    // flex-direction: column;
-    // flex-wrap: wrap;
-    // flex-flow
-    justify-content: space-around;
-    align-items: center;
-    // align-content
-    .item {
-      height: 100px;
-      width: 100px;
-      margin: 0 10px;
-      border: 1px solid red;
-    }
-    .aaa {
-      // position: absolute;
-      // left: 0;
-      // border: 1px solid blue;
-    }
   }
 }
 </style>

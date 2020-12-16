@@ -35,6 +35,8 @@ export default {
   },
   watch: {
     data() {
+      console.log(this.data)
+
       this.chart.changeData(this.data)
     }
   },
@@ -53,6 +55,8 @@ export default {
         label: {
           type: 'inner',
           offset: -50,
+          // content: ({ percent }) => `${(percent * 100).toFixed(2)}%`
+          // content: ({ percentage }) => `${(percentage * 100)}%`
           content: '{percentage}'
         },
         tooltip: {
