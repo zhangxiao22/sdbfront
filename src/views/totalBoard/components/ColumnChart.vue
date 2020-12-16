@@ -52,11 +52,19 @@ export default {
         xField: 'label',
         yField: 'value',
         yAxis: {
+          grid: {
+            line: {
+              style: {
+                lineDash: [2, 2]
+              }
+            }
+          },
           label: {
             // 数值格式化为千分位
             formatter: (v) => formatMoney(v)
           }
         },
+        xAxis: null,
         label: {
           formatter: ({ value }) => formatMoney(value),
           // 可手动配置 label 数据标签位置

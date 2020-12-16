@@ -51,6 +51,13 @@ export default {
         xField: 'value',
         yField: 'label',
         xAxis: {
+          grid: {
+            line: {
+              style: {
+                lineDash: [2, 2]
+              }
+            }
+          },
           label: {
             formatter: (v) => v + this.unit
           }

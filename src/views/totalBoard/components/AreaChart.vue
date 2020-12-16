@@ -54,18 +54,23 @@ export default {
       this.chart = new Area(this.id, {
         data: this.data,
         smooth: true,
-        xAxis: {
-          range: [0, 1],
-          tickCount: 5
-        },
         yAxis: {
-          label: {
-            formatter: (v) => v + this.unit
-          },
-          // line: null,
-          range: [0, 1],
-          tickCount: 5
+          grid: {
+            line: {
+              style: {
+                lineDash: [2, 2]
+              }
+            }
+          }
         },
+        // yAxis: {
+        //   label: {
+        //     formatter: (v) => v + this.unit
+        //   },
+        //   // line: null,
+        //   range: [0, 1],
+        //   tickCount: 5
+        // },
         xField: 'label',
         yField: 'value',
         tooltip: {
