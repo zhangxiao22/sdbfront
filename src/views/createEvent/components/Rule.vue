@@ -7,12 +7,12 @@
              :rule-opt="ruleOpt"
              :origin-data="originData"
              :button-loading="totalButtonLoading"
-             :total-group-length="totalCondition.length+ Math.max(...labelTabs.map(n => {return n.condition.length}))"
+             :total-group-length="totalCondition.length + Math.max(0, ...labelTabs.map(n => {return n.condition.length}))"
              required
              :min-length="0"
              label="整体规则"
              @check="checkAll" />
-      <!-- {{ totalCondition }} -->
+      <!-- {{ Math.max(0,...labelTabs.map(n => {return n.condition.length})) }} -->
       <el-form-item label="客户人数：">{{ totalPeople }}</el-form-item>
     </el-form>
     <el-form ref="form"

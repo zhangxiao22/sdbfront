@@ -8,22 +8,22 @@
                 :total="total"
                 :table-data="tableData"
                 :table-column-list="tableColumnList">
-      <template v-slot:dateSlot="scope">
+      <template v-slot:bsnStkhdNmSlot="scope">
         <div class="date-group">
-          <div :content="scope.row.date">
-            {{ scope.row.date }}
+          <div :content="scope.row.bsnStkhdNm">
+            {{ scope.row.bsnStkhdNm }}
           </div>
-          <div v-show="scope.row.waitDate"
+          <div v-show="scope.row.techStkhdNm"
                class="bottom">
-            {{ scope.row.waitDate }} 天
+            {{ scope.row.techStkhdNm }}
           </div>
         </div>
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn play"
-               :class="{disable:scope.row.status!==1}">{{ scope.row.status===1?'启动':'已启动' }}</div>
-          <div v-show="scope.row.file"
+               :class="{disable:scope.row.modelId !== '000001'}">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
+          <div v-show="scope.row.modelId === '000002'"
                class="btn"
                style="color:#1890FF;">下载名单</div>
         </div>
@@ -34,7 +34,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { } from '@/api/api'
+import { queryModelList } from '@/api/api'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -58,21 +58,41 @@ export default {
       searchForm: {},
       tableColumnList: [
         {
-          prop: 'name',
-          label: '名称',
-          minWidth: 300
+          prop: 'modelName',
+          label: '模型名称',
+          minWidth: 150
         },
         {
-          prop: 'date',
-          label: '最近启动时间/等待天数',
-          minWidth: 300,
-          notShowOverflowTooltip: true,
-          slot: true
+          prop: 'modelId',
+          label: '模型标识',
+          minWidth: 120
+        },
+        {
+          prop: 'rqdTagCnt',
+          label: '所需标签个数',
+          minWidth: 120
         },
 
         {
-          prop: 'desc',
-          label: '描述',
+          prop: 'useDate',
+          label: '使用日期',
+          minWidth: 120
+        },
+        {
+          prop: 'departmentName',
+          label: '归属部门',
+          minWidth: 120
+        },
+        {
+          prop: 'bsnStkhdNm',
+          label: '业务干系人/技术干系人',
+          minWidth: 180,
+          notShowOverflowTooltip: true,
+          slot: true
+        },
+        {
+          prop: 'modelDsc',
+          label: '模型描述',
           minWidth: 200
         },
         {
@@ -83,36 +103,38 @@ export default {
           fixed: 'right'
         }
       ],
-      tableData: [{
-        date: '',
-        name: '模型1',
-        desc: '上海市普陀区金沙江路 1518 弄',
-        waitDate: '',
-        status: 1,
-        file: ''
-      },
-      {
-        date: '2016-05-01',
-        name: '模型2',
-        status: 2,
-        desc: '上海市普陀区金沙江路 1519 弄',
-        waitDate: '1',
-        file: ''
-      }, {
-        date: '2016-05-04',
-        name: '模型3',
-        desc: '上海市普陀区金沙江路 1517 弄',
-        status: 1,
-        waitDate: '5',
-        file: '11'
-      }, {
-        date: '2016-05-03',
-        name: '模型4',
-        status: 2,
-        desc: '上海市普陀区金沙江路 1516 弄',
-        waitDate: '3',
-        file: '11'
-      }]
+      tableData: [
+        // {
+        //   date: '',
+        //   name: '模型1',
+        //   desc: '上海市普陀区金沙江路 1518 弄',
+        //   waitDate: '',
+        //   status: 1,
+        //   file: ''
+        // },
+        // {
+        //   date: '2016-05-01',
+        //   name: '模型2',
+        //   status: 2,
+        //   desc: '上海市普陀区金沙江路 1519 弄',
+        //   waitDate: '1',
+        //   file: ''
+        // }, {
+        //   date: '2016-05-04',
+        //   name: '模型3',
+        //   desc: '上海市普陀区金沙江路 1517 弄',
+        //   status: 1,
+        //   waitDate: '5',
+        //   file: '11'
+        // }, {
+        //   date: '2016-05-03',
+        //   name: '模型4',
+        //   status: 2,
+        //   desc: '上海市普陀区金沙江路 1516 弄',
+        //   waitDate: '3',
+        //   file: '11'
+        // }
+      ]
     }
   },
   computed: {
@@ -128,9 +150,18 @@ export default {
   watch: {
   },
   created() {
-
+    this.getList()
   },
   methods: {
+    getList() {
+      this.loading = true
+      queryModelList().then(res => {
+        this.tableData = res.data.modelList
+      })
+        .finally(() => {
+          this.loading = false
+        })
+    }
 
   }
 }
