@@ -53,7 +53,7 @@
 
                   <el-tooltip content="复制"
                               placement="top">
-                    <el-button v-show="+pi === groupItem.ployTabsValue - 1"
+                    <el-button v-show="pi === ployIndex"
                                size="mini"
                                class="copy"
                                circle
@@ -64,6 +64,7 @@
 
                   {{ ployItem.title }}
                 </span>
+                <!-- {{ pi }} -->
                 <el-form-item label="策略名称："
                               :prop="'group.' + gi + '.ployTabs.' + pi + '.title'"
                               :rules="[{
