@@ -14,8 +14,18 @@
         </div>
       </div>
       <div class="time">
-        <i class="el-icon-time" />
-        {{ detail.startDate }} 至 {{ detail.endDate }}
+        <div class="param">
+          <i class="el-icon-time">
+            {{ detail.startDate }} 至 {{ detail.endDate }}</i>
+          <div v-for="(item,i) of paramValue"
+               :key="i"
+               class="param-item">
+            <el-tag>
+              <i class="el-icon-collection-tag" />
+              {{ item.name }}
+            </el-tag>
+          </div>
+        </div>
       </div>
       <div class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
@@ -338,6 +348,8 @@ export default {
     },
     tranform(data) {
       this.detail = data.eventBaseInfo
+      // 获取维度补充标签
+      this.paramValue = data.groupInfo.supplyDetailList
       this.groups = data.groupInfo.groupDetailList.map((n, i) => {
         return {
           active: false,
@@ -492,6 +504,14 @@ export default {
       font-size: 14px;
       color: #888;
       margin-top: 15px;
+
+      .param {
+        display: flex;
+        align-items: center;
+        .param-item {
+          margin-left: 8px;
+        }
+      }
     }
     .block {
       margin-top: 15px;
