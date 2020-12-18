@@ -14,14 +14,15 @@
         </div>
       </div>
       <div class="time">
+        <i class="el-icon-time"
+           style="margin-right:5px;" />
+        {{ detail.startDate }} 至 {{ detail.endDate }}
         <div class="param">
-          <i class="el-icon-time">
-            {{ detail.startDate }} 至 {{ detail.endDate }}</i>
           <div v-for="(item,i) of paramValue"
                :key="i"
                class="param-item">
-            <el-tag>
-              <i class="el-icon-collection-tag" />
+            <el-tag type="warning">
+              <i class="el-icon-price-tag" />
               {{ item.name }}
             </el-tag>
           </div>
@@ -504,12 +505,14 @@ export default {
       font-size: 14px;
       color: #888;
       margin-top: 15px;
-
+      display: flex;
+      align-items: center;
       .param {
+        margin-left: 10px;
         display: flex;
         align-items: center;
         .param-item {
-          margin-left: 8px;
+          margin-right: 8px;
         }
       }
     }
