@@ -289,8 +289,6 @@ export default {
         })
         this.total = res.pagination.totalItemCount
         // this.loading = false
-      }).catch(() => {
-        // this.loading = false
       }).finally(() => {
         this.loading = false
       })
