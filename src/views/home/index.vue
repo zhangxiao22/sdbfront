@@ -1,5 +1,6 @@
 <template>
   <div class="container shun-card">
+    <!-- test -->
     <div v-for="(box,pi) of realTabList"
          v-show="box.list.length"
          :key="pi"
