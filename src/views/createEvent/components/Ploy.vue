@@ -48,6 +48,23 @@
                            :key="ployItem.name"
                            :label="ployItem.title"
                            :name="ployItem.name">
+                <span slot="label"
+                      class="ploy-title-tab">
+
+                  <el-tooltip content="复制"
+                              placement="top">
+                    <el-button v-show="pi === ployIndex"
+                               size="mini"
+                               class="copy"
+                               circle
+                               icon="el-icon-document-copy"
+                               type="primary"
+                               @click="copyTab(ployItem)" />
+                  </el-tooltip>
+
+                  {{ ployItem.title }}
+                </span>
+                <!-- {{ pi }} -->
                 <el-form-item label="策略名称："
                               :prop="'group.' + gi + '.ployTabs.' + pi + '.title'"
                               :rules="[{
@@ -997,6 +1014,44 @@ export default {
       // 修改简介
       this.$parent.ployDetail.ployCount = this.ployCounts
     },
+    copyTab(ployItem) {
+      console.log(ployItem)
+      const gi = this.groupIndex
+      const newTabName = ++this.group[gi].ployTabIndex + ''
+      let percent = 100
+      this.group[gi].ployTabs.forEach((n, i) => {
+        percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
+      })
+      const ploy = {
+        title: '新策略' + newTabName,
+        name: newTabName,
+        percent,
+        // 产品
+        product: JSON.parse(JSON.stringify(ployItem.product)),
+        // 权益
+        interest: JSON.parse(JSON.stringify(ployItem.interest)),
+        // 渠道
+        channel: JSON.parse(JSON.stringify(ployItem.channel)),
+        channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
+      }
+      ploy.channel.forEach(n => {
+        n.infoId = undefined
+        n.pushTimeId = undefined
+      })
+      this.group[gi].ployTabs.push(ploy)
+      // this.group[gi].ployTabsValue = newTabName
+      this.group[gi].totalPercent = this.getTotalPercent(gi)
+      // console.log(typeof this.group[gi].totalPercent, typeof percent)
+      // this.$nextTick(() => {
+      //   // 校验策略是否为空
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+      //   // 校验策略名是否重复
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      // })
+
+      // 修改简介
+      this.$parent.ployDetail.ployCount = this.ployCounts
+    },
     handleRemoveTab(targetName) {
       const gi = this.groupIndex
       this.$confirm('确认删除？')
@@ -1060,7 +1115,7 @@ export default {
     },
     // 选择产品
     addProduct(item) {
-      // console.log(item.product)
+      console.log(item.product)
       // this.$refs.productRef && this.$refs.productRef.resetAll()
       this.showProduct = true
       this.$nextTick(() => {
@@ -1352,6 +1407,15 @@ export default {
     display: flex;
     align-items: center;
   }
+  .ploy-title-tab {
+    display: inline-flex;
+    align-items: center;
+    .copy {
+      margin-right: 4px;
+      transform: scale(0.8);
+    }
+  }
+
   .ploy-card {
     // @include shun-text;
     // border: 1px solid #ebeef5;
