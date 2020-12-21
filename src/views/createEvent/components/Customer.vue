@@ -66,18 +66,16 @@ export default {
             if (lodeType === 1) {
               // 白名单
               this.activeName = '1'
-              this.$refs['whiteList'].init(res.data)
             } else if (lodeType === 2) {
               // 规则
               this.activeName = '2'
-              this.$refs['rule'].init(res.data)
             }
           } else {
             // 默认白名单
             this.activeName = '1'
-            this.$refs['whiteList'].init(res.data)
-            this.$refs['rule'].init(res.data)
           }
+          this.$refs['whiteList'].init(res.data)
+          this.$refs['rule'].init(res.data)
         }
       }).finally(() => {
         this.mainLoading = false
