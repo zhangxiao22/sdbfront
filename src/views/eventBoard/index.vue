@@ -126,11 +126,9 @@
       </template>
       <template v-slot:peopleSlot="scope">
         {{ scope.row.creater }}
-        <!-- <svg-icon icon-class="right_arrow_icon" /> -->
-        <svg-icon icon-class="right" />
+        <i class="el-icon-d-arrow-right" />
         {{ scope.row.reviewer }}
-        <!-- <svg-icon icon-class="right_arrow_icon" /> -->
-        <svg-icon icon-class="right" />
+        <i class="el-icon-d-arrow-right" />
         {{ scope.row.approver }}
       </template>
       <template v-slot:operateSlot="scope">
@@ -246,7 +244,7 @@ export default {
         {
           prop: 'modifyTime',
           label: '更新时间',
-          minWidth: 180
+          minWidth: 160
         },
         {
           prop: 'desc',
