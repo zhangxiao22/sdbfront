@@ -202,7 +202,7 @@ export default {
         type: '',
         participants: [],
         isSwithOnUnDisturb: 1,
-        ditributeMode: 1,
+        ditributeMode: '',
         cluePriority: '',
         approver: '',
         target: [
@@ -220,27 +220,22 @@ export default {
       },
       {
         value: 2,
-        label: '负债类挂靠-白名单-高频-主办-历史',
-        disabled: true
+        label: '负债类挂靠-白名单-高频-主办-历史'
       },
       {
         value: 3,
-        label: '小贷挂靠-白名单-主办-高频-历史',
-        disabled: true
+        label: '小贷挂靠-白名单-主办-高频-历史'
       },
       {
         value: 4,
-        label: '小贷挂靠-白名单-高频-主办-历史',
-        disabled: true
+        label: '小贷挂靠-白名单-高频-主办-历史'
       },
       {
         value: 5,
-        label: '消贷挂靠-白名单-主办-高频-历史',
-        disabled: true
+        label: '消贷挂靠-白名单-主办-高频-历史'
       }, {
         value: 6,
-        label: '消贷挂靠-白名单-高频-主办-历史',
-        disabled: true
+        label: '消贷挂靠-白名单-高频-主办-历史'
       }],
       cluePriorityOptions: [],
       approverOptions: []
