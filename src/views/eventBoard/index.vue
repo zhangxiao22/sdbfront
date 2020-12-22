@@ -60,6 +60,28 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
+          <el-form-item label="审核人："
+                        prop="reviewerId">
+            <el-select v-model="filterForm.reviewerId"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in reviewerOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="审批人："
+                        prop="approverId">
+            <el-select v-model="filterForm.approverId"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in approverOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
@@ -102,6 +124,15 @@
           </div>
         </div>
       </template>
+      <template v-slot:peopleSlot="scope">
+        {{ scope.row.creater }}
+        <!-- <svg-icon icon-class="right_arrow_icon" /> -->
+        <svg-icon icon-class="right" />
+        {{ scope.row.reviewer }}
+        <!-- <svg-icon icon-class="right_arrow_icon" /> -->
+        <svg-icon icon-class="right" />
+        {{ scope.row.approver }}
+      </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <!-- <div class="btn"
@@ -123,6 +154,10 @@
                class="btn"
                style="color:#1890FF;"
                @click="handleCopy(scope.row)">复制</div>
+          <div v-if="scope.row.reviewer === user.userName && judgeStatus(scope.row.status.value) === 4"
+               class="btn"
+               style="color:#f56c6c;"
+               @click="handleOfflineEvent(scope.row)">下线</div>
           <div v-if="judgeStatus(scope.row.status.value) === 2"
                class="btn"
                style="color:#f56c6c;"
@@ -135,7 +170,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventList, getEventOwner, getEventCategory, getEventStatus, getAllUseCase, copyEvent, deleteEvent } from '@/api/api'
+import { getEventList, getEventOwner, getEventReviewer, getEventApprover, getEventCategory, getEventStatus, getAllUseCase, copyEvent, offlineEvent, deleteEvent } from '@/api/api'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -173,6 +208,8 @@ export default {
         name: '',
         // category: '',
         userId: '',
+        reviewerId: '',
+        approverId: '',
         useCaseId: +this.$route.query.id || '',
         dateRange: []
       },
@@ -184,6 +221,8 @@ export default {
       useCaseOpt: [],
       // categoryOpt: [],
       ownerOpt: [],
+      reviewerOpt: [],
+      approverOpt: [],
       totalColor: '#224191',
       colors: ['#ff9900', '#1890FF', '#67c23a', '#aaaaaa'],
       tabList: [],
@@ -192,16 +231,22 @@ export default {
         {
           prop: 'name',
           label: '状态/名称/起止日期',
-          minWidth: 300,
+          minWidth: 320,
           notShowOverflowTooltip: true,
           slot: true,
           filters: [],
           columnKey: 'status'
         },
         {
+          prop: 'people',
+          label: '事件创建人/审核人/审批人',
+          minWidth: 200,
+          slot: true
+        },
+        {
           prop: 'modifyTime',
           label: '更新时间',
-          minWidth: 150
+          minWidth: 180
         },
         {
           prop: 'desc',
@@ -215,7 +260,8 @@ export default {
         {
           prop: 'operate',
           label: '操作',
-          minWidth: 150,
+          width: 200,
+          fixed: 'right',
           slot: true
         }
       ],
@@ -225,7 +271,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'roles'
+      'roles',
+      'user'
     ]),
     parentRef() {
       return this.$refs.table
@@ -238,10 +285,12 @@ export default {
   watch: {},
   created() {
     // 是否能新建事件
-    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === 'admin'
+    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === 'admin'
     this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批' || this.roles === 'admin'
     // this.eventCategoryList()
     this.getOwner()
+    this.getReviewer()
+    this.getApprover()
     this.useCase()
     this.getStatus().then(res => {
       this.tabClick(0)
@@ -249,6 +298,7 @@ export default {
     })
   },
   methods: {
+    // 判断事件大状态
     judgeStatus(subId) {
       return this.tabList.find(n => {
         return n.id !== 'all' && n.children.find(m => {
@@ -296,6 +346,28 @@ export default {
         })
       })
     },
+    // 获取审核人
+    getReviewer() {
+      getEventReviewer().then(res => {
+        this.reviewerOpt = res.data.map(n => {
+          return {
+            value: n.userId,
+            label: n.userName
+          }
+        })
+      })
+    },
+    // 获取审批人
+    getApprover() {
+      getEventApprover().then(res => {
+        this.approverOpt = res.data.map(n => {
+          return {
+            value: n.userId,
+            label: n.userName
+          }
+        })
+      })
+    },
     // 获取状态
     getStatus() {
       return new Promise((resolve) => {
@@ -315,7 +387,7 @@ export default {
               count: 0
             }))
           })
-          // this.tabList.unshift(total)
+          this.tabList.unshift(total)
           resolve()
         })
       })
@@ -360,6 +432,8 @@ export default {
         name: this.filterForm.name,
         useCaseId: this.filterForm.useCaseId || null,
         userId: this.filterForm.userId || null,
+        reviewerId: this.filterForm.reviewerId || null,
+        approverId: this.filterForm.approverId || null,
         // category: this.filterForm.category || null,
         dateRange: this.filterForm.dateRange
       }
@@ -428,6 +502,7 @@ export default {
     handleCopy(row) {
       this.$confirm(`确定复制事件（${row.name}）？`)
         .then(() => {
+          this.loading = true
           copyEvent({ baseId: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -439,11 +514,33 @@ export default {
             }
           })
         })
-        .catch(() => { })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    handleOfflineEvent(row) {
+      this.$confirm(`是否确认下线事件（${row.name}）？`)
+        .then(() => {
+          this.loading = true
+          offlineEvent({ baseId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
+        })
+        .finally(() => {
+          this.loading = false
+        })
     },
     handleDelete(row) {
       this.$confirm(`是否确认删除事件（${row.name}）？`)
-        .then(_ => {
+        .then(() => {
+          this.loading = true
           deleteEvent({ baseId: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -454,9 +551,10 @@ export default {
               this.resetAll()
             }
           })
-          this.resetAll()
         })
-        .catch(() => { })
+        .catch(() => {
+          this.loading = false
+        })
     }
   }
 }

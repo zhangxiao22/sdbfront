@@ -268,6 +268,22 @@ export function getEventOwner() {
   })
 }
 
+// 获取审核人
+export function getEventReviewer() {
+  return request({
+    url: '/event/getAllReviewer',
+    method: 'get'
+  })
+}
+
+// 获取审批人
+export function getEventApprover() {
+  return request({
+    url: '/event/getAllApprover',
+    method: 'get'
+  })
+}
+
 // 获取事件列表
 export function getEventList(data) {
   return request({
@@ -289,6 +305,15 @@ export function getEventStatus() {
 export function copyEvent(params) {
   return request({
     url: 'event/copyEvent',
+    method: 'get',
+    params
+  })
+}
+
+// 事件下线
+export function offlineEvent(params) {
+  return request({
+    url: '/event/offline',
     method: 'get',
     params
   })
