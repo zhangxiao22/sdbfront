@@ -11,7 +11,9 @@
         <Rule ref="rule" />
       </el-tab-pane>
       <el-tab-pane label="模型导入"
-                   name="3" />
+                   name="3">
+        <Model ref="model" />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -20,13 +22,15 @@
 import { } from '@/api/api'
 import WhiteList from './WhiteList'
 import Rule from './Rule'
+import Model from './Model'
 import { getGroup } from '@/api/api'
 
 export default {
   name: 'Customer',
   components: {
     WhiteList,
-    Rule
+    Rule,
+    Model
   },
   data() {
     return {
@@ -43,11 +47,11 @@ export default {
     // }
   },
   watch: {
-    activeName() {
-      if (this.activeName === '3') {
-        this.$router.push('/model')
-      }
-    }
+    // activeName() {
+    //   if (this.activeName === '3') {
+    //     this.$router.push('/model')
+    //   }
+    // }
   },
   mounted() {
   },

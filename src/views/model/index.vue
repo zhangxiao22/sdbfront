@@ -3,6 +3,7 @@
     <shun-table ref="table"
                 title="模型库"
                 :loading="loading"
+                :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
@@ -19,10 +20,15 @@
           </div>
         </div>
       </template>
+      <template v-slot:progressSlot="scope">
+        <el-progress :percentage="scope.row.modelId === '000002' ? 99.99 : +percentage.toFixed(2)"
+                     :color="customColors" />
+      </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn play"
-               :class="{disable:scope.row.modelId !== '000001'}">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
+               :class="{disable:scope.row.modelId !== '000001'}"
+               @click="increase">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
           <div v-show="scope.row.modelId === '000002'"
                class="btn"
                style="color:#1890FF;">下载名单</div>
@@ -43,9 +49,21 @@ export default {
     ShunTable
   },
   props: {
+    showSelection: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
+      percentage: 0,
+      customColors: [
+        { color: '#f56c6c', percentage: 20 },
+        { color: '#e6a23c', percentage: 40 },
+        { color: '#5cb87a', percentage: 60 },
+        { color: '#1989fa', percentage: 80 },
+        { color: '#6f7ad3', percentage: 100 }
+      ],
       // 权限判断
       roleJudge: {},
       loading: false,
@@ -93,6 +111,12 @@ export default {
         {
           prop: 'modelDsc',
           label: '模型描述',
+          minWidth: 200
+        },
+        {
+          prop: 'progress',
+          label: '模型进度',
+          slot: true,
           minWidth: 200
         },
         {
@@ -153,6 +177,16 @@ export default {
     this.getList()
   },
   methods: {
+    increase() {
+      this.percentage += +(Math.random() * (1 - 0)).toFixed(2)
+      if (this.percentage > 99.99) {
+        this.percentage = 99.99
+        return
+      }
+      setTimeout(() => {
+        this.increase()
+      }, Math.floor(Math.random() * 10000))
+    },
     getList() {
       this.loading = true
       queryModelList().then(res => {
