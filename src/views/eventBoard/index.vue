@@ -283,8 +283,8 @@ export default {
   watch: {},
   created() {
     // 是否能新建事件
-    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === 'admin'
-    this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批' || this.roles === 'admin'
+    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === '用例管理'
+    this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批'
     // this.eventCategoryList()
     this.getOwner()
     this.getReviewer()

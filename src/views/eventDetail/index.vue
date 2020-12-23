@@ -198,11 +198,11 @@ export default {
   },
   created() {
     this.getDetail().then(() => {
-      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && this.roles === '事件注册' || this.roles === 'admin'
+      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && this.roles === '事件注册'
       this.roleJudge.showApproveList = this.subStatus !== 1
       if (this.roleJudge.showApproveList) {
         this.getLinkList().then(() => {
-          this.roleJudge.canApprove = this.list[0].user.includes(this.user.userName) && this.mainStatus === 3 || this.roles === 'admin'
+          this.roleJudge.canApprove = this.list[0].user.includes(this.user.userName) && this.mainStatus === 3
         })
       }
     })
