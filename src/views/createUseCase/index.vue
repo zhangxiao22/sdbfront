@@ -55,7 +55,6 @@
                    placeholder="请选择">
           <el-option v-for="item in ditributeModeOptions"
                      :key="item.value"
-                     :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
@@ -70,7 +69,6 @@
                    placeholder="请选择">
           <el-option v-for="item in cluePriorityOptions"
                      :key="item.value"
-                     :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
@@ -85,7 +83,6 @@
                    placeholder="请选择">
           <el-option v-for="item in approverOptions"
                      :key="item.value"
-                     :disabled="item.disabled"
                      :label="item.label"
                      :value="item.value" />
         </el-select>
