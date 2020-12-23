@@ -157,6 +157,7 @@ export default {
       list: [],
       mainStatus: '',
       subStatus: '',
+      approverListId: '',
       previewData: {},
       eventName: '',
       showResolve: false,
@@ -198,8 +199,9 @@ export default {
   },
   created() {
     this.getDetail().then(() => {
-      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && this.roles === '事件注册'
-      this.roleJudge.showApproveList = this.subStatus !== 1
+      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && (this.roles === '事件注册' || this.roles === '用例管理')
+      // 是否展示审批动态根据是否事件有审批动态ID
+      this.roleJudge.showApproveList = this.approverListId
       if (this.roleJudge.showApproveList) {
         this.getLinkList().then(() => {
           this.roleJudge.canApprove = this.list[0].user.includes(this.user.userName) && this.mainStatus === 3
@@ -235,6 +237,8 @@ export default {
           this.previewData = res.data
           this.mainStatus = res.data.eventBaseInfo.largeStatus.value
           this.subStatus = res.data.eventBaseInfo.status.value
+          // 审批动态的Id
+          this.approverListId = res.data.eventBaseInfo.firstNodeId
           this.eventName = res.data.eventBaseInfo.name
           resolve()
         })
