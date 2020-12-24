@@ -10,7 +10,7 @@
                       required: true, message: '请分客群', type: 'array'
                     }]">
         <div slot="label">
-          <Info content="选择整体规则后进行模型分群" />
+          <Info content="请选择模型分群" />
           添加模型：
         </div>
         <el-button icon="el-icon-plus"
@@ -35,8 +35,7 @@
         <el-table-column prop="modelDsc"
                          :min-width="200"
                          label="模型描述" />
-        <el-table-column fixed="right"
-                         label="操作"
+        <el-table-column label="操作"
                          width="100">
           <template slot-scope="scope">
             <el-popconfirm title="确定删除吗？"
