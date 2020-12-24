@@ -90,6 +90,8 @@ export default {
         return this.$refs['whiteList'].validateAndNext()
       } else if (this.activeName === '2') {
         return this.$refs['rule'].validateAndNext()
+      } else if (this.activeName === '3') {
+        return this.$refs['model'].validateAndNext()
       }
     },
     reset() {
