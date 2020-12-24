@@ -1,28 +1,35 @@
 <template>
   <div v-loading="mainLoading"
        class="container">
-    <el-form ref="modelFormRef"
-             :model="{modelForm}"
-             label-width="110px">
-      <el-form-item class="shun-label"
-                    prop="modelForm"
-                    :rules="[{
-                      required: true, message: '请分客群', type: 'array'
-                    }]">
-        <div slot="label">
-          <Info content="选择整体规则后进行模型分群" />
-          添加模型：
-        </div>
-        <el-button icon="el-icon-plus"
-                   type="primary"
-                   @click="addModel()">
-          选择模型
-        </el-button>
-      </el-form-item>
+    <el-form>
+      <Group ref="totalRuleRef"
+             :condition="totalCondition"
+             :rule-opt="ruleOpt"
+             :origin-data="originData"
+             :button-loading="totalButtonLoading"
+             :total-group-length="totalCondition.length + Math.max(0, ...labelTabs.map(n => {return n.condition.length}))"
+             required
+             :min-length="0"
+             label="整体规则"
+             @check="checkAll" />
+      <!-- {{ Math.max(0,...labelTabs.map(n => {return n.condition.length})) }} -->
+      <el-form-item label="客户人数：">{{ totalPeople }}</el-form-item>
     </el-form>
-    <div v-show="modelForm && modelForm.length"
+    <el-form ref="modelFormRef"
+             :model="modelForm"
+             label-width="100px"
+             class="modelForm">
+      <Info content="选择整体规则后进行模型分群" />
+      添加模型：
+      <el-button icon="el-icon-plus"
+                 type="primary"
+                 @click="addModel()">
+        选择模型
+      </el-button>
+    </el-form>
+    <div v-show="modelForm.model && modelForm.model.length"
          class="ploy-card">
-      <el-table :data="modelForm"
+      <el-table :data="modelForm.model"
                 border
                 style="width: 100%;margin-bottom:18px;">
         <el-table-column prop="modelName"
@@ -50,7 +57,7 @@
         </el-table-column>
       </el-table>
     </div>
-    <!-- 模型 -->
+    <!-- 权益 -->
     <ShunDrawer title="选择模型"
                 :show.sync="showModel"
                 @submit="submitModel()">
@@ -59,94 +66,18 @@
                :show-selection="true" />
       </template>
     </ShunDrawer>
-    <el-form>
-      <Group ref="totalRuleRef"
-             :condition="totalCondition"
-             :rule-opt="ruleOpt"
-             :origin-data="originData"
-             :button-loading="totalButtonLoading"
-             :total-group-length="totalCondition.length + Math.max(0, ...labelTabs.map(n => {return n.condition.length}))"
-             required
-             :min-length="0"
-             label="整体规则"
-             @check="checkAll" />
-      <!-- {{ Math.max(0,...labelTabs.map(n => {return n.condition.length})) }} -->
-      <el-form-item label="客户人数：">{{ totalPeople }}</el-form-item>
-    </el-form>
-    <el-form ref="form"
-             :model="{labelTabs}"
-             label-width="100px"
-             class="form">
-      <el-form-item class="shun-label"
-                    prop="labelTabs"
-                    :rules="[{
-                      required: true, message: '请分客群', type: 'array'
-                    }]">
-        <div slot="label">
-          <Info content="客群先后顺序决定客群优先级（客群标签可拖拽排序）" />
-          分群：
-        </div>
-        <el-button icon="el-icon-plus"
-                   type="primary"
-                   @click="addTab">
-          添加客群
-        </el-button>
-
-      </el-form-item>
-      <el-tabs v-show="labelTabs.length"
-               id="group-tabs"
-               v-model="labelIndex"
-               type="card"
-               @tab-remove="removeTab">
-        <el-tab-pane v-for="(item, ti) of labelTabs"
-                     :key="item.name"
-                     :closable="item.closable"
-                     :label="item.title"
-                     :name="item.name">
-          <el-form-item :prop="'labelTabs.' + ti + '.title'"
-                        :rules="[{
-                          required: true, message: '请填写客群名称', trigger:'blur'
-                        }]"
-                        label="客群名称：">
-            <el-input v-model.trim="item.title"
-                      style="width:300px"
-                      :disabled="!item.closable"
-                      placeholder="请输入客群名称" />
-          </el-form-item>
-          <el-form-item label="客群描述：">
-            <el-input v-model.trim="item.desc"
-                      style="width:300px"
-                      type="textarea"
-                      :disabled="!item.closable"
-                      :autosize="{ minRows: 2, maxRows: 4}"
-                      placeholder="请输入客群描述" />
-          </el-form-item>
-          <!-- {{ labelTabs }} -->
-          <Group v-if="item.closable"
-                 ref="groupRuleRef"
-                 required
-                 :condition="item.condition"
-                 :rule-opt="ruleOpt"
-                 :origin-data="originData"
-                 :total-group-length="totalCondition.length + item.condition.length"
-                 :button-loading="groupButtonLoading"
-                 @check="checkGroup(item, ti)" />
-          <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
-        </el-tab-pane>
-      </el-tabs>
-    </el-form>
 
   </div>
 </template>
 
 <script>
-import ShunDrawer from '@/components/ShunDrawer'
-import Model from '@/views/model/index'
-import { Message } from 'element-ui'
 import Info from '@/components/Info'
 import Group from './Group'
 import bus from '../bus'
 import Sortable from 'sortablejs'
+import ShunDrawer from '@/components/ShunDrawer'
+import Model from '@/views/model/index'
+import { Message } from 'element-ui'
 import { getPeopleCount, saveGroup, getGroup, getCustomerLabel } from '@/api/api'
 import { valid } from 'mockjs'
 const _ = require('lodash')
@@ -161,7 +92,8 @@ export default {
   },
   data() {
     return {
-      modelForm: [],
+      modelForm: {
+      },
       showModel: false,
       beforeCondition: [],
       totalButtonLoading: false,
@@ -192,7 +124,6 @@ export default {
   watch: {
   },
   mounted() {
-    this.tabDrop()
   },
   created() {
   },
@@ -518,8 +449,6 @@ export default {
       }
       return new Promise((resolve, reject) => {
         const promiseArray = [
-          // 校验模型
-          this.$refs.modelFormRef.validate(),
           // 校验整体规则
           this.$refs.totalRuleRef.$form.validate(),
           // 校验客群
@@ -546,57 +475,9 @@ export default {
         })
       })
     },
-    // tab拖拽
-    tabDrop() {
-      const el = document.querySelector('#group-tabs .el-tabs__nav')
-      const _this = this
-      var sortable = Sortable.create(el, {
-        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-          const currRow = _this.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
-          _this.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组
-        }
-      })
-    },
-    addTab() {
-      const newTabName = ++this.labelTabsCounts + ''
-      this.labelTabs.push({
-        title: '新客群' + newTabName,
-        desc: '',
-        name: newTabName,
-        closable: true,
-        // 规则
-        condition: [],
-        people: ''
-      })
-      this.labelIndex = newTabName
-      // 校验
-      this.$refs.form.validateField('labelTabs')
-    },
-    removeTab(targetName) {
-      const tabs = this.labelTabs
-      let activeName = this.labelIndex
-      if (activeName === targetName) {
-        tabs.forEach((tab, index) => {
-          if (tab.name === targetName) {
-            const nextTab = tabs[index + 1] || tabs[index - 1]
-            if (nextTab) {
-              activeName = nextTab.name
-            }
-          }
-        })
-      }
-
-      this.labelIndex = activeName
-      this.labelTabs = tabs.filter(tab => tab.name !== targetName)
-
-      // 校验
-      this.$nextTick(() => {
-        this.$refs.form.validateField('labelTabs')
-      })
-    },
     // 选择模型
     addModel() {
-      console.log(this.modelForm)
+      console.log(this.modelForm.model)
 
       this.showModel = true
       this.$nextTick(() => {
@@ -609,8 +490,8 @@ export default {
       const val = this.$refs.modelRef.parentRef.getVal()
       if (val.length) {
         this.showModel = false
-        this.modelForm = val
-        console.log(this.modelForm)
+        this.modelForm.model = val
+        console.log(this.modelForm.model)
         // this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
         // 校验
         // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
@@ -624,7 +505,7 @@ export default {
     },
     // 删除权益
     deleteModel(item, i) {
-      item.splice(i, 1)
+      item.model.splice(i, 1)
     }
 
   }
