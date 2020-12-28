@@ -51,7 +51,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -190,7 +190,11 @@ export default {
     getList() {
       this.loading = true
       queryModelList().then(res => {
-        this.tableData = res.data.modelList
+        this.tableData = res.data.modelList.map((n) => {
+          return Object.assign(n, {
+            canSelected: false
+          })
+        })
       })
         .finally(() => {
           this.loading = false
