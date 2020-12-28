@@ -114,8 +114,7 @@
             <el-tooltip :content="scope.row.name"
                         placement="top-start">
               <div class="name elip bold"
-                   :class="{link:scope.row.firstNodeId}"
-                   @click="scope.row.firstNodeId && eventDetail(scope.row.id)">
+                   @click="eventDetail(scope.row.id)">
                 {{ scope.row.name }}
               </div>
             </el-tooltip>
@@ -582,10 +581,12 @@ export default {
       }
       .name {
         flex: 1;
-        &.link {
-          color: $blue;
-          cursor: pointer;
-        }
+        color: $blue;
+        cursor: pointer;
+        // &.link {
+        //   color: $blue;
+        //   cursor: pointer;
+        // }
       }
     }
   }
