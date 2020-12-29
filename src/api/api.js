@@ -126,24 +126,6 @@ export function getSmsList(data) {
   })
 }
 
-// 批量上传短信
-export function uploadSmsFile(data) {
-  return request({
-    url: '/material/uploadSMS',
-    method: 'post',
-    data
-  })
-}
-
-// 删除短信
-export function delMaterial(params) {
-  return request({
-    url: '/material/delMaterial',
-    method: 'get',
-    params
-  })
-}
-
 /** ************************************************ 模型 ************************************************************/
 // 获取模型库
 export function queryModelList() {
