@@ -100,6 +100,13 @@
             全部下载
           </el-button>
         </el-tooltip> -->
+        <el-button class="button"
+                   icon="el-icon-delete"
+                   type="danger"
+                   plain
+                   @click.native="delSome">
+          批量删除
+        </el-button>
         <el-link type="primary"
                  @click="download">模版下载</el-link>
 
@@ -206,7 +213,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getInterestList, uploadInterestFile, getAttributionUseCaseEnumList, getProductCategoryList } from '@/api/api'
+import { getInterestList, uploadInterestFile, getAttributionUseCaseEnumList, getProductCategoryList, delInterests } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 
 export default {
@@ -218,7 +225,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -313,7 +320,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.resetSelection()
+      this.$refs.table.setSelection([])
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -361,6 +368,37 @@ export default {
       // const data = {
       // }
       // downloadFile('/hateSale/downloadAll', data)
+    },
+    delSome() {
+      this.selection = this.$refs.table.getVal()
+      const data = {
+        ids: this.selection.map(n => n.id).join(',')
+      }
+      if (this.selection.length) {
+        this.$confirm(`确定删除？`)
+          .then(() => {
+            this.loading = true
+            delInterests(data).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.resetAll()
+              }
+            })
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        return this.$message({
+          message: '请选择权益',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
     },
 
     // 获取权益用例

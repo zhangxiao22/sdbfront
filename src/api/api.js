@@ -44,6 +44,15 @@ export function uploadProductFile(data) {
   })
 }
 
+// 删除产品
+export function delProduct(params) {
+  return request({
+    url: '/resource/delProduct',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 话术 ************************************************************/
 // 获取话术列表
 export function getWordList(data) {
@@ -69,6 +78,16 @@ export function uploadScriptFile(data) {
     data
   })
 }
+
+// 删除话术
+export function delScript(params) {
+  return request({
+    url: '/script/delScript',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 权益 ************************************************************/
 // 获取权益库
 export function getInterestList(data) {
@@ -88,6 +107,15 @@ export function uploadInterestFile(data) {
   })
 }
 
+// 删除权益
+export function delInterests(params) {
+  return request({
+    url: '/interests/delInterests',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 短信 ************************************************************/
 // 获取短信库
 export function getSmsList(data) {
@@ -104,6 +132,15 @@ export function uploadSmsFile(data) {
     url: '/material/uploadSMS',
     method: 'post',
     data
+  })
+}
+
+// 删除短信
+export function delMaterial(params) {
+  return request({
+    url: '/material/delMaterial',
+    method: 'get',
+    params
   })
 }
 

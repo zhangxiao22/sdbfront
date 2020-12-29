@@ -101,6 +101,13 @@
             全部下载
           </el-button>
         </el-tooltip> -->
+        <el-button class="button"
+                   icon="el-icon-delete"
+                   type="danger"
+                   plain
+                   @click.native="delSome">
+          批量删除
+        </el-button>
         <el-link type="primary"
                  @click="download">模版下载</el-link>
 
@@ -199,7 +206,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getWordList, getWordCategory, uploadScriptFile, getAttributionUseCaseEnumList, getProductCategoryList } from '@/api/api'
+import { getWordList, getWordCategory, uploadScriptFile, getAttributionUseCaseEnumList, getProductCategoryList, delScript } from '@/api/api'
 import { downloadFile } from '@/utils'
 import UploadButton from '@/components/UploadButton'
 
@@ -212,7 +219,7 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -295,7 +302,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.resetSelection()
+      this.$refs.table.setSelection([])
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -345,6 +352,37 @@ export default {
       //   category: this.category
       // }
       // downloadFile('/hateSale/downloadAll', data)
+    },
+    delSome() {
+      this.selection = this.$refs.table.getVal()
+      const data = {
+        ids: this.selection.map(n => n.id).join(',')
+      }
+      if (this.selection.length) {
+        this.$confirm(`确定删除？`)
+          .then(() => {
+            this.loading = true
+            delScript(data).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.resetAll()
+              }
+            })
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        return this.$message({
+          message: '请选择话术',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
     },
 
     // 获取话术用例

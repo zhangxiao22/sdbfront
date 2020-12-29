@@ -36,7 +36,13 @@
             全部下载
           </el-button>
         </el-tooltip>
-
+        <el-button class="button"
+                   icon="el-icon-delete"
+                   type="danger"
+                   plain
+                   @click.native="delSome">
+          批量删除
+        </el-button>
         <el-link type="primary"
                  class="button"
                  @click="downloadModel">模版下载</el-link>
@@ -117,7 +123,7 @@
 <script>
 import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST, downloadFile } from '@/utils'
-import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList } from '@/api/api'
+import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList, delProduct } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 
 import qs from 'qs'
@@ -182,7 +188,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.resetSelection()
+      this.$refs.table.setSelection([])
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -221,10 +227,10 @@ export default {
     },
 
     downloadSome() {
+      this.selection = this.$refs.table.getVal()
       const data = {
         idList: this.selection.map(n => n.id).join(',')
       }
-      this.selection = this.$refs.table.getVal()
       if (this.selection.length) {
         downloadFile('/resource/downloadProductBatch', data)
       } else {
@@ -246,6 +252,37 @@ export default {
       } else {
         return this.$message({
           message: '产品数据不存在',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
+    },
+    delSome() {
+      this.selection = this.$refs.table.getVal()
+      const data = {
+        ids: this.selection.map(n => n.id).join(',')
+      }
+      if (this.selection.length) {
+        this.$confirm(`确定删除？`)
+          .then(() => {
+            this.loading = true
+            delProduct(data).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.resetAll()
+              }
+            })
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        return this.$message({
+          message: '请选择产品',
           type: 'warning',
           duration: '3000'
         })
