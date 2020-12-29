@@ -572,6 +572,7 @@
                 @submit="submitSms()">
       <template v-slot:container>
         <sms ref="smsRef"
+             :multiple="false"
              :show-selection="true" />
       </template>
     </ShunDrawer>

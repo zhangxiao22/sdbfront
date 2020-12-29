@@ -7,6 +7,7 @@
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
+                :multiple="multiple"
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
@@ -205,6 +206,10 @@ export default {
   },
   props: {
     showSelection: {
+      type: Boolean,
+      default: true
+    },
+    multiple: {
       type: Boolean,
       default: true
     }
