@@ -7,14 +7,14 @@
       <el-form-item class="shun-label"
                     prop="modelForm"
                     :rules="[{
-                      required: true, message: '请分客群', type: 'array'
+                      required: true, message: '请选模型', type: 'array'
                     }]">
         <div slot="label">
           <Info content="请选择模型分群" />
           添加模型：
         </div>
         <el-button icon="el-icon-plus"
-                   type="primary"
+                   class="add"
                    @click="addModel()">
           选择模型
         </el-button>
@@ -58,20 +58,6 @@
                :show-selection="true" />
       </template>
     </ShunDrawer>
-    <el-form>
-      <Group ref="totalRuleRef"
-             :condition="totalCondition"
-             :rule-opt="ruleOpt"
-             :origin-data="originData"
-             :button-loading="totalButtonLoading"
-             :total-group-length="totalCondition.length + Math.max(0, ...labelTabs.map(n => {return n.condition.length}))"
-             required
-             :min-length="0"
-             label="整体规则"
-             @check="checkAll" />
-      <!-- {{ Math.max(0,...labelTabs.map(n => {return n.condition.length})) }} -->
-      <el-form-item label="客户人数：">{{ totalPeople }}</el-form-item>
-    </el-form>
     <el-form ref="form"
              :model="{labelTabs}"
              label-width="100px"
@@ -90,7 +76,6 @@
                    @click="addTab">
           添加客群
         </el-button>
-
       </el-form-item>
       <el-tabs v-show="labelTabs.length"
                id="group-tabs"
@@ -127,7 +112,7 @@
                  :condition="item.condition"
                  :rule-opt="ruleOpt"
                  :origin-data="originData"
-                 :total-group-length="totalCondition.length + item.condition.length"
+                 :total-group-length="item.condition.length"
                  :button-loading="groupButtonLoading"
                  @check="checkGroup(item, ti)" />
           <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
@@ -163,12 +148,10 @@ export default {
       modelForm: [],
       showModel: false,
       beforeCondition: [],
-      totalButtonLoading: false,
       groupButtonLoading: false,
       mainLoading: false,
       ruleOpt: [],
       originData: [],
-      totalDetail: [],
       valDetail: [],
       totalPeople: '',
       fileId: null,
@@ -179,7 +162,6 @@ export default {
       people: '0',
       // 用于计数 累加
       labelTabsCounts: 0,
-      totalCondition: [],
       supplyIdList: []
     }
   },
@@ -331,18 +313,6 @@ export default {
         this.labelTabs[i].condition = this.beforeCondition
       }
       this.labelIndex = '1'
-      // 传递整体规则ID以及且或符号
-      this.totalDetail = data.abstractDetail.tagList.map(n => {
-        return { tagId: n.tagId, combineRelation: n.combineRelation }
-      })
-      // 传递整体规则比较符号和值
-      this.valDetail = data.abstractDetail.tagList.map(n => {
-        return n.tagContentUnitVOList.map((m) => {
-          return { content: m.content, compare: m.tagRelation }
-        })
-      })
-      this.getAllData(this.totalDetail, this.valDetail)
-      this.totalCondition = this.beforeCondition
     },
     // 获取规则信息
     getDetail() {
@@ -352,7 +322,6 @@ export default {
           this.render(res.data)
         } else {
           this.labelTabs = []
-          this.totalCondition = []
         }
       }).finally(() => {
         this.mainLoading = false
@@ -454,17 +423,9 @@ export default {
       })
       return data
     },
-    checkAll(val) {
-      this.totalButtonLoading = true
-      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(val) }).then(res => {
-        this.totalPeople = res.data.count
-      }).finally(() => {
-        this.totalButtonLoading = false
-      })
-    },
     checkGroup(item, ti) {
       this.groupButtonLoading = true
-      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition), searchRuleList: this.transferDataByType(this.totalCondition) }).then(res => {
+      getPeopleCount({ baseId: this.id, rawSearchRuleList: this.transferDataByType(item.condition) }).then(res => {
         this.labelTabs[ti].people = res.data.count
       }).finally(() => {
         this.groupButtonLoading = false
@@ -481,8 +442,7 @@ export default {
           userId: 1,
           subBranchId: 1000,
           rawGroup: {
-            count: this.totalPeople,
-            tagList: this.transferDataByType(this.totalCondition)
+            count: this.totalPeople
           },
           groupSaveCriteriaList: this.labelTabs.map((n, i) => {
             return {
@@ -494,7 +454,7 @@ export default {
           })
         }
         return new Promise((resolve, reject) => {
-          if (Math.max(...this.labelTabs.map(n => { return n.condition.length })) + this.totalCondition.length < 6) {
+          if (Math.max(...this.labelTabs.map(n => { return n.condition.length })) < 6) {
             saveGroup(data).then(res => {
               if (res.code === 200) {
                 resolve()
@@ -519,8 +479,6 @@ export default {
         const promiseArray = [
           // 校验模型
           this.$refs.modelFormRef.validate(),
-          // 校验整体规则
-          this.$refs.totalRuleRef.$form.validate(),
           // 校验客群
           this.$refs.form.validate(),
           // 校验客群中的规则
@@ -596,11 +554,14 @@ export default {
     // 选择模型
     addModel() {
       console.log(this.modelForm)
-
       this.showModel = true
       this.$nextTick(() => {
-        // this.$refs.modelRef.reset()
-        // this.$refs.modelRef.parentRef.setSelection(this.modelForm.model)
+        if (this.modelForm.length) {
+          this.$refs.modelRef.parentRef.setSelection(this.modelForm)
+        } else {
+          this.$refs.modelRef.reset()
+          this.$refs.modelRef.parentRef.setSelection(this.modelForm)
+        }
       })
     },
     // 选择模型-确定
@@ -610,9 +571,10 @@ export default {
         this.showModel = false
         this.modelForm = val
         console.log(this.modelForm)
-        // this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
         // 校验
-        // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+        this.$nextTick(() => {
+          this.$refs.modelFormRef.validateField('modelForm')
+        })
       } else {
         Message({
           message: '请选择至少一项',
@@ -624,6 +586,10 @@ export default {
     // 删除权益
     deleteModel(item, i) {
       item.splice(i, 1)
+      // 校验
+      this.$nextTick(() => {
+        this.$refs.modelFormRef.validateField('modelForm')
+      })
     }
 
   }
@@ -635,5 +601,8 @@ export default {
 
 .container {
   overflow: auto;
+  .add {
+    border-style: dashed;
+  }
 }
 </style>
