@@ -116,6 +116,14 @@ export function queryModelList() {
   })
 }
 
+// 运行模型库
+export function noticeModel() {
+  return request({
+    url: '/clue/noticeModel',
+    method: 'get'
+  })
+}
+
 /** ************************************************ 事件 ************************************************************/
 
 // 获取事件类型
