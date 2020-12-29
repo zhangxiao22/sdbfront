@@ -20,15 +20,15 @@
           </div>
         </div>
       </template>
-      <template v-slot:progressSlot="scope">
+      <!-- <template v-slot:progressSlot="scope">
         <el-progress :percentage="scope.row.modelId === '000002' ? 99.99 : +percentage.toFixed(2)"
                      :color="customColors" />
-      </template>
+      </template> -->
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn play"
                :class="{disable:scope.row.modelId !== '000001'}"
-               @click="increase">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
+               @click="increase(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
           <div v-show="scope.row.modelId === '000002'"
                class="btn"
                style="color:#1890FF;">下载名单</div>
@@ -40,11 +40,10 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { queryModelList } from '@/api/api'
-import { mapGetters } from 'vuex'
+import { queryModelList, noticeModel } from '@/api/api'
 
 export default {
-  name: 'UseCase',
+  name: 'Model',
   components: {
     ShunTable
   },
@@ -57,17 +56,14 @@ export default {
   data() {
     return {
       percentage: 0,
-      customColors: [
-        { color: '#f56c6c', percentage: 20 },
-        { color: '#e6a23c', percentage: 40 },
-        { color: '#5cb87a', percentage: 60 },
-        { color: '#1989fa', percentage: 80 },
-        { color: '#6f7ad3', percentage: 100 }
-      ],
-      // 权限判断
-      roleJudge: {},
+      // customColors: [
+      //   { color: '#f56c6c', percentage: 20 },
+      //   { color: '#e6a23c', percentage: 40 },
+      //   { color: '#5cb87a', percentage: 60 },
+      //   { color: '#1989fa', percentage: 80 },
+      //   { color: '#6f7ad3', percentage: 100 }
+      // ],
       loading: false,
-
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -90,7 +86,6 @@ export default {
           label: '所需标签个数',
           minWidth: 120
         },
-
         {
           prop: 'useDate',
           label: '使用日期',
@@ -113,12 +108,12 @@ export default {
           label: '模型描述',
           minWidth: 200
         },
-        {
-          prop: 'progress',
-          label: '模型进度',
-          slot: true,
-          minWidth: 200
-        },
+        // {
+        //   prop: 'progress',
+        //   label: '模型进度',
+        //   slot: true,
+        //   minWidth: 200
+        // },
         {
           prop: 'operate',
           label: '操作',
@@ -164,11 +159,7 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    ...mapGetters([
-      'roles',
-      'user'
-    ])
+    }
   },
 
   watch: {
@@ -177,15 +168,27 @@ export default {
     this.getList()
   },
   methods: {
-    increase() {
-      this.percentage += +(Math.random() * (1 - 0)).toFixed(2)
-      if (this.percentage > 99.99) {
-        this.percentage = 99.99
-        return
-      }
-      setTimeout(() => {
-        this.increase()
-      }, Math.floor(Math.random() * 10000))
+    reset() {
+      this.getList()
+    },
+    increase(modelId) {
+      noticeModel({ modelId: modelId }).then(res => {
+        if (res.code === 200) {
+          console.log('success')
+        } else {
+          console.log('failed')
+        }
+      }).finally(() => {
+        console.log('end')
+      })
+      // this.percentage += +(Math.random() * (1 - 0)).toFixed(2)
+      // if (this.percentage > 99.99) {
+      //   this.percentage = 99.99
+      //   return
+      // }
+      // setTimeout(() => {
+      //   this.increase()
+      // }, Math.floor(Math.random() * 10000))
     },
     getList() {
       this.loading = true
@@ -195,12 +198,10 @@ export default {
             canSelected: false
           })
         })
+      }).finally(() => {
+        this.loading = false
       })
-        .finally(() => {
-          this.loading = false
-        })
     }
-
   }
 }
 </script>
