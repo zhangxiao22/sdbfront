@@ -65,10 +65,10 @@
               <el-button slot="reference"
                          type="text">审批动态<i class="el-icon-arrow-down el-icon--right" /></el-button>
             </el-popover>
-            <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
+            <el-button v-if="roleJudge.canApprove"
                        type="success"
                        @click="resolveForm.resolveText='';showResolve=true;">{{ subStatus&&subStatus === 9 ? '审核通过': '审批通过' }}</el-button>
-            <el-button v-if="roleJudge.showApproveButton && roleJudge.canApprove"
+            <el-button v-if="roleJudge.canApprove"
                        type="danger"
                        @click="resolveForm.rejectText='';showReject=true;">{{ subStatus&&subStatus === 9 ? '审核驳回': '审批驳回' }}</el-button>
             <el-button v-if="roleJudge.showCopyButton"
@@ -157,6 +157,7 @@ export default {
       list: [],
       mainStatus: '',
       subStatus: '',
+      approverListId: '',
       previewData: {},
       eventName: '',
       showResolve: false,
@@ -172,7 +173,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'roles'
+      'roles',
+      'user'
     ]),
     id() {
       return +this.$route.query.id
@@ -197,14 +199,13 @@ export default {
   },
   created() {
     this.getDetail().then(() => {
-      console.log(this.roles)
-      console.log(this.mainStatus)
-      this.roleJudge.canApprove = this.roles === '领导审批' || this.roles === '用例管理' || this.roles === 'admin'
-      this.roleJudge.showApproveButton = this.mainStatus === 3
-      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && this.roles === '事件注册' || this.roles === 'admin'
-      this.roleJudge.showApproveList = this.subStatus !== 1
+      this.roleJudge.showCopyButton = (this.mainStatus === 4 || this.mainStatus === 5) && (this.roles === '事件注册' || this.roles === '用例管理')
+      // 是否展示审批动态根据是否事件有审批动态ID
+      this.roleJudge.showApproveList = this.approverListId
       if (this.roleJudge.showApproveList) {
-        this.getLinkList()
+        this.getLinkList().then(() => {
+          this.roleJudge.canApprove = this.list[0].user.includes(this.user.userName) && this.mainStatus === 3
+        })
       }
     })
   },
@@ -236,21 +237,26 @@ export default {
           this.previewData = res.data
           this.mainStatus = res.data.eventBaseInfo.largeStatus.value
           this.subStatus = res.data.eventBaseInfo.status.value
+          // 审批动态的Id
+          this.approverListId = res.data.eventBaseInfo.firstNodeId
           this.eventName = res.data.eventBaseInfo.name
           resolve()
         })
       })
     },
     getLinkList() {
-      getEventApprovalLink({ baseId: this.id }).then(res => {
-        this.list = res.data.map(n => {
-          return {
-            title: n.status.label,
-            user: n.approverNameList,
-            desc: n.comment,
-            timestamp: n.modifyTime
-          }
-        }).reverse()
+      return new Promise((resolve) => {
+        getEventApprovalLink({ baseId: this.id }).then(res => {
+          this.list = res.data.map(n => {
+            return {
+              title: n.status.label,
+              user: n.approverNameList,
+              desc: n.comment,
+              timestamp: n.modifyTime
+            }
+          }).reverse()
+          resolve()
+        })
       })
     },
     goBack() {
@@ -325,7 +331,7 @@ export default {
       left: 15px;
       right: 15px;
       bottom: 0;
-      background-color: #dcdfe6;
+      background-color: #ebeef5;
     }
     .header-left {
       cursor: pointer;

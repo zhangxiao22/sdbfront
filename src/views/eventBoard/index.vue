@@ -168,7 +168,18 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventList, getEventOwner, getEventReviewer, getEventApprover, getEventCategory, getEventStatus, getAllUseCase, copyEvent, offlineEvent, deleteEvent } from '@/api/api'
+import {
+  getEventList,
+  getEventOwner,
+  getEventReviewer,
+  getEventApprover,
+  getEventCategory,
+  getEventStatus,
+  getAllUseCase,
+  copyEvent,
+  offlineEvent,
+  deleteEvent
+} from '@/api/api'
 import { mapGetters } from 'vuex'
 
 export default {
@@ -283,8 +294,8 @@ export default {
   watch: {},
   created() {
     // 是否能新建事件
-    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === 'admin'
-    this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批' || this.roles === 'admin'
+    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === '用例管理'
+    this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批'
     // this.eventCategoryList()
     this.getOwner()
     this.getReviewer()
@@ -583,6 +594,10 @@ export default {
         flex: 1;
         color: $blue;
         cursor: pointer;
+        // &.link {
+        //   color: $blue;
+        //   cursor: pointer;
+        // }
       }
     }
   }

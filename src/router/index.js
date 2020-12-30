@@ -58,7 +58,7 @@ export const asyncRoutes = [
         path: 'createEvent',
         name: 'CreateEvent',
         component: () => import('@/views/createEvent/index'),
-        meta: { title: '新建营销事件', icon: 'create', roles: ['事件注册'] }
+        meta: { title: '新建营销事件', icon: 'create', roles: ['事件注册', '用例管理'] }
       },
       {
         // 事件看板

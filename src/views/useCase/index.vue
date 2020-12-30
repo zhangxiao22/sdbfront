@@ -259,8 +259,8 @@ export default {
   },
   created() {
     this.search()
-    this.roleJudge.createUseCase = this.roles === '用例管理' || this.roles === 'admin'
-    this.roleJudge.editPeople = this.roles === '业务管理' || this.roles === 'admin'
+    this.roleJudge.createUseCase = this.roles === '用例管理'
+    this.roleJudge.editPeople = this.roles === '业务管理'
   },
   methods: {
     rowStyle({ row, index }) {
