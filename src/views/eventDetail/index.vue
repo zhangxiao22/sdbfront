@@ -331,7 +331,7 @@ export default {
       left: 15px;
       right: 15px;
       bottom: 0;
-      background-color: #dcdfe6;
+      background-color: #ebeef5;
     }
     .header-left {
       cursor: pointer;

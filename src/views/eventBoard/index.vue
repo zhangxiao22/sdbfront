@@ -168,7 +168,18 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventList, getEventOwner, getEventReviewer, getEventApprover, getEventCategory, getEventStatus, getAllUseCase, copyEvent, offlineEvent, deleteEvent } from '@/api/api'
+import {
+  getEventList,
+  getEventOwner,
+  getEventReviewer,
+  getEventApprover,
+  getEventCategory,
+  getEventStatus,
+  getAllUseCase,
+  copyEvent,
+  offlineEvent,
+  deleteEvent
+} from '@/api/api'
 import { mapGetters } from 'vuex'
 
 export default {
