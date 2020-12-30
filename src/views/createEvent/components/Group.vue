@@ -254,7 +254,6 @@ export default {
     check() {
       this.$refs.form.validate((valid) => {
         if (valid) {
-          console.log('this.condition', this.condition)
           this.$emit('check', this.condition)
         }
       })
