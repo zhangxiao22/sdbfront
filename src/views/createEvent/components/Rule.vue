@@ -13,7 +13,9 @@
              label="整体规则"
              @check="checkAll" />
       <!-- {{ Math.max(0,...labelTabs.map(n => {return n.condition.length})) }} -->
-      <el-form-item label="客户人数：">{{ totalPeople }}</el-form-item>
+      <el-form-item label="客户人数：">
+        {{ totalPeople === '' ? '' : parseInt(totalPeople).toLocaleString() }}
+      </el-form-item>
     </el-form>
     <el-form ref="form"
              :model="{labelTabs}"
@@ -73,7 +75,13 @@
                  :total-group-length="totalCondition.length + item.condition.length"
                  :button-loading="groupButtonLoading"
                  @check="checkGroup(item, ti)" />
-          <el-form-item label="客户人数：">{{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}</el-form-item>
+          <el-form-item label="客户人数："
+                        :prop="'labelTabs.' + ti + '.people'"
+                        :rules="[{
+                          required: true, message: '请筛选客户'
+                        }]">
+            {{ item.people === '' ? '' : parseInt(item.people).toLocaleString() }}
+          </el-form-item>
         </el-tab-pane>
       </el-tabs>
     </el-form>
@@ -376,8 +384,6 @@ export default {
           this.ruleOpt = this.listToTree(this.listChangeAgain)
           resolve()
         })
-        // todo
-        // console.log(this.ruleOpt)
       })
     },
     transferDataByType(val) {
@@ -404,6 +410,7 @@ export default {
         this.labelTabs[ti].people = res.data.count
       }).finally(() => {
         this.groupButtonLoading = false
+        this.$refs.form.validate()
       })
     },
 
@@ -431,15 +438,34 @@ export default {
         }
         return new Promise((resolve, reject) => {
           if (Math.max(...this.labelTabs.map(n => { return n.condition.length })) + this.totalCondition.length < 6) {
-            saveGroup(data).then(res => {
-              if (res.code === 200) {
-                resolve()
-              } else {
+            if (this.labelTabs.map(n => { return n.people }).join('+') < 200000) {
+              saveGroup(data).then(res => {
+                if (res.code === 200) {
+                  resolve()
+                } else {
+                  reject()
+                }
+              }).catch(() => {
                 reject()
-              }
-            }).catch(() => {
+              })
+            } else {
+              this.$message({
+                message: '客群总人数需低于20万人',
+                type: 'warning',
+                duration: '3000'
+              })
               reject()
-            })
+              return
+            }
+            // saveGroup(data).then(res => {
+            //   if (res.code === 200) {
+            //     resolve()
+            //   } else {
+            //     reject()
+            //   }
+            // }).catch(() => {
+            //   reject()
+            // })
           } else {
             this.$message({
               message: '整体和分群规则总和不能超过5个',
@@ -471,7 +497,11 @@ export default {
             })
           } else {
             const index = result.slice(2).findIndex(r => r.status === 'rejected')
-            this.labelIndex = index + 1 + ''
+            if (index !== -1) {
+              this.labelIndex = index + 1 + ''
+            } else {
+              this.labelIndex = this.labelTabs.findIndex(n => n.people === '') + 1 + ''
+            }
             reject()
           }
         }).catch(() => {
