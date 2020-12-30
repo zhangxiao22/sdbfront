@@ -324,8 +324,7 @@ export default {
       this.$emit('render')
     },
     handleClearSelection() {
-      this.$refs.table.clearSelection()
-      this.selection = []
+      this.resetSelection()
     },
     autoSelect(ids) {
       this.tableData.forEach((n, i) => {
@@ -334,6 +333,7 @@ export default {
     },
     resetSelection() {
       this.$refs.table.clearSelection()
+      this.selection = []
     },
     getVal() {
       return this.selection

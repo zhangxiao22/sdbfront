@@ -104,7 +104,7 @@
                    icon="el-icon-delete"
                    type="danger"
                    plain
-                   @click.native="delSome">
+                   @click="delSome">
           批量删除
         </el-button>
         <el-link type="primary"
@@ -272,7 +272,7 @@ export default {
         },
         {
           prop: 'attributionUseCaseList',
-          label: '话术用例',
+          label: '权益用例',
           minWidth: 100,
           slot: true
         },
@@ -293,8 +293,7 @@ export default {
           minWidth: 100
         }
       ],
-      tableData: [],
-      selection: []
+      tableData: []
     }
   },
   computed: {
@@ -320,7 +319,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.setSelection([])
+      this.$refs.table.resetSelection()
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -370,11 +369,11 @@ export default {
       // downloadFile('/hateSale/downloadAll', data)
     },
     delSome() {
-      this.selection = this.$refs.table.getVal()
+      const selection = this.$refs.table.getVal()
       const data = {
-        ids: this.selection.map(n => n.id).join(',')
+        ids: selection.map(n => n.id).join(',')
       }
-      if (this.selection.length) {
+      if (selection.length) {
         this.$confirm(`确定删除？`)
           .then(() => {
             this.loading = true

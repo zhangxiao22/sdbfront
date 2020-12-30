@@ -21,7 +21,7 @@
                    icon="el-icon-download"
                    type="success"
                    plain
-                   @click.native="downloadSome">
+                   @click="downloadSome">
           批量下载
         </el-button>
         <el-tooltip class="item"
@@ -32,7 +32,7 @@
                      icon="el-icon-download"
                      type="success"
                      plain
-                     @click.native="downloadAll">
+                     @click="downloadAll">
             全部下载
           </el-button>
         </el-tooltip>
@@ -40,7 +40,7 @@
                    icon="el-icon-delete"
                    type="danger"
                    plain
-                   @click.native="delSome">
+                   @click="delSome">
           批量删除
         </el-button>
         <el-link type="primary"
@@ -188,7 +188,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.setSelection([])
+      this.$refs.table.resetSelection()
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -227,11 +227,11 @@ export default {
     },
 
     downloadSome() {
-      this.selection = this.$refs.table.getVal()
+      const selection = this.$refs.table.getVal()
       const data = {
-        idList: this.selection.map(n => n.id).join(',')
+        idList: selection.map(n => n.id).join(',')
       }
-      if (this.selection.length) {
+      if (selection.length) {
         downloadFile('/resource/downloadProductBatch', data)
       } else {
         return this.$message({
@@ -258,11 +258,11 @@ export default {
       }
     },
     delSome() {
-      this.selection = this.$refs.table.getVal()
+      const selection = this.$refs.table.getVal()
       const data = {
-        ids: this.selection.map(n => n.id).join(',')
+        ids: selection.map(n => n.id).join(',')
       }
-      if (this.selection.length) {
+      if (selection.length) {
         this.$confirm(`确定删除？`)
           .then(() => {
             this.loading = true

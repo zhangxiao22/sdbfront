@@ -105,7 +105,7 @@
                    icon="el-icon-delete"
                    type="danger"
                    plain
-                   @click.native="delSome">
+                   @click="delSome">
           批量删除
         </el-button>
         <el-link type="primary"
@@ -276,8 +276,7 @@ export default {
           notShowOverflowTooltip: true
         }
       ],
-      tableData: [],
-      selection: []
+      tableData: []
     }
   },
   computed: {
@@ -302,7 +301,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.setSelection([])
+      this.$refs.table.resetSelection()
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -354,14 +353,14 @@ export default {
       // downloadFile('/hateSale/downloadAll', data)
     },
     delSome() {
-      this.selection = this.$refs.table.getVal()
-      const data = {
-        ids: this.selection.map(n => n.id).join(',')
-      }
-      if (this.selection.length) {
+      const selection = this.$refs.table.getVal()
+      if (selection.length) {
         this.$confirm(`确定删除？`)
           .then(() => {
             this.loading = true
+            const data = {
+              ids: selection.map(n => n.id).join(',')
+            }
             delScript(data).then(res => {
               if (res.code === 200) {
                 this.$message({
