@@ -122,9 +122,9 @@
                 {{ item.label }}
               </div>
             </div>
-            <div>
+            <span>
               {{ scope.row.attributionUseCaseList.length }}个用例
-            </div>
+            </span>
           </el-tooltip>
         </template>
         <div v-else>
@@ -142,9 +142,9 @@
                 {{ item.label }}
               </div>
             </div>
-            <div>
-              {{ scope.row.productFirstCategoryList.length }}个产品
-            </div>
+            <span>
+              {{ scope.row.productFirstCategoryList.length }}类产品
+            </span>
           </el-tooltip>
         </template>
         <div v-else>

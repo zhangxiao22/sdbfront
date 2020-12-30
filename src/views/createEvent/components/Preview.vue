@@ -113,9 +113,9 @@
                                 {{ useItem.label }}
                               </div>
                             </div>
-                            <div>
+                            <span>
                               {{ scope.row.attributionUseCaseList.length }}个用例
-                            </div>
+                            </span>
                           </el-tooltip>
                         </template>
                         <div v-else>
