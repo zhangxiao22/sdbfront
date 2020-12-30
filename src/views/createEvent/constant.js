@@ -54,33 +54,33 @@ export const CHANNEL_OPT = [
       icon: 'el-icon-tickets'
     }],
     model: []
-  },
-  {
-    value: 3,
-    label: '微信',
-    disabled: false,
-    icon: 'wechat',
-    iconColor: '#67c23a',
-    chooseType: 1,
-    timingDateType: 1,
-    timingDateValue: [],
-    timingTimeValue: '07:00',
-    dateRange: [],
-    ruleValue: [{
-      date: 0,
-      time: '00:00'
-    }],
-    type: [{
-      id: 1,
-      name: '定时型',
-      icon: 'el-icon-alarm-clock'
-    }, {
-      id: 2,
-      name: '规则型',
-      icon: 'el-icon-tickets'
-    }],
-    model: []
   }
+  // {
+  //   value: 3,
+  //   label: '微信',
+  //   disabled: false,
+  //   icon: 'wechat',
+  //   iconColor: '#67c23a',
+  //   chooseType: 1,
+  //   timingDateType: 1,
+  //   timingDateValue: [],
+  //   timingTimeValue: '07:00',
+  //   dateRange: [],
+  //   ruleValue: [{
+  //     date: 0,
+  //     time: '00:00'
+  //   }],
+  //   type: [{
+  //     id: 1,
+  //     name: '定时型',
+  //     icon: 'el-icon-alarm-clock'
+  //   }, {
+  //     id: 2,
+  //     name: '规则型',
+  //     icon: 'el-icon-tickets'
+  //   }],
+  //   model: []
+  // }
 ]
 export const TIMING_OPT = [
   {
