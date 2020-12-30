@@ -438,7 +438,8 @@ export default {
         }
         return new Promise((resolve, reject) => {
           if (Math.max(...this.labelTabs.map(n => { return n.condition.length })) + this.totalCondition.length < 6) {
-            if (this.labelTabs.map(n => { return n.people }).join('+') < 200000) {
+            // eslint-disable-next-line no-eval
+            if (eval(this.labelTabs.map(n => { return n.people }).join('+')) < 200000) {
               saveGroup(data).then(res => {
                 if (res.code === 200) {
                   resolve()
