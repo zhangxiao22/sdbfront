@@ -103,7 +103,7 @@ export default {
   methods: {
     resetAll() {
       this.reset()
-      this.$refs.table.setSelection([])
+      this.$refs.table.resetSelection()
     },
     reset() {
       this.$refs.filterRef.resetFields()

@@ -169,8 +169,7 @@ export default {
       useCaseListOpt: [],
       searchForm: {},
       tableColumnList: COMMON_COLUMN_LIST,
-      tableData: [],
-      selection: []
+      tableData: []
       // selectedId: [1, 20]
     }
   },
@@ -259,13 +258,13 @@ export default {
     },
     delSome() {
       const selection = this.$refs.table.getVal()
-      const data = {
-        ids: selection.map(n => n.id).join(',')
-      }
       if (selection.length) {
         this.$confirm(`确定删除？`)
           .then(() => {
             this.loading = true
+            const data = {
+              ids: selection.map(n => n.id).join(',')
+            }
             delProduct(data).then(res => {
               if (res.code === 200) {
                 this.$message({
