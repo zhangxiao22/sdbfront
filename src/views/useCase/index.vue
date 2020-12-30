@@ -260,7 +260,7 @@ export default {
   created() {
     this.search()
     this.roleJudge.createUseCase = this.roles === '用例管理'
-    this.roleJudge.editPeople = this.roles === '业务管理'
+    this.roleJudge.editPeople = this.roles === '线索统筹'
   },
   methods: {
     rowStyle({ row, index }) {
