@@ -497,7 +497,11 @@ export default {
             })
           } else {
             const index = result.slice(2).findIndex(r => r.status === 'rejected')
-            this.labelIndex = index + 1 + ''
+            if (index + 1) {
+              this.labelIndex = index + 1 + ''
+            } else {
+              this.labelIndex = this.labelTabs.findIndex(n => n.people === '') + 1 + ''
+            }
             reject()
           }
         }).catch(() => {
