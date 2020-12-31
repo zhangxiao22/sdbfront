@@ -59,7 +59,7 @@ export default {
               title: '用例库',
               desc: '',
               path: '/useCase',
-              roles: ['用例管理', '线索统筹', '业务管理']
+              roles: ['用例管理', '线索统筹']
 
             },
             {
