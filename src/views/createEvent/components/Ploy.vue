@@ -735,9 +735,7 @@ export default {
     //   })
     //   return val
     // },
-    transToHtml(str) {
-      return 'dsf<input v-model="params.aaa" type="text" />adsfads'
-    },
+
     ployDetail() {
       return new Promise((resolve, reject) => {
         getPloyDetail({ baseId: this.id }).then(res => {
@@ -776,11 +774,7 @@ export default {
                             isEdit: false,
                             isHover: false
                           })
-                        }) : m.meterialInfoList.map(n => {
-                          return Object.assign(n, {
-                            htmlContent: this.transToHtml(n._content)
-                          })
-                        })
+                        }) : m.meterialInfoList
                       }, (() => {
                         const obj = {}
                         if (m.pushType.value === 1) {
