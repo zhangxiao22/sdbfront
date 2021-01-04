@@ -471,12 +471,20 @@
                                 :data="channelCardItem.model"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content"
-                                         :min-width="400"
-                                         label="短信内容" />
-                        <el-table-column prop="category.label"
+                        <el-table-column label="短信内容">
+                          <template slot-scope="scope">
+                            <div v-html="scope.row.htmlContent" />
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="参数描述"
+                                         show-overflow-tooltip>
+                          <template slot-scope="scope">
+                            <pre>{{ scope.row.parameterDescription }}</pre>
+                          </template>
+                        </el-table-column>
+                        <!-- <el-table-column prop="parameterDescription"
                                          show-overflow-tooltip
-                                         label="短信分类" />
+                                         label="参数描述" /> -->
                       </el-table>
                       <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
@@ -657,7 +665,10 @@ export default {
           return dateTime > testEndTime || dateTime < testStartTime
         }
       },
-      channelIndex: null
+      channelIndex: null,
+      params: {
+        aaa: 'adsfa'
+      }
     }
   },
   computed: {
@@ -724,7 +735,9 @@ export default {
     //   })
     //   return val
     // },
-
+    transToHtml(str) {
+      return 'dsf<input v-model="params.aaa" type="text" />adsfads'
+    },
     ployDetail() {
       return new Promise((resolve, reject) => {
         getPloyDetail({ baseId: this.id }).then(res => {
@@ -763,7 +776,11 @@ export default {
                             isEdit: false,
                             isHover: false
                           })
-                        }) : m.meterialInfoList
+                        }) : m.meterialInfoList.map(n => {
+                          return Object.assign(n, {
+                            htmlContent: this.transToHtml(n._content)
+                          })
+                        })
                       }, (() => {
                         const obj = {}
                         if (m.pushType.value === 1) {
@@ -1320,6 +1337,8 @@ export default {
     // 短信/微信-确认
     submitSms() {
       const val = this.$refs.smsRef.parentRef.getVal()
+
+      console.log(val)
       if (val.length) {
         this.showSms = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val

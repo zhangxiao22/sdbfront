@@ -36,8 +36,8 @@
           </el-form-item>
         </el-form>
       </template>
-      <template v-slot:paramsSlot="props">
-        <pre>{{ props.row.params }}</pre>
+      <template v-slot:parameterDescriptionSlot="props">
+        <pre>{{ props.row.parameterDescription }}</pre>
       </template>
     </shun-table>
   </div>
@@ -84,6 +84,7 @@ export default {
           prop: 'parameterDescription',
           label: '参数说明',
           minWidth: 200,
+          slot: true,
           notShowOverflowTooltip: true
         }
       ],
