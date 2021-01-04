@@ -19,7 +19,7 @@
         <div class="operate-btns">
           <div class="btn play"
                :class="{disable:scope.row.modelId !== '000001'}"
-               @click="false && runModel(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
+               @click="runModel(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
           <div v-show="scope.row.modelId === '000002'"
                class="btn"
                style="color:#1890FF;">下载名单</div>
