@@ -5,30 +5,21 @@
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
+                :show-pagination="false"
                 :current-page.sync="currentPage"
                 :total="total"
                 :table-data="tableData"
                 :table-column-list="tableColumnList">
       <template v-slot:bsnStkhdNmSlot="scope">
-        <div class="date-group">
-          <div :content="scope.row.bsnStkhdNm">
-            {{ scope.row.bsnStkhdNm }}
-          </div>
-          <div v-show="scope.row.techStkhdNm"
-               class="bottom">
-            {{ scope.row.techStkhdNm }}
-          </div>
+        <div>
+          {{ scope.row.techStkhdNm }} / {{ scope.row.bsnStkhdNm }}
         </div>
       </template>
-      <!-- <template v-slot:progressSlot="scope">
-        <el-progress :percentage="scope.row.modelId === '000002' ? 99.99 : +percentage.toFixed(2)"
-                     :color="customColors" />
-      </template> -->
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn play"
                :class="{disable:scope.row.modelId !== '000001'}"
-               @click="increase(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
+               @click="false && runModel(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
           <div v-show="scope.row.modelId === '000002'"
                class="btn"
                style="color:#1890FF;">下载名单</div>
@@ -50,19 +41,11 @@ export default {
   props: {
     showSelection: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
     return {
-      percentage: 0,
-      // customColors: [
-      //   { color: '#f56c6c', percentage: 20 },
-      //   { color: '#e6a23c', percentage: 40 },
-      //   { color: '#5cb87a', percentage: 60 },
-      //   { color: '#1989fa', percentage: 80 },
-      //   { color: '#6f7ad3', percentage: 100 }
-      // ],
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -78,7 +61,7 @@ export default {
         },
         {
           prop: 'modelId',
-          label: '模型标识',
+          label: '模型ID',
           minWidth: 120
         },
         {
@@ -108,16 +91,10 @@ export default {
           label: '模型描述',
           minWidth: 200
         },
-        // {
-        //   prop: 'progress',
-        //   label: '模型进度',
-        //   slot: true,
-        //   minWidth: 200
-        // },
         {
           prop: 'operate',
           label: '操作',
-          minWidth: 150,
+          minWidth: 160,
           slot: true,
           fixed: 'right'
         }
@@ -171,24 +148,20 @@ export default {
     reset() {
       this.getList()
     },
-    increase(modelId) {
+    runModel(modelId) {
+      this.loading = true
       noticeModel({ modelId: modelId }).then(res => {
         if (res.code === 200) {
-          console.log('success')
-        } else {
-          console.log('failed')
+          this.$message({
+            message: '启动成功',
+            type: 'success',
+            duration: '3000'
+          })
+          this.reset()
         }
       }).finally(() => {
-        console.log('end')
+        this.loading = false
       })
-      // this.percentage += +(Math.random() * (1 - 0)).toFixed(2)
-      // if (this.percentage > 99.99) {
-      //   this.percentage = 99.99
-      //   return
-      // }
-      // setTimeout(() => {
-      //   this.increase()
-      // }, Math.floor(Math.random() * 10000))
     },
     getList() {
       this.loading = true
