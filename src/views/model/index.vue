@@ -3,26 +3,23 @@
     <shun-table ref="table"
                 title="模型库"
                 :loading="loading"
+                :show-selection="showSelection"
                 :page-size.sync="pageSize"
+                :show-pagination="false"
                 :current-page.sync="currentPage"
                 :total="total"
                 :table-data="tableData"
                 :table-column-list="tableColumnList">
       <template v-slot:bsnStkhdNmSlot="scope">
-        <div class="date-group">
-          <div :content="scope.row.bsnStkhdNm">
-            {{ scope.row.bsnStkhdNm }}
-          </div>
-          <div v-show="scope.row.techStkhdNm"
-               class="bottom">
-            {{ scope.row.techStkhdNm }}
-          </div>
+        <div>
+          {{ scope.row.techStkhdNm }} / {{ scope.row.bsnStkhdNm }}
         </div>
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
           <div class="btn play"
-               :class="{disable:scope.row.modelId !== '000001'}">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
+               :class="{disable:scope.row.modelId !== '000001'}"
+               @click="runModel(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
           <div v-show="scope.row.modelId === '000002'"
                class="btn"
                style="color:#1890FF;">下载名单</div>
@@ -34,22 +31,22 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { queryModelList } from '@/api/api'
-import { mapGetters } from 'vuex'
+import { queryModelList, noticeModel } from '@/api/api'
 
 export default {
-  name: 'UseCase',
+  name: 'Model',
   components: {
     ShunTable
   },
   props: {
+    showSelection: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
-      // 权限判断
-      roleJudge: {},
       loading: false,
-
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -64,7 +61,7 @@ export default {
         },
         {
           prop: 'modelId',
-          label: '模型标识',
+          label: '模型ID',
           minWidth: 120
         },
         {
@@ -72,7 +69,6 @@ export default {
           label: '所需标签个数',
           minWidth: 120
         },
-
         {
           prop: 'useDate',
           label: '使用日期',
@@ -98,7 +94,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
-          minWidth: 150,
+          minWidth: 160,
           slot: true,
           fixed: 'right'
         }
@@ -140,11 +136,7 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    ...mapGetters([
-      'roles',
-      'user'
-    ])
+    }
   },
 
   watch: {
@@ -153,16 +145,36 @@ export default {
     this.getList()
   },
   methods: {
+    reset() {
+      this.getList()
+    },
+    runModel(modelId) {
+      this.loading = true
+      noticeModel({ modelId: modelId }).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '启动成功',
+            type: 'success',
+            duration: '3000'
+          })
+          this.reset()
+        }
+      }).finally(() => {
+        this.loading = false
+      })
+    },
     getList() {
       this.loading = true
       queryModelList().then(res => {
-        this.tableData = res.data.modelList
-      })
-        .finally(() => {
-          this.loading = false
+        this.tableData = res.data.modelList.map((n) => {
+          return Object.assign(n, {
+            canSelected: false
+          })
         })
+      }).finally(() => {
+        this.loading = false
+      })
     }
-
   }
 }
 </script>

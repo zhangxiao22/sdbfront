@@ -59,6 +59,7 @@
         <!-- 选择框 -->
         <el-table-column v-if="showSelection"
                          type="selection"
+                         :selectable="selectable"
                          fixed="left"
                          width="55" />
         <template v-for="(item,index) of tableColumnList">
@@ -235,6 +236,10 @@ export default {
 
       // })
       return val
+    },
+    // 能否选择
+    selectable(row, index) {
+      return !row.canSelected
     },
     // tab点击
     handleTabClick(tab) {
