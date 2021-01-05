@@ -259,6 +259,14 @@ export function savePloy(data) {
     data
   })
 }
+// 精准内侧
+export function testSms(data) {
+  return request({
+    url: '/clue/sendSms',
+    method: 'post',
+    data
+  })
+}
 // 第4步
 // 获取预览信息
 export function getEventPreview(params) {

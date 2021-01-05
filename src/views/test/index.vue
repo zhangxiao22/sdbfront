@@ -1,3 +1,13 @@
+<template>
+  <div class="test">
+    <div v-for="(item,i) of arr"
+         :key="i">
+      <el-input v-model="item.val"
+                placeholder="请输入内容" />
+    </div>
+    <el-button @click="add">add</el-button>
+  </div>
+</template>
 <script>
 import { Funnel } from '@antv/g2plot'
 
@@ -6,7 +16,7 @@ export default {
   },
   data() {
     return {
-      i: 5
+      arr: []
     }
   },
   computed: {
@@ -17,88 +27,26 @@ export default {
 
   },
   created() {
-
   },
   mounted() {
   },
   methods: {
-    clickHandler() {
-      console.log(1234)
+    add() {
+      this.arr.push({
+        val: ''
+      })
     }
-  },
-  render(h) {
-    return h('div', {
-      'class': {
-        foo: true,
-        bar: true
-      },
-      style: {
-        borderLeft: '1px solid red',
-        fontSize: '20px'
-      },
-      // 普通的 HTML 特性
-      attrs: {
-        xxxx: 'xxxx',
-        ssss: 'sdf'
-      },
-      // 组件 prop
-      props: {
-        myProp: 'bar'
-      },
-      // // DOM 属性
-      // domProps: {
-      //   innerHTML: 'baz'
-      // },
-      // 事件监听器在 `on` 属性内，
-      // 但不再支持如 `v-on:keyup.enter` 这样的修饰器。
-      // 需要在处理函数中手动检查 keyCode。
-      on: {
-        click: this.clickHandler
-      }
-      // 仅用于组件，用于监听原生事件，而不是组件内部使用
-      // `vm.$emit` 触发的事件。
-      // nativeOn: {
-      //   click: this.nativeClickHandler
-      // },
-      // 自定义指令。注意，你无法对 `binding` 中的 `oldValue`
-      // 赋值，因为 Vue 已经自动为你进行了同步。
-      // directives: [
-      //   {
-      //     name: 'my-custom-directive',
-      //     value: '2',
-      //     expression: '1 + 1',
-      //     arg: 'foo',
-      //     modifiers: {
-      //       bar: true
-      //     }
-      //   }
-      // ],
-      // 作用域插槽的格式为
-      // { name: props => VNode | Array<VNode> }
-      // scopedSlots: {
-      //   default: props => h('span', props.text)
-      // },
-      // 如果组件是其它组件的子组件，需为插槽指定名称
-      // slot: 'name-of-slot',
-      // 其它特殊顶层属性
-      // key: 'myKey',
-      // ref: 'myRef',
-      // 如果你在渲染函数中给多个元素都应用了相同的 ref 名，
-      // 那么 `$refs.myRef` 会变成一个数组。
-      // refInFor: true
-    }, [
-      'dasfasdfdsaf',
-      h('h1', ['一则头条', h('h5', '一则头条')]),
-      h('h1', '一则头条'),
-      h('h1', '一则头条')
-    ])
   }
+
 }
 </script>
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
 
-.container {
+.test {
+  width: 500px;
+  height: 500px;
+  border: 1px solid red;
 }
 </style>

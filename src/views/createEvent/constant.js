@@ -43,16 +43,18 @@ export const CHANNEL_OPT = [
       time: '00:00'
     }],
     // 精准内测
-    test: [],
+    test: '',
     type: [{
       id: 1,
       name: '定时型',
       icon: 'el-icon-alarm-clock'
-    }, {
-      id: 2,
-      name: '规则型',
-      icon: 'el-icon-tickets'
-    }],
+    }
+      // {
+      //   id: 2,
+      //   name: '规则型',
+      //   icon: 'el-icon-tickets'
+      // }
+    ],
     model: []
   }
   // {

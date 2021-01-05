@@ -3,7 +3,8 @@
        class="ploy-container">
     <el-form ref="refCustomerForm"
              :model="{group}"
-             label-width="120px">
+             label-width="120px"
+             @validate="validateForm">
       <el-tabs v-model="groupName"
                :before-leave="beforeHandleGroupTabClick">
         <!-- {{ groupIndex }}{{ ployIndex }} -->
@@ -458,9 +459,10 @@
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
                       <el-form-item label="短信模版："
+                                    required
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
                                     :rules="[{
-                                      required: true, message: '请选择模版', type: 'array'
+                                      validator: ValidatorModel
                                     }]">
                         <el-button icon="el-icon-plus"
                                    @click="addSmsWords(channelCardItem,ci)">
@@ -471,9 +473,13 @@
                                 :data="channelCardItem.model"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column label="短信内容">
+                        <el-table-column label="短信内容"
+                                         width="650">
                           <template slot-scope="scope">
-                            <div v-html="scope.row.htmlContent" />
+                            <!-- <span style="color:red;">{{ scope.row.smsAttr }}</span> -->
+                            <TextToHtml :ref="'testSmsRef-'+gi+'-'+pi"
+                                        :params.sync="scope.row.smsAttr"
+                                        :text="scope.row.content" />
                           </template>
                         </el-table-column>
                         <el-table-column label="参数描述"
@@ -488,7 +494,7 @@
                       </el-table>
                       <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
-                                      validator: ValidatorTestSelect, trigger: 'change'
+                                      validator: ValidatorTestSelect
                                     }]">
                         <div slot="label">
                           <Info content="对当前策略进行测试" />
@@ -496,14 +502,13 @@
                         </div>
                         <el-select v-model="channelCardItem.test"
                                    style="width:500px;margin-right:10px;float:left;"
-                                   multiple
                                    filterable
                                    allow-create
                                    default-first-option
-                                   placeholder="请选择电话号码/输入电话号码并选择或按回车键创建"
-                                   @change="handleTestChange" />
+                                   placeholder="请选择电话号码/输入电话号码并选择或按回车键创建" />
                         <el-button icon="el-icon-thumb"
-                                   style="float:left;">
+                                   style="float:left;"
+                                   @click="handleTestSms(ci)">
                           测试一下
                         </el-button>
                       </el-form-item>
@@ -587,10 +592,11 @@
 </template>
 
 <script>
-import { savePloy, getPloyDetail } from '@/api/api'
+import { savePloy, getPloyDetail, testSms } from '@/api/api'
 import gsap from 'gsap'
 import Info from '@/components/Info'
 import ShunDrawer from '@/components/ShunDrawer'
+import TextToHtml from '@/components/TextToHtml'
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
@@ -604,13 +610,15 @@ import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 
 export default {
   components: {
-    Product, Info, Interest, Word, ShunDrawer, Sms
+    Product, Info, Interest, Word, ShunDrawer, Sms, TextToHtml
   },
   data() {
     const _this = this
     return {
       SELF_COLUMN_LIST,
       COMMON_COLUMN_LIST,
+      // 单个校验时零时存放数组
+      validateList: [],
       // 客群tab对应的值
       groupName: '0',
       // 人数初始值
@@ -665,10 +673,7 @@ export default {
           return dateTime > testEndTime || dateTime < testStartTime
         }
       },
-      channelIndex: null,
-      params: {
-        aaa: 'adsfa'
-      }
+      channelIndex: null
     }
   },
   computed: {
@@ -829,6 +834,14 @@ export default {
     handleChangeTab() {
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
     },
+    validateForm(rule, validate, message) {
+      // console.log(a, b, c)
+      this.validateList.push({
+        rule,
+        validate,
+        message
+      })
+    },
     validatePloyName(rule, value, callback) {
       const gi = this.getIndex(rule.field)[0]
       const pi = this.getIndex(rule.field)[1]
@@ -879,6 +892,7 @@ export default {
     },
 
     validateAndNext() {
+      this.isSubmit = true
       return new Promise((resolve, reject) => {
         this.$refs.refCustomerForm.validate((valid, field) => {
           // console.log(valid, field)
@@ -903,6 +917,7 @@ export default {
                     couponIdList: pn.interest.map(n => n.id),
                     // 渠道
                     strategyInfoList: pn.channel.map((cn, ci) => {
+                      console.log(cn.model)
                       return {
                         // 渠道id
                         infoId: cn.infoId,
@@ -918,6 +933,7 @@ export default {
                         }) : undefined,
                         // 模版id
                         materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
+                        smsAttr: cn.smsAttr,
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
@@ -971,6 +987,7 @@ export default {
                 this.group[gi].ployTabsValue = this.group[gi].ployTabs[pi].name
               }
             })
+            this.isSubmit = false
             reject()
           }
         })
@@ -1043,7 +1060,7 @@ export default {
         interest: JSON.parse(JSON.stringify(ployItem.interest)),
         // 渠道
         channel: JSON.parse(JSON.stringify(ployItem.channel)),
-        channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
+        channelOpt: JSON.parse(JSON.stringify(ployItem.channelOpt))
       }
       ploy.channel.forEach(n => {
         n.infoId = undefined
@@ -1331,11 +1348,14 @@ export default {
     // 短信/微信-确认
     submitSms() {
       const val = this.$refs.smsRef.parentRef.getVal()
-
-      console.log(val)
+      // console.log(val)
       if (val.length) {
         this.showSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val.map(n => {
+          return Object.assign({}, n, {
+            smsAttr: {}
+          })
+        })
         // 校验
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
@@ -1346,22 +1366,67 @@ export default {
         })
       }
     },
-
+    // 精准内侧
+    handleTestSms(channelIndex) {
+      this.validateList = []
+      // 校验model
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`)
+      // 校验phone
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`)
+      const data = {}
+      console.log(this.validateList)
+      const validate = this.validateList.every(n => {
+        return n.validate
+      })
+      if (validate) {
+        // console.log(this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex])
+        const data = {}
+        data.templateId = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].id
+        data.mblpnNo = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].test
+        // const params = this.$refs['testSmsRef-' + this.groupIndex + '-' + this.ployIndex][0].getParams()
+        const params = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].smsAttr
+        Object.assign(data, params)
+        console.log(data)
+        testSms(data).then(res => {
+          if (res.code === 200) {
+            Message({
+              message: '操作成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
+        })
+      }
+    },
     handleTimeBlur(vueComponent, item) {
       if (!item.time) {
         item.time = parseTime(new Date(), '{h}:{i}')
       }
     },
-    // 精准内测
-    handleTestChange(val) {
-      console.log(val)
+    ValidatorModel(rule, value, callback) {
+      if (value.length) {
+        value.forEach(n => {
+          // console.log(n.smsAttr, '???')
+          if (
+            Object.keys(n.smsAttr).every(m => {
+              return n.smsAttr[m]
+            })
+          ) {
+            callback()
+          } else {
+            callback(new Error('请填写参数'))
+          }
+        })
+      } else {
+        callback(new Error('请选择模版'))
+      }
+      // callback()
     },
     ValidatorTestSelect(rule, value, callback) {
-      // console.log(rule, value, callback)
-      const b = value.every((n, i) => {
-        // console.log(isPhone(n))
-        return isPhone(n)
-      })
+      // console.log(value)
+      if (this.isSubmit) callback()
+      // if (!value) callback()
+      const b = isPhone(value)
       if (!b) {
         callback(new Error('请输入正确的手机号码'))
       } else {
