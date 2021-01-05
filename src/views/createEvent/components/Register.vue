@@ -2,7 +2,7 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="baseInfo"
-             label-width="250px"
+             label-width="100px"
              class="reg-form">
       <el-form-item label="事件名称："
                     :rules="[{

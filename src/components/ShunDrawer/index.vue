@@ -13,7 +13,7 @@
       </div>
       <div class="drawer-bottom">
         <el-button type="primary"
-                   style="width:200px"
+                   style="max-width:400px;width:100%;"
                    @click="submit()">
           确 认
         </el-button>

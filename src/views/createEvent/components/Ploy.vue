@@ -917,7 +917,7 @@ export default {
                     couponIdList: pn.interest.map(n => n.id),
                     // 渠道
                     strategyInfoList: pn.channel.map((cn, ci) => {
-                      console.log(cn.model)
+                      // console.log(cn.model)
                       return {
                         // 渠道id
                         infoId: cn.infoId,
@@ -933,7 +933,7 @@ export default {
                         }) : undefined,
                         // 模版id
                         materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
-                        smsAttr: cn.smsAttr,
+                        smsAttr: cn.model[0].smsAttr,
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
@@ -1374,7 +1374,7 @@ export default {
       // 校验phone
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`)
       const data = {}
-      console.log(this.validateList)
+      // console.log(this.validateList)
       const validate = this.validateList.every(n => {
         return n.validate
       })
@@ -1386,7 +1386,7 @@ export default {
         // const params = this.$refs['testSmsRef-' + this.groupIndex + '-' + this.ployIndex][0].getParams()
         const params = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].smsAttr
         Object.assign(data, params)
-        console.log(data)
+        // console.log(data)
         testSms(data).then(res => {
           if (res.code === 200) {
             Message({
@@ -1404,10 +1404,12 @@ export default {
       }
     },
     ValidatorModel(rule, value, callback) {
+      console.log(value)
       if (value.length) {
         value.forEach(n => {
-          // console.log(n.smsAttr, '???')
-          if (
+          if (!n.smsAttr) {
+            callback()
+          } else if (
             Object.keys(n.smsAttr).every(m => {
               return n.smsAttr[m]
             })
@@ -1420,7 +1422,6 @@ export default {
       } else {
         callback(new Error('请选择模版'))
       }
-      // callback()
     },
     ValidatorTestSelect(rule, value, callback) {
       // console.log(value)
