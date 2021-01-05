@@ -155,7 +155,7 @@ export default {
       const data = {
         modelId: id
       }
-      downloadFile('/modelDownload', data)
+      downloadFile('/customer/modelDownload', data)
     }
   }
 }
