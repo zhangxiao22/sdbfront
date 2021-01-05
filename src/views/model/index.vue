@@ -17,12 +17,14 @@
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
+          <!-- status true:未启动 false:已启动 -->
           <div class="btn play"
-               :class="{disable:scope.row.modelId !== '000001'}"
-               @click="runModel(scope.row.modelId)">{{ scope.row.modelId === '000001'?'启动':'已启动' }}</div>
-          <div v-show="scope.row.modelId === '000002'"
+               :class="{disable:!scope.row.status}"
+               @click="runModel(scope.row)">{{ scope.row.status?'启动':'已启动' }}</div>
+          <div v-show="scope.row.download"
                class="btn"
-               style="color:#1890FF;">下载名单</div>
+               style="color:#1890FF;"
+               @click="download(scope.row.modelId)">下载名单</div>
         </div>
       </template>
     </shun-table>
@@ -32,6 +34,7 @@
 <script>
 import ShunTable from '@/components/ShunTable'
 import { queryModelList, noticeModel } from '@/api/api'
+import { downloadFile } from '@/utils'
 
 export default {
   name: 'Model',
@@ -100,36 +103,7 @@ export default {
         }
       ],
       tableData: [
-        // {
-        //   date: '',
-        //   name: '模型1',
-        //   desc: '上海市普陀区金沙江路 1518 弄',
-        //   waitDate: '',
-        //   status: 1,
-        //   file: ''
-        // },
-        // {
-        //   date: '2016-05-01',
-        //   name: '模型2',
-        //   status: 2,
-        //   desc: '上海市普陀区金沙江路 1519 弄',
-        //   waitDate: '1',
-        //   file: ''
-        // }, {
-        //   date: '2016-05-04',
-        //   name: '模型3',
-        //   desc: '上海市普陀区金沙江路 1517 弄',
-        //   status: 1,
-        //   waitDate: '5',
-        //   file: '11'
-        // }, {
-        //   date: '2016-05-03',
-        //   name: '模型4',
-        //   status: 2,
-        //   desc: '上海市普陀区金沙江路 1516 弄',
-        //   waitDate: '3',
-        //   file: '11'
-        // }
+
       ]
     }
   },
@@ -148,9 +122,23 @@ export default {
     reset() {
       this.getList()
     },
-    runModel(modelId) {
+
+    getList() {
       this.loading = true
-      noticeModel({ modelId: modelId }).then(res => {
+      queryModelList().then(res => {
+        this.tableData = res.data.modelList.map((n) => {
+          return Object.assign(n, {
+            canSelected: false
+          })
+        })
+      }).finally(() => {
+        this.loading = false
+      })
+    },
+    runModel(row) {
+      if (!row.status) return
+      this.loading = true
+      noticeModel({ modelId: row.modelId }).then(res => {
         if (res.code === 200) {
           this.$message({
             message: '启动成功',
@@ -163,17 +151,11 @@ export default {
         this.loading = false
       })
     },
-    getList() {
-      this.loading = true
-      queryModelList().then(res => {
-        this.tableData = res.data.modelList.map((n) => {
-          return Object.assign(n, {
-            canSelected: false
-          })
-        })
-      }).finally(() => {
-        this.loading = false
-      })
+    download(id) {
+      const data = {
+        modelId: id
+      }
+      downloadFile('/modelDownload', data)
     }
   }
 }

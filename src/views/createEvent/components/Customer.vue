@@ -12,7 +12,7 @@
       </el-tab-pane>
       <el-tab-pane label="模型导入"
                    name="3">
-        <Model ref="model" />
+        <!-- <Model ref="model" /> -->
       </el-tab-pane>
     </el-tabs>
   </div>
@@ -47,11 +47,11 @@ export default {
     // }
   },
   watch: {
-    // activeName() {
-    //   if (this.activeName === '3') {
-    //     this.$router.push('/model')
-    //   }
-    // }
+    activeName() {
+      if (this.activeName === '3') {
+        this.$router.push('/model')
+      }
+    }
   },
   mounted() {
   },

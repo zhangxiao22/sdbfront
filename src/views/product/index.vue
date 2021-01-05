@@ -21,7 +21,7 @@
                    icon="el-icon-download"
                    type="success"
                    plain
-                   @click.native="downloadSome">
+                   @click="downloadSome">
           批量下载
         </el-button>
         <el-tooltip class="item"
@@ -32,7 +32,7 @@
                      icon="el-icon-download"
                      type="success"
                      plain
-                     @click.native="downloadAll">
+                     @click="downloadAll">
             全部下载
           </el-button>
         </el-tooltip>
