@@ -136,10 +136,11 @@ export function queryModelList() {
 }
 
 // 运行模型库
-export function noticeModel() {
+export function noticeModel(params) {
   return request({
     url: '/clue/noticeModel',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
