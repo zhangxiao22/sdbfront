@@ -933,7 +933,7 @@ export default {
                         }) : undefined,
                         // 模版id
                         materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
-                        smsAttr: cn.model[0].smsAttr,
+                        smsAttr: cn.model[0].smsAttr || {},
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
@@ -1404,7 +1404,7 @@ export default {
       }
     },
     ValidatorModel(rule, value, callback) {
-      console.log(value)
+      // console.log('ValidatorModelValue>>>>>>>>>>>>', value)
       if (value.length) {
         value.forEach(n => {
           if (!n.smsAttr) {

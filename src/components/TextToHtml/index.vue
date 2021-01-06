@@ -42,19 +42,24 @@ export default {
   },
   watch: {
     text() {
+      // text转换成html
       this.transform()
     },
-    params() {
-      // console.log(JSON.stringify(this.params), 'params???')
-      if (JSON.stringify(this.params) === '{}') {
-        this.$emit('update:params', this.getParams(true))
-      } else {
-        this.html.forEach(n => {
-          if (n.type === 'input') {
-            n.val = this.params[n.content]
-          }
-        })
-      }
+    params: {
+      handler(newName, oldName) {
+        // console.log(JSON.stringify(this.params), 'params???')
+        if (JSON.stringify(this.params) === '{}') {
+          this.$emit('update:params', this.getParams(true))
+        } else {
+          this.html.forEach(n => {
+            if (n.type === 'input') {
+              n.val = this.params?.[n.content]
+            }
+          })
+        }
+      },
+      immediate: true,
+      deep: true
     }
   },
   created() {
@@ -91,6 +96,7 @@ export default {
     },
     getParams(reset) {
       const params = {}
+      // console.log('html????', this.html)
       this.html.forEach(n => {
         if (n.type === 'input') {
           params[n.content] = reset ? '' : (n.val || '')
