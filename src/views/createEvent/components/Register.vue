@@ -329,7 +329,7 @@ export default {
 .container {
   padding: 50px 20px;
   .reg-form {
-    width: 700px;
+    width: 600px;
     margin: 0 auto;
     .target-form-item {
       width: 600px;
