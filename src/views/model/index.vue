@@ -21,7 +21,7 @@
           <div class="btn play"
                :class="{disable:!scope.row.status}"
                @click="runModel(scope.row)">{{ scope.row.status?'启动':'已启动' }}</div>
-          <div v-show="scope.row.download"
+          <div v-if="scope.row.download"
                class="btn"
                style="color:#1890FF;"
                @click="download(scope.row.modelId)">下载名单</div>
