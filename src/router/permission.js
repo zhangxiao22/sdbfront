@@ -31,8 +31,8 @@ router.beforeEach(async (to, from, next) => {
       // console.log('process.env.NODE_ENV>>>>>>>>>>>>>>', process.env.NODE_ENV)
       let roles
       if (process.env.NODE_ENV === 'development') {
-        // roles = 'admin'
-        roles = data?.permissionPack.label
+        roles = 'admin'
+        // roles = data?.permissionPack.label
         store.commit('user/SET_ROLES', roles)
       } else {
         roles = data?.permissionPack.label
