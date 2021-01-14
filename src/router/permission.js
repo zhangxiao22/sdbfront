@@ -11,7 +11,7 @@ NProgress.configure({ showSpinner: false }) // NProgress Configuration
 const whiteList = ['/401', '/404'] // no redirect whitelist
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to.path)
+  // console.log(to.path)
   // // start progress bar
   NProgress.start()
 
