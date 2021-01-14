@@ -578,10 +578,10 @@ export default {
       }],
       // 漏斗图数据
       funnelData: [
-        { label: '线索数量', value: 10000 },
-        { label: '线索执行', value: 9000 },
-        { label: '联系成功', value: 7000 },
-        { label: '成功购买', value: 5500 }
+        // { label: '线索数量', value: 10000 },
+        // { label: '线索执行', value: 9000 },
+        // { label: '联系成功', value: 7000 },
+        // { label: '成功购买', value: 5500 }
       ],
       funnelResult: {
         effective_count: '',
@@ -797,12 +797,12 @@ export default {
       this.loading.funnelChartLoading = true
       totalFunnel().then(res => {
         const data = res.data
-        // this.funnelData = [
-        //   { label: '线索数量', value: data.total_clues },
-        //   { label: '线索执行', value: data.executed_clues },
-        //   { label: '联系成功', value: data.success_clues },
-        //   { label: '成功购买', value: data.purchased_clues }
-        // ]
+        this.funnelData = [
+          { label: '线索数量', value: data.total_clues },
+          { label: '线索执行', value: data.executed_clues },
+          { label: '联系成功', value: data.success_clues },
+          { label: '成功购买', value: data.purchased_clues }
+        ]
         this.funnelResult.effective_count = res.data.effective_count
         this.funnelResult.effective_rate = res.data.effective_rate
         this.funnelResult.actual_achievement = res.data.actual_achievement
