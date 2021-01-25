@@ -148,7 +148,7 @@
                @click="handleEdit(scope.row)">
             编辑
           </div>
-          <div v-if="roleJudge.createEvent && judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5"
+          <div v-if="roleJudge.createEvent && (judgeStatus(scope.row.status.value) === 4 || judgeStatus(scope.row.status.value) === 5)"
                class="btn"
                style="color:#1890FF;"
                @click="handleCopy(scope.row)">复制</div>
