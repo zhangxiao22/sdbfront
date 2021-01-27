@@ -390,6 +390,50 @@
                                    @click="addRuleItem(channelCardItem)" />
                       </el-form-item>
                     </template>
+                    <!-- 触发型 -->
+                    <template v-if="channelCardItem.chooseType===3">
+                      <el-form-item label="触发规则："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.triggerId'"
+                                    :rules="[{
+                                      required: true, message: '请选择触发规则', type: 'array'
+                                    }]">
+                        <el-button icon="el-icon-plus">
+                          选择规则
+                        </el-button>
+                      </el-form-item>
+                      <el-form-item class="rule-form"
+                                    required
+                                    label="推送时间："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.triggerValue'"
+                                    :rules="[{
+                                      validator: validateRule
+                                    }]">
+                        <div v-for="(item,rule_i) of channelCardItem.triggerValue"
+                             :key="rule_i"
+                             class="rule-item">
+                          <Info content="规则触发日" />
+                          <span class="text-text">T</span>
+                          <span class="plus-text">+</span>
+                          <el-input-number v-model="item.date"
+                                           style="margin-right:10px;"
+                                           controls-position="right"
+                                           :min="0"
+                                           @blur="item.date=item.date||0" />天
+                          <el-time-picker v-model="item.time"
+                                          style="width:150px;margin-left:10px;"
+                                          :clearable="false"
+                                          format="HH:mm"
+                                          value-format="HH:mm"
+                                          @blur="handleTimeBlur($event,item)" />
+                          <i v-if="channelCardItem.ruleValue.length > 1"
+                             class="el-icon-delete delete"
+                             @click="delTriggerItem(channelCardItem,rule_i)" />
+                        </div>
+                        <el-button class="add"
+                                   icon="el-icon-plus"
+                                   @click="addTriggerItem(channelCardItem)" />
+                      </el-form-item>
+                    </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
                       <el-form-item required
@@ -1288,6 +1332,15 @@ export default {
     },
     delRuleItem(item, i) {
       item.ruleValue.splice(i, 1)
+    },
+    addTriggerItem(item) {
+      item.triggerValue.push({
+        date: 0,
+        time: '00:00'
+      })
+    },
+    delTriggerItem(item, i) {
+      item.triggerValue.splice(i, 1)
     },
 
     handleMouseEnter(row, column, cell, event) {
