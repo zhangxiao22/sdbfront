@@ -383,11 +383,11 @@
                                           @blur="handleTimeBlur($event,item)" />
                           <i v-if="channelCardItem.ruleValue.length > 1"
                              class="el-icon-delete delete"
-                             @click="delRuleItem(channelCardItem,rule_i)" />
+                             @click="delRuleItem(channelCardItem,rule_i,ci)" />
                         </div>
                         <el-button class="add"
                                    icon="el-icon-plus"
-                                   @click="addRuleItem(channelCardItem)" />
+                                   @click="addRuleItem(channelCardItem,ci)" />
                       </el-form-item>
                     </template>
                     <!-- 触发型 -->
@@ -429,11 +429,11 @@
                                           @blur="handleTimeBlur($event,item)" />
                           <i v-if="channelCardItem.triggerValue.length > 1"
                              class="el-icon-delete delete"
-                             @click="delTriggerItem(channelCardItem,rule_i)" />
+                             @click="delTriggerItem(channelCardItem,rule_i,ci)" />
                         </div>
                         <el-button class="add"
                                    icon="el-icon-plus"
-                                   @click="addTriggerItem(channelCardItem)" />
+                                   @click="addTriggerItem(channelCardItem,ci)" />
                       </el-form-item>
                     </template>
                     <!-- crm -->
@@ -1356,23 +1356,35 @@ export default {
       // 校验
       this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
     },
-    addRuleItem(item) {
+    addRuleItem(item, ci) {
       item.ruleValue.push({
         date: 0,
         time: '00:00'
       })
+      this.channelIndex = ci
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
     },
-    delRuleItem(item, i) {
+    delRuleItem(item, i, ci) {
       item.ruleValue.splice(i, 1)
+      this.channelIndex = ci
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
     },
-    addTriggerItem(item) {
+    addTriggerItem(item, ci) {
       item.triggerValue.push({
         date: 0,
         time: '00:00'
       })
+      this.channelIndex = ci
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
     },
-    delTriggerItem(item, i) {
+    delTriggerItem(item, i, ci) {
       item.triggerValue.splice(i, 1)
+      this.channelIndex = ci
+      // 校验
+      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
     },
 
     handleMouseEnter(row, column, cell, event) {
