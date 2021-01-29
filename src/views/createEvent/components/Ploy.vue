@@ -297,6 +297,7 @@
 
                   </el-form-item>
                   <div class="card-body">
+                    <!-- {{ gi }}{{ pi }}{{ ci }} -->
                     <!-- 定时型 -->
                     <template v-if="channelCardItem.chooseType===1">
                       <el-form-item label="起止日期："
@@ -359,6 +360,7 @@
                     <!-- 规则型 -->
                     <template v-if="channelCardItem.chooseType===2">
                       <el-form-item class="rule-form"
+                                    required
                                     label="推送时间："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.ruleValue'"
                                     :rules="[{
@@ -397,16 +399,21 @@
                                     :rules="[{
                                       required: true, message: '请选择触发规则', type: 'array'
                                     }]">
-                        <el-button icon="el-icon-plus">
+                        <el-button icon="el-icon-plus"
+                                   @click="handleAddRule(channelCardItem,ci)">
                           选择规则
                         </el-button>
+                        {{ channelCardItem.triggerId }}
                       </el-form-item>
+                      <!-- <el-form-item required
+                                    label="xxxxx">xxxx</el-form-item> -->
+
                       <el-form-item class="rule-form"
                                     required
                                     label="推送时间："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.triggerValue'"
                                     :rules="[{
-                                      validator: validateRule
+                                      validator: validateRule2
                                     }]">
                         <div v-for="(item,rule_i) of channelCardItem.triggerValue"
                              :key="rule_i"
@@ -425,7 +432,7 @@
                                           format="HH:mm"
                                           value-format="HH:mm"
                                           @blur="handleTimeBlur($event,item)" />
-                          <i v-if="channelCardItem.ruleValue.length > 1"
+                          <i v-if="channelCardItem.triggerValue.length > 1"
                              class="el-icon-delete delete"
                              @click="delTriggerItem(channelCardItem,rule_i)" />
                         </div>
@@ -437,7 +444,6 @@
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
                       <el-form-item required
-                                    class="rule-form"
                                     label="线索有效期："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.validPeriod'">
                         <el-input-number v-model="channelCardItem.validPeriod"
@@ -738,12 +744,18 @@ export default {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()
     },
     groupIndex() {
+      console.log('this.groupName:', this.groupName)
       return +this.groupName
     },
     ployIndex() {
-      return this.group[this.groupIndex].ployTabs.findIndex((n, i) => {
-        return n.name === this.group[this.groupIndex].ployTabsValue
-      })
+      console.log('ployIndex>>>>>>', this.group, this.groupIndex, this.group[this.groupIndex])
+      if (this.group.length) {
+        return this.group[this.groupIndex]?.ployTabs.findIndex((n, i) => {
+          return n.name === this.group[this.groupIndex].ployTabsValue
+        })
+      } else {
+        return null
+      }
     },
     ployCounts() {
       let count = 0
@@ -914,18 +926,40 @@ export default {
     },
     validateRule(rule, value, callback) {
       let hasSame = false
-
       for (let i = 0; i < value.length - 1; i++) {
         for (let j = i + 1; j < value.length; j++) {
+          console.log(value[i], value[j])
+          delete value[i].pushTimeId
+          delete value[j].pushTimeId
           if (JSON.stringify(value[i]) === JSON.stringify(value[j])) {
             hasSame = true
             break
           }
         }
       }
-      // console.log('hasSame', hasSame)
+      console.log('hasSame', hasSame)
       if (hasSame) {
-        callback(new Error('存在相同的推送时间'))
+        callback(new Error('11111存在相同的推送时间11111'))
+      } else {
+        callback()
+      }
+    },
+    validateRule2(rule, value, callback) {
+      let hasSame = false
+      for (let i = 0; i < value.length - 1; i++) {
+        for (let j = i + 1; j < value.length; j++) {
+          console.log(value[i], value[j])
+          delete value[i].pushTimeId
+          delete value[j].pushTimeId
+          if (JSON.stringify(value[i]) === JSON.stringify(value[j])) {
+            hasSame = true
+            break
+          }
+        }
+      }
+      console.log('hasSame', hasSame)
+      if (hasSame) {
+        callback(new Error('222222存在相同的推送时间2222222'))
       } else {
         callback()
       }
@@ -951,7 +985,7 @@ export default {
       this.isSubmit = true
       return new Promise((resolve, reject) => {
         this.$refs.refCustomerForm.validate((valid, field) => {
-          // console.log(valid, field)
+          console.log('valid:', valid, 'field:', field)
           if (valid) {
             // 客群
             const data = this.group.map((gn, gi) => {
@@ -1172,15 +1206,46 @@ export default {
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
       this.channelIndex = ci
+      // console.log(ci)
+      // const validateArr = [
+      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
+      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
+      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`,
+      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+      // ]
+      // this.$refs.refCustomerForm.clearValidate(validateArr)
       // 校验
       this.$nextTick(() => {
         // 1 定时型 2 规则型
+        // 为什么要做这个：切换推送类型tab，之前的校验还在
+        // 之前的做法：切换推送类型就校验被选中类型下的选项
+        // 缺点：1.判断过于复杂 2.有一些没必要的校验
         if (val === 1) {
           this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
           this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
         } else if (val === 2) {
           this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+        } else if (val === 3) {
+          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`)
+          // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
         }
+        // 现在的做法：切换tab就全部清楚校验
+        // const validateArr = [
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`,
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+        // ]
+        // this.$refs.refCustomerForm.clearValidate(validateArr)
+        // console.log(this.groupIndex, this.ployIndex, this.channelIndex)
+        // const arr = [
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+        // ]
+        // this.$refs.refCustomerForm.clearValidate(arr)
       })
     },
     handlePercentChange() {
@@ -1350,6 +1415,16 @@ export default {
     handleMouseLeave(row, column, cell, event) {
       // console.log(row)
       row.isHover = false
+    },
+    // 触发规则
+    handleAddRule(item, ci) {
+      this.channelIndex = ci
+      const arr = [
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+      ]
+      this.$refs.refCustomerForm.clearValidate(arr)
     },
     // crm选择话术
     addCRMWords(item, ci) {
