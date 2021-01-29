@@ -297,7 +297,6 @@
 
                   </el-form-item>
                   <div class="card-body">
-                    <!-- {{ gi }}{{ pi }}{{ ci }} -->
                     <!-- 定时型 -->
                     <template v-if="channelCardItem.chooseType===1">
                       <el-form-item label="起止日期："
@@ -314,9 +313,12 @@
                                         end-placeholder="结束日期" />
                       </el-form-item>
                       <el-form-item label="推送时间："
-                                    required>
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.timingDateValue'"
+                                    :rules="[{
+                                      validator: validateTiming
+                                    }]">
                         <div style="display:flex">
-                          <el-form-item style="margin-bottom:0;margin-right:10px;">
+                          <div style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateType"
                                        style="width:80px;"
                                        @change="channelCardItem.timingDateValue = []">
@@ -325,12 +327,8 @@
                                          :label="item.label"
                                          :value="item.value" />
                             </el-select>
-                          </el-form-item>
-                          <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.timingDateValue'"
-                                        :rules="[{
-                                          required: true, message: '请选择推送时间', trigger: 'change'
-                                        }]"
-                                        style="margin-bottom:0;margin-right:10px;">
+                          </div>
+                          <div style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateValue"
                                        multiple
                                        collapse-tags>
@@ -339,8 +337,8 @@
                                          :label="item.label"
                                          :value="item.value" />
                             </el-select>
-                          </el-form-item>
-                          <el-form-item style="margin-bottom:0;">
+                          </div>
+                          <div style="margin-bottom:0;">
                             <el-time-select v-model="channelCardItem.timingTimeValue"
                                             style="width:150px;"
                                             :picker-options="{
@@ -352,7 +350,7 @@
                                             :editable="false"
                                             format="HH:mm"
                                             value-format="HH:mm" />
-                          </el-form-item>
+                          </div>
                         </div>
                       </el-form-item>
 
@@ -405,15 +403,12 @@
                         </el-button>
                         {{ channelCardItem.triggerId }}
                       </el-form-item>
-                      <!-- <el-form-item required
-                                    label="xxxxx">xxxx</el-form-item> -->
-
                       <el-form-item class="rule-form"
                                     required
                                     label="推送时间："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.triggerValue'"
                                     :rules="[{
-                                      validator: validateRule2
+                                      validator: validateRule
                                     }]">
                         <div v-for="(item,rule_i) of channelCardItem.triggerValue"
                              :key="rule_i"
@@ -744,11 +739,11 @@ export default {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()
     },
     groupIndex() {
-      console.log('this.groupName:', this.groupName)
+      // console.log('this.groupName:', this.groupName)
       return +this.groupName
     },
     ployIndex() {
-      console.log('ployIndex>>>>>>', this.group, this.groupIndex, this.group[this.groupIndex])
+      // console.log('ployIndex>>>>>>', this.group, this.groupIndex, this.group[this.groupIndex])
       if (this.group.length) {
         return this.group[this.groupIndex]?.ployTabs.findIndex((n, i) => {
           return n.name === this.group[this.groupIndex].ployTabsValue
@@ -834,7 +829,7 @@ export default {
                     // 权益
                     interest: n.couponInfoList,
                     channel: n.strategyInfoList.map(m => {
-                      console.log(m)
+                      // console.log(m)
                       return Object.assign({}, CHANNEL_OPT.find(x => {
                         return x.value === m.channel.value
                       }), {
@@ -924,31 +919,19 @@ export default {
         callback()
       }
     },
-    validateRule(rule, value, callback) {
-      let hasSame = false
-      for (let i = 0; i < value.length - 1; i++) {
-        for (let j = i + 1; j < value.length; j++) {
-          console.log(value[i], value[j])
-          delete value[i].pushTimeId
-          delete value[j].pushTimeId
-          if (JSON.stringify(value[i]) === JSON.stringify(value[j])) {
-            hasSame = true
-            break
-          }
-        }
-      }
-      console.log('hasSame', hasSame)
-      if (hasSame) {
-        callback(new Error('11111存在相同的推送时间11111'))
+    validateTiming(rule, value, callback) {
+      // console.log('value???:', value)
+      if (value.length === 0) {
+        callback(new Error('请选择推送时间'))
       } else {
         callback()
       }
     },
-    validateRule2(rule, value, callback) {
+    validateRule(rule, value, callback) {
       let hasSame = false
       for (let i = 0; i < value.length - 1; i++) {
         for (let j = i + 1; j < value.length; j++) {
-          console.log(value[i], value[j])
+          // console.log(value[i], value[j])
           delete value[i].pushTimeId
           delete value[j].pushTimeId
           if (JSON.stringify(value[i]) === JSON.stringify(value[j])) {
@@ -957,9 +940,9 @@ export default {
           }
         }
       }
-      console.log('hasSame', hasSame)
+      // console.log('hasSame', hasSame)
       if (hasSame) {
-        callback(new Error('222222存在相同的推送时间2222222'))
+        callback(new Error('存在相同的推送时间'))
       } else {
         callback()
       }
@@ -985,7 +968,7 @@ export default {
       this.isSubmit = true
       return new Promise((resolve, reject) => {
         this.$refs.refCustomerForm.validate((valid, field) => {
-          console.log('valid:', valid, 'field:', field)
+          // console.log('valid:', valid, 'field:', field)
           if (valid) {
             // 客群
             const data = this.group.map((gn, gi) => {
@@ -1134,7 +1117,7 @@ export default {
       this.$parent.ployDetail.ployCount = this.ployCounts
     },
     copyTab(ployItem) {
-      console.log(ployItem)
+      // console.log(ployItem)
       const gi = this.groupIndex
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
@@ -1206,47 +1189,31 @@ export default {
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
       this.channelIndex = ci
-      // console.log(ci)
-      // const validateArr = [
-      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
-      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
-      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`,
-      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
-      // ]
-      // this.$refs.refCustomerForm.clearValidate(validateArr)
       // 校验
-      this.$nextTick(() => {
-        // 1 定时型 2 规则型
-        // 为什么要做这个：切换推送类型tab，之前的校验还在
-        // 之前的做法：切换推送类型就校验被选中类型下的选项
-        // 缺点：1.判断过于复杂 2.有一些没必要的校验
-        if (val === 1) {
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
-        } else if (val === 2) {
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
-        } else if (val === 3) {
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`)
-          // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
-        }
-        // 现在的做法：切换tab就全部清楚校验
-        // const validateArr = [
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`,
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
-        // ]
-        // this.$refs.refCustomerForm.clearValidate(validateArr)
-        // console.log(this.groupIndex, this.ployIndex, this.channelIndex)
-        // const arr = [
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-        //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
-        // ]
-        // this.$refs.refCustomerForm.clearValidate(arr)
-      })
+      // this.$nextTick(() => {
+      // 1 定时型 2 规则型
+      // 为什么要做这个：切换推送类型tab，之前的校验还在
+      // 之前的做法：切换推送类型就校验被选中类型下的选项
+      // 缺点：1.判断过于复杂 2.有一些没必要的校验
+      // if (val === 1) {
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
+      // } else if (val === 2) {
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+      // } else if (val === 3) {
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`)
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
+      // }
+      // 现在的做法：切换tab就全部清楚校验
+      const validateArr = [
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`,
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+      ]
+      this.$refs.refCustomerForm.clearValidate(validateArr)
+      // })
     },
     handlePercentChange() {
       let total = 0
@@ -1265,7 +1232,7 @@ export default {
     },
     // 选择产品
     addProduct(item) {
-      console.log(item.product)
+      // console.log(item.product)
       // this.$refs.productRef && this.$refs.productRef.resetAll()
       this.showProduct = true
       this.$nextTick(() => {
