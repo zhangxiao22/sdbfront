@@ -401,7 +401,7 @@
                                    @click="handleAddRule(channelCardItem,ci)">
                           选择规则
                         </el-button>
-                        {{ channelCardItem.triggerId }}
+                        <!-- {{ channelCardItem.triggerId }} -->
                       </el-form-item>
                       <el-form-item class="rule-form"
                                     required
