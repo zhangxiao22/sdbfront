@@ -117,6 +117,12 @@ export const asyncRoutes = [
         meta: { title: '成效看板', icon: 'board' }
       },
       {
+        path: 'crmAndOds',
+        name: 'CrmAndOds',
+        component: () => import('@/views/crmAndOds/index'),
+        meta: { title: 'crm与ods反馈数据的查询列表', icon: 'bug' }
+      },
+      {
         path: 'test',
         name: 'Test',
         component: () => import('@/views/test/index'),

@@ -709,7 +709,15 @@ export function totalRank(params) {
 //     params
 //   })
 // }
+/** ************************************************ crm与ods ************************************************************/
 
+export function getRecordPage(data) {
+  return request({
+    url: '/clue/selectRecordPage',
+    method: 'post',
+    data
+  })
+}
 /** ************************************************ 系统配置 ************************************************************/
 // 防打扰修改
 export function updateNoDisturb(data) {
