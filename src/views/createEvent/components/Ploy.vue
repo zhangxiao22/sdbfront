@@ -1407,6 +1407,7 @@ export default {
     },
     // crm选择话术
     addCRMWords(item, ci) {
+      //
       this.showCRMWord = true
       this.$nextTick(() => {
         this.$refs.wordRef.reset()
