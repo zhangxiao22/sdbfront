@@ -120,7 +120,7 @@ export const asyncRoutes = [
         path: 'crmAndOds',
         name: 'CrmAndOds',
         component: () => import('@/views/crmAndOds/index'),
-        meta: { title: 'crm与ods反馈数据的查询列表', icon: 'bug' }
+        meta: { title: 'crm与ods反馈数据的查询列表', icon: 'crmAndOds' }
       },
       {
         path: 'test',

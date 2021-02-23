@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="产品库"
+                title="crm与ods反馈数据的查询列表"
                 :loading="loading"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
