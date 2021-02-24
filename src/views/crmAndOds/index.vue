@@ -25,6 +25,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -59,7 +60,6 @@ export default {
         this.loading = false
       })
     }
-
   }
 }
 </script>
