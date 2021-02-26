@@ -8,11 +8,22 @@
                 :total="total"
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
-                @render="getList" />
+                @render="getList">
+      <template v-slot:main-buttons>
+        <el-button class="button"
+                   icon="el-icon-download"
+                   type="success"
+                   plain
+                   @click="downloadAll">
+          全部下载
+        </el-button>
+      </template>
+    </shun-table>
   </div>
 </template>
 
 <script>
+import { downloadFile } from '@/utils'
 import ShunTable from '@/components/ShunTable/index'
 import { getRecordPage } from '@/api/api'
 export default {
@@ -25,6 +36,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
@@ -58,8 +70,10 @@ export default {
       }).finally(() => {
         this.loading = false
       })
+    },
+    downloadAll() {
+      downloadFile('/clue/downloadRecord', {})
     }
-
   }
 }
 </script>
