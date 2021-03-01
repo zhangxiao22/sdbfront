@@ -465,6 +465,38 @@
                           </template>
                         </el-table-column>
                       </el-table>
+                      <!-- 预热短息 -->
+                      <el-form-item label="预热短息："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
+                                    :rules="[{
+                                      validator: ValidatorModel
+                                    }]">
+                        <el-button icon="el-icon-plus"
+                                   @click="addSmsWords(channelCardItem,ci)">
+                          选择模版
+                        </el-button>
+                      </el-form-item>
+                      <el-table v-show="channelCardItem.model.length"
+                                :data="channelCardItem.model"
+                                border
+                                style="width: 100%;margin-bottom:18px;">
+                        <el-table-column label="短信内容"
+                                         width="650">
+                          <template slot-scope="scope">
+                            <!-- <span style="color:red;">{{ scope.row.smsAttr }}</span> -->
+                            <TextToHtml :ref="'testSmsRef-'+gi+'-'+pi"
+                                        :params.sync="scope.row.smsAttr"
+                                        :text="scope.row.content" />
+                          </template>
+                        </el-table-column>
+                        <el-table-column label="参数描述"
+                                         show-overflow-tooltip>
+                          <template slot-scope="scope">
+                            <pre>{{ scope.row.parameterDescription }}</pre>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                      <!-- 预热短息end -->
                     </template>
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
