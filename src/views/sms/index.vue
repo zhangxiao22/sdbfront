@@ -10,6 +10,22 @@
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
+      <template v-slot:main-buttons>
+        <UploadButton button-name="批量上传"
+                      class="button"
+                      :upload-method="uploadSmsFile"
+                      @afterUploadSuccess="resetAll" />
+        <el-button class="button"
+                   icon="el-icon-delete"
+                   type="danger"
+                   plain
+                   @click="delSome">
+          批量删除
+        </el-button>
+        <el-link type="primary"
+                 class="button"
+                 @click="downloadModel">模版下载</el-link>
+      </template>
       <template v-slot:filter>
         <el-form ref="filterRef"
                  :inline="true"
@@ -45,21 +61,24 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getSmsList } from '@/api/api'
+import { getSmsList, uploadSmsFile, delSms } from '@/api/api'
+import UploadButton from '@/components/UploadButton'
 
 export default {
   name: 'Sms',
   components: {
-    ShunTable
+    ShunTable,
+    UploadButton
   },
   props: {
     showSelection: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
     return {
+      uploadSmsFile,
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -129,8 +148,42 @@ export default {
       }).catch(() => {
         this.loading = false
       })
+    },
+    // 下载模版
+    downloadModel() {
+      window.open('/static/短信库模板.xlsx', '_blank')
+    },
+    delSome() {
+      const selection = this.$refs.table.getVal()
+      if (selection.length) {
+        this.$confirm(`确定删除？`)
+          .then(() => {
+            this.loading = true
+            const data = {
+              ids: selection.map(n => n.id).join(',')
+            }
+            delSms(data).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.resetAll()
+              }
+            })
+          })
+          .finally(() => {
+            this.loading = false
+          })
+      } else {
+        return this.$message({
+          message: '请选择短信',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
     }
-
   }
 }
 </script>

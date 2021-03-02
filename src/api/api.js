@@ -125,7 +125,23 @@ export function getSmsList(data) {
     data
   })
 }
+// 上传短信
+export function uploadSmsFile(data) {
+  return request({
+    url: '/material/uploadSMS',
+    method: 'post',
+    data
+  })
+}
 
+// 删除短信
+export function delSms(params) {
+  return request({
+    url: '/material/delSMS',
+    method: 'get',
+    params
+  })
+}
 /** ************************************************ 模型 ************************************************************/
 // 获取模型库
 export function queryModelList() {
