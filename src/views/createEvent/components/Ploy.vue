@@ -465,8 +465,8 @@
                           </template>
                         </el-table-column>
                       </el-table>
-                      <!-- 预热短息 -->
-                      <el-form-item label="预热短息：">
+                      <!-- 预热短信 -->
+                      <el-form-item label="预热短信：">
                         <el-button icon="el-icon-plus"
                                    @click="addBeforeSmsWords(channelCardItem,ci)">
                           选择模版
@@ -493,9 +493,9 @@
                           </template>
                         </el-table-column>
                       </el-table>
-                      <!-- 预热短息end -->
-                      <!-- 跟尾短息 -->
-                      <el-form-item label="跟尾短息：">
+                      <!-- 预热短信end -->
+                      <!-- 跟尾短信 -->
+                      <el-form-item label="跟尾短信：">
                         <el-button icon="el-icon-plus"
                                    @click="addAfterSmsWords(channelCardItem,ci)">
                           选择模版
@@ -523,7 +523,7 @@
                         </el-table-column>
                       </el-table>
                       <!-- {{ channelCardItem.afterSms.map(n=>n.id) }} -->
-                      <!-- 跟尾短息end -->
+                      <!-- 跟尾短信end -->
                     </template>
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
@@ -651,6 +651,7 @@
                 @submit="submitSms()">
       <template v-slot:container>
         <sms ref="smsRef"
+             :multiple="false"
              :show-selection="true" />
       </template>
     </ShunDrawer>
