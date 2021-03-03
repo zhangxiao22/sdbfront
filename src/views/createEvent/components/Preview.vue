@@ -216,10 +216,34 @@
                         <el-table :data="channelItem.scriptInfoList"
                                   class="preview-table"
                                   size="mini"
-                                  style="width: 100%">
+                                  style="width: 100%;border-bottom:1px solid #eaeef4;">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="话术内容" />
+                          <el-table-column prop="category.label"
+                                           width="100"
+                                           label="话术分类" />
+                        </el-table>
+                        <el-table v-show="channelItem.advanceSMSInfoList.length"
+                                  :data="channelItem.advanceSMSInfoList"
+                                  class="preview-table"
+                                  size="mini"
+                                  style="width: 100%;border-bottom:1px solid #eaeef4">
+                          <el-table-column prop="content"
+                                           show-overflow-tooltip
+                                           label="预热短信内容" />
+                          <el-table-column prop="category.label"
+                                           width="100"
+                                           label="话术分类" />
+                        </el-table>
+                        <el-table v-show="channelItem.followSMSInfoList.length"
+                                  :data="channelItem.followSMSInfoList"
+                                  class="preview-table"
+                                  size="mini"
+                                  style="width: 100%">
+                          <el-table-column prop="content"
+                                           show-overflow-tooltip
+                                           label="跟进短信内容" />
                           <el-table-column prop="category.label"
                                            width="100"
                                            label="话术分类" />
@@ -701,7 +725,7 @@ export default {
       .preview-table-contaiber {
         border: 1px solid #ebeef5;
         overflow: hidden;
-        display: flex;
+        // display: flex;
         // min-height: 100px;
         margin-top: 15px;
         border-radius: 4px;

@@ -21,7 +21,9 @@ export const CHANNEL_OPT = [
       name: '定时型'
     }],
     validPeriod: 0,
-    model: []
+    model: [],
+    beforeSms: [],
+    afterSms: []
   },
   {
     value: 2,

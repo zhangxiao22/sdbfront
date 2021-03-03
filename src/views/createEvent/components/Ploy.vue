@@ -465,6 +465,65 @@
                           </template>
                         </el-table-column>
                       </el-table>
+                      <!-- 预热短息 -->
+                      <el-form-item label="预热短息：">
+                        <el-button icon="el-icon-plus"
+                                   @click="addBeforeSmsWords(channelCardItem,ci)">
+                          选择模版
+                        </el-button>
+                      </el-form-item>
+                      <el-table v-show="channelCardItem.beforeSms.length"
+                                :data="channelCardItem.beforeSms"
+                                border
+                                style="width: 100%;margin-bottom:18px;">
+                        <el-table-column prop="content"
+                                         :min-width="300"
+                                         label="短信内容" />
+                        <el-table-column fixed="right"
+                                         label="操作"
+                                         width="100">
+                          <template slot-scope="scope">
+                            <el-popconfirm title="确定删除吗？"
+                                           @onConfirm="deleteBeforeSms(channelCardItem,scope.$index)">
+                              <el-button slot="reference"
+                                         type="text"
+                                         style="color:#f56c6c;"
+                                         size="small">删除</el-button>
+                            </el-popconfirm>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                      <!-- 预热短息end -->
+                      <!-- 跟尾短息 -->
+                      <el-form-item label="跟尾短息：">
+                        <el-button icon="el-icon-plus"
+                                   @click="addAfterSmsWords(channelCardItem,ci)">
+                          选择模版
+                        </el-button>
+                      </el-form-item>
+                      <el-table v-show="channelCardItem.afterSms.length"
+                                :data="channelCardItem.afterSms"
+                                border
+                                style="width: 100%;margin-bottom:18px;">
+                        <el-table-column prop="content"
+                                         :min-width="300"
+                                         label="短信内容" />
+                        <el-table-column fixed="right"
+                                         label="操作"
+                                         width="100">
+                          <template slot-scope="scope">
+                            <el-popconfirm title="确定删除吗？"
+                                           @onConfirm="deleteAfterSms(channelCardItem,scope.$index)">
+                              <el-button slot="reference"
+                                         type="text"
+                                         style="color:#f56c6c;"
+                                         size="small">删除</el-button>
+                            </el-popconfirm>
+                          </template>
+                        </el-table-column>
+                      </el-table>
+                      <!-- {{ channelCardItem.afterSms.map(n=>n.id) }} -->
+                      <!-- 跟尾短息end -->
                     </template>
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
@@ -498,9 +557,6 @@
                             <pre>{{ scope.row.parameterDescription }}</pre>
                           </template>
                         </el-table-column>
-                        <!-- <el-table-column prop="parameterDescription"
-                                         show-overflow-tooltip
-                                         label="参数描述" /> -->
                       </el-table>
                       <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
@@ -598,6 +654,26 @@
              :show-selection="true" />
       </template>
     </ShunDrawer>
+    <!-- 预热短信 -->
+    <ShunDrawer title="选择短信"
+                :show.sync="showBeforeSms"
+                @submit="submitBeforeSms()">
+      <template v-slot:container>
+        <sms ref="beforeSmsRef"
+             multiple
+             :show-selection="true" />
+      </template>
+    </ShunDrawer>
+    <!-- 跟尾短信 -->
+    <ShunDrawer title="选择短信"
+                :show.sync="showAfterSms"
+                @submit="submitAfterSms()">
+      <template v-slot:container>
+        <sms ref="afterSmsRef"
+             multiple
+             :show-selection="true" />
+      </template>
+    </ShunDrawer>
   </div>
 </template>
 
@@ -639,6 +715,10 @@ export default {
       showInterest: false,
       // crm话术侧边栏
       showCRMWord: false,
+      // crm预热短信侧边栏
+      showBeforeSms: false,
+      // crm跟尾短信侧边栏
+      showAfterSms: false,
       // 短信侧边栏
       showSms: false,
       // 定时型 下拉选项
@@ -778,7 +858,7 @@ export default {
                     // 权益
                     interest: n.couponInfoList,
                     channel: n.strategyInfoList.map(m => {
-                      console.log(m)
+                      // console.log(m)
                       return Object.assign({}, CHANNEL_OPT.find(x => {
                         return x.value === m.channel.value
                       }), {
@@ -791,7 +871,9 @@ export default {
                             isEdit: false,
                             isHover: false
                           })
-                        }) : m.meterialInfoList
+                        }) : m.meterialInfoList,
+                        beforeSms: m.advanceSMSInfoList,
+                        afterSms: m.followSMSInfoList
                       }, (() => {
                         const obj = {}
                         if (m.pushType.value === 1) {
@@ -910,6 +992,7 @@ export default {
           // console.log(valid, field)
           if (valid) {
             // 客群
+            console.log(this.group)
             const data = this.group.map((gn, gi) => {
               return {
                 // 客群id
@@ -929,7 +1012,7 @@ export default {
                     couponIdList: pn.interest.map(n => n.id),
                     // 渠道
                     strategyInfoList: pn.channel.map((cn, ci) => {
-                      // console.log(cn.model)
+                      console.log(cn)
                       return {
                         // 渠道id
                         infoId: cn.infoId,
@@ -944,6 +1027,10 @@ export default {
                             scriptInstId: n.scriptInstId
                           }
                         }) : undefined,
+                        // 预热短信ids
+                        advanceSMSIds: cn.value === 1 ? cn.beforeSms.map(n => n.id) : undefined,
+                        // 跟尾短信ids
+                        followSMSIds: cn.value === 1 ? cn.afterSms.map(n => n.id) : undefined,
                         // 模版id
                         materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
                         smsAttr: cn.model[0].smsAttr || {},
@@ -1317,6 +1404,32 @@ export default {
       })
       this.channelIndex = ci
     },
+    // crm-预热短信
+    addBeforeSmsWords(item, ci) {
+      this.showBeforeSms = true
+      this.$nextTick(() => {
+        this.$refs.beforeSmsRef.reset()
+        this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+      })
+      this.channelIndex = ci
+    },
+    // 删除crm-预热短信
+    deleteBeforeSms(item, i) {
+      item.beforeSms.splice(i, 1)
+    },
+    // crm-跟尾短信
+    addAfterSmsWords(item, ci) {
+      this.showAfterSms = true
+      this.$nextTick(() => {
+        this.$refs.afterSmsRef.reset()
+        this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+      })
+      this.channelIndex = ci
+    },
+    // 删除crm-跟尾短信
+    deleteAfterSms(item, i) {
+      item.afterSms.splice(i, 1)
+    },
     // 微信
     addWeChatWords(item, ci) {
       this.showSms = true
@@ -1358,6 +1471,42 @@ export default {
         })
       }
     },
+    // crm-预热短信-确认
+    submitBeforeSms() {
+      const val = this.$refs.beforeSmsRef.parentRef.getVal()
+      if (val.length) {
+        this.showBeforeSms = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].beforeSms = val.map(n => {
+          return Object.assign({}, n, {
+            smsAttr: {}
+          })
+        })
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
+    // crm-跟尾短信-确认
+    submitAfterSms() {
+      const val = this.$refs.afterSmsRef.parentRef.getVal()
+      if (val.length) {
+        this.showAfterSms = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
+          return Object.assign({}, n, {
+            smsAttr: {}
+          })
+        })
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
     // 短信/微信-确认
     submitSms() {
       const val = this.$refs.smsRef.parentRef.getVal()
@@ -1379,6 +1528,7 @@ export default {
         })
       }
     },
+
     // 精准内侧
     handleTestSms(channelIndex) {
       this.validateList = []
