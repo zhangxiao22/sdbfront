@@ -873,8 +873,8 @@ export default {
                             isHover: false
                           })
                         }) : m.meterialInfoList,
-                        beforeSms: m.advanceSMSInfoList,
-                        afterSms: m.followSMSInfoList
+                        beforeSms: m.advanceSMSInfoList || [],
+                        afterSms: m.followSMSInfoList || []
                       }, (() => {
                         const obj = {}
                         if (m.pushType.value === 1) {
