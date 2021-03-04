@@ -45,6 +45,7 @@ export const CHANNEL_OPT = [
       date: 0,
       time: '00:00'
     }],
+    smsSendMode: 0,
     // 精准内测
     test: '',
     type: [{

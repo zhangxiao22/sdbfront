@@ -527,6 +527,16 @@
                     </template>
                     <!-- 短信 -->
                     <template v-if="channelCardItem.value===2">
+                      <el-form-item label="发送模式："
+                                    required
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.smsSendMode'">
+                        <el-radio-group v-model="channelCardItem.smsSendMode">
+                          <el-radio v-for="(item,i) of smsSendModeOpt"
+                                    :key="i"
+                                    :label="item.value"
+                                    @blur="channelCardItem.smsSendMode=channelCardItem.smsSendMode||1">{{ item.label }}</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
                       <el-form-item label="短信模版："
                                     required
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
@@ -722,6 +732,11 @@ export default {
       showAfterSms: false,
       // 短信侧边栏
       showSms: false,
+      // 短信发送模式的选项
+      smsSendModeOpt: [
+        { label: '重复下发', value: 0 },
+        { label: '均分下发', value: 1 }
+      ],
       // 定时型 下拉选项
       timingOpt: JSON.parse(JSON.stringify(TIMING_OPT)),
       group: [
@@ -866,6 +881,7 @@ export default {
                         infoId: m.infoId,
                         chooseType: m.pushType.value,
                         validPeriod: m.clueEffectDays,
+                        smsSendMode: m.sendMode.value,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
                             _content: n.content,
@@ -1019,7 +1035,10 @@ export default {
                         infoId: cn.infoId,
                         // 渠道类型 1:crm 2:短信 3:微信
                         channel: cn.value,
+                        // CRM线索有效期
                         clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
+                        // SMS发送模式（重复均分）
+                        sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
                         // 话术id
                         scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {
