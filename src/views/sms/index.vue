@@ -107,6 +107,11 @@ export default {
           notShowOverflowTooltip: true
         },
         {
+          prop: 'description',
+          label: '短信描述',
+          minWidth: 200
+        },
+        {
           prop: 'businessScenario',
           label: '业务场景',
           minWidth: 200
