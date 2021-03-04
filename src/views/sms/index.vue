@@ -8,7 +8,7 @@
                 :current-page.sync="currentPage"
                 :total="total"
                 :multiple="multiple"
-                :table-data="tableData"
+                :table-data="filterMethod(tableData)"
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
@@ -72,6 +72,13 @@ export default {
     UploadButton
   },
   props: {
+    // 筛选出没有参数的模版
+    filterMethod: {
+      type: Function,
+      default(val) {
+        return val
+      }
+    },
     showSelection: {
       type: Boolean,
       default: true
