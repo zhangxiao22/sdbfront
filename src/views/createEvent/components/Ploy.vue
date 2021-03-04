@@ -661,7 +661,7 @@
                 @submit="submitBeforeSms()">
       <template v-slot:container>
         <sms ref="beforeSmsRef"
-             multiple
+             :multiple="false"
              :show-selection="true" />
       </template>
     </ShunDrawer>
