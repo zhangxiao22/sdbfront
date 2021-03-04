@@ -9,6 +9,33 @@
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
+      <template v-slot:filter>
+        <el-form ref="filterRef"
+                 :inline="true"
+                 :model="filterForm"
+                 class="filter-container">
+          <el-form-item label="日期范围："
+                        prop="dateRange">
+            <el-date-picker v-model="filterForm.dateRange"
+                            value-format="yyyy-MM-dd"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
+          </el-form-item>
+          <el-form-item class="filter-item-end">
+            <el-button type="primary"
+                       icon="el-icon-search"
+                       @click="search">
+              搜索
+            </el-button>
+            <el-button icon="el-icon-refresh"
+                       @click="reset">
+              重置
+            </el-button>
+          </el-form-item>
+        </el-form>
+      </template>
       <template v-slot:main-buttons>
         <el-button class="button"
                    icon="el-icon-download"
@@ -36,6 +63,10 @@ export default {
   },
   data() {
     return {
+      filterForm: {
+        dateRange: []
+      },
+      searchForm: {},
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -52,17 +83,40 @@ export default {
   watch: {},
   created() {
     this.search()
+    // console.log(this.getCurrentDate(new Date()), this.getCurrentDate(new Date((new Date() - 3600 * 1000 * 24 * 7))))
   },
   methods: {
+    getCurrentDate(val) {
+      var date = val
+      var seperator1 = '-'
+      var year = date.getFullYear()
+      var month = date.getMonth() + 1
+      var strDate = date.getDate()
+      if (month >= 1 && month <= 9) {
+        month = '0' + month
+      }
+      if (strDate >= 0 && strDate <= 9) {
+        strDate = '0' + strDate
+      }
+      var currentdate = year + seperator1 + month + seperator1 + strDate
+      return currentdate
+    },
     search() {
+      this.searchForm = {
+        dateRange: this.filterForm.dateRange
+      }
       this.getList(1)
+    },
+    reset() {
+      this.$refs.filterRef.resetFields()
+      this.search()
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
         pageNo: this.currentPage,
         pageSize: this.pageSize
-      })
+      }, this.filterForm.dateRange?.length ? this.searchForm : { dateRange: [this.getCurrentDate(new Date((new Date() - 3600 * 1000 * 24 * 7))), this.getCurrentDate(new Date())] })
       this.loading = true
       getRecordPage(data).then(res => {
         this.tableData = res.data.resultList
