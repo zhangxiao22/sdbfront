@@ -28,6 +28,11 @@ export const COMMON_COLUMN_LIST = [
     label: '产品用例',
     minWidth: 100,
     slot: true
+  },
+  {
+    prop: 'description',
+    label: '产品描述',
+    minWidth: 100
   }
 ]
 
@@ -292,12 +297,8 @@ export const SELF_COLUMN_LIST = [
       prop: 'guaranteeMethod',
       label: '担保方式',
       minWidth: 100
-    },
-    {
-      prop: 'description',
-      label: '产品说明',
-      minWidth: 100
-    }]
+    }
+    ]
   },
   {
     // 通用类产品
