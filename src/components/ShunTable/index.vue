@@ -17,10 +17,10 @@
     <div v-loading="loading"
          class="table-container"
          :class="{'shun-card card': isCard}">
-      <el-alert v-show="selection.length"
+      <el-alert v-show="selection.length >= 0 && showSelection"
                 :title="`已选择 ${selection.length} 项`"
                 style="margin:10px 0;"
-                type="success"
+                :type="selection.length > 0 ? `success` : `warning`"
                 close-text="清空"
                 show-icon
                 @close="handleClearSelection" />
