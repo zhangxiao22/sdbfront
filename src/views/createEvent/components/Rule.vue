@@ -440,15 +440,26 @@ export default {
           if (Math.max(...this.labelTabs.map(n => { return n.condition.length })) + this.totalCondition.length < 6) {
             // eslint-disable-next-line no-eval
             if (eval(this.labelTabs.map(n => { return n.people }).join('+')) < 200000) {
-              saveGroup(data).then(res => {
-                if (res.code === 200) {
-                  resolve()
-                } else {
+              // eslint-disable-next-line no-eval
+              if (eval(this.labelTabs.map(n => { return n.people }).join('+')) > 0) {
+                saveGroup(data).then(res => {
+                  if (res.code === 200) {
+                    resolve()
+                  } else {
+                    reject()
+                  }
+                }).catch(() => {
                   reject()
-                }
-              }).catch(() => {
+                })
+              } else {
+                this.$message({
+                  message: '客群总人数需大于0人',
+                  type: 'warning',
+                  duration: '3000'
+                })
                 reject()
-              })
+                return
+              }
             } else {
               this.$message({
                 message: '客群总人数需低于20万人',
