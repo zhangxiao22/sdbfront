@@ -400,6 +400,7 @@
                                          style="margin-right:10px;"
                                          controls-position="right"
                                          :min="0"
+                                         :max="10000"
                                          @blur="channelCardItem.validPeriod=channelCardItem.validPeriod||0" />天
                       </el-form-item>
                       <el-form-item label="推荐话术："
