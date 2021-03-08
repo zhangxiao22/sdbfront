@@ -20,6 +20,7 @@
                             value-format="yyyy-MM-dd"
                             type="daterange"
                             range-separator="至"
+                            :picker-options="pickerOptions"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期" />
           </el-form-item>
@@ -66,6 +67,32 @@ export default {
     return {
       filterForm: {
         dateRange: [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 1)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 3)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '今年至今',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date(new Date().getFullYear(), 0)
+            picker.$emit('pick', [start, end])
+          }
+        }]
       },
       searchForm: {},
       loading: false,
