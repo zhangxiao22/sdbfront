@@ -8,7 +8,7 @@
                 :current-page.sync="currentPage"
                 :total="total"
                 :multiple="multiple"
-                :table-data="filterMethod(tableData)"
+                :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
@@ -72,13 +72,6 @@ export default {
     UploadButton
   },
   props: {
-    // 筛选出没有参数的模版
-    filterMethod: {
-      type: Function,
-      default(val) {
-        return val
-      }
-    },
     showSelection: {
       type: Boolean,
       default: true
@@ -86,6 +79,10 @@ export default {
     multiple: {
       type: Boolean,
       default: true
+    },
+    commonTemplate: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -159,7 +156,7 @@ export default {
       }, this.searchForm)
       this.loading = true
       getSmsList(data).then(res => {
-        this.tableData = res.data.resultList
+        this.tableData = this.commonTemplate ? res.data.resultList.filter(n => n.commonTemplate === true) : res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
