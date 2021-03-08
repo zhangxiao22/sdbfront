@@ -673,7 +673,7 @@
       <template v-slot:container>
         <sms ref="beforeSmsRef"
              :multiple="false"
-             :filter-method="filterMethod"
+             :common-template="true"
              :show-selection="true" />
       </template>
     </ShunDrawer>
@@ -684,7 +684,7 @@
       <template v-slot:container>
         <sms ref="afterSmsRef"
              multiple
-             :filter-method="filterMethod"
+             :common-template="true"
              :show-selection="true" />
       </template>
     </ShunDrawer>
@@ -849,10 +849,6 @@ export default {
     //   })
     //   return val
     // },
-    filterMethod(val) {
-      return val.filter(n => n.parameterDescription === null)
-    },
-
     ployDetail() {
       return new Promise((resolve, reject) => {
         getPloyDetail({ baseId: this.id }).then(res => {

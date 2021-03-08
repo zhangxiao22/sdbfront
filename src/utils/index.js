@@ -33,7 +33,23 @@ export const COMMON_COLUMN_LIST = [
     prop: 'description',
     label: '产品描述',
     minWidth: 100
+  },
+  {
+    prop: 'uploader',
+    label: '上传人',
+    width: 100
+  },
+  {
+    prop: 'reviser',
+    label: '最后修改人',
+    width: 100
+  },
+  {
+    prop: 'modifyTime',
+    label: '最后修改时间',
+    width: 180
   }
+
 ]
 
 // 按产品类型区分不同字段
