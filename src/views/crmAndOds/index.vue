@@ -20,6 +20,7 @@
                             value-format="yyyy-MM-dd"
                             type="daterange"
                             range-separator="至"
+                            :picker-options="pickerOptions"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期" />
           </el-form-item>
@@ -53,6 +54,7 @@
 import { downloadFile } from '@/utils'
 import ShunTable from '@/components/ShunTable/index'
 import { getRecordPage } from '@/api/api'
+import moment from 'moment'
 export default {
   name: 'CrmAndOds',
   components: {
@@ -64,7 +66,33 @@ export default {
   data() {
     return {
       filterForm: {
-        dateRange: []
+        dateRange: [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
+      },
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 1)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 3)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '今年至今',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date(new Date().getFullYear(), 0)
+            picker.$emit('pick', [start, end])
+          }
+        }]
       },
       searchForm: {},
       loading: false,
@@ -83,24 +111,8 @@ export default {
   watch: {},
   created() {
     this.search()
-    // console.log(this.getCurrentDate(new Date()), this.getCurrentDate(new Date((new Date() - 3600 * 1000 * 24 * 7))))
   },
   methods: {
-    getCurrentDate(val) {
-      var date = val
-      var seperator1 = '-'
-      var year = date.getFullYear()
-      var month = date.getMonth() + 1
-      var strDate = date.getDate()
-      if (month >= 1 && month <= 9) {
-        month = '0' + month
-      }
-      if (strDate >= 0 && strDate <= 9) {
-        strDate = '0' + strDate
-      }
-      var currentdate = year + seperator1 + month + seperator1 + strDate
-      return currentdate
-    },
     search() {
       this.searchForm = {
         dateRange: this.filterForm.dateRange
@@ -116,7 +128,7 @@ export default {
       const data = Object.assign({
         pageNo: this.currentPage,
         pageSize: this.pageSize
-      }, this.filterForm.dateRange?.length ? this.searchForm : { dateRange: [this.getCurrentDate(new Date((new Date() - 3600 * 1000 * 24 * 7))), this.getCurrentDate(new Date())] })
+      }, this.filterForm)
       this.loading = true
       getRecordPage(data).then(res => {
         this.tableData = res.data.resultList
