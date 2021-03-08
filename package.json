@@ -15,8 +15,8 @@
   },
   "dependencies": {
     "@antv/data-set": "^0.11.7",
-    "@antv/g2": "^4.0.15",
-    "@antv/g2plot": "^2.3.2",
+    "@antv/g2": "^4.1.12",
+    "@antv/g2plot": "^2.3.13",
     "axios": "0.18.1",
     "core-js": "3.6.5",
     "el-tree-transfer": "^2.3.2",
@@ -50,6 +50,7 @@
     "eslint-plugin-vue": "6.2.2",
     "html-webpack-plugin": "3.2.0",
     "mockjs": "1.0.1-beta3",
+    "moment": "^2.29.1",
     "node-sass": "^4.14.1",
     "runjs": "4.3.2",
     "sass": "1.26.8",
