@@ -80,7 +80,7 @@ export default {
       type: Boolean,
       default: true
     },
-    xxxx: {
+    commonTemplate: {
       type: Boolean,
       default: false
     }
@@ -151,7 +151,7 @@ export default {
       }, this.searchForm)
       this.loading = true
       getSmsList(data).then(res => {
-        this.tableData = res.data.resultList
+        this.tableData = this.commonTemplate ? res.data.resultList.filter(n => n.commonTemplate === true) : res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {

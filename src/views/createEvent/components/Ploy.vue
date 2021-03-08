@@ -672,6 +672,7 @@
       <template v-slot:container>
         <sms ref="beforeSmsRef"
              :multiple="false"
+             :common-template="true"
              :show-selection="true" />
       </template>
     </ShunDrawer>
@@ -682,6 +683,7 @@
       <template v-slot:container>
         <sms ref="afterSmsRef"
              multiple
+             :common-template="true"
              :show-selection="true" />
       </template>
     </ShunDrawer>
