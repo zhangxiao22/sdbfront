@@ -38,13 +38,18 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <el-button class="button"
-                   icon="el-icon-download"
-                   type="success"
-                   plain
-                   @click="downloadAll">
-          全部下载
-        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    content="下载当前搜索结果"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-download"
+                     type="success"
+                     plain
+                     @click="downloadAll">
+            下载
+          </el-button>
+        </el-tooltip>
       </template>
     </shun-table>
   </div>
@@ -138,7 +143,11 @@ export default {
       })
     },
     downloadAll() {
-      downloadFile('/clue/downloadRecord', {})
+      const data = {
+        startDate: this.searchForm.dateRange ? this.searchForm.dateRange[0] : null,
+        endDate: this.searchForm.dateRange ? this.searchForm.dateRange[1] : null
+      }
+      downloadFile('/clue/downloadRecord', data)
     }
   }
 }
