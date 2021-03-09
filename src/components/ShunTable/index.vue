@@ -17,13 +17,20 @@
     <div v-loading="loading"
          class="table-container"
          :class="{'shun-card card': isCard}">
-      <el-alert v-show="selection.length >= 0 && showSelection"
+      <!-- <el-alert v-show="showSelection"
                 :title="`已选择 ${selection.length} 项`"
                 style="margin:10px 0;"
                 :type="selection.length > 0 ? `success` : `warning`"
                 close-text="清空"
                 show-icon
-                @close="handleClearSelection" />
+                @close="handleClearSelection" /> -->
+      <Alert v-show="showSelection"
+             :title="`已选择 ${selection.length} 项`"
+             :type="selection.length > 0 ? `success` : `warning`"
+             close-text="清空"
+             :closable="selection.length > 0"
+             show-icon
+             @close="handleClearSelection" />
       <!-- {{ tabValue }} -->
       <el-tabs v-if="tabList.length"
                :value="tabValue"
@@ -100,8 +107,13 @@
 </template>
 
 <script>
+import Alert from '@/components/Alert'
+
 export default {
   name: 'ShunTable',
+  components: {
+    Alert
+  },
   props: {
     // 是否以卡片形式展示（默认是）
     isCard: {
