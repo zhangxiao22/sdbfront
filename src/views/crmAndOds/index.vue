@@ -144,7 +144,8 @@ export default {
     },
     downloadAll() {
       const data = {
-        dateRange: this.searchForm.dateRange?.join(',')
+        startDate: this.searchForm.dateRange ? this.searchForm.dateRange[0] : null,
+        endDate: this.searchForm.dateRange ? this.searchForm.dateRange[1] : null
       }
       downloadFile('/clue/downloadRecord', data)
     }
