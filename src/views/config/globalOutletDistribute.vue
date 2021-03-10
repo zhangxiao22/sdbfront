@@ -6,17 +6,14 @@
              label-width="200px"
              class="main-form">
       <el-form-item class="form-item">
-        <div slot="label">
-          <Info content="默认100%" />
-          全局网点分配比例：
-        </div>
         <div v-for="(outletItem,i) of form.outlets"
              :key="i"
              class="block-item">
           <el-form-item :prop="'outlets.'+i+'.item'"
                         :rules="{
                           required: true, message: '请选择网点', trigger: 'change'
-                        }">
+                        }"
+                        label="网点">
             <el-select v-model="outletItem.item"
                        filterable
                        placeholder="请选择网点"
@@ -29,11 +26,11 @@
                          :value="optItem.value" />
             </el-select>
           </el-form-item>
-          <span class="compare">:</span>
           <el-form-item :prop="'outlets.'+i+'.value'"
                         :rules="{
                           required: true, message: '请输入分配比例', trigger: 'change'
-                        }">
+                        }"
+                        label="比例">
             <el-input-number v-model="outletItem.value"
                              :disabled="!outletItem.item"
                              :min="0"
@@ -43,6 +40,19 @@
                              placeholder="请输入分配比例"
                              class="item-input number-input" />
             <div class="unit">%</div>
+          </el-form-item>
+          <el-form-item :prop="'outlets.'+i+'.dateRange'"
+                        :rules="[{
+                          required: true, message: '请输入有效期', trigger: 'blur'
+                        }]"
+                        label="有效期">
+            <el-date-picker v-model="outletItem.dateRange"
+                            value-format="yyyy-MM-dd"
+                            class="item-date"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
           </el-form-item>
           <i class="el-icon-delete delete"
              @click="delOutletItem(i)" />
@@ -67,11 +77,9 @@
 
 <script>
 import { getOutletAllot, insertOutletAllotBatch, getOutletList } from '@/api/api'
-import Info from '@/components/Info'
 
 export default {
   components: {
-    Info
   },
   props: {
     loading: {
@@ -226,12 +234,6 @@ export default {
       .block-item {
         display: flex;
         position: relative;
-        .compare {
-          width: 10px;
-          margin: 0 10px;
-          color: #888;
-          text-align: center;
-        }
         .el-form-item {
           flex: 1;
           position: relative;
