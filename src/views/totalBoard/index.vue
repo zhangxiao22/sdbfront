@@ -21,7 +21,7 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="营销事件："
+        <!-- <el-form-item label="营销事件："
                       prop="event">
           <el-select v-model="filterForm.event"
                      clearable
@@ -31,7 +31,7 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="机构："
                       prop="agency">
           <el-select v-model="filterForm.agency"
@@ -43,7 +43,7 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="渠道："
+        <!-- <el-form-item label="渠道："
                       prop="channel">
           <el-select v-model="filterForm.channel"
                      clearable
@@ -53,8 +53,8 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="批次："
+        </el-form-item> -->
+        <!-- <el-form-item label="批次："
                       prop="batch">
           <el-select v-model="filterForm.batch"
                      clearable
@@ -64,8 +64,8 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="岗位："
+        </el-form-item> -->
+        <!-- <el-form-item label="岗位："
                       prop="post">
           <el-select v-model="filterForm.post"
                      clearable
@@ -75,7 +75,7 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item class="filter-item-end">
           <el-button type="primary"
                      icon="el-icon-search"
@@ -484,11 +484,11 @@ export default {
       filterForm: {
         // 2241884
         useCase: [],
-        event: '',
-        agency: '',
-        channel: '',
-        batch: '',
-        post: ''
+        // event: '',
+        agency: ''
+        // channel: '',
+        // batch: '',
+        // post: ''
       },
       searchForm: {
       },
@@ -920,7 +920,7 @@ export default {
         })
       })
     },
-    // 获取事件
+    // 根据用例获取事件
     getEvent(useCase) {
       if (this.filterForm.useCase?.length === 1) {
         getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0], status: [4, 6, 11, 13] }).then(res => {
@@ -933,7 +933,7 @@ export default {
         })
       } else {
         this.eventOpt = []
-        this.filterForm.event = ''
+        // this.filterForm.event = ''
       }
     },
     expandOpen() {
