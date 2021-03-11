@@ -6,7 +6,7 @@
                :inline="true"
                :model="filterForm"
                class="shun-filter-container">
-        <el-form-item label="营销用例："
+        <!-- <el-form-item label="营销用例："
                       prop="useCase">
           <el-select v-model="filterForm.useCase"
                      class="long-text"
@@ -20,7 +20,7 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <!-- <el-form-item label="营销事件："
                       prop="event">
           <el-select v-model="filterForm.event"
@@ -483,7 +483,7 @@ export default {
       lineChartLoading6: false,
       filterForm: {
         // 2241884
-        useCase: [],
+        // useCase: [],
         // event: '',
         agency: ''
         // channel: '',
@@ -741,6 +741,7 @@ export default {
     },
     reset() {
       this.$refs.filterRef.resetFields()
+      // this.getUseCase()
       this.search()
     },
     render() {
@@ -758,7 +759,7 @@ export default {
       this.getLineChartData(4, 5)
       this.getLineChartData(5, 6)
 
-      this.getUseCase()
+      // this.getUseCase()
       this.getCluesUseCase()
       // 旧接口
       // this.getAchieveRate()
@@ -907,19 +908,19 @@ export default {
     //   })
     // },
     // 获取用例列表
-    getUseCase() {
-      return new Promise((resolve) => {
-        getAllUseCase().then(res => {
-          this.useCaseOpt = res.data.map(n => {
-            return {
-              label: n.name,
-              value: n.id
-            }
-          })
-          resolve()
-        })
-      })
-    },
+    // getUseCase() {
+    //   return new Promise((resolve) => {
+    //     getAllUseCase().then(res => {
+    //       this.useCaseOpt = res.data.map(n => {
+    //         return {
+    //           label: n.name,
+    //           value: n.id
+    //         }
+    //       })
+    //       resolve()
+    //     })
+    //   })
+    // },
     // 根据用例获取事件
     getEvent(useCase) {
       if (this.filterForm.useCase?.length === 1) {
@@ -952,8 +953,8 @@ export default {
     getStatistics() {
       this.loading.chartBarLoading = true
       this.loading.chartLineLoading = true
-      if (this.filterForm.useCase.length === 1) {
-        totalStatisticsOne({ case: this.filterForm.useCase.join(',') }).then(res => {
+      if (this.filterForm.useCase?.length === 1) {
+        totalStatisticsOne({ case: this.filterForm.useCase?.join(',') }).then(res => {
           this.statistics = res.data.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
