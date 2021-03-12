@@ -193,7 +193,7 @@
                              :key="timeIndex"
                              class="item">
                           <div class="date">{{ timeItem.timerTime }} </div>
-                          <div class="time">09:00</div>
+                          <div class="time">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.moment }}</div>
                         </div>
                       </div>
                     </div>
