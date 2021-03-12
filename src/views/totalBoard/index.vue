@@ -534,201 +534,6 @@ export default {
         value: 5,
         label: '机构5'
       }],
-      // allBranchOpt: [{
-      //   value: 'zhinan',
-      //   label: '指南',
-      //   children: [{
-      //     value: 'shejiyuanze',
-      //     label: '设计原则',
-      //     children: [{
-      //       value: 'yizhi',
-      //       label: '一致'
-      //     }, {
-      //       value: 'fankui',
-      //       label: '反馈'
-      //     }, {
-      //       value: 'xiaolv',
-      //       label: '效率'
-      //     }, {
-      //       value: 'kekong',
-      //       label: '可控'
-      //     }]
-      //   }, {
-      //     value: 'daohang',
-      //     label: '导航',
-      //     children: [{
-      //       value: 'cexiangdaohang',
-      //       label: '侧向导航'
-      //     }, {
-      //       value: 'dingbudaohang',
-      //       label: '顶部导航'
-      //     }]
-      //   }]
-      // }, {
-      //   value: 'zujian',
-      //   label: '组件',
-      //   children: [{
-      //     value: 'basic',
-      //     label: 'Basic',
-      //     children: [{
-      //       value: 'layout',
-      //       label: 'Layout 布局'
-      //     }, {
-      //       value: 'color',
-      //       label: 'Color 色彩'
-      //     }, {
-      //       value: 'typography',
-      //       label: 'Typography 字体'
-      //     }, {
-      //       value: 'icon',
-      //       label: 'Icon 图标'
-      //     }, {
-      //       value: 'button',
-      //       label: 'Button 按钮'
-      //     }]
-      //   }, {
-      //     value: 'form',
-      //     label: 'Form',
-      //     children: [{
-      //       value: 'radio',
-      //       label: 'Radio 单选框'
-      //     }, {
-      //       value: 'checkbox',
-      //       label: 'Checkbox 多选框'
-      //     }, {
-      //       value: 'input',
-      //       label: 'Input 输入框'
-      //     }, {
-      //       value: 'input-number',
-      //       label: 'InputNumber 计数器'
-      //     }, {
-      //       value: 'select',
-      //       label: 'Select 选择器'
-      //     }, {
-      //       value: 'cascader',
-      //       label: 'Cascader 级联选择器'
-      //     }, {
-      //       value: 'switch',
-      //       label: 'Switch 开关'
-      //     }, {
-      //       value: 'slider',
-      //       label: 'Slider 滑块'
-      //     }, {
-      //       value: 'time-picker',
-      //       label: 'TimePicker 时间选择器'
-      //     }, {
-      //       value: 'date-picker',
-      //       label: 'DatePicker 日期选择器'
-      //     }, {
-      //       value: 'datetime-picker',
-      //       label: 'DateTimePicker 日期时间选择器'
-      //     }, {
-      //       value: 'upload',
-      //       label: 'Upload 上传'
-      //     }, {
-      //       value: 'rate',
-      //       label: 'Rate 评分'
-      //     }, {
-      //       value: 'form',
-      //       label: 'Form 表单'
-      //     }]
-      //   }, {
-      //     value: 'data',
-      //     label: 'Data',
-      //     children: [{
-      //       value: 'table',
-      //       label: 'Table 表格'
-      //     }, {
-      //       value: 'tag',
-      //       label: 'Tag 标签'
-      //     }, {
-      //       value: 'progress',
-      //       label: 'Progress 进度条'
-      //     }, {
-      //       value: 'tree',
-      //       label: 'Tree 树形控件'
-      //     }, {
-      //       value: 'pagination',
-      //       label: 'Pagination 分页'
-      //     }, {
-      //       value: 'badge',
-      //       label: 'Badge 标记'
-      //     }]
-      //   }, {
-      //     value: 'notice',
-      //     label: 'Notice',
-      //     children: [{
-      //       value: 'alert',
-      //       label: 'Alert 警告'
-      //     }, {
-      //       value: 'loading',
-      //       label: 'Loading 加载'
-      //     }, {
-      //       value: 'message',
-      //       label: 'Message 消息提示'
-      //     }, {
-      //       value: 'message-box',
-      //       label: 'MessageBox 弹框'
-      //     }, {
-      //       value: 'notification',
-      //       label: 'Notification 通知'
-      //     }]
-      //   }, {
-      //     value: 'navigation',
-      //     label: 'Navigation',
-      //     children: [{
-      //       value: 'menu',
-      //       label: 'NavMenu 导航菜单'
-      //     }, {
-      //       value: 'tabs',
-      //       label: 'Tabs 标签页'
-      //     }, {
-      //       value: 'breadcrumb',
-      //       label: 'Breadcrumb 面包屑'
-      //     }, {
-      //       value: 'dropdown',
-      //       label: 'Dropdown 下拉菜单'
-      //     }, {
-      //       value: 'steps',
-      //       label: 'Steps 步骤条'
-      //     }]
-      //   }, {
-      //     value: 'others',
-      //     label: 'Others',
-      //     children: [{
-      //       value: 'dialog',
-      //       label: 'Dialog 对话框'
-      //     }, {
-      //       value: 'tooltip',
-      //       label: 'Tooltip 文字提示'
-      //     }, {
-      //       value: 'popover',
-      //       label: 'Popover 弹出框'
-      //     }, {
-      //       value: 'card',
-      //       label: 'Card 卡片'
-      //     }, {
-      //       value: 'carousel',
-      //       label: 'Carousel 走马灯'
-      //     }, {
-      //       value: 'collapse',
-      //       label: 'Collapse 折叠面板'
-      //     }]
-      //   }]
-      // }, {
-      //   value: 'ziyuan',
-      //   label: '资源',
-      //   children: [{
-      //     value: 'axure',
-      //     label: 'Axure Components'
-      //   }, {
-      //     value: 'sketch',
-      //     label: 'Sketch Templates'
-      //   }, {
-      //     value: 'jiaohu',
-      //     label: '组件交互文档'
-      //   }]
-      // }],
       allBranchOpt: [],
       orgOpt: [],
       channelOptVal: 1,
@@ -949,6 +754,7 @@ export default {
   },
   watch: {},
   created() {
+    this.getBranches()
     this.render(this.getParams)
 
     // this.getStatistics()
@@ -993,7 +799,6 @@ export default {
       this.getLineChartData(4, 5, val)
       this.getLineChartData(5, 6, val)
 
-      this.getBranches()
       // this.getUseCase()
       this.getCluesUseCase(val)
       // 旧接口
@@ -1050,7 +855,7 @@ export default {
       this.loading.chartPieLoading = true
       totalPie(Object.assign({ type: this.channelCluePieChart }, val)).then(res => {
         const data = res.data
-        this.channelPieData = res.data.map(n => {
+        this.channelPieData = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
@@ -1094,7 +899,7 @@ export default {
     getCluesUseCase(val) {
       this.loading.usecaseBarLoading = true
       totalCluesUseCase(Object.assign({ type: this.funnelSel, channel: this.channelOptVal }, val)).then(res => {
-        this.usecaseBarData = res.data.map(n => {
+        this.usecaseBarData = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
@@ -1107,7 +912,7 @@ export default {
       totalAchieveRate({ channel_id }).then(res => {
         this['lineChartData' + unm] = [
           ...(res.data.control || [])
-            .map(n => {
+            ?.map(n => {
               return {
                 label: n.label,
                 value: +n.value,
@@ -1115,7 +920,7 @@ export default {
               }
             }),
           ...(res.data.exec || [])
-            .map(n => {
+            ?.map(n => {
               return {
                 label: n.label,
                 value: +n.value,
@@ -1169,7 +974,7 @@ export default {
     getEvent(useCase) {
       if (this.filterForm.useCase?.length === 1) {
         getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0], status: [4, 6, 11, 13] }).then(res => {
-          this.eventOpt = res.data.resultList.map(n => {
+          this.eventOpt = res.data.resultList?.map(n => {
             return {
               label: n.eventBaseInfo.name,
               value: n.eventBaseInfo.id
@@ -1199,12 +1004,12 @@ export default {
       this.loading.chartLineLoading = true
       if (this.filterForm.useCase?.length === 1) {
         totalStatisticsOne(Object.assign({ case: this.filterForm.useCase?.join(',') }, val)).then(res => {
-          this.statistics = res.data.map(n => {
+          this.statistics = res.data?.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
             })
           })
-          this.statistics2 = this.statistics.slice(0).sort((a, b) => {
+          this.statistics2 = this.statistics?.slice(0).sort((a, b) => {
             return b.value - a.value
           })
         }).finally(() => {
@@ -1213,12 +1018,12 @@ export default {
         })
       } else {
         totalStatisticsOne(Object.assign({ case: 2241884 }, val)).then(res => {
-          this.statistics = res.data.map(n => {
+          this.statistics = res.data?.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
             })
           })
-          this.statistics2 = this.statistics.slice(0).sort((a, b) => {
+          this.statistics2 = this.statistics?.slice(0).sort((a, b) => {
             return b.value - a.value
           })
         }).finally(() => {
@@ -1230,11 +1035,11 @@ export default {
     getRankOrg(val) {
       this.loading.orgRankLoading = true
       totalRank(Object.assign({ content: 0, type: this.rankSelVal1 }, val)).then(res => {
-        this.rankChartData1 = res.data.map(n => {
+        this.rankChartData1 = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +(n.value / 10000).toFixed(2)
           })
-        }).slice(0, 10)
+        })?.slice(0, 10)
         // console.log(this.rankChartData1)
       })
         .finally(() => {
@@ -1244,11 +1049,11 @@ export default {
     getRankBranch(val) {
       this.loading.branchRankLoading = true
       totalRank(Object.assign({ content: 1, type: this.rankSelVal2 }, val)).then(res => {
-        this.rankChartData2 = res.data.map(n => {
+        this.rankChartData2 = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +(n.value / 10000).toFixed(2)
           })
-        }).slice(0, 10)
+        })?.slice(0, 10)
       })
         .finally(() => {
           this.loading.branchRankLoading = false
@@ -1257,11 +1062,11 @@ export default {
     getRankEmp(val) {
       this.loading.empRankLoading = true
       totalRank(Object.assign({ content: 2, type: this.rankSelVal3 }, val)).then(res => {
-        this.rankChartData3 = res.data.map(n => {
+        this.rankChartData3 = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
-        }).slice(0, 10)
+        })?.slice(0, 10)
       })
         .finally(() => {
           this.loading.empRankLoading = false
