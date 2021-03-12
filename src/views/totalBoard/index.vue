@@ -754,6 +754,7 @@ export default {
   },
   watch: {},
   created() {
+    this.getBranches()
     this.render(this.getParams)
 
     // this.getStatistics()
@@ -798,7 +799,6 @@ export default {
       this.getLineChartData(4, 5, val)
       this.getLineChartData(5, 6, val)
 
-      this.getBranches()
       // this.getUseCase()
       this.getCluesUseCase(val)
       // 旧接口
