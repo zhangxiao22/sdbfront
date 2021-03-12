@@ -20,7 +20,7 @@ export const CHANNEL_OPT = [
       icon: 'el-icon-alarm-clock',
       name: '定时型'
     }],
-    validPeriod: 0,
+    // validPeriod: 0,
     model: []
   },
   {
