@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const api2 = process.env.VUE_APP_BASE_API_2 + '/odsEffect'
-// const api3 = process.env.VUE_APP_BASE_API_3
+const api3 = process.env.VUE_APP_BASE_API_2
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -661,6 +661,14 @@ export function totalAchieveRate(params) {
     params
   })
 }
+
+export function getAllBranches() {
+  return request({
+    url: api3 + '/branches',
+    method: 'get'
+  })
+}
+
 // export function totalPurchaseAmount(params) {
 //   return request({
 //     url: api2 + '/purchase_amount',

@@ -32,16 +32,38 @@
                        :value="item.value" />
           </el-select>
         </el-form-item> -->
-        <el-form-item label="机构："
-                      prop="agency">
-          <el-select v-model="filterForm.agency"
+        <!-- branch -->
+        <!-- <el-form-item label="支行："
+                      prop="branch">
+          <el-select v-model="filterForm.branch"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="(item,i) in agencyOpt"
+            <el-option v-for="(item,i) in branchOpt"
                        :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
+        </el-form-item> -->
+        <!-- <el-form-item label="网点："
+                      prop="org">
+          <el-select v-model="filterForm.org"
+                     clearable
+                     placeholder="请选择">
+            <el-option v-for="(item,i) in orgOpt"
+                       :key="i"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item> -->
+        <el-form-item label="机构："
+                      prop="branch">
+          <el-cascader v-model="filterForm.branch"
+                       style="width:300px"
+                       :options="allBranchOpt"
+                       :props="{ value: 'org_code',
+                                 label: 'org_name',
+                                 children: 'Children',checkStrictly: true }"
+                       clearable />
         </el-form-item>
         <!-- <el-form-item label="渠道："
                       prop="channel">
@@ -444,7 +466,8 @@ import {
   // totalRankOrg,
   // totalRankBrancg,
   totalRank,
-  // getAllJob,
+  getAllBranches,
+  getAllJob,
   getAllUseCase,
   getEventList
 } from '@/api/api'
@@ -485,16 +508,17 @@ export default {
         // 2241884
         // useCase: [],
         // event: '',
-        agency: ''
+        branch: ''
         // channel: '',
         // batch: '',
         // post: ''
       },
       searchForm: {
       },
+      getParams: {},
       useCaseOpt: [],
       eventOpt: [],
-      agencyOpt: [{
+      branchOpt: [{
         value: 1,
         label: '机构1'
       }, {
@@ -510,6 +534,203 @@ export default {
         value: 5,
         label: '机构5'
       }],
+      // allBranchOpt: [{
+      //   value: 'zhinan',
+      //   label: '指南',
+      //   children: [{
+      //     value: 'shejiyuanze',
+      //     label: '设计原则',
+      //     children: [{
+      //       value: 'yizhi',
+      //       label: '一致'
+      //     }, {
+      //       value: 'fankui',
+      //       label: '反馈'
+      //     }, {
+      //       value: 'xiaolv',
+      //       label: '效率'
+      //     }, {
+      //       value: 'kekong',
+      //       label: '可控'
+      //     }]
+      //   }, {
+      //     value: 'daohang',
+      //     label: '导航',
+      //     children: [{
+      //       value: 'cexiangdaohang',
+      //       label: '侧向导航'
+      //     }, {
+      //       value: 'dingbudaohang',
+      //       label: '顶部导航'
+      //     }]
+      //   }]
+      // }, {
+      //   value: 'zujian',
+      //   label: '组件',
+      //   children: [{
+      //     value: 'basic',
+      //     label: 'Basic',
+      //     children: [{
+      //       value: 'layout',
+      //       label: 'Layout 布局'
+      //     }, {
+      //       value: 'color',
+      //       label: 'Color 色彩'
+      //     }, {
+      //       value: 'typography',
+      //       label: 'Typography 字体'
+      //     }, {
+      //       value: 'icon',
+      //       label: 'Icon 图标'
+      //     }, {
+      //       value: 'button',
+      //       label: 'Button 按钮'
+      //     }]
+      //   }, {
+      //     value: 'form',
+      //     label: 'Form',
+      //     children: [{
+      //       value: 'radio',
+      //       label: 'Radio 单选框'
+      //     }, {
+      //       value: 'checkbox',
+      //       label: 'Checkbox 多选框'
+      //     }, {
+      //       value: 'input',
+      //       label: 'Input 输入框'
+      //     }, {
+      //       value: 'input-number',
+      //       label: 'InputNumber 计数器'
+      //     }, {
+      //       value: 'select',
+      //       label: 'Select 选择器'
+      //     }, {
+      //       value: 'cascader',
+      //       label: 'Cascader 级联选择器'
+      //     }, {
+      //       value: 'switch',
+      //       label: 'Switch 开关'
+      //     }, {
+      //       value: 'slider',
+      //       label: 'Slider 滑块'
+      //     }, {
+      //       value: 'time-picker',
+      //       label: 'TimePicker 时间选择器'
+      //     }, {
+      //       value: 'date-picker',
+      //       label: 'DatePicker 日期选择器'
+      //     }, {
+      //       value: 'datetime-picker',
+      //       label: 'DateTimePicker 日期时间选择器'
+      //     }, {
+      //       value: 'upload',
+      //       label: 'Upload 上传'
+      //     }, {
+      //       value: 'rate',
+      //       label: 'Rate 评分'
+      //     }, {
+      //       value: 'form',
+      //       label: 'Form 表单'
+      //     }]
+      //   }, {
+      //     value: 'data',
+      //     label: 'Data',
+      //     children: [{
+      //       value: 'table',
+      //       label: 'Table 表格'
+      //     }, {
+      //       value: 'tag',
+      //       label: 'Tag 标签'
+      //     }, {
+      //       value: 'progress',
+      //       label: 'Progress 进度条'
+      //     }, {
+      //       value: 'tree',
+      //       label: 'Tree 树形控件'
+      //     }, {
+      //       value: 'pagination',
+      //       label: 'Pagination 分页'
+      //     }, {
+      //       value: 'badge',
+      //       label: 'Badge 标记'
+      //     }]
+      //   }, {
+      //     value: 'notice',
+      //     label: 'Notice',
+      //     children: [{
+      //       value: 'alert',
+      //       label: 'Alert 警告'
+      //     }, {
+      //       value: 'loading',
+      //       label: 'Loading 加载'
+      //     }, {
+      //       value: 'message',
+      //       label: 'Message 消息提示'
+      //     }, {
+      //       value: 'message-box',
+      //       label: 'MessageBox 弹框'
+      //     }, {
+      //       value: 'notification',
+      //       label: 'Notification 通知'
+      //     }]
+      //   }, {
+      //     value: 'navigation',
+      //     label: 'Navigation',
+      //     children: [{
+      //       value: 'menu',
+      //       label: 'NavMenu 导航菜单'
+      //     }, {
+      //       value: 'tabs',
+      //       label: 'Tabs 标签页'
+      //     }, {
+      //       value: 'breadcrumb',
+      //       label: 'Breadcrumb 面包屑'
+      //     }, {
+      //       value: 'dropdown',
+      //       label: 'Dropdown 下拉菜单'
+      //     }, {
+      //       value: 'steps',
+      //       label: 'Steps 步骤条'
+      //     }]
+      //   }, {
+      //     value: 'others',
+      //     label: 'Others',
+      //     children: [{
+      //       value: 'dialog',
+      //       label: 'Dialog 对话框'
+      //     }, {
+      //       value: 'tooltip',
+      //       label: 'Tooltip 文字提示'
+      //     }, {
+      //       value: 'popover',
+      //       label: 'Popover 弹出框'
+      //     }, {
+      //       value: 'card',
+      //       label: 'Card 卡片'
+      //     }, {
+      //       value: 'carousel',
+      //       label: 'Carousel 走马灯'
+      //     }, {
+      //       value: 'collapse',
+      //       label: 'Collapse 折叠面板'
+      //     }]
+      //   }]
+      // }, {
+      //   value: 'ziyuan',
+      //   label: '资源',
+      //   children: [{
+      //     value: 'axure',
+      //     label: 'Axure Components'
+      //   }, {
+      //     value: 'sketch',
+      //     label: 'Sketch Templates'
+      //   }, {
+      //     value: 'jiaohu',
+      //     label: '组件交互文档'
+      //   }]
+      // }],
+      allBranchOpt: [],
+      orgOpt: [],
       channelOptVal: 1,
       channelOpt: [{
         value: 1,
@@ -728,7 +949,7 @@ export default {
   },
   watch: {},
   created() {
-    this.render()
+    this.render(this.getParams)
 
     // this.getStatistics()
   },
@@ -738,29 +959,43 @@ export default {
   methods: {
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      // console.log(this.searchForm)
+      if (this.searchForm.branch?.length) {
+        this.getParams = {
+          branch: this.searchForm.branch[0],
+          org: this.searchForm.branch[1]
+        }
+      } else {
+        this.getParams = {
+          branch: '',
+          org: ''
+        }
+      }
+      this.render(this.getParams)
     },
     reset() {
       this.$refs.filterRef.resetFields()
       // this.getUseCase()
       this.search()
     },
-    render() {
+    render(val) {
       // 获取岗位
       // this.getPostOpt()
       //
-      this.getOverview()
-      this.getFunnel()
-      this.getPie()
+      this.getOverview(val)
+      this.getFunnel(val)
+      this.getPie(val)
       // 实际达成率
-      this.getLineChartData(0, 1)
-      this.getLineChartData(1, 2)
-      this.getLineChartData(2, 3)
-      this.getLineChartData(3, 4)
-      this.getLineChartData(4, 5)
-      this.getLineChartData(5, 6)
+      this.getLineChartData(0, 1, val)
+      this.getLineChartData(1, 2, val)
+      this.getLineChartData(2, 3, val)
+      this.getLineChartData(3, 4, val)
+      this.getLineChartData(4, 5, val)
+      this.getLineChartData(5, 6, val)
 
+      this.getBranches()
       // this.getUseCase()
-      this.getCluesUseCase()
+      this.getCluesUseCase(val)
       // 旧接口
       // this.getAchieveRate()
       // this.getAchieveRate(1, 1)
@@ -773,16 +1008,16 @@ export default {
 
       // 成效统计
 
-      this.getStatistics()
+      this.getStatistics(val)
 
       // 支行网点员工排名
-      this.getRankOrg()
-      this.getRankBranch()
-      this.getRankEmp()
+      this.getRankOrg(val)
+      this.getRankBranch(val)
+      this.getRankEmp(val)
     },
-    getOverview() {
+    getOverview(val) {
       this.loading.baseInfoLoading = true
-      totalOverview().then(res => {
+      totalOverview(val).then(res => {
         const data = res.data
         this.baseInfo[0].value = data.total_use_case
         this.baseInfo[1].value = data.total_event
@@ -794,9 +1029,9 @@ export default {
         this.loading.baseInfoLoading = false
       })
     },
-    getFunnel() {
+    getFunnel(val) {
       this.loading.funnelChartLoading = true
-      totalFunnel().then(res => {
+      totalFunnel(val).then(res => {
         const data = res.data
         this.funnelData = [
           { label: '线索数量', value: data.total_clues },
@@ -811,9 +1046,9 @@ export default {
         this.loading.funnelChartLoading = false
       })
     },
-    getPie() {
+    getPie(val) {
       this.loading.chartPieLoading = true
-      totalPie({ type: this.channelCluePieChart }).then(res => {
+      totalPie(Object.assign({ type: this.channelCluePieChart }, val)).then(res => {
         const data = res.data
         this.channelPieData = res.data.map(n => {
           return Object.assign({}, n, {
@@ -856,9 +1091,9 @@ export default {
     //     })
     //   })
     // },
-    getCluesUseCase() {
+    getCluesUseCase(val) {
       this.loading.usecaseBarLoading = true
-      totalCluesUseCase({ type: this.funnelSel, channel: this.channelOptVal }).then(res => {
+      totalCluesUseCase(Object.assign({ type: this.funnelSel, channel: this.channelOptVal }, val)).then(res => {
         this.usecaseBarData = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
@@ -890,9 +1125,9 @@ export default {
         ]
       })
     },
-    getLineChartData(typeKey, i) {
+    getLineChartData(typeKey, i, val) {
       this['lineChartLoading' + i] = true
-      getActualRate({ type: typeKey }).then(res => {
+      getActualRate(Object.assign({ type: typeKey }, val)).then(res => {
         this['lineChartData' + i] = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value * 100
@@ -921,6 +1156,15 @@ export default {
     //     })
     //   })
     // },
+    // 获取支行网点列表
+    getBranches() {
+      return new Promise((resolve) => {
+        getAllBranches().then(res => {
+          this.allBranchOpt = res.data
+          resolve()
+        })
+      })
+    },
     // 根据用例获取事件
     getEvent(useCase) {
       if (this.filterForm.useCase?.length === 1) {
@@ -950,11 +1194,11 @@ export default {
       }
     },
 
-    getStatistics() {
+    getStatistics(val) {
       this.loading.chartBarLoading = true
       this.loading.chartLineLoading = true
       if (this.filterForm.useCase?.length === 1) {
-        totalStatisticsOne({ case: this.filterForm.useCase?.join(',') }).then(res => {
+        totalStatisticsOne(Object.assign({ case: this.filterForm.useCase?.join(',') }, val)).then(res => {
           this.statistics = res.data.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
@@ -968,7 +1212,7 @@ export default {
           this.loading.chartLineLoading = false
         })
       } else {
-        totalStatisticsOne({ case: 2241884 }).then(res => {
+        totalStatisticsOne(Object.assign({ case: 2241884 }, val)).then(res => {
           this.statistics = res.data.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
@@ -983,23 +1227,23 @@ export default {
         })
       }
     },
-    getRankOrg() {
+    getRankOrg(val) {
       this.loading.orgRankLoading = true
-      totalRank({ content: 0, type: this.rankSelVal1 }).then(res => {
+      totalRank(Object.assign({ content: 0, type: this.rankSelVal1 }, val)).then(res => {
         this.rankChartData1 = res.data.map(n => {
           return Object.assign({}, n, {
             value: +(n.value / 10000).toFixed(2)
           })
         }).slice(0, 10)
-        console.log(this.rankChartData1)
+        // console.log(this.rankChartData1)
       })
         .finally(() => {
           this.loading.orgRankLoading = false
         })
     },
-    getRankBranch() {
+    getRankBranch(val) {
       this.loading.branchRankLoading = true
-      totalRank({ content: 1, type: this.rankSelVal2 }).then(res => {
+      totalRank(Object.assign({ content: 1, type: this.rankSelVal2 }, val)).then(res => {
         this.rankChartData2 = res.data.map(n => {
           return Object.assign({}, n, {
             value: +(n.value / 10000).toFixed(2)
@@ -1010,9 +1254,9 @@ export default {
           this.loading.branchRankLoading = false
         })
     },
-    getRankEmp() {
+    getRankEmp(val) {
       this.loading.empRankLoading = true
-      totalRank({ content: 2, type: this.rankSelVal3 }).then(res => {
+      totalRank(Object.assign({ content: 2, type: this.rankSelVal3 }, val)).then(res => {
         this.rankChartData3 = res.data.map(n => {
           return Object.assign({}, n, {
             value: +n.value
