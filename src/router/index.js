@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
 
@@ -23,7 +22,7 @@ export const constantRoutes = [
   }
 ]
 
-export const asyncRoutes = [
+let asyncRoutes = [
   {
     path: '/',
     redirect: '/home',
@@ -123,12 +122,6 @@ export const asyncRoutes = [
         meta: { title: 'crm与ods反馈数据的查询列表', icon: 'crmAndOds' }
       },
       {
-        path: 'test',
-        name: 'Test',
-        component: () => import('@/views/test/index'),
-        meta: { title: 'test', icon: 'bug', roles: ['admin'] }
-      },
-      {
         // 设置
         path: 'config',
         name: 'Config',
@@ -140,7 +133,21 @@ export const asyncRoutes = [
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-
+const testRoutes = [{
+  path: '/',
+  redirect: '/home',
+  component: Layout,
+  children: [{
+    path: 'test',
+    name: 'Test',
+    component: () => import('@/views/test/index'),
+    meta: { title: 'test', icon: 'bug' }
+  }]
+}]
+if (process.env.NODE_ENV === 'development') {
+  asyncRoutes = asyncRoutes.concat(testRoutes)
+}
+export { asyncRoutes }
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),

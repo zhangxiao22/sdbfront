@@ -26,20 +26,23 @@ router.beforeEach(async (to, from, next) => {
   if (isIncludeWhiteList || hasRoles) {
     next()
   } else {
+    // 必须try catch
     try {
       const data = await store.dispatch('user/getInfo')
       // console.log('process.env.NODE_ENV>>>>>>>>>>>>>>', process.env.NODE_ENV)
-      let roles
-      if (process.env.NODE_ENV === 'development') {
-        roles = 'admin'
-        // roles = data?.permissionPack.label
-        store.commit('user/SET_ROLES', roles)
-      } else {
-        roles = data?.permissionPack.label
-      }
+      // let roles
+      // if (process.env.NODE_ENV === 'development') {
+      //   roles = 'admin'
+      //   // roles = data?.permissionPack.label
+      //   store.commit('user/SET_ROLES', roles)
+      // } else {
+      const roles = data?.permissionPack.label
+      // }
       // console.log('roles>>>>>>>>>>>>>>>>>>>>>>>', roles)
+      // 1.使用roles过滤有权限路由  2.在state中存储路由数据   3.返回数据
       const accessRoutes = await store.dispatch('permission/generateRoutes', roles)
       // console.log('accessRoutes>>>>>>>>>>>>>>>>>>>>>>>>>', accessRoutes)
+      // 在路由中加入动态路由
       router.addRoutes(accessRoutes)
       // next()
       next({ ...to, replace: true })

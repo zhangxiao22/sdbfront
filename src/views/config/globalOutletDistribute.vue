@@ -3,7 +3,6 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"
-             label-width="200px"
              class="main-form">
       <el-form-item class="form-item">
         <div v-for="(outletItem,i) of form.outlets"
@@ -13,7 +12,7 @@
                         :rules="{
                           required: true, message: '请选择网点', trigger: 'change'
                         }"
-                        label="网点">
+                        label="网点：">
             <el-select v-model="outletItem.item"
                        filterable
                        placeholder="请选择网点"
@@ -30,8 +29,9 @@
                         :rules="{
                           required: true, message: '请输入分配比例', trigger: 'change'
                         }"
-                        label="比例">
+                        label="比例：">
             <el-input-number v-model="outletItem.value"
+                             style="width:200px;"
                              :disabled="!outletItem.item"
                              :min="0"
                              :max="200"
@@ -45,8 +45,9 @@
                         :rules="[{
                           required: true, message: '请输入有效期', trigger: 'blur'
                         }]"
-                        label="有效期">
+                        label="有效期：">
             <el-date-picker v-model="outletItem.dateRange"
+                            style="width:300px;"
                             value-format="yyyy-MM-dd"
                             class="item-date"
                             type="daterange"
@@ -227,16 +228,19 @@ export default {
 
 .container {
   .main-form {
-    width: 700px;
     margin: 20px auto;
-
+    width: 715px;
     .form-item {
       .block-item {
         display: flex;
         position: relative;
+        margin-bottom: 10px;
         .el-form-item {
-          flex: 1;
           position: relative;
+          margin-right: 10px;
+          &:last-of-type {
+            margin-right: 0;
+          }
           .item-input {
             width: 100%;
             position: relative;
@@ -250,7 +254,7 @@ export default {
           }
           .unit {
             position: absolute;
-            top: 0;
+            bottom: 0;
             right: 42px;
           }
         }
@@ -266,7 +270,7 @@ export default {
           line-height: 32px;
           position: absolute;
           right: -30px;
-          top: 0;
+          top: 32px;
           &:hover {
             opacity: 0.8;
           }
