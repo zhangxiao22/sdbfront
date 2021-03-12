@@ -392,7 +392,7 @@
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
-                      <el-form-item required
+                      <!-- <el-form-item required
                                     class="rule-form"
                                     label="线索有效期："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.validPeriod'">
@@ -402,7 +402,7 @@
                                          :min="0"
                                          :max="10000"
                                          @blur="channelCardItem.validPeriod=channelCardItem.validPeriod||0" />天
-                      </el-form-item>
+                      </el-form-item> -->
                       <el-form-item label="推荐话术："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
                                     :rules="[{
@@ -882,7 +882,7 @@ export default {
                       }), {
                         infoId: m.infoId,
                         chooseType: m.pushType.value,
-                        validPeriod: m.clueEffectDays,
+                        // validPeriod: m.clueEffectDays,
                         smsSendMode: m.sendMode.value,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
@@ -1038,7 +1038,7 @@ export default {
                         // 渠道类型 1:crm 2:短信 3:微信
                         channel: cn.value,
                         // CRM线索有效期
-                        clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
+                        // clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
                         // 话术id
