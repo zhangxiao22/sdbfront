@@ -213,11 +213,11 @@ export default {
       targetOpt: [],
       ditributeModeOptions: [{
         value: 1,
-        label: '白名单-负债类挂靠-主办-高频-历史'
+        label: '负债类挂靠-白名单-主办-高频-历史'
       },
       {
         value: 2,
-        label: '白名单-负债类挂靠-高频-主办-历史'
+        label: '负债类挂靠-白名单-高频-主办-历史'
       },
       {
         value: 3,
