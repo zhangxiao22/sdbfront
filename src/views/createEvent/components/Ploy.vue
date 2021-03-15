@@ -476,9 +476,14 @@
                                 :data="channelCardItem.beforeSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="description"
+                        <el-table-column prop="content"
+                                         show-overflow-tooltip
                                          :min-width="300"
-                                         label="短信描述" />
+                                         label="预热短信内容" />
+                        <el-table-column prop="description"
+                                         show-overflow-tooltip
+                                         :min-width="300"
+                                         label="预热短信描述" />
                         <el-table-column fixed="right"
                                          label="操作"
                                          width="100">
@@ -505,9 +510,14 @@
                                 :data="channelCardItem.afterSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="description"
+                        <el-table-column prop="content"
+                                         show-overflow-tooltip
                                          :min-width="300"
-                                         label="短信描述" />
+                                         label="跟尾短信内容" />
+                        <el-table-column prop="description"
+                                         show-overflow-tooltip
+                                         :min-width="300"
+                                         label="跟尾短信描述" />
                         <el-table-column fixed="right"
                                          label="操作"
                                          width="100">
