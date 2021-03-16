@@ -883,7 +883,7 @@ export default {
                         infoId: m.infoId,
                         chooseType: m.pushType.value,
                         // validPeriod: m.clueEffectDays,
-                        smsSendMode: m.sendMode.value,
+                        smsSendMode: m.sendMode?.value || 1,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
                             _content: n.content,
