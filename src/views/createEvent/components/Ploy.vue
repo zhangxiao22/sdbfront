@@ -1514,12 +1514,20 @@ export default {
     submitAfterSms() {
       const val = this.$refs.afterSmsRef.parentRef.getVal()
       if (val.length) {
-        this.showAfterSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
-          return Object.assign({}, n, {
-            smsAttr: {}
+        if (val.length > 15) {
+          Message({
+            message: '请选择少于十五项',
+            type: 'error',
+            duration: 5 * 1000
           })
-        })
+        } else {
+          this.showAfterSms = false
+          this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
+            return Object.assign({}, n, {
+              smsAttr: {}
+            })
+          })
+        }
       } else {
         Message({
           message: '请选择至少一项',
