@@ -101,6 +101,15 @@
                          :max="100" />
         <span class="unit">条</span>
       </el-form-item>
+      <el-form-item label="行内员工："
+                    prop="clark">
+        <el-tooltip :content="form.clark?'发送':'不发送'"
+                    placement="top">
+          <el-switch v-model="form.clark"
+                     :active-value="1"
+                     :inactive-value="0" />
+        </el-tooltip>
+      </el-form-item>
       <el-form-item>
         <el-button type="primary"
                    style="width:100px;"
@@ -138,7 +147,8 @@ export default {
         adviserWeeklyDistribution: null,
         personalWeeklyDistribution: null,
         networkManagerWeeklyDistribution: null,
-        networkClerkWeeklyDistribution: null
+        networkClerkWeeklyDistribution: null,
+        clark: 0
       }
     }
   },
