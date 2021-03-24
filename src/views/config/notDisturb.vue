@@ -101,7 +101,7 @@
                          :max="100" />
         <span class="unit">条</span>
       </el-form-item>
-      <el-form-item label="行内员工："
+      <el-form-item label="线索是否发送至行内员工："
                     prop="clark">
         <el-tooltip :content="form.clark?'发送':'不发送'"
                     placement="top">
