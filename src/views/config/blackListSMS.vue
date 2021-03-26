@@ -187,7 +187,7 @@ export default {
   data() {
     return {
       loading: false,
-      currentPage: 2,
+      currentPage: 1,
       pageSize: 10,
       batchUploadFile,
       // category: 2短信黑名单

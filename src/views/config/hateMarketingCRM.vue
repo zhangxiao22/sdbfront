@@ -186,7 +186,7 @@ export default {
   data() {
     return {
       loading: false,
-      currentPage: 2,
+      currentPage: 1,
       pageSize: 10,
       batchUploadFile,
       // category: 1厌恶人员名单
@@ -279,7 +279,6 @@ export default {
             category: this.category
           }
           addCustomerToBlackList([data]).then(res => {
-            this.buttonLoading = false
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -289,7 +288,7 @@ export default {
               this.showDialog = false
               this.resetAll()
             }
-          }).catch(() => {
+          }).finally(() => {
             this.buttonLoading = false
           })
         }

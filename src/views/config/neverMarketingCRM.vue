@@ -186,7 +186,7 @@ export default {
   data() {
     return {
       loading: false,
-      currentPage: 2,
+      currentPage: 1,
       pageSize: 10,
       batchUploadFile,
       // category: 3 不营销人员名单

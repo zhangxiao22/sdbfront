@@ -77,10 +77,11 @@
                       prop="orgCodes"
                       label-width="110px">
           <el-cascader v-model="form.orgCodes"
-                       style="width:300px"
+                       style="width:90%"
                        :options="allBranchOpt"
                        :props="{ multiple: true }"
                        clearable
+                       collapse-tags
                        filterable />
         </el-form-item>
       </el-form>
@@ -101,7 +102,6 @@ import { getAppointList, appointEmp, getAllBranches } from '@/api/api'
 
 export default {
   name: 'Appoint',
-
   components: {
     ShunTable
   },
@@ -111,7 +111,7 @@ export default {
     return {
       participantsOptions: [],
       loading: false,
-      currentPage: 2,
+      currentPage: 1,
       pageSize: 10,
       total: 0,
       showDialog: false,
@@ -178,7 +178,7 @@ export default {
     },
     resetAll() {
       this.reset()
-      this.$refs.table.resetSelection()
+      // this.$refs.table.resetSelection()
     },
     reset() {
       this.$refs.filterRef.resetFields()
@@ -210,47 +210,51 @@ export default {
         })
       })
     },
+    transformData(arr) {
+      return arr.map(n => {
+        let tempArr = []
+        this.allBranchOpt.forEach(a => {
+          a.children.find(b => {
+            if (b.value === n) {
+              tempArr = [a.value, n]
+              return true
+            }
+          })
+        })
+        return tempArr
+      })
+    },
     cancelAppoint() {
       // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
     handleAppointButton(row) {
       this.showDialog = true
-      this.$nextTick(() => {
-        this.form.empCode = row.emp_code
-        this.form.orgCodes = row.org_code
+      // this.$nextTick(() => {
+      this.form.empCode = row.emp_code
+      this.form.orgCodes = row.assign_orgs.map(n => {
+        return [n.orgCode.slice(0, 3) + '098', n.orgCode]
       })
+      // })
     },
     ensureAppoint() {
-      this.$refs['regFormRef'].validate((valid) => {
-        if (valid) {
-          this.buttonLoading = true
-          const arr = []
-          if (this.form.orgCodes) {
-            for (let i = 0; i < this.form.orgCodes.length; i++) {
-              arr.push(this.form.orgCodes[i][1])
-            }
-          }
-          const data = {
-            empCode: this.form.empCode,
-            orgCodes: arr.join(',')
-          }
-          console.log('data', this.form.orgCodes)
-          appointEmp(data).then(res => {
-            this.buttonLoading = false
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.showDialog = false
-              this.resetAll()
-            }
-          }).catch(() => {
-            this.buttonLoading = false
+      this.buttonLoading = true
+      const data = {
+        empCode: this.form.empCode,
+        orgCodes: this.form.orgCodes.map(n => n[1]).join(',')
+      }
+      appointEmp(data).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+            duration: '3000'
           })
+          this.showDialog = false
+          this.getList()
         }
+      }).finally(() => {
+        this.buttonLoading = false
       })
     },
     getList(pageNo) {
@@ -264,8 +268,8 @@ export default {
       getAppointList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {
           return Object.assign({}, n, {
-            org: n.assign_orgs?.map((k) => {
-              return k.orgCode
+            org: n.assign_orgs.map((k) => {
+              return k.orgName
             }).join(',')
           })
         })
