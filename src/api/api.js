@@ -900,3 +900,24 @@ export function downloadTest(params) {
     params
   })
 }
+
+/** ************************************************ 理财顾问 ************************************************************/
+
+// 获取理顾指派列表数据
+export function getAppointList(data) {
+  return request({
+    url: '/emp/select_by_page',
+    method: 'post',
+    data
+  })
+}
+
+// 获取理顾指派列表数据
+export function appointEmp(params) {
+  return request({
+    url: '/emp/update_by_emp',
+    method: 'get',
+    params
+  })
+}
+
