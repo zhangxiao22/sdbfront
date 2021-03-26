@@ -70,7 +70,7 @@ export function getWordCategory() {
   })
 }
 
-// 批量上传话术
+// 增量更新话术
 export function uploadScriptFile(data) {
   return request({
     url: '/script/uploadScript',
@@ -98,7 +98,7 @@ export function getInterestList(data) {
   })
 }
 
-// 批量上传权益
+// 增量更新权益
 export function uploadInterestFile(data) {
   return request({
     url: '/interests/uploadInterests',
@@ -921,3 +921,11 @@ export function appointEmp(params) {
   })
 }
 
+// 全量更新理顾指派列表数据
+export function empUpdate(data) {
+  return request({
+    url: api3 + '/emp/upload',
+    method: 'post',
+    data
+  })
+}

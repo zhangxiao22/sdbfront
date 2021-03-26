@@ -80,7 +80,7 @@
       <template v-slot:main-buttons>
         <UploadButton :upload-method="uploadScriptFile"
                       class="button"
-                      button-name="批量上传"
+                      button-name="增量更新"
                       @afterUploadSuccess="resetAll" />
         <!-- <el-button class="button"
                    type="primary"

@@ -12,7 +12,7 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-        <UploadButton button-name="批量上传"
+        <UploadButton button-name="增量更新"
                       class="button"
                       :upload-method="uploadSmsFile"
                       @afterUploadSuccess="resetAll" />

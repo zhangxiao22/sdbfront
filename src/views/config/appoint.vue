@@ -58,6 +58,12 @@
           </el-form-item>
         </el-form>
       </template>
+      <template v-slot:main-buttons>
+        <UploadButton :upload-method="empUpdate"
+                      class="button"
+                      button-name="全量更新"
+                      @afterUploadSuccess="resetAll" />
+      </template>
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#1890FF;"
@@ -98,17 +104,20 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getAppointList, appointEmp, getAllBranches } from '@/api/api'
+import { getAppointList, appointEmp, getAllBranches, empUpdate } from '@/api/api'
+import UploadButton from '@/components/UploadButton'
 
 export default {
   name: 'Appoint',
   components: {
+    UploadButton,
     ShunTable
   },
   props: {
   },
   data() {
     return {
+      empUpdate,
       participantsOptions: [],
       loading: false,
       currentPage: 1,

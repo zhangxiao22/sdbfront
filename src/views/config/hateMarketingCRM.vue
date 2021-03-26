@@ -73,7 +73,7 @@
                       @afterUploadSuccess="resetAll" />
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
-                      button-name="批量更新"
+                      button-name="增量更新"
                       :upload-params="{
                         category: 1,
                         updateType: 1

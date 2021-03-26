@@ -13,7 +13,7 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-        <UploadButton button-name="批量上传"
+        <UploadButton button-name="增量更新"
                       class="button"
                       :upload-method="uploadProductFile"
                       @afterUploadSuccess="resetAll" />
@@ -153,7 +153,7 @@ export default {
   },
   data() {
     return {
-      // 批量上传
+      // 增量更新
       uploadProductFile,
       // 全量上传
       loading: false,
