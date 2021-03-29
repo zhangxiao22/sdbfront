@@ -47,7 +47,7 @@
                      type="success"
                      plain
                      @click="downloadAll">
-            下载
+            全部下载
           </el-button>
         </el-tooltip>
       </template>
