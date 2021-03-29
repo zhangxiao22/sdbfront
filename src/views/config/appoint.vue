@@ -73,13 +73,13 @@
         <pre>{{ props.row.params }}</pre>
       </template>
     </shun-table>
-    <el-dialog title="网点指定"
+    <el-dialog title="网点指派"
                :before-close="cancelAppoint"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                label-width="110px"
                :model="form">
-        <el-form-item label="请选择网点："
+        <el-form-item label="选择网点："
                       prop="orgCodes"
                       label-width="110px">
           <el-cascader v-model="form.orgCodes"
@@ -160,7 +160,7 @@ export default {
         },
         {
           prop: 'org',
-          label: '网点',
+          label: '指派网点',
           minWidth: 200
         },
         {
