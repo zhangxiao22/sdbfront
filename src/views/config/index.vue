@@ -57,7 +57,7 @@ export default {
         label: '理顾指派',
         component: 'Appoint',
         loading: false,
-        roles: ['线索统筹', '用例管理', '业务管理']
+        roles: ['线索统筹']
       },
       {
         label: '分发规则参数',

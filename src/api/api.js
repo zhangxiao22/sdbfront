@@ -924,7 +924,7 @@ export function appointEmp(params) {
 // 全量更新理顾指派列表数据
 export function empUpdate(data) {
   return request({
-    url: api3 + '/emp/upload',
+    url: '/emp/upload',
     method: 'post',
     data
   })
