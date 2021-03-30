@@ -49,7 +49,7 @@
              :class="{active:item.active}"
              @click="handleClickSwiperSlider(i)">
           <div class="tooltip">
-            <div class="g-name elip">{{ item.groupName }}</div>
+            <div class="g-name">{{ item.groupName }}</div>
             <el-tooltip class="item"
                         effect="dark"
                         :content="item.desc"
@@ -216,7 +216,7 @@
                         <el-table :data="channelItem.scriptInfoList"
                                   class="preview-table"
                                   size="mini"
-                                  style="width: 100%;border-bottom:1px solid #eaeef4;">
+                                  style="width: 100%;">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="话术内容" />
@@ -228,7 +228,7 @@
                                   :data="channelItem.advanceSMSInfoList"
                                   class="preview-table"
                                   size="mini"
-                                  style="width: 100%;border-bottom:1px solid #eaeef4">
+                                  style="width: 100%;border-top:1px solid #eaeef4">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="预热短信内容" />
@@ -240,7 +240,7 @@
                                   :data="channelItem.followSMSInfoList"
                                   class="preview-table"
                                   size="mini"
-                                  style="width: 100%">
+                                  style="width: 100%;border-top:1px solid #eaeef4;">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="跟进短信内容" />
@@ -576,7 +576,7 @@ export default {
     }
     .swiper-slide {
       width: 160px;
-      height: 100px;
+      // height: 100px;
       border: 1px solid #cdcdcd;
       border-radius: 4px;
       opacity: 0.5;
@@ -599,7 +599,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0 10px;
+        padding: 12px 10px;
         justify-content: center;
       }
       .g-name {
