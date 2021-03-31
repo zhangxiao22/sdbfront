@@ -131,6 +131,21 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
+        <el-form-item label="防打扰天数："
+                      :rules="[{
+                        required: true, message: '请输入防打扰天数', trigger: 'blur'
+                      }]"
+                      prop="name">
+          <!-- <el-input v-model.trim="addInfo.name"
+                    show-word-limit
+                    style="width:80%;"
+                    maxlength="50" /> -->
+          <el-input-number v-model="addInfo.minAge"
+                           controls-position="right"
+                           :min="1"
+                           :max="200" />
+          <span class="unit">天</span>
+        </el-form-item>
         <el-form-item label="备注："
                       prop="remarks">
           <el-input v-model.trim="addInfo.remarks"
@@ -218,8 +233,12 @@ export default {
           // sortable: true
         },
         {
-          prop: 'createTime',
+          prop: 'start_date',
           label: '加入日期'
+        },
+        {
+          prop: 'end_date',
+          label: '防打扰截止日'
         },
         {
           prop: 'remarks',
