@@ -80,6 +80,7 @@
       <template v-slot:main-buttons>
         <UploadButton :upload-method="uploadScriptFile"
                       class="button"
+                      :description="DESCRIPTION.uploadSome"
                       button-name="增量更新"
                       @afterUploadSuccess="resetAll" />
         <!-- <el-button class="button"
@@ -101,13 +102,18 @@
             全部下载
           </el-button>
         </el-tooltip> -->
-        <el-button class="button"
-                   icon="el-icon-delete"
-                   type="danger"
-                   plain
-                   @click="delSome">
-          批量删除
-        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    :content="DESCRIPTION.delSome"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-delete"
+                     type="danger"
+                     plain
+                     @click="delSome">
+            批量删除
+          </el-button>
+        </el-tooltip>
         <el-link type="primary"
                  @click="download">模版下载</el-link>
 
@@ -207,7 +213,7 @@
 <script>
 import ShunTable from '@/components/ShunTable'
 import { getWordList, getWordCategory, uploadScriptFile, getAttributionUseCaseEnumList, getProductCategoryList, delScript } from '@/api/api'
-import { downloadFile } from '@/utils'
+import { downloadFile, DESCRIPTION } from '@/utils'
 import UploadButton from '@/components/UploadButton'
 
 export default {
@@ -224,6 +230,7 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       uploadScriptFile,
       showDialog: false,
       buttonLoading: false,

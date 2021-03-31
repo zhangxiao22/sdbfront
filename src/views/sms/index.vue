@@ -14,15 +14,21 @@
       <template v-slot:main-buttons>
         <UploadButton button-name="增量更新"
                       class="button"
+                      :description="DESCRIPTION.uploadSome"
                       :upload-method="uploadSmsFile"
                       @afterUploadSuccess="resetAll" />
-        <el-button class="button"
-                   icon="el-icon-delete"
-                   type="danger"
-                   plain
-                   @click="delSome">
-          批量删除
-        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    :content="DESCRIPTION.delSome"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-delete"
+                     type="danger"
+                     plain
+                     @click="delSome">
+            批量删除
+          </el-button>
+        </el-tooltip>
         <el-link type="primary"
                  class="button"
                  @click="downloadModel">模版下载</el-link>
@@ -64,6 +70,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getSmsList, uploadSmsFile, delSms } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
+import { DESCRIPTION } from '@/utils'
 
 export default {
   name: 'Sms',
@@ -87,6 +94,7 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       uploadSmsFile,
       loading: false,
       currentPage: 1,

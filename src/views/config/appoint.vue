@@ -62,6 +62,7 @@
         <UploadButton :upload-method="empUpdate"
                       class="button"
                       button-name="全量更新"
+                      :description="DESCRIPTION.uploadAll"
                       @afterUploadSuccess="resetAll" />
       </template>
       <template v-slot:operateSlot="scope">
@@ -106,6 +107,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getAppointList, appointEmp, getAllBranches, empUpdate } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
+import { DESCRIPTION } from '@/utils'
 
 export default {
   name: 'Appoint',
@@ -117,6 +119,7 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       empUpdate,
       participantsOptions: [],
       loading: false,
