@@ -66,6 +66,7 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="全量更新"
+                      :description="DESCRIPTION.uploadAll"
                       :upload-params="{
                         category: 1,
                         updateType: 0
@@ -74,6 +75,7 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="增量更新"
+                      :description="DESCRIPTION.uploadSome"
                       :upload-params="{
                         category: 1,
                         updateType: 1
@@ -81,7 +83,7 @@
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
-                    content="全部下载所有名单"
+                    :content="DESCRIPTION.downloadSearch"
                     placement="top">
           <el-button class="button"
                      icon="el-icon-download"
@@ -156,7 +158,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getHateMarketingList, addCustomerToBlackList, batchUploadFile, deleteHateMarketingListById } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
-import { downloadFile } from '@/utils'
+import { downloadFile, DESCRIPTION } from '@/utils'
 
 export default {
   name: 'HateMarketingCRM',
@@ -185,6 +187,7 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       loading: false,
       currentPage: 1,
       pageSize: 10,
