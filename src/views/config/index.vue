@@ -52,7 +52,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '0',
+      tabIndex: '1',
       tabList: [{
         label: '理顾指派',
         component: 'Appoint',
