@@ -115,17 +115,18 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '特定免打扰客户名单（CRM）',
-        component: 'NeverMarketingCRM',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
         label: '黑名单（短信）',
         component: 'BlackListSMS',
         loading: false,
         roles: ['线索统筹']
+      },
+      {
+        label: '私银客户名单',
+        component: 'NeverMarketingCRM',
+        loading: false,
+        roles: ['线索统筹']
       }
+
       ]
     }
   },

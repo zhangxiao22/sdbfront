@@ -135,15 +135,11 @@
                       :rules="[{
                         required: true, message: '请输入防打扰天数', trigger: 'blur'
                       }]"
-                      prop="name">
-          <!-- <el-input v-model.trim="addInfo.name"
-                    show-word-limit
-                    style="width:80%;"
-                    maxlength="50" /> -->
-          <el-input-number v-model="addInfo.minAge"
+                      prop="days">
+          <el-input-number v-model="addInfo.days"
                            controls-position="right"
-                           :min="1"
-                           :max="200" />
+                           :max="1000"
+                           :min="1" />
           <span class="unit">天</span>
         </el-form-item>
         <el-form-item label="备注："
@@ -217,7 +213,8 @@ export default {
       addInfo: {
         customerAccount: '',
         name: '',
-        remarks: ''
+        remarks: '',
+        days: ''
       },
       searchForm: {
       },
@@ -292,6 +289,7 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const data = {
+            days: this.addInfo.days,
             name: this.addInfo.name,
             customerAccount: this.addInfo.customerAccount,
             remarks: this.addInfo.remarks,
@@ -367,6 +365,9 @@ export default {
 .container {
   .btn {
     cursor: pointer;
+  }
+  .unit {
+    margin-left: 10px;
   }
 }
 </style>
