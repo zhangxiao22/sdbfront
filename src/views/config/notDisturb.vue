@@ -89,9 +89,12 @@
                            :step="5" />
           <span class="unit">天</span>
         </el-form-item>
-        <el-form-item label="线索是否发送至行内员工："
-                      class="form-item"
+        <el-form-item class="form-item"
                       prop="clark">
+          <div slot="label">
+            <Info content="设置为否，则客户标签“十大客群”为“行内员工”的线索跳过分发，直接弃用" />
+            线索是否发送至行内员工：
+          </div>
           <el-tooltip :content="form.clark?'发送':'不发送'"
                       placement="top">
             <el-switch v-model="form.clark"
@@ -103,8 +106,11 @@
       <div class="block">
         <div class="block-title">分配数量</div>
         <el-form-item prop="adviserWeeklyDistribution"
-                      class="form-item"
-                      label="每周线索分配数量（理财顾问）：">
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时CRM岗位为理财顾问的员工可分配的线索上限，达到线索上线后，该员工不再分配线索，以该员工为挂靠人的线索直接弃用" />
+            每周线索分配数量（理财顾问）：
+          </div>
           <el-input-number v-model="form.adviserWeeklyDistribution"
                            controls-position="right"
                            :min="1"
@@ -112,8 +118,11 @@
           <span class="unit">条</span>
         </el-form-item>
         <el-form-item prop="personalWeeklyDistribution"
-                      class="form-item"
-                      label="每周线索分配数量（个人客户经理）：">
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时CRM岗位为个人客户经理的员工可分配的线索上限，达到线索上线后，该员工不再分配线索，以该员工为挂靠人的线索直接弃用" />
+            每周线索分配数量（个人客户经理）：
+          </div>
           <el-input-number v-model="form.personalWeeklyDistribution"
                            controls-position="right"
                            :min="1"
@@ -121,8 +130,11 @@
           <span class="unit">条</span>
         </el-form-item>
         <el-form-item prop="networkManagerWeeklyDistribution"
-                      class="form-item"
-                      label="每周线索分配数量（网点经理）：">
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时CRM岗位为网点经理的员工可分配的线索上限，达到线索上线后，该员工不再分配线索，以该员工为挂靠人的线索直接弃用" />
+            每周线索分配数量（网点经理）：
+          </div>
           <el-input-number v-model="form.networkManagerWeeklyDistribution"
                            controls-position="right"
                            :min="1"
@@ -130,8 +142,11 @@
           <span class="unit">条</span>
         </el-form-item>
         <el-form-item prop="networkClerkWeeklyDistribution"
-                      class="form-item"
-                      label="每周线索分配数量（网点柜员）：">
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时CRM岗位为网点柜员的员工可分配的线索上限，达到线索上线后，该员工不再分配线索，以该员工为挂靠人的线索直接弃用" />
+            每周线索分配数量（网点柜员）：
+          </div>
           <el-input-number v-model="form.networkClerkWeeklyDistribution"
                            controls-position="right"
                            :min="1"
