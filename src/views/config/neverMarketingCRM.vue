@@ -214,13 +214,14 @@ export default {
         },
         {
           prop: 'name',
-          label: '客户姓名'
+          label: '客户姓名',
+          minWidth: 100
           // sortable: true
         },
         {
           prop: 'startDate',
           label: '加入日期',
-          minWidth: 150
+          minWidth: 160
         },
         {
           prop: 'remarks',
