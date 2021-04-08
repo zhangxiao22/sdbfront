@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="特定免打扰客户名单"
+                title="私银客户名单"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -217,13 +217,14 @@ export default {
         },
         {
           prop: 'name',
-          label: '客户姓名'
+          label: '客户姓名',
+          minWidth: 100
           // sortable: true
         },
         {
-          prop: 'createTime',
+          prop: 'startDate',
           label: '加入日期',
-          minWidth: 150
+          minWidth: 160
         },
         {
           prop: 'remarks',

@@ -133,6 +133,17 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
+        <el-form-item label="防打扰天数："
+                      :rules="[{
+                        required: true, message: '请输入防打扰天数', trigger: 'blur'
+                      }]"
+                      prop="days">
+          <el-input-number v-model="addInfo.days"
+                           controls-position="right"
+                           :max="1000"
+                           :min="1" />
+          <span class="unit">天</span>
+        </el-form-item>
         <el-form-item label="备注："
                       prop="remarks">
           <el-input v-model.trim="addInfo.remarks"
@@ -205,7 +216,8 @@ export default {
       addInfo: {
         customerAccount: '',
         name: '',
-        remarks: ''
+        remarks: '',
+        days: ''
       },
       searchForm: {
       },
@@ -213,16 +225,23 @@ export default {
         {
           prop: 'customerAccount',
           label: '客户号',
-          minWidth: 150
+          minWidth: 130
         },
         {
           prop: 'name',
-          label: '客户姓名'
+          label: '客户姓名',
+          minWidth: 100
           // sortable: true
         },
         {
-          prop: 'createTime',
-          label: '加入日期'
+          prop: 'startDate',
+          label: '加入日期',
+          minWidth: 160
+        },
+        {
+          prop: 'endDate',
+          label: '防打扰截止日',
+          minWidth: 160
         },
         {
           prop: 'remarks',
@@ -276,6 +295,7 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const data = {
+            days: this.addInfo.days,
             name: this.addInfo.name,
             customerAccount: this.addInfo.customerAccount,
             remarks: this.addInfo.remarks,
@@ -351,6 +371,9 @@ export default {
 .container {
   .btn {
     cursor: pointer;
+  }
+  .unit {
+    margin-left: 10px;
   }
 }
 </style>

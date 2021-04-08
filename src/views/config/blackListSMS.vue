@@ -214,16 +214,18 @@ export default {
         {
           prop: 'customerAccount',
           label: '客户号',
-          minWidth: 150
+          minWidth: 130
         },
         {
           prop: 'name',
-          label: '客户姓名'
+          label: '客户姓名',
+          minWidth: 100
           // sortable: true
         },
         {
-          prop: 'createTime',
-          label: '加入日期'
+          prop: 'startDate',
+          label: '加入日期',
+          minWidth: 160
         },
         {
           prop: 'remarks',
