@@ -158,7 +158,7 @@ export default {
         // 获取网点加分配比例值
         this.form.outlets = res.data.map(item => {
           return {
-            dateRange: [item.startDate, item.endDate],
+            dateRange: item.startDate ? [item.startDate, item.endDate] : [],
             item: item.outletId,
             value: item.proportion
           }
