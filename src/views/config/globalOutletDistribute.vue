@@ -51,6 +51,7 @@
                             value-format="yyyy-MM-dd"
                             class="item-date"
                             type="daterange"
+                            :picker-options="pickerOptions"
                             range-separator="至"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期" />
@@ -78,6 +79,7 @@
 
 <script>
 import { getOutletAllot, insertOutletAllotBatch, getOutletList } from '@/api/api'
+import { parseTime } from '@/utils'
 
 export default {
   components: {
@@ -90,11 +92,19 @@ export default {
   },
   data() {
     return {
+      pickerOptions: {
+        disabledDate(time) {
+          const testStartTime = parseTime(new Date(), '{y}-{m}-{d}')
+          const dateTime = parseTime(time, '{y}-{m}-{d}')
+          return dateTime < testStartTime
+        }
+      },
       form: {
         outlets: [
           {
             item: '',
-            proportion: ''
+            value: '',
+            dateRange: []
           }
         ]
       },
@@ -108,7 +118,9 @@ export default {
       data.outletAllotList = this.form.outlets.map(n => {
         return {
           outletId: n.item,
-          proportion: n.value
+          proportion: n.value,
+          startDate: n.dateRange[0],
+          endDate: n.dateRange[1]
         }
       })
       data.category = 0
@@ -130,21 +142,23 @@ export default {
       })
     },
     reset() {
-      this.form.outlets = [{
-        item: '',
-        value: 100
-      }]
-      this.$nextTick(() => {
-        this.$refs['regFormRef'].resetFields()
-        this.resetOutLet()
-        this.$emit('update:loading', false)
-      })
+      // this.form.outlets = [{
+      //   item: '',
+      //   value: 100
+      // }]
+      // this.$nextTick(() => {
+      //   this.$refs['regFormRef'].resetFields()
+      //   this.resetOutLet()
+      //   this.$emit('update:loading', false)
+      // })
+      this.getDetail()
     },
     getDetail() {
       getOutletAllot({ category: 0 }).then(res => {
         // 获取网点加分配比例值
         this.form.outlets = res.data.map(item => {
           return {
+            dateRange: [item.startDate, item.endDate],
             item: item.outletId,
             value: item.proportion
           }

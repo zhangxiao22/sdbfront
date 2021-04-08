@@ -3,19 +3,19 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"
-             label-width="200px"
              class="main-form">
       <el-form-item class="form-item">
-        <div slot="label">
+        <!-- <div slot="label">
           <Info content="默认100%" />
           用例网点分配比例：
-        </div>
+        </div> -->
         <div v-for="(caseOutletItem,i) of form.useCaseOutlets"
              :key="i"
              class="block-item">
           <el-form-item :prop="'useCaseOutlets.'+i+'.useCase'"
                         :rules="[{required: true, message: '请选择用例'},
-                                 {validator: validateSame}]">
+                                 {validator: validateSame}]"
+                        label="用例：">
             <el-select v-model="caseOutletItem.useCase"
                        placeholder="请选择用例"
                        class="item-input"
@@ -28,9 +28,9 @@
             </el-select>
           </el-form-item>
           <el-form-item :prop="'useCaseOutlets.'+i+'.outlet'"
-                        style="margin-left:20px;"
                         :rules="[{required: true, message: '请选择网点', trigger: 'change'},
-                                 {validator: validateSame}]">
+                                 {validator: validateSame}]"
+                        label="网点：">
             <el-select v-model="caseOutletItem.outlet"
                        placeholder="请选择网点"
                        filterable
@@ -43,12 +43,14 @@
                          :value="optItem.value" />
             </el-select>
           </el-form-item>
-          <span class="compare">:</span>
+          <!-- <span class="compare">:</span> -->
           <el-form-item :prop="'useCaseOutlets.'+i+'.value'"
                         :rules="{
                           required: true, message: '请输入分配比例', trigger: 'change'
-                        }">
+                        }"
+                        label="比例：">
             <el-input-number v-model="caseOutletItem.value"
+                             style="width:150px;"
                              :disabled="!caseOutletItem.useCase || !caseOutletItem.outlet"
                              :min="0"
                              :max="200"
@@ -57,6 +59,21 @@
                              placeholder="请输入分配比例"
                              class="item-input number-input" />
             <div class="unit">%</div>
+          </el-form-item>
+          <el-form-item :prop="'useCaseOutlets.'+i+'.dateRange'"
+                        :rules="[{
+                          required: true, message: '请输入有效期', trigger: 'blur'
+                        }]"
+                        label="有效期：">
+            <el-date-picker v-model="caseOutletItem.dateRange"
+                            style="width:300px;"
+                            value-format="yyyy-MM-dd"
+                            class="item-date"
+                            type="daterange"
+                            :picker-options="pickerOptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
           </el-form-item>
           <i class="el-icon-delete delete"
              @click="delUseCaseOutletItem(i)" />
@@ -80,11 +97,10 @@
 
 <script>
 import { getAllUseCase, getOutletList, insertOutletAllotBatch, getOutletAllot } from '@/api/api'
-import Info from '@/components/Info'
+import { parseTime } from '@/utils'
 
 export default {
   components: {
-    Info
   },
   props: {
     loading: {
@@ -94,9 +110,17 @@ export default {
   },
   data() {
     return {
+      pickerOptions: {
+        disabledDate(time) {
+          const testStartTime = parseTime(new Date(), '{y}-{m}-{d}')
+          const dateTime = parseTime(time, '{y}-{m}-{d}')
+          return dateTime < testStartTime
+        }
+      },
       form: {
         useCaseOutlets: [
           {
+            dateRange: [],
             useCase: '',
             outlet: '',
             value: 100
@@ -113,6 +137,8 @@ export default {
       const data = {}
       data.outletAllotList = this.form.useCaseOutlets.map(n => {
         return {
+          startDate: n.dateRange[0],
+          endDate: n.dateRange[1],
           useCaseId: n.useCase,
           outletId: n.outlet,
           proportion: n.value
@@ -138,15 +164,16 @@ export default {
       })
     },
     reset() {
-      this.form.useCaseOutlets = [{
-        useCase: '',
-        outlet: '',
-        value: 100
-      }]
-      this.$nextTick(() => {
-        this.$refs['regFormRef'].resetFields()
-        this.$emit('update:loading', false)
-      })
+      // this.form.useCaseOutlets = [{
+      //   useCase: '',
+      //   outlet: '',
+      //   value: 100
+      // }]
+      // this.$nextTick(() => {
+      //   this.$refs['regFormRef'].resetFields()
+      //   this.$emit('update:loading', false)
+      // })
+      this.getDetail()
     },
 
     getDetail() {
@@ -154,6 +181,7 @@ export default {
         // 获取用例-网点-分配比例值
         this.form.useCaseOutlets = res.data.map(item => {
           return {
+            dateRange: [item.startDate, item.endDate],
             useCase: item.useCaseId,
             outlet: item.outletId,
             value: item.proportion
@@ -269,13 +297,14 @@ export default {
 
 .container {
   .main-form {
-    width: 700px;
+    width: 800px;
     margin: 20px auto;
 
     .form-item {
       .block-item {
         display: flex;
         position: relative;
+        margin-bottom: 10px;
         .compare {
           width: 10px;
           margin: 0 10px;
@@ -283,8 +312,12 @@ export default {
           text-align: center;
         }
         .el-form-item {
-          flex: 1;
+          // flex: 1;
           position: relative;
+          margin-right: 10px;
+          &:last-of-type {
+            margin-right: 0;
+          }
           .item-input {
             width: 100%;
             position: relative;
@@ -298,7 +331,7 @@ export default {
           }
           .unit {
             position: absolute;
-            top: 0;
+            top: 34px;
             right: 42px;
           }
         }
@@ -314,7 +347,7 @@ export default {
           line-height: 32px;
           position: absolute;
           right: -30px;
-          top: 0;
+          top: 32px;
           &:hover {
             opacity: 0.8;
           }
