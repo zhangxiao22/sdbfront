@@ -230,11 +230,11 @@ export default {
           // sortable: true
         },
         {
-          prop: 'start_date',
+          prop: 'startDate',
           label: '加入日期'
         },
         {
-          prop: 'end_date',
+          prop: 'endDate',
           label: '防打扰截止日'
         },
         {

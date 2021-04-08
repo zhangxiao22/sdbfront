@@ -218,7 +218,7 @@ export default {
           // sortable: true
         },
         {
-          prop: 'createTime',
+          prop: 'startDate',
           label: '加入日期',
           minWidth: 150
         },
