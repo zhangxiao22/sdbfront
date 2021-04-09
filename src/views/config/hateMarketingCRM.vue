@@ -124,9 +124,6 @@
                     maxlength="11" />
         </el-form-item>
         <el-form-item label="客户名称："
-                      :rules="[{
-                        required: true, message: '请输入客户名称', trigger: 'blur'
-                      }]"
                       prop="name">
           <el-input v-model.trim="addInfo.name"
                     show-word-limit
