@@ -9,13 +9,30 @@
           <Info content="默认100%" />
           用例网点分配比例：
         </div> -->
+        <div class="form-header">
+          <el-form-item required
+                        class="item"
+                        label="用例："
+                        style="flex:1;" />
+          <el-form-item required
+                        class="item"
+                        label="网点："
+                        style="flex:1;" />
+          <el-form-item required
+                        class="item"
+                        label="比例："
+                        style="width:150px;" />
+          <el-form-item required
+                        class="item"
+                        label="有效期："
+                        style="width:300px;" />
+        </div>
         <div v-for="(caseOutletItem,i) of form.useCaseOutlets"
              :key="i"
              class="block-item">
           <el-form-item :prop="'useCaseOutlets.'+i+'.useCase'"
                         :rules="[{required: true, message: '请选择用例'},
-                                 {validator: validateSame}]"
-                        label="用例：">
+                                 {validator: validateSame}]">
             <el-select v-model="caseOutletItem.useCase"
                        placeholder="请选择用例"
                        class="item-input"
@@ -29,8 +46,7 @@
           </el-form-item>
           <el-form-item :prop="'useCaseOutlets.'+i+'.outlet'"
                         :rules="[{required: true, message: '请选择网点', trigger: 'change'},
-                                 {validator: validateSame}]"
-                        label="网点：">
+                                 {validator: validateSame}]">
             <el-select v-model="caseOutletItem.outlet"
                        placeholder="请选择网点"
                        filterable
@@ -47,8 +63,7 @@
           <el-form-item :prop="'useCaseOutlets.'+i+'.value'"
                         :rules="{
                           required: true, message: '请输入分配比例', trigger: 'change'
-                        }"
-                        label="比例：">
+                        }">
             <el-input-number v-model="caseOutletItem.value"
                              style="width:150px;"
                              :disabled="!caseOutletItem.useCase || !caseOutletItem.outlet"
@@ -63,8 +78,7 @@
           <el-form-item :prop="'useCaseOutlets.'+i+'.dateRange'"
                         :rules="[{
                           required: true, message: '请输入有效期', trigger: 'blur'
-                        }]"
-                        label="有效期：">
+                        }]">
             <el-date-picker v-model="caseOutletItem.dateRange"
                             style="width:300px;"
                             value-format="yyyy-MM-dd"
@@ -301,10 +315,21 @@ export default {
     margin: 20px auto;
 
     .form-item {
+      .form-header {
+        display: flex;
+        .item {
+          margin-right: 10px;
+          margin-bottom: 0;
+          // border: 1px solid;
+          &:last-of-type {
+            margin-right: 0;
+          }
+        }
+      }
       .block-item {
         display: flex;
         position: relative;
-        margin-bottom: 10px;
+        margin-bottom: 2px;
         .compare {
           width: 10px;
           margin: 0 10px;
@@ -331,7 +356,7 @@ export default {
           }
           .unit {
             position: absolute;
-            top: 34px;
+            top: 0;
             right: 42px;
           }
         }
@@ -347,7 +372,7 @@ export default {
           line-height: 32px;
           position: absolute;
           right: -30px;
-          top: 32px;
+          top: 0;
           &:hover {
             opacity: 0.8;
           }

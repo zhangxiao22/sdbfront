@@ -50,7 +50,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '1',
+      tabIndex: '0',
       tabList: [{
         label: '分发规则参数',
         component: 'NotDisturb',
