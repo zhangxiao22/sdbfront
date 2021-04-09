@@ -5,14 +5,27 @@
              :model="form"
              class="main-form">
       <el-form-item class="form-item">
+        <div class="form-header">
+          <el-form-item required
+                        class="item"
+                        label="网点："
+                        style="flex:1;" />
+          <el-form-item required
+                        class="item"
+                        label="比例："
+                        style="width:200px;" />
+          <el-form-item required
+                        class="item"
+                        label="有效期："
+                        style="width:300px;" />
+        </div>
         <div v-for="(outletItem,i) of form.outlets"
              :key="i"
              class="block-item">
           <el-form-item :prop="'outlets.'+i+'.item'"
                         :rules="{
                           required: true, message: '请选择网点', trigger: 'change'
-                        }"
-                        label="网点：">
+                        }">
             <el-select v-model="outletItem.item"
                        filterable
                        placeholder="请选择网点"
@@ -28,8 +41,7 @@
           <el-form-item :prop="'outlets.'+i+'.value'"
                         :rules="{
                           required: true, message: '请输入分配比例', trigger: 'change'
-                        }"
-                        label="比例：">
+                        }">
             <el-input-number v-model="outletItem.value"
                              style="width:200px;"
                              :disabled="!outletItem.item"
@@ -44,8 +56,7 @@
           <el-form-item :prop="'outlets.'+i+'.dateRange'"
                         :rules="[{
                           required: true, message: '请输入有效期', trigger: 'blur'
-                        }]"
-                        label="有效期：">
+                        }]">
             <el-date-picker v-model="outletItem.dateRange"
                             style="width:300px;"
                             value-format="yyyy-MM-dd"
@@ -245,10 +256,21 @@ export default {
     margin: 20px auto;
     width: 715px;
     .form-item {
+      .form-header {
+        display: flex;
+        .item {
+          margin-right: 10px;
+          margin-bottom: 0;
+          // border: 1px solid;
+          &:last-of-type {
+            margin-right: 0;
+          }
+        }
+      }
       .block-item {
         display: flex;
         position: relative;
-        margin-bottom: 10px;
+        margin-bottom: 2px;
         .el-form-item {
           position: relative;
           margin-right: 10px;
@@ -258,7 +280,6 @@ export default {
           .item-input {
             width: 100%;
             position: relative;
-
             &.number-input {
               ::v-deep .el-input__inner {
                 padding-right: 80px;
@@ -284,7 +305,7 @@ export default {
           line-height: 32px;
           position: absolute;
           right: -30px;
-          top: 32px;
+          top: 0;
           &:hover {
             opacity: 0.8;
           }
