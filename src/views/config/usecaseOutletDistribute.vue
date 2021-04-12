@@ -193,14 +193,16 @@ export default {
     getDetail() {
       getOutletAllot({ category: 1 }).then(res => {
         // 获取用例-网点-分配比例值
-        this.form.useCaseOutlets = res.data.map(item => {
-          return {
-            dateRange: item.startDate ? [item.startDate, item.endDate] : [],
-            useCase: item.useCaseId,
-            outlet: item.outletId,
-            value: item.proportion
-          }
-        })
+        if (res.data.length) {
+          this.form.useCaseOutlets = res.data.map(item => {
+            return {
+              dateRange: item.startDate ? [item.startDate, item.endDate] : [],
+              useCase: item.useCaseId,
+              outlet: item.outletId,
+              value: item.proportion
+            }
+          })
+        }
       })
     },
 
