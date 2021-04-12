@@ -77,7 +77,7 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleView(scope.row)">查看已有事件</div>
+               @click="handleView(scope.row)">查看事件</div>
 
           <el-dropdown trigger="click">
             <span class="el-dropdown-link center-center">

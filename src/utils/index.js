@@ -497,3 +497,12 @@ export function translate(data, opt = {}) {
   }
   return refn(data)
 }
+
+// 按钮注释
+export const DESCRIPTION = {
+  uploadSome: '上传并增加数据',
+  uploadAll: '上传并覆盖原数据',
+  downloadSome: '下载已选项',
+  downloadSearch: '全部下载当前搜索结果',
+  delSome: '删除已选项'
+}

@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
 import GlobalOutletDistribute from './globalOutletDistribute'
@@ -36,6 +37,7 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    Appoint,
     Assign,
     NotDisturb,
     GlobalOutletDistribute,
@@ -52,6 +54,12 @@ export default {
     return {
       tabIndex: '0',
       tabList: [{
+        label: '理顾指派',
+        component: 'Appoint',
+        loading: false,
+        roles: ['线索统筹']
+      },
+      {
         label: '分发规则参数',
         component: 'NotDisturb',
         loading: false,
@@ -107,17 +115,18 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '特定免打扰客户名单（CRM）',
-        component: 'NeverMarketingCRM',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
         label: '黑名单（短信）',
         component: 'BlackListSMS',
         loading: false,
         roles: ['线索统筹']
+      },
+      {
+        label: '私银客户名单',
+        component: 'NeverMarketingCRM',
+        loading: false,
+        roles: ['线索统筹']
       }
+
       ]
     }
   },

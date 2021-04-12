@@ -40,7 +40,7 @@ let asyncRoutes = [
         name: 'UseCase',
         component: () => import('@/views/useCase/index'),
         meta: {
-          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹']
+          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批']
         }
       },
       {

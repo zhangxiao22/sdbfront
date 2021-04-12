@@ -79,7 +79,8 @@
       <template v-slot:main-buttons>
         <UploadButton :upload-method="uploadInterestFile"
                       class="button"
-                      button-name="批量上传"
+                      :description="DESCRIPTION.uploadSome"
+                      button-name="增量更新"
                       @afterUploadSuccess="resetAll" />
         <!-- <el-button class="button"
                    type="primary"
@@ -100,13 +101,18 @@
             全部下载
           </el-button>
         </el-tooltip> -->
-        <el-button class="button"
-                   icon="el-icon-delete"
-                   type="danger"
-                   plain
-                   @click="delSome">
-          批量删除
-        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    :content="DESCRIPTION.delSome"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-delete"
+                     type="danger"
+                     plain
+                     @click="delSome">
+            批量删除
+          </el-button>
+        </el-tooltip>
         <el-link type="primary"
                  @click="download">模版下载</el-link>
 
@@ -215,6 +221,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getInterestList, uploadInterestFile, getAttributionUseCaseEnumList, getProductCategoryList, delInterests } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
+import { DESCRIPTION } from '@/utils'
 
 export default {
   name: 'Interest',
@@ -230,6 +237,7 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       uploadInterestFile,
       showDialog: false,
       buttonLoading: false,

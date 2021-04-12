@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const api2 = process.env.VUE_APP_BASE_API_2 + '/odsEffect'
-// const api3 = process.env.VUE_APP_BASE_API_3
+const api3 = process.env.VUE_APP_BASE_API_2
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -70,7 +70,7 @@ export function getWordCategory() {
   })
 }
 
-// 批量上传话术
+// 增量更新话术
 export function uploadScriptFile(data) {
   return request({
     url: '/script/uploadScript',
@@ -98,7 +98,7 @@ export function getInterestList(data) {
   })
 }
 
-// 批量上传权益
+// 增量更新权益
 export function uploadInterestFile(data) {
   return request({
     url: '/interests/uploadInterests',
@@ -661,6 +661,14 @@ export function totalAchieveRate(params) {
     params
   })
 }
+
+export function getAllBranches() {
+  return request({
+    url: api3 + '/branches',
+    method: 'get'
+  })
+}
+
 // export function totalPurchaseAmount(params) {
 //   return request({
 //     url: api2 + '/purchase_amount',
@@ -890,5 +898,34 @@ export function downloadTest(params) {
     method: 'get',
     responseType: 'blob',
     params
+  })
+}
+
+/** ************************************************ 理财顾问 ************************************************************/
+
+// 获取理顾指派列表数据
+export function getAppointList(data) {
+  return request({
+    url: '/emp/select_by_page',
+    method: 'post',
+    data
+  })
+}
+
+// 获取理顾指派列表数据
+export function appointEmp(params) {
+  return request({
+    url: '/emp/update_by_emp',
+    method: 'get',
+    params
+  })
+}
+
+// 全量更新理顾指派列表数据
+export function empUpdate(data) {
+  return request({
+    url: '/emp/upload',
+    method: 'post',
+    data
   })
 }

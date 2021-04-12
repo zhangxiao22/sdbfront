@@ -392,7 +392,7 @@
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
-                      <el-form-item required
+                      <!-- <el-form-item required
                                     class="rule-form"
                                     label="线索有效期："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.validPeriod'">
@@ -402,7 +402,7 @@
                                          :min="0"
                                          :max="10000"
                                          @blur="channelCardItem.validPeriod=channelCardItem.validPeriod||0" />天
-                      </el-form-item>
+                      </el-form-item> -->
                       <el-form-item label="推荐话术："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
                                     :rules="[{
@@ -477,9 +477,13 @@
                                 :data="channelCardItem.beforeSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="description"
+                        <el-table-column prop="content"
                                          :min-width="300"
-                                         label="短信描述" />
+                                         label="预热短信内容" />
+                        <el-table-column prop="description"
+                                         show-overflow-tooltip
+                                         :min-width="300"
+                                         label="预热短信描述" />
                         <el-table-column fixed="right"
                                          label="操作"
                                          width="100">
@@ -506,9 +510,13 @@
                                 :data="channelCardItem.afterSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="description"
+                        <el-table-column prop="content"
                                          :min-width="300"
-                                         label="短信描述" />
+                                         label="跟尾短信内容" />
+                        <el-table-column prop="description"
+                                         show-overflow-tooltip
+                                         :min-width="300"
+                                         label="跟尾短信描述" />
                         <el-table-column fixed="right"
                                          label="操作"
                                          width="100">
@@ -882,8 +890,8 @@ export default {
                       }), {
                         infoId: m.infoId,
                         chooseType: m.pushType.value,
-                        validPeriod: m.clueEffectDays,
-                        smsSendMode: m.sendMode.value,
+                        // validPeriod: m.clueEffectDays,
+                        smsSendMode: m.sendMode?.value,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
                             _content: n.content,
@@ -1038,7 +1046,7 @@ export default {
                         // 渠道类型 1:crm 2:短信 3:微信
                         channel: cn.value,
                         // CRM线索有效期
-                        clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
+                        // clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
                         // 话术id
@@ -1515,12 +1523,20 @@ export default {
     submitAfterSms() {
       const val = this.$refs.afterSmsRef.parentRef.getVal()
       if (val.length) {
-        this.showAfterSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
-          return Object.assign({}, n, {
-            smsAttr: {}
+        if (val.length > 15) {
+          Message({
+            message: '请选择少于十五项',
+            type: 'error',
+            duration: 5 * 1000
           })
-        })
+        } else {
+          this.showAfterSms = false
+          this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
+            return Object.assign({}, n, {
+              smsAttr: {}
+            })
+          })
+        }
       } else {
         Message({
           message: '请选择至少一项',

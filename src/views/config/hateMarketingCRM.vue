@@ -66,6 +66,7 @@
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
                       button-name="全量更新"
+                      :description="DESCRIPTION.uploadAll"
                       :upload-params="{
                         category: 1,
                         updateType: 0
@@ -73,7 +74,8 @@
                       @afterUploadSuccess="resetAll" />
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
-                      button-name="批量更新"
+                      button-name="增量更新"
+                      :description="DESCRIPTION.uploadSome"
                       :upload-params="{
                         category: 1,
                         updateType: 1
@@ -81,7 +83,7 @@
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
-                    content="全部下载所有名单"
+                    :content="DESCRIPTION.downloadSearch"
                     placement="top">
           <el-button class="button"
                      icon="el-icon-download"
@@ -131,6 +133,17 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
+        <el-form-item label="防打扰天数："
+                      :rules="[{
+                        required: true, message: '请输入防打扰天数', trigger: 'blur'
+                      }]"
+                      prop="days">
+          <el-input-number v-model="addInfo.days"
+                           controls-position="right"
+                           :max="1000"
+                           :min="1" />
+          <span class="unit">天</span>
+        </el-form-item>
         <el-form-item label="备注："
                       prop="remarks">
           <el-input v-model.trim="addInfo.remarks"
@@ -156,7 +169,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getHateMarketingList, addCustomerToBlackList, batchUploadFile, deleteHateMarketingListById } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
-import { downloadFile } from '@/utils'
+import { downloadFile, DESCRIPTION } from '@/utils'
 
 export default {
   name: 'HateMarketingCRM',
@@ -185,8 +198,9 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       loading: false,
-      currentPage: 2,
+      currentPage: 1,
       pageSize: 10,
       batchUploadFile,
       // category: 1厌恶人员名单
@@ -202,7 +216,8 @@ export default {
       addInfo: {
         customerAccount: '',
         name: '',
-        remarks: ''
+        remarks: '',
+        days: ''
       },
       searchForm: {
       },
@@ -210,16 +225,23 @@ export default {
         {
           prop: 'customerAccount',
           label: '客户号',
-          minWidth: 150
+          minWidth: 130
         },
         {
           prop: 'name',
-          label: '客户姓名'
+          label: '客户姓名',
+          minWidth: 100
           // sortable: true
         },
         {
-          prop: 'createTime',
-          label: '加入日期'
+          prop: 'startDate',
+          label: '加入日期',
+          minWidth: 160
+        },
+        {
+          prop: 'endDate',
+          label: '防打扰截止日',
+          minWidth: 160
         },
         {
           prop: 'remarks',
@@ -273,13 +295,13 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const data = {
+            days: this.addInfo.days,
             name: this.addInfo.name,
             customerAccount: this.addInfo.customerAccount,
             remarks: this.addInfo.remarks,
             category: this.category
           }
           addCustomerToBlackList([data]).then(res => {
-            this.buttonLoading = false
             if (res.code === 200) {
               this.$message({
                 message: '保存成功',
@@ -289,7 +311,7 @@ export default {
               this.showDialog = false
               this.resetAll()
             }
-          }).catch(() => {
+          }).finally(() => {
             this.buttonLoading = false
           })
         }
@@ -349,6 +371,9 @@ export default {
 .container {
   .btn {
     cursor: pointer;
+  }
+  .unit {
+    margin-left: 10px;
   }
 }
 </style>

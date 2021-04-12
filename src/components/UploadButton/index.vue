@@ -8,13 +8,18 @@
                :show-file-list="false"
                :accept="accept.map(n => `.${n}`).join(',')"
                action="">
-      <el-button :loading="uploading"
-                 :disabled="uploading"
-                 icon="el-icon-upload2"
-                 type="primary"
-                 plain>
-        {{ buttonName }}
-      </el-button>
+      <el-tooltip class="item"
+                  effect="dark"
+                  :content="description"
+                  placement="top">
+        <el-button :loading="uploading"
+                   :disabled="uploading"
+                   icon="el-icon-upload2"
+                   type="primary"
+                   plain>
+          {{ buttonName }}
+        </el-button>
+      </el-tooltip>
     </el-upload>
   </div>
 </template>
@@ -32,6 +37,11 @@ export default {
     },
     // 按钮名字
     buttonName: {
+      type: String,
+      default: ''
+    },
+    // 按钮注释
+    description: {
       type: String,
       default: ''
     },
