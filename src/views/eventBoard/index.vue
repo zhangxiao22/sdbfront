@@ -156,6 +156,10 @@
                class="btn"
                style="color:#f56c6c;"
                @click="handleOfflineEvent(scope.row)">下线</div>
+          <div v-if="scope.row.reviewer === user.userName && judgeStatus(scope.row.status.value) === 4"
+               class="btn"
+               style="color:#1890FF;"
+               @click="handleSyncProduct(scope.row)">同步产品</div>
           <div v-if="judgeStatus(scope.row.status.value) === 2"
                class="btn"
                style="color:#f56c6c;"
@@ -177,6 +181,7 @@ import {
   getEventStatus,
   getAllUseCase,
   copyEvent,
+  syncProduct,
   offlineEvent,
   deleteEvent
 } from '@/api/api'
@@ -532,6 +537,25 @@ export default {
         .then(() => {
           this.loading = true
           offlineEvent({ baseId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
+    handleSyncProduct(row) {
+      this.$confirm(`是否确认事件（${row.name}）同步产品？`)
+        .then(() => {
+          this.loading = true
+          syncProduct({ eventId: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '操作成功',
