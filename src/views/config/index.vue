@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import Employees from './employees'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
@@ -37,6 +38,7 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    Employees,
     Appoint,
     Assign,
     NotDisturb,
@@ -105,6 +107,12 @@ export default {
       {
         label: '岗位分配',
         component: 'JobOccupy',
+        loading: false,
+        roles: ['业务管理']
+      },
+      {
+        label: '岗位员工',
+        component: 'Employees',
         loading: false,
         roles: ['业务管理']
       },

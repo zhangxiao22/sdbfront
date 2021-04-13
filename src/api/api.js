@@ -901,6 +901,23 @@ export function downloadTest(params) {
   })
 }
 
+// 获取机构
+export function getOrgNames() {
+  return request({
+    url: '/org/getOrgNames',
+    method: 'get'
+  })
+}
+
+// 获取员工
+export function getEmployees(data) {
+  return request({
+    url: '/user/queryPageEmp',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 理财顾问 ************************************************************/
 
 // 获取理顾指派列表数据
