@@ -4,7 +4,8 @@
     <el-form ref="regFormRef"
              :model="form"
              class="main-form">
-      <div class="box">
+      <div class="box"
+           style="border-bottom:1px solid #eee;">
         <el-form-item class="form-item">
           <div class="form-header">
             <el-form-item required
@@ -385,11 +386,8 @@ export default {
     margin: 20px auto;
     width: 715px;
     .box {
-      border-bottom: 1px solid #eee;
       padding-top: 18px;
-      &:last-of-type {
-        border-bottom: none;
-      }
+
       &:first-of-type {
         padding-top: 0;
       }
