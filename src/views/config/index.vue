@@ -21,6 +21,7 @@
 </template>
 
 <script>
+import Agent from './agent'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
@@ -37,6 +38,7 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    Agent,
     Appoint,
     Assign,
     NotDisturb,
@@ -52,80 +54,87 @@ export default {
   },
   data() {
     return {
-      tabIndex: '0',
-      tabList: [{
-        label: '理顾指派',
-        component: 'Appoint',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
-        label: '分发规则参数',
-        component: 'NotDisturb',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
-        label: '全局网点分配比例',
-        component: 'GlobalOutletDistribute',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
-        label: '用例网点分配比例',
-        component: 'UseCaseOutletDistribute',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
-        label: '用例管理',
-        component: 'UseCasePriority',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      // {
-      //   label: '线索优先级',
-      //   component: 'CluePriority',
-      //   loading: false,
-      //   roles: ['用例管理']
-      // },
-      {
-        label: '事件管理',
-        component: 'EventPriority',
-        loading: false,
-        roles: ['用例管理']
-      },
-      {
-        label: '岗位管理',
-        component: 'Assign',
-        loading: false,
-        roles: ['业务管理']
+      tabIndex: '5',
+      tabList: [
+        {
+          label: '理顾指派',
+          component: 'Appoint',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '分发规则参数',
+          component: 'NotDisturb',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '全局网点分配比例',
+          component: 'GlobalOutletDistribute',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '用例网点分配比例',
+          component: 'UseCaseOutletDistribute',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '用例管理',
+          component: 'UseCasePriority',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        // {
+        //   label: '线索优先级',
+        //   component: 'CluePriority',
+        //   loading: false,
+        //   roles: ['用例管理']
+        // },
+        {
+          label: '事件管理',
+          component: 'EventPriority',
+          loading: false,
+          roles: ['用例管理']
+        },
+        {
+          label: '岗位管理',
+          component: 'Assign',
+          loading: false,
+          roles: ['业务管理']
 
-      },
-      {
-        label: '岗位分配',
-        component: 'JobOccupy',
-        loading: false,
-        roles: ['业务管理']
-      },
-      {
-        label: '防打扰名单（CRM）',
-        component: 'HateMarketingCRM',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
-        label: '黑名单（短信）',
-        component: 'BlackListSMS',
-        loading: false,
-        roles: ['线索统筹']
-      },
-      {
-        label: '私银客户名单',
-        component: 'NeverMarketingCRM',
-        loading: false,
-        roles: ['线索统筹']
-      }
+        },
+        {
+          label: '岗位分配',
+          component: 'JobOccupy',
+          loading: false,
+          roles: ['业务管理']
+        },
+        {
+          label: '请假代办',
+          component: 'Agent',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '防打扰名单（CRM）',
+          component: 'HateMarketingCRM',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '黑名单（短信）',
+          component: 'BlackListSMS',
+          loading: false,
+          roles: ['线索统筹']
+        },
+        {
+          label: '私银客户名单',
+          component: 'NeverMarketingCRM',
+          loading: false,
+          roles: ['线索统筹']
+        }
 
       ]
     }
