@@ -200,7 +200,8 @@
             <svg-icon icon-class="chart-bar" />用例成效
           </div>
           <div v-loading="loading.resultLoading"
-               class="chart-box">
+               class="chart-box"
+               style="height:450px;">
             <StackedBarChart id="stacked-bar"
                              :data="stackedBarData" />
           </div>
@@ -355,7 +356,8 @@
             <svg-icon icon-class="chart-bar" />用例成效
           </div>
           <div v-loading="loading.amountLoading"
-               class="chart-box">
+               class="chart-box"
+               style="height:450px;">
             <StackedBarChart id="stacked-bar2"
                              :data="stackedBarData_amount" />
           </div>
@@ -1424,6 +1426,9 @@ export default {
   }
   .block {
     margin-bottom: 16px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
     .head {
       border-bottom: 1px solid #f4f4f4;
       height: 60px;

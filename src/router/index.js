@@ -117,8 +117,8 @@ let asyncRoutes = [
       },
       {
         // 总看板Copy
-        path: 'totalBoardCopy',
-        name: 'TotalBoardCopy',
+        path: 'totalBoard2',
+        name: 'TotalBoard2',
         component: () => import('@/views/totalBoard2/index'),
         meta: { title: '成效看板', icon: 'board', hide: true }
       },
