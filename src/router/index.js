@@ -116,6 +116,13 @@ let asyncRoutes = [
         meta: { title: '成效看板', icon: 'board' }
       },
       {
+        // 总看板Copy
+        path: 'totalBoardCopy',
+        name: 'TotalBoardCopy',
+        component: () => import('@/views/totalBoard2/index'),
+        meta: { title: '成效看板', icon: 'board', hide: true }
+      },
+      {
         path: 'crmAndOds',
         name: 'CrmAndOds',
         component: () => import('@/views/crmAndOds/index'),
