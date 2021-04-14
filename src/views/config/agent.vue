@@ -77,16 +77,18 @@
                       }]"
                       prop="empCode"
                       label-width="110px">
-          <el-cascader v-model="form.empCode"
-                       style="width:90%"
-                       :options="empListOpt"
-                       :props="{ multiple: false }"
-                       clearable
-                       collapse-tags
-                       filterable />
+          <el-select v-model="form.empCode"
+                     @change="handleSelectEmp">
+            <el-option v-for="item in empListOpt"
+                       :key="item.value"
+                       :disabled="item.disabled"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
+        <Info content="请假日期从下周一开始" />
         <el-form-item label="请假日期："
-                      :rules="[{required: true, message: '请选择员工姓名', trigger: 'blur'
+                      :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
                       }]"
                       prop="dateRange"
                       label-width="110px">
@@ -103,17 +105,18 @@
         <el-form-item label="代办人："
                       prop="agentCode"
                       label-width="110px">
-          <el-cascader v-model="form.agentCode"
-                       style="width:90%"
-                       :options="empListOpt"
-                       :props="{ multiple: true }"
-                       clearable
-                       collapse-tags
-                       filterable />
+          <el-select v-model="form.agentCode"
+                     @change="handleSelectEmp">
+            <el-option v-for="item in empListOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :disabled="item.disabled"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注："
-                      prop="remarks">
-          <el-input v-model.trim="form.remarks"
+                      prop="remark">
+          <el-input v-model.trim="form.remark"
                     style="width:90%;"
                     type="textarea"
                     :rows="10"
@@ -134,12 +137,15 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEmpLeave, addEmpLeave, delEmpLeave } from '@/api/api'
+import { getEmpLeave, addEmpLeave, delEmpLeave, getEmpInCurrentOrg } from '@/api/api'
 import { parseTime } from '@/utils'
+import moment from 'moment'
+import Info from '@/components/Info'
 
 export default {
   name: 'Appoint',
   components: {
+    Info,
     ShunTable
   },
   props: {
@@ -148,7 +154,8 @@ export default {
     return {
       pickerOptions: {
         disabledDate(time) {
-          const testStartTime = parseTime(new Date(), '{y}-{m}-{d}')
+          const today = moment().format('d')
+          const testStartTime = moment().add(7 - today + 1, 'days').format('YYYY-MM-DD')
           const dateTime = parseTime(time, '{y}-{m}-{d}')
           return dateTime < testStartTime
         }
@@ -168,23 +175,10 @@ export default {
         dateRange: [],
         agentCode: '',
         empCode: '',
-        remarks: ''
+        remark: ''
       },
       empListOpt: [
-        {
-          label: '张三',
-          value: 10,
-          children: [
-            {
-              label: '张三',
-              value: 100
-            },
-            {
-              label: '李四',
-              value: 101
-            }
-          ]
-        }
+
       ],
       searchForm: {
       },
@@ -246,6 +240,7 @@ export default {
   methods: {
     init() {
       this.search()
+      this.getEmpListOpt()
     },
     resetAll() {
       this.reset()
@@ -259,18 +254,24 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-    eachReplaceKey(array) {
-      const item = []
-      array.map(arr => {
-        const newData = {}
-        newData.label = arr.org_name
-        newData.value = arr.org_code
-        if (arr.Children) {
-          newData.children = this.eachReplaceKey(arr.Children)
-        }
-        item.push(newData)
+    getEmpListOpt() {
+      getEmpInCurrentOrg().then(res => {
+        this.empListOpt = res.data.map(n => {
+          return {
+            label: n.empName,
+            value: n.empCode,
+            disabled: false
+          }
+        })
       })
-      return item
+    },
+    handleSelectEmp() {
+      const temp = []
+      temp.push(this.form.empCode)
+      temp.push(this.form.agentCode)
+      this.empListOpt.forEach(n => {
+        n.disabled = temp.includes(n.value)
+      })
     },
     handleAddList() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
@@ -284,7 +285,10 @@ export default {
       this.buttonLoading = true
       const data = {
         empCode: this.form.empCode,
-        orgCodes: this.form.orgCodes.map(n => n[1]).join(',')
+        agentCode: this.form.agentCode,
+        remark: this.form.remark,
+        startTime: this.form.dateRange[0],
+        endTime: this.form.dateRange[1]
       }
       addEmpLeave(data).then(res => {
         if (res.code === 200) {

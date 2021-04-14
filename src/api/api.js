@@ -957,3 +957,12 @@ export function delEmpLeave(params) {
     params
   })
 }
+
+// 删除请假代办列表某个数据
+export function getEmpInCurrentOrg(params) {
+  return request({
+    url: '/empLeave/get_emp_in_current_org',
+    method: 'get',
+    params
+  })
+}
