@@ -54,15 +54,12 @@
         </el-button>
       </template>
       <template v-slot:typeSlot="props">
-        <pre>{{ props.row.type ? "代办" : "请假" }}</pre>
+        {{ props.row.type === 1 ? "代办" : "请假" }}
       </template>
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#f56c6c;"
              @click="handleDeleteButton(scope.row)">删除</div>
-      </template>
-      <template v-slot:paramsSlot="props">
-        <pre>{{ props.row.params }}</pre>
       </template>
     </shun-table>
     <el-dialog title="请假代办"
