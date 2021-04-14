@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="container">
     <shun-table ref="employeesTable"
                 title="岗位员工"
                 :loading="loading"
@@ -52,7 +52,7 @@
               <el-option v-for="(item, i) of jobOpt"
                          :key="i"
                          :label="item.label"
-                         :value="item.label" />
+                         :value="item.value" />
             </el-select>
           </el-form-item>
           <el-form-item class="filter-item-end">
