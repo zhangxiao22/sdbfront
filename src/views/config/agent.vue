@@ -63,7 +63,7 @@
       </template>
     </shun-table>
     <el-dialog title="请假代办"
-               :before-close="cancelAppoint"
+               :before-close="cancelAdd"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                label-width="110px"
@@ -83,12 +83,13 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <Info content="请假日期从下周一开始" />
-        <el-form-item label="请假日期："
-                      :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
+        <el-form-item :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
                       }]"
-                      prop="dateRange"
-                      label-width="110px">
+                      prop="dateRange">
+          <div slot="label">
+            <Info content="请假日期从下周一开始" />
+            请假日期：
+          </div>
           <el-date-picker v-model="form.dateRange"
                           style="width:300px;"
                           value-format="yyyy-MM-dd"
