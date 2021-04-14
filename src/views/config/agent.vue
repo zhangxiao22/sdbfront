@@ -197,11 +197,11 @@ export default {
           label: '员工号',
           minWidth: 150
         },
-        {
-          prop: 'org_name',
-          label: '所属岗位',
-          minWidth: 200
-        },
+        // {
+        //   prop: 'orgName',
+        //   label: '所属岗位',
+        //   minWidth: 200
+        // },
         {
           prop: 'startTime',
           label: '开始时间',
@@ -262,7 +262,7 @@ export default {
       getEmpInCurrentOrg().then(res => {
         this.empListOpt = res.data.map(n => {
           return {
-            label: n.empName,
+            label: n.empCode + '-' + n.empName,
             value: n.empCode,
             disabled: false
           }
