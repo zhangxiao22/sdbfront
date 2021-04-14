@@ -733,6 +733,119 @@ export function totalRank(params) {
 //     params
 //   })
 // }
+
+// Copy
+//
+export function totalOverviewCopy(params) {
+  return request({
+    url: '/report/summary',
+    method: 'get',
+    params
+  })
+}
+
+// AUM LUM 信用卡小图
+export function totalIncreaseCopy(params) {
+  return request({
+    url: '/report/increase',
+    method: 'get',
+    params
+  })
+}
+
+// 漏斗图
+export function totalFunnelCopy(params) {
+  return request({
+    url: '/report/sales_funnel',
+    method: 'get',
+    params
+  })
+}
+
+// 饼图
+export function totalPieCopy(params) {
+  return request({
+    url: '/report/channel_distribution',
+    method: 'get',
+    params
+  })
+}
+
+// 获取rateOpt
+export function rateOptCopy() {
+  return request({
+    url: '/report/rate_labels',
+    method: 'get'
+  })
+}
+
+// rate
+export function totalRateCopy(params) {
+  return request({
+    url: '/report/rate_by_batch',
+    method: 'get',
+    params
+  })
+}
+// rateRank
+export function totalRateRankCopy(params) {
+  return request({
+    url: '/report/rate_by_Executor',
+    method: 'get',
+    params
+  })
+}
+
+// 获取resultOpt
+export function resultOptCopy() {
+  return request({
+    url: '/report/value_labels',
+    method: 'get'
+  })
+}
+
+// result
+export function totalResultCopy(params) {
+  return request({
+    url: '/report/data_by_batch',
+    method: 'get',
+    params
+  })
+}
+// resultRank
+export function totalResultRankCopy(params) {
+  return request({
+    url: '/report/data_by_Executor',
+    method: 'get',
+    params
+  })
+}
+
+// 获取effectOpt
+export function effectOptCopy() {
+  return request({
+    url: '/report/target_labels',
+    method: 'get'
+  })
+}
+
+// effect
+export function totalEffectCopy(params) {
+  return request({
+    url: '/report/target_by_batch',
+    method: 'get',
+    params
+  })
+}
+// effectRank
+export function totalEffectRankCopy(params) {
+  return request({
+    url: '/report/target_by_Executor',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ crm与ods ************************************************************/
 
 export function getRecordPage(data) {
