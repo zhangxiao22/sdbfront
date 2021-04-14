@@ -54,15 +54,12 @@
         </el-button>
       </template>
       <template v-slot:typeSlot="props">
-        <pre>{{ props.row.type ? "代办" : "请假" }}</pre>
+        {{ props.row.type === 1 ? "代办" : "请假" }}
       </template>
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#f56c6c;"
              @click="handleDeleteButton(scope.row)">删除</div>
-      </template>
-      <template v-slot:paramsSlot="props">
-        <pre>{{ props.row.params }}</pre>
       </template>
     </shun-table>
     <el-dialog title="请假代办"
@@ -126,10 +123,10 @@
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="cancelAppoint">取 消</el-button>
+        <el-button @click="cancelAdd">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="ensureAppoint">确 定</el-button>
+                   @click="ensureAdd">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -277,31 +274,35 @@ export default {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.showDialog = true
     },
-    cancelAppoint() {
+    cancelAdd() {
       // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
-    ensureAppoint() {
-      this.buttonLoading = true
-      const data = {
-        empCode: this.form.empCode,
-        agentCode: this.form.agentCode,
-        remark: this.form.remark,
-        startTime: this.form.dateRange[0],
-        endTime: this.form.dateRange[1]
-      }
-      addEmpLeave(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '保存成功',
-            type: 'success',
-            duration: '3000'
+    ensureAdd() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          const data = {
+            empCode: this.form.empCode,
+            agentCode: this.form.agentCode,
+            remark: this.form.remark,
+            startTime: this.form.dateRange[0],
+            endTime: this.form.dateRange[1]
+          }
+          addEmpLeave(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
           })
-          this.showDialog = false
-          this.getList()
         }
-      }).finally(() => {
-        this.buttonLoading = false
       })
     },
     handleDeleteButton(row) {
