@@ -76,6 +76,7 @@
                       label-width="110px">
           <el-select v-model="form.empCode"
                      clearable
+                     filterable
                      @change="handleSelectEmp">
             <el-option v-for="item in empListOpt"
                        :key="item.value"
@@ -108,6 +109,7 @@
                       label-width="110px">
           <el-select v-model="form.agentCode"
                      clearable
+                     filterable
                      @change="handleSelectEmp">
             <el-option v-for="item in empListOpt"
                        :key="item.value"
