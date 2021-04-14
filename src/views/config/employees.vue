@@ -32,8 +32,8 @@
                       @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item label="机构名称："
-                        prop="branch">
-            <el-cascader v-model="filterForm.orgName"
+                        prop="orgCode">
+            <el-cascader v-model="filterForm.orgCode"
                          style="width:200px"
                          :options="orgOpt"
                          :props="{ value: 'org_code',
@@ -45,7 +45,7 @@
           </el-form-item>
           <el-form-item label="岗位："
                         prop="name">
-            <el-select v-model="filterForm.name"
+            <el-select v-model="filterForm.jobId"
                        style="width:200px"
                        placeholder="请选择岗位"
                        clearable>
@@ -92,8 +92,8 @@ export default {
         // 员工姓名 员工工号 机构名称 岗位名称
         empName: '',
         empCode: '',
-        orgName: '',
-        name: ''
+        orgCode: '',
+        jobId: ''
       },
       searchForm: {},
       orgOpt: [],
@@ -142,7 +142,7 @@ export default {
       getAllJob().then(res => {
         this.jobOpt = [{
           label: '未分配',
-          value: null
+          value: -1
         }]
         res.data.forEach(n => {
           this.jobOpt.push({

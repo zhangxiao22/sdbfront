@@ -10,6 +10,7 @@
 </template>
 <script>
 import { Funnel } from '@antv/g2plot'
+import moment from 'moment'
 
 export default {
   components: {
@@ -29,6 +30,10 @@ export default {
   created() {
   },
   mounted() {
+    console.log(moment().format('d'))
+    const today = moment().format('d')
+    const d = moment().add(7 - today, 'days')
+    console.log(d)
   },
   methods: {
     add() {
