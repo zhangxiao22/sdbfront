@@ -552,7 +552,7 @@ export default {
         })
     },
     handleSyncProduct(row) {
-      this.$confirm(`是否确认事件（${row.name}）同步产品？`)
+      this.$confirm(`同步时间较长，请勿重复点击，是否确认事件（${row.name} ）同步产品？`)
         .then(() => {
           this.loading = true
           syncProduct({ eventId: row.id }).then(res => {
@@ -571,7 +571,7 @@ export default {
         })
     },
     handleDelete(row) {
-      this.$confirm(`是否确认删除事件（${row.name}）？`)
+      this.$confirm(`是否确认删除事件（${row.name} ）？`)
         .then(() => {
           this.loading = true
           deleteEvent({ baseId: row.id }).then(res => {
