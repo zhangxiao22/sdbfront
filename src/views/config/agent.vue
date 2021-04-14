@@ -63,7 +63,7 @@
       </template>
     </shun-table>
     <el-dialog title="请假代办"
-               :before-close="cancelAppoint"
+               :before-close="cancelAdd"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                label-width="110px"
@@ -83,12 +83,13 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <Info content="请假日期从下周一开始" />
-        <el-form-item label="请假日期："
-                      :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
+        <el-form-item :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
                       }]"
-                      prop="dateRange"
-                      label-width="110px">
+                      prop="dateRange">
+          <div slot="label">
+            <Info content="请假日期从下周一开始" />
+            请假日期：
+          </div>
           <el-date-picker v-model="form.dateRange"
                           style="width:300px;"
                           value-format="yyyy-MM-dd"
@@ -123,10 +124,10 @@
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="cancelAppoint">取 消</el-button>
+        <el-button @click="cancelAdd">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="ensureAppoint">确 定</el-button>
+                   @click="ensureAdd">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -274,31 +275,35 @@ export default {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.showDialog = true
     },
-    cancelAppoint() {
+    cancelAdd() {
       // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
-    ensureAppoint() {
-      this.buttonLoading = true
-      const data = {
-        empCode: this.form.empCode,
-        agentCode: this.form.agentCode,
-        remark: this.form.remark,
-        startTime: this.form.dateRange[0],
-        endTime: this.form.dateRange[1]
-      }
-      addEmpLeave(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '保存成功',
-            type: 'success',
-            duration: '3000'
+    ensureAdd() {
+      this.$refs['regFormRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          const data = {
+            empCode: this.form.empCode,
+            agentCode: this.form.agentCode,
+            remark: this.form.remark,
+            startTime: this.form.dateRange[0],
+            endTime: this.form.dateRange[1]
+          }
+          addEmpLeave(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
           })
-          this.showDialog = false
-          this.getList()
         }
-      }).finally(() => {
-        this.buttonLoading = false
       })
     },
     handleDeleteButton(row) {
