@@ -142,7 +142,7 @@ export default {
       getAllJob().then(res => {
         this.jobOpt = [{
           label: '未分配',
-          value: '-1'
+          value: -1
         }]
         res.data.forEach(n => {
           this.jobOpt.push({
