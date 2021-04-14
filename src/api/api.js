@@ -901,14 +901,6 @@ export function downloadTest(params) {
   })
 }
 
-// 获取机构
-export function getOrgNames() {
-  return request({
-    url: '/org/getOrgNames',
-    method: 'get'
-  })
-}
-
 // 获取员工
 export function getEmployees(data) {
   return request({
