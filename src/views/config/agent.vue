@@ -319,7 +319,7 @@ export default {
       this.$confirm(`是否确认删除请假员工（${row.empName}）？`)
         .then(() => {
           this.loading = true
-          delEmpLeave({ empCode: row.empCode }).then(res => {
+          delEmpLeave({ empCode: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '删除成功',
