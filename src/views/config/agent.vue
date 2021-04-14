@@ -53,6 +53,9 @@
           新增
         </el-button>
       </template>
+      <template v-slot:typeSlot="props">
+        <pre>{{ props.row.type ? "代办" : "请假" }}</pre>
+      </template>
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#f56c6c;"
@@ -77,7 +80,7 @@
           <el-cascader v-model="form.empCode"
                        style="width:90%"
                        :options="empListOpt"
-                       :props="{ multiple: true }"
+                       :props="{ multiple: false }"
                        clearable
                        collapse-tags
                        filterable />
@@ -98,9 +101,6 @@
                           end-placeholder="结束日期" />
         </el-form-item>
         <el-form-item label="代办人："
-                      :rules="[{
-                        required: true, message: '请选择员工姓名', trigger: 'blur'
-                      }]"
                       prop="agentCode"
                       label-width="110px">
           <el-cascader v-model="form.agentCode"
@@ -172,8 +172,18 @@ export default {
       },
       empListOpt: [
         {
-          empName: '张三',
-          empCode: 100
+          label: '张三',
+          value: 10,
+          children: [
+            {
+              label: '张三',
+              value: 100
+            },
+            {
+              label: '李四',
+              value: 101
+            }
+          ]
         }
       ],
       searchForm: {
@@ -191,7 +201,7 @@ export default {
         },
         {
           prop: 'org_name',
-          label: '原机构',
+          label: '所属岗位',
           minWidth: 200
         },
         {
@@ -210,8 +220,15 @@ export default {
           width: 100
         },
         {
+          prop: 'type',
+          label: '类型',
+          slot: true,
+          width: 100
+        },
+        {
           prop: 'operate',
           label: '操作',
+          fixed: 'right',
           slot: true
         }
       ],
