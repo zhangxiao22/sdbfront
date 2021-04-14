@@ -70,11 +70,12 @@
                :model="form">
         <el-form-item label="员工名称："
                       :rules="[{
-                        required: true, message: '请选择员工姓名', trigger: 'blur'
+                        required: true, message: '请选择员工姓名', trigger: 'change'
                       }]"
                       prop="empCode"
                       label-width="110px">
           <el-select v-model="form.empCode"
+                     clearable
                      @change="handleSelectEmp">
             <el-option v-for="item in empListOpt"
                        :key="item.value"
@@ -83,7 +84,8 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
+        <el-form-item class="shun-label"
+                      :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
                       }]"
                       prop="dateRange">
           <div slot="label">
@@ -97,6 +99,7 @@
                           type="daterange"
                           :picker-options="pickerOptions"
                           range-separator="至"
+                          clearable
                           start-placeholder="开始日期"
                           end-placeholder="结束日期" />
         </el-form-item>
@@ -104,6 +107,7 @@
                       prop="agentCode"
                       label-width="110px">
           <el-select v-model="form.agentCode"
+                     clearable
                      @change="handleSelectEmp">
             <el-option v-for="item in empListOpt"
                        :key="item.value"
@@ -264,15 +268,18 @@ export default {
       })
     },
     handleSelectEmp() {
-      const temp = []
-      temp.push(this.form.empCode)
-      temp.push(this.form.agentCode)
       this.empListOpt.forEach(n => {
-        n.disabled = temp.includes(n.value)
+        n.disabled = (n.value === this.form.empCode || n.value === this.form.agentCode)
+      })
+    },
+    resetDialog() {
+      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.empListOpt.forEach(n => {
+        n.disabled = false
       })
     },
     handleAddList() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.resetDialog()
       this.showDialog = true
     },
     cancelAdd() {
