@@ -398,6 +398,15 @@ export function setEventDistributeLimit(data) {
   })
 }
 
+// 同步产品按钮
+export function syncProduct(data) {
+  return request({
+    url: 'event/sync_product',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件审批 ************************************************************/
 // 事件审批
 export function isPass(data) {
