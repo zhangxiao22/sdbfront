@@ -154,7 +154,29 @@
           <span class="unit">条</span>
         </el-form-item>
       </div>
-
+      <div class="block">
+        <div class="block-title">分发模式</div>
+        <el-form-item class="form-item"
+                      prop="distributeMode">
+          <div slot="label">
+            <Info content="选择分发模式" />
+            分发模式：
+          </div>
+          <!-- <el-tooltip :content="form.clark?'发送':'不发送'"
+                      placement="top">
+            <el-switch v-model="form.clark"
+                       :active-value="1"
+                       :inactive-value="0" />
+          </el-tooltip> -->
+          <el-select v-model="form.distributeMode"
+                     placeholder="请选择">
+            <el-option v-for="item in distributeModeOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+      </div>
       <!-- <el-form-item prop="smsIntervalDays"
                     label="短信黑名单持续天数：">
         <el-input-number v-model="form.smsIntervalDays"
@@ -195,6 +217,20 @@ export default {
   },
   data() {
     return {
+      distributeModeOpt: [
+        {
+          label: '最老版本',
+          value: 0
+        },
+        {
+          label: '最新版本',
+          value: 1
+        },
+        {
+          label: '上一个版本',
+          value: 2
+        }
+      ],
       form: {
         intervalDays: null,
         minAge: null,
@@ -206,6 +242,7 @@ export default {
         personalWeeklyDistribution: null,
         networkManagerWeeklyDistribution: null,
         networkClerkWeeklyDistribution: null,
+        distributeMode: 0,
         clark: 0
       }
     }
