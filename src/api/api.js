@@ -570,6 +570,14 @@ export function getApproverList() {
   })
 }
 
+// 获取分发模式选项
+export function getDitributeModeList() {
+  return request({
+    url: '/useCase/distributeEnum',
+    method: 'get'
+  })
+}
+
 // 新建用例
 export function saveUseCase(data) {
   return request({
