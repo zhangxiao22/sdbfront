@@ -1060,3 +1060,40 @@ export function empUpdate(data) {
     data
   })
 }
+
+/** ************************************************ 请假代办 ************************************************************/
+
+// 获取请假代办列表数据
+export function getEmpLeave(data) {
+  return request({
+    url: '/empLeave/get_emp_leave',
+    method: 'post',
+    data
+  })
+}
+
+export function addEmpLeave(data) {
+  return request({
+    url: '/empLeave/insert_leave',
+    method: 'post',
+    data
+  })
+}
+
+// 删除请假代办列表某个数据
+export function delEmpLeave(params) {
+  return request({
+    url: '/empLeave/delete_by_code',
+    method: 'get',
+    params
+  })
+}
+
+// 删除请假代办列表某个数据
+export function getEmpInCurrentOrg(params) {
+  return request({
+    url: '/empLeave/get_emp_in_current_org',
+    method: 'get',
+    params
+  })
+}

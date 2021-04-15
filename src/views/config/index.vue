@@ -22,6 +22,7 @@
 
 <script>
 import Employees from './employees'
+import Agent from './agent'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
@@ -39,6 +40,7 @@ import { mapGetters } from 'vuex'
 export default {
   components: {
     Employees,
+    Agent,
     Appoint,
     Assign,
     NotDisturb,
@@ -54,7 +56,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '2',
+      tabIndex: '0',
       tabList: [{
         label: '理顾指派',
         component: 'Appoint',
@@ -117,6 +119,12 @@ export default {
         roles: ['业务管理']
       },
       {
+        label: '请假代办',
+        component: 'Agent',
+        loading: false,
+        roles: ['线索统筹']
+      },
+      {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
         loading: false,
@@ -134,7 +142,6 @@ export default {
         loading: false,
         roles: ['线索统筹']
       }
-
       ]
     }
   },
