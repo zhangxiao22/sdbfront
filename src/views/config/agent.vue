@@ -316,7 +316,7 @@ export default {
       })
     },
     handleDeleteButton(row) {
-      this.$confirm(`是否确认删除请假员工（${row.empName}）？`)
+      this.$confirm(`是否确认删除请假员工（${row.empName || ''}）？`)
         .then(() => {
           this.loading = true
           delEmpLeave({ empCode: row.id }).then(res => {
