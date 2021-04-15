@@ -44,7 +44,7 @@
                          clearable />
           </el-form-item>
           <el-form-item label="岗位："
-                        prop="name">
+                        prop="jobId">
             <el-select v-model="filterForm.jobId"
                        style="width:200px"
                        placeholder="请选择岗位"
