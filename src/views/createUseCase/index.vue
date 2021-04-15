@@ -174,6 +174,7 @@
 <script>
 import { MAX_NUMBER, translate } from '@/utils'
 import {
+  getDitributeModeList,
   getUseCaseType,
   getUseCaseParticipant,
   getTargetList,
@@ -268,6 +269,7 @@ export default {
 
   },
   created() {
+    this.getDitributeModeOptions()
     this.getType()
     this.getApproverOpt()
     this.getParticipant()
@@ -325,6 +327,16 @@ export default {
           return {
             label: n.empName,
             value: n.empCode
+          }
+        })
+      })
+    },
+    getDitributeModeOptions() {
+      getDitributeModeList().then(res => {
+        this.ditributeModeOptions = res.data.map(n => {
+          return {
+            label: n.desc,
+            value: n.code
           }
         })
       })
