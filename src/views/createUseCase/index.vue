@@ -333,12 +333,7 @@ export default {
     },
     getDitributeModeOptions() {
       getDitributeModeList().then(res => {
-        this.ditributeModeOptions = res.data.map(n => {
-          return {
-            label: n.desc,
-            value: n.code
-          }
-        })
+        this.ditributeModeOptions = res.data
       })
     },
     getUseCaseById() {
