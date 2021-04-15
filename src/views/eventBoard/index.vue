@@ -552,7 +552,21 @@ export default {
         })
     },
     handleSyncProduct(row) {
-      this.$confirm(`同步时间较长，请勿重复点击，是否确认事件（${row.name} ）同步产品？`)
+      const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件（${row.name} ）同步产品？`]
+      const newDatas = []
+      const h = this.$createElement
+      for (const i in confirmText) {
+        newDatas.push(h('p', null, confirmText[i]))
+      }
+      this.$confirm(
+        '提示',
+        {
+          title: '提示',
+          message: h('div', null, newDatas),
+          type: 'warning'
+        }
+      )
+        // this.$confirm(`同步时间较长，请勿重复点击，是否确认事件（${row.name} ）同步产品？`)
         .then(() => {
           this.loading = true
           syncProduct({ eventId: row.id }).then(res => {
