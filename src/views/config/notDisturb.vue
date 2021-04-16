@@ -169,12 +169,21 @@
                        :inactive-value="0" />
           </el-tooltip> -->
           <el-select v-model="form.distributeMode"
+                     disabled
                      placeholder="请选择">
             <el-option v-for="item in distributeModeOpt"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
+        </el-form-item>
+        <el-form-item class="form-item">
+          <el-button type="primary"
+                     style="width:100px;"
+                     icon="el-icon-thumb"
+                     disabled
+                     plain
+                     @click="handleTest">测试分发</el-button>
         </el-form-item>
       </div>
       <!-- <el-form-item prop="smsIntervalDays"
@@ -201,7 +210,7 @@
   </div>
 </template>
 <script>
-import { getNoDisturb, updateNoDisturb } from '@/api/api'
+import { getNoDisturb, updateNoDisturb, testAllocateClue } from '@/api/api'
 import { Loading } from 'element-ui'
 import Info from '@/components/Info'
 
@@ -292,6 +301,20 @@ export default {
             this.$emit('update:loading', false)
           })
         }
+      })
+    },
+    handleTest() {
+      this.$emit('update:loading', true)
+      testAllocateClue({ publish: this.form.distributeMode }).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+        this.$emit('update:loading', false)
       })
     },
     reset() {

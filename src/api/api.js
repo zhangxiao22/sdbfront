@@ -890,6 +890,15 @@ export function getNoDisturb() {
   })
 }
 
+// Notdisturb页面测试分发按钮接口
+export function testAllocateClue(params) {
+  return request({
+    url: '/bmp2crm/test_allocate_clue',
+    method: 'get',
+    params
+  })
+}
+
 // 获取网点
 export function getOutletList(data) {
   return request({
