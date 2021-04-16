@@ -122,7 +122,7 @@ export default {
         label: '请假代办',
         component: 'Agent',
         loading: false,
-        roles: ['线索统筹']
+        roles: ['支行业务管理']
       },
       {
         label: '防打扰名单（CRM）',
