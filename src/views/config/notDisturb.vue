@@ -305,7 +305,7 @@ export default {
     },
     handleTest() {
       this.$emit('update:loading', true)
-      testAllocateClue({ publish: this.form.distributeMode }).then(res => {
+      testAllocateClue({ publish: 0 }).then(res => {
         if (res.code === 200) {
           this.$message({
             message: '保存成功',
