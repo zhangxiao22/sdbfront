@@ -6,7 +6,7 @@
              label-width="300px"
              class="form">
       <div class="block">
-        <div class="block-title">免打扰开关</div>
+        <div class="block-title">防打扰设置</div>
         <el-form-item prop="intervalDays"
                       class="form-item">
           <div slot="label">
