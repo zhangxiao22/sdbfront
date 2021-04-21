@@ -20,6 +20,19 @@
                            :step="5" />
           <span class="unit">天</span>
         </el-form-item>
+        <el-form-item prop="hateSaleIntervalDays"
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户上次执行记录为厌恶营销，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
+            厌恶营销防打扰间隔天数：
+          </div>
+          <el-input-number v-model="form.hateSaleIntervalDays"
+                           controls-position="right"
+                           :min="1"
+                           :max="1000"
+                           :step="5" />
+          <span class="unit">天</span>
+        </el-form-item>
       </div>
       <div class="block">
         <div class="block-title">不营销客户</div>
@@ -51,19 +64,7 @@
                            @blur="handleBlurMaxAge" />
           <span class="unit">岁</span>
         </el-form-item>
-        <el-form-item prop="hateSaleIntervalDays"
-                      class="form-item">
-          <div slot="label">
-            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户上次执行记录为厌恶营销，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
-            厌恶营销防打扰间隔天数：
-          </div>
-          <el-input-number v-model="form.hateSaleIntervalDays"
-                           controls-position="right"
-                           :min="1"
-                           :max="1000"
-                           :step="5" />
-          <span class="unit">天</span>
-        </el-form-item>
+
         <el-form-item prop="emptyNumbers"
                       class="form-item">
           <div slot="label">
@@ -308,7 +309,7 @@ export default {
       testAllocateClue({ publish: 0 }).then(res => {
         if (res.code === 200) {
           this.$message({
-            message: '保存成功',
+            message: '测试成功',
             type: 'success',
             duration: '3000'
           })
