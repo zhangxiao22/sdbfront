@@ -876,7 +876,7 @@ export default {
     //   })
     //   return val
     // },
-    ployTranslate(ployObj, ployIndex) {
+    ployTranslate(ployObj, ployName) {
       // console.log(ployObj, ployIndex)
       // ployIndex tab的index下标
       return {
@@ -886,7 +886,7 @@ export default {
         // 策略分发范围
         percent: ployObj.range,
         // 策略tab id
-        name: ployIndex + 1 + '',
+        name: ployName + '',
         // 产品
         product: ployObj.productInfoList.map((product) => {
           return Object.assign({}, product, product.extraField)
@@ -958,7 +958,7 @@ export default {
                 desc: n.desc,
                 totalPercent: 100,
                 ployTabs: n.strategyDetailVOList.map((n, i) => {
-                  return this.ployTranslate(n, i)
+                  return this.ployTranslate(n, i + 1)
                 }),
                 // v-model值：控制策略tab显示
                 ployTabsValue: '1',
@@ -1180,11 +1180,16 @@ export default {
         const gi = this.groupIndex
         const length = this.group[gi].ployTabs.length
         // 添加策略
-        this.group[gi].ployTabs.push(...val.map((n, i) => {
-          return this.ployTranslate(n, i + length)
-        }))
-        // 累加数量：策略数量的累加,用于显示‘新策略几’
-        this.group[gi].ployTabIndex = this.group[gi].ployTabs.length
+        val.forEach((n, i) => {
+          // 累加数量
+          const newTabName = ++this.group[gi].ployTabIndex
+          this.group[gi].ployTabs.push(
+            this.ployTranslate(n, newTabName)
+          )
+        })
+        // this.group[gi].ployTabs.push(...val.map((n, i) => {
+        //   return this.ployTranslate(n, i + length)
+        // }))
         this.group[gi].totalPercent = this.getTotalPercent(gi)
         // 修改简介
         this.$parent.ployDetail.ployCount = this.ployCounts
