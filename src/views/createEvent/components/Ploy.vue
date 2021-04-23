@@ -29,8 +29,13 @@
                             }]">
                 <el-button icon="el-icon-plus"
                            type="primary"
-                           @click="addStrategy(groupItem)">
+                           @click="addStrategy">
                   添加策略
+                </el-button>
+                <el-button icon="el-icon-plus"
+                           type="primary"
+                           @click="addTab">
+                  添加空白策略
                 </el-button>
               </el-form-item>
             </div>
@@ -44,7 +49,7 @@
                      closable
                      @tab-click="handleChangeTab"
                      @tab-remove="handleRemoveTab">
-              <!-- {{ groupItem.ployTabs.map(n => n.name) }} -->
+              {{ groupItem.ployTabs.map(n => n.name) }}
               <el-tab-pane v-for="(ployItem,pi) of groupItem.ployTabs"
                            :key="ployItem.name"
                            :label="ployItem.title"
@@ -839,7 +844,9 @@ export default {
     reset() {
       this.ployDetail().then(() => {
         this.$nextTick(() => {
+          // 客群tab跳转到第一个
           this.beforeHandleGroupTabClick(0)
+          // 清除校验
           this.$refs['refCustomerForm'].clearValidate()
         })
       })
@@ -869,6 +876,76 @@ export default {
     //   })
     //   return val
     // },
+    ployTranslate(ployObj, ployIndex) {
+      // console.log(ployObj, ployIndex)
+      // ployIndex tab的index下标
+      return {
+        abstractId: ployObj.abstractId,
+        // 策略名称
+        title: ployObj.name,
+        // 策略分发范围
+        percent: ployObj.range,
+        // 策略tab id
+        name: ployIndex + 1 + '',
+        // 产品
+        product: ployObj.productInfoList.map((product) => {
+          return Object.assign({}, product, product.extraField)
+        }),
+        // 权益
+        interest: ployObj.couponInfoList,
+        channel: ployObj.strategyInfoList.map(m => {
+          // console.log(m)
+          return Object.assign({}, CHANNEL_OPT.find(x => {
+            return x.value === m.channel.value
+          }), {
+            infoId: m.infoId,
+            chooseType: m.pushType.value,
+            // validPeriod: m.clueEffectDays,
+            smsSendMode: m.sendMode?.value,
+            model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                isHover: false
+              })
+            }) : m.meterialInfoList,
+            beforeSms: m.advanceSMSInfoList || [],
+            afterSms: m.followSMSInfoList || []
+          }, (() => {
+            const obj = {}
+            if (m.pushType.value === 1) {
+              // 定时型
+              obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+              // 定时型的值-规则 (每周几或每月)
+              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
+              // 定时型的值-规则 (周几或者几号) (多选)
+              obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+              // 定时型的值-时间
+              obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
+              // 定时型的值-起止时间
+              obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+            } else if (m.pushType.value === 2) {
+              // 规则型
+              // 规则型的值
+              obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
+                return {
+                  pushTimeId: r.pushTimeId,
+                  date: r.delay,
+                  time: r.moment
+                }
+              })
+            }
+            return obj
+          })())
+        }),
+        channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
+          return Object.assign({}, c, {
+            // 已选择的渠道禁止选择
+            disabled: ployObj.strategyInfoList.some(x => x.channel.value === c.value)
+          })
+        })
+      }
+    },
     ployDetail() {
       return new Promise((resolve, reject) => {
         getPloyDetail({ baseId: this.id }).then(res => {
@@ -881,76 +958,11 @@ export default {
                 desc: n.desc,
                 totalPercent: 100,
                 ployTabs: n.strategyDetailVOList.map((n, i) => {
-                  return {
-                    abstractId: n.abstractId,
-                    // 策略名称
-                    title: n.name,
-                    // 策略分发范围
-                    percent: n.range,
-                    // 策略tab id
-                    name: i + 1 + '',
-                    // 产品
-                    product: n.productInfoList.map((product) => {
-                      return Object.assign({}, product, product.extraField)
-                    }),
-                    // 权益
-                    interest: n.couponInfoList,
-                    channel: n.strategyInfoList.map(m => {
-                      // console.log(m)
-                      return Object.assign({}, CHANNEL_OPT.find(x => {
-                        return x.value === m.channel.value
-                      }), {
-                        infoId: m.infoId,
-                        chooseType: m.pushType.value,
-                        // validPeriod: m.clueEffectDays,
-                        smsSendMode: m.sendMode?.value,
-                        model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
-                          return Object.assign({}, n, {
-                            _content: n.content,
-                            isEdit: false,
-                            isHover: false
-                          })
-                        }) : m.meterialInfoList,
-                        beforeSms: m.advanceSMSInfoList || [],
-                        afterSms: m.followSMSInfoList || []
-                      }, (() => {
-                        const obj = {}
-                        if (m.pushType.value === 1) {
-                          // 定时型
-                          obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
-                          // 定时型的值-规则 (每周几或每月)
-                          obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
-                          // 定时型的值-规则 (周几或者几号) (多选)
-                          obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
-                          // 定时型的值-时间
-                          obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
-                          // 定时型的值-起止时间
-                          obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
-                        } else if (m.pushType.value === 2) {
-                          // 规则型
-                          // 规则型的值
-                          obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
-                            return {
-                              pushTimeId: r.pushTimeId,
-                              date: r.delay,
-                              time: r.moment
-                            }
-                          })
-                        }
-                        return obj
-                      })())
-                    }),
-                    channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
-                      return Object.assign({}, c, {
-                        // 已选择的渠道禁止选择
-                        disabled: n.strategyInfoList.some(x => x.channel.value === c.value)
-                      })
-                    })
-                  }
+                  return this.ployTranslate(n, i)
                 }),
-                // v-model值
+                // v-model值：控制策略tab显示
                 ployTabsValue: '1',
-                // 累加数量
+                // 累加数量：策略数量的累加,用于显示‘新策略几’
                 ployTabIndex: n.strategyDetailVOList.length
               }
             })
@@ -1152,8 +1164,7 @@ export default {
       })
       return p
     },
-    addStrategy(item) {
-      console.log('item', item)
+    addStrategy() {
       this.showStrategy = true
       this.$nextTick(() => {
         this.$refs.strategyRef.reset()
@@ -1167,79 +1178,13 @@ export default {
         this.showStrategy = false
         console.log('val', val)
         const gi = this.groupIndex
-        // const newTabName = ++this.group[gi].ployTabIndex + ''
-        let percent = 100
-        this.group[gi].ployTabs.forEach((n, i) => {
-          percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
-        })
-        this.group[gi].ployTabs = val.map((n, i) => {
-          return {
-            // abstractId: n.abstractId,
-            // 策略名称
-            title: n.name,
-            // 策略分发范围
-            percent: n.range,
-            // 策略tab id
-            name: i + 1 + '',
-            // 产品
-            product: n.productInfoList?.map((product) => {
-              return Object.assign({}, product, product.extraField)
-            }),
-            // 权益
-            interest: n.couponInfoList,
-            channel: n.strategyInfoList?.map(m => {
-              // console.log(m)
-              return Object.assign({}, CHANNEL_OPT.find(x => {
-                return x.value === m.channel.value
-              }), {
-                infoId: m.infoId,
-                chooseType: m.pushType.value,
-                // validPeriod: m.clueEffectDays,
-                smsSendMode: m.sendMode?.value,
-                model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
-                  return Object.assign({}, n, {
-                    _content: n.content,
-                    isEdit: false,
-                    isHover: false
-                  })
-                }) : m.meterialInfoList,
-                beforeSms: m.advanceSMSInfoList || [],
-                afterSms: m.followSMSInfoList || []
-              }, (() => {
-                const obj = {}
-                if (m.pushType.value === 1) {
-                  // 定时型
-                  obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
-                  // 定时型的值-规则 (每周几或每月)
-                  obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
-                  // 定时型的值-规则 (周几或者几号) (多选)
-                  obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
-                  // 定时型的值-时间
-                  obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
-                  // 定时型的值-起止时间
-                  obj.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
-                } else if (m.pushType.value === 2) {
-                  // 规则型
-                  // 规则型的值
-                  obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
-                    return {
-                      pushTimeId: r.pushTimeId,
-                      date: r.delay,
-                      time: r.moment
-                    }
-                  })
-                }
-                return obj
-              })())
-            }),
-            channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
-              return Object.assign({}, c, {
-                // 已选择的渠道禁止选择
-                disabled: n.strategyInfoList?.some(x => x.channel.value === c.value)
-              })
-            })
-          }
-        })
+        const length = this.group[gi].ployTabs.length
+        // 添加策略
+        this.group[gi].ployTabs.push(...val.map((n, i) => {
+          return this.ployTranslate(n, i + length)
+        }))
+        // 累加数量：策略数量的累加,用于显示‘新策略几’
+        this.group[gi].ployTabIndex = this.group[gi].ployTabs.length
         this.group[gi].totalPercent = this.getTotalPercent(gi)
         // 修改简介
         this.$parent.ployDetail.ployCount = this.ployCounts
