@@ -229,7 +229,7 @@ export default {
       }, this.searchForm)
       this.loading = true
       getStragetyList(data).then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         this.tableData = res.data
         // this.total = res.pagination.totalItemCount
         this.loading = false

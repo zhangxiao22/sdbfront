@@ -141,7 +141,24 @@ export function delSms(params) {
     method: 'get',
     params
   })
+}/** ************************************************ 策略 ************************************************************/
+// 获取策略库
+export function getStragetyList(params) {
+  return request({
+    url: '/strategy/history_template',
+    method: 'get',
+    params
+  })
 }
+// list 联想搜索
+export function fuzzySearch(params) {
+  return request({
+    url: '/strategy/fuzzy_search',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 模型 ************************************************************/
 // 获取模型库
 export function queryModelList() {

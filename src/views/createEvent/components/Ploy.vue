@@ -29,7 +29,7 @@
                             }]">
                 <el-button icon="el-icon-plus"
                            type="primary"
-                           @click="addTab">
+                           @click="addStrategy(groupItem)">
                   添加策略
                 </el-button>
               </el-form-item>
@@ -637,6 +637,15 @@
       </el-tabs>
     </el-form>
 
+    <!-- 策略 -->
+    <ShunDrawer title="选择策略"
+                :show.sync="showStrategy"
+                @submit="submitStrategy()">
+      <template v-slot:container>
+        <strategy ref="strategyRef"
+                  :show-selection="true" />
+      </template>
+    </ShunDrawer>
     <!-- 产品 -->
     <ShunDrawer title="选择产品"
                 :show.sync="showProduct"
@@ -705,6 +714,7 @@ import gsap from 'gsap'
 import Info from '@/components/Info'
 import ShunDrawer from '@/components/ShunDrawer'
 import TextToHtml from '@/components/TextToHtml'
+import Strategy from '@/views/strategy/index'
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
@@ -718,7 +728,7 @@ import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 
 export default {
   components: {
-    Product, Info, Interest, Word, ShunDrawer, Sms, TextToHtml
+    Strategy, Product, Info, Interest, Word, ShunDrawer, Sms, TextToHtml
   },
   data() {
     const _this = this
@@ -731,6 +741,8 @@ export default {
       groupName: '0',
       // 人数初始值
       tweenedNumber: 0,
+      // 策略侧边栏
+      showStrategy: false,
       // 产品侧边栏
       showProduct: false,
       // 权益侧边栏
@@ -1019,7 +1031,7 @@ export default {
           // console.log(valid, field)
           if (valid) {
             // 客群
-            console.log(this.group)
+            // console.log(this.group)
             const data = this.group.map((gn, gi) => {
               return {
                 // 客群id
@@ -1039,7 +1051,7 @@ export default {
                     couponIdList: pn.interest.map(n => n.id),
                     // 渠道
                     strategyInfoList: pn.channel.map((cn, ci) => {
-                      console.log(cn)
+                      // console.log(cn)
                       return {
                         // 渠道id
                         infoId: cn.infoId,
@@ -1140,6 +1152,112 @@ export default {
       })
       return p
     },
+    addStrategy(item) {
+      console.log('item', item)
+      this.showStrategy = true
+      this.$nextTick(() => {
+        this.$refs.strategyRef.reset()
+        this.$refs.strategyRef.parentRef.setSelection([])
+      })
+    },
+    // 选择策略-确定
+    submitStrategy() {
+      const val = this.$refs.strategyRef.parentRef.getVal()
+      if (val.length) {
+        this.showStrategy = false
+        console.log('val', val)
+        const gi = this.groupIndex
+        // const newTabName = ++this.group[gi].ployTabIndex + ''
+        let percent = 100
+        this.group[gi].ployTabs.forEach((n, i) => {
+          percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
+        })
+        this.group[gi].ployTabs = val.map((n, i) => {
+          return {
+            // abstractId: n.abstractId,
+            // 策略名称
+            title: n.name,
+            // 策略分发范围
+            percent: n.range,
+            // 策略tab id
+            name: i + 1 + '',
+            // 产品
+            product: n.productInfoList?.map((product) => {
+              return Object.assign({}, product, product.extraField)
+            }),
+            // 权益
+            interest: n.couponInfoList,
+            channel: n.strategyInfoList?.map(m => {
+              // console.log(m)
+              return Object.assign({}, CHANNEL_OPT.find(x => {
+                return x.value === m.channel.value
+              }), {
+                infoId: m.infoId,
+                chooseType: m.pushType.value,
+                // validPeriod: m.clueEffectDays,
+                smsSendMode: m.sendMode?.value,
+                model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
+                  return Object.assign({}, n, {
+                    _content: n.content,
+                    isEdit: false,
+                    isHover: false
+                  })
+                }) : m.meterialInfoList,
+                beforeSms: m.advanceSMSInfoList || [],
+                afterSms: m.followSMSInfoList || []
+              }, (() => {
+                const obj = {}
+                if (m.pushType.value === 1) {
+                  // 定时型
+                  obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+                  // 定时型的值-规则 (每周几或每月)
+                  obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
+                  // 定时型的值-规则 (周几或者几号) (多选)
+                  obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+                  // 定时型的值-时间
+                  obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
+                  // 定时型的值-起止时间
+                  obj.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+                } else if (m.pushType.value === 2) {
+                  // 规则型
+                  // 规则型的值
+                  obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
+                    return {
+                      pushTimeId: r.pushTimeId,
+                      date: r.delay,
+                      time: r.moment
+                    }
+                  })
+                }
+                return obj
+              })())
+            }),
+            channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
+              return Object.assign({}, c, {
+                // 已选择的渠道禁止选择
+                disabled: n.strategyInfoList?.some(x => x.channel.value === c.value)
+              })
+            })
+          }
+        })
+        this.group[gi].totalPercent = this.getTotalPercent(gi)
+        // 修改简介
+        this.$parent.ployDetail.ployCount = this.ployCounts
+        // 校验
+        this.$nextTick(() => {
+          // 校验策略是否为空
+          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+          // 校验策略名是否重复
+          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+        })
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
     addTab() {
       const gi = this.groupIndex
       const newTabName = ++this.group[gi].ployTabIndex + ''
@@ -1173,7 +1291,7 @@ export default {
       this.$parent.ployDetail.ployCount = this.ployCounts
     },
     copyTab(ployItem) {
-      console.log(ployItem)
+      // console.log(ployItem)
       const gi = this.groupIndex
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
@@ -1273,7 +1391,7 @@ export default {
     },
     // 选择产品
     addProduct(item) {
-      console.log(item.product)
+      // console.log(item.product)
       // this.$refs.productRef && this.$refs.productRef.resetAll()
       this.showProduct = true
       this.$nextTick(() => {
