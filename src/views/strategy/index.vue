@@ -68,10 +68,10 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getSmsList, getStragetyList, fuzzySearch } from '@/api/api'
+import { getStragetyList, fuzzySearch } from '@/api/api'
 
 export default {
-  name: 'Sms',
+  name: 'Strategy',
   components: {
     ShunTable
   },
@@ -83,10 +83,6 @@ export default {
     multiple: {
       type: Boolean,
       default: true
-    },
-    commonTemplate: {
-      type: Boolean,
-      default: false
     }
   },
   data() {
@@ -118,7 +114,6 @@ export default {
         }
       ],
       tableData: [],
-      selection: [],
       useCaseList: [
         // { 'value': '用例一', 'id': 1 }
       ],
@@ -230,7 +225,11 @@ export default {
       this.loading = true
       getStragetyList(data).then(res => {
         // console.log(res.data)
-        this.tableData = res.data
+        this.tableData = res.data.map(n => {
+          return Object.assign(n, {
+            id: n.abstractId
+          })
+        })
         // this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
