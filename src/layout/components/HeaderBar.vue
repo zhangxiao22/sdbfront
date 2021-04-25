@@ -5,7 +5,7 @@
            src="@/assets/logo.png"> -->
       <svg-icon class="logo"
                 icon-class="logo" />
-      <div class="text">顺德农商银行大数据营销平台</div>
+      <div class="text">顺德农商银行 - 大数据营销平台</div>
     </div>
     <div class="right-menu">
       <!-- <div class="message-container">
