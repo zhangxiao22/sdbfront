@@ -29,11 +29,13 @@
                             }]">
                 <el-button icon="el-icon-plus"
                            type="primary"
+                           plain
                            @click="addStrategy">
-                  添加策略
+                  选择历史策略
                 </el-button>
                 <el-button icon="el-icon-plus"
                            type="primary"
+                           plain
                            @click="addTab">
                   添加空白策略
                 </el-button>
@@ -49,7 +51,7 @@
                      closable
                      @tab-click="handleChangeTab"
                      @tab-remove="handleRemoveTab">
-              {{ groupItem.ployTabs.map(n => n.name) }}
+              <!-- {{ groupItem.ployTabs.map(n => n.name) }} -->
               <el-tab-pane v-for="(ployItem,pi) of groupItem.ployTabs"
                            :key="ployItem.name"
                            :label="ployItem.title"

@@ -1,8 +1,9 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="策略库"
+                title="历史策略"
                 :loading="loading"
+                :show-pagination="false"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
@@ -18,35 +19,31 @@
                  class="filter-container">
           <el-form-item label="用例："
                         prop="useCaseName">
-            <el-autocomplete v-model="filterForm.useCaseName"
+            <el-autocomplete v-model.trim="filterForm.useCaseName"
                              class="inline-input"
-                             :fetch-suggestions="useCaseQuerySearch"
-                             placeholder="请输入内容"
-                             @select="handleSelect" />
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'useCase')}"
+                             placeholder="请输入内容" />
           </el-form-item>
           <el-form-item label="事件："
                         prop="eventName">
-            <el-autocomplete v-model="filterForm.eventName"
+            <el-autocomplete v-model.trim="filterForm.eventName"
                              class="inline-input"
-                             :fetch-suggestions="eventQuerySearch"
-                             placeholder="请输入内容"
-                             @select="handleSelect" />
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'event')}"
+                             placeholder="请输入内容" />
           </el-form-item>
           <el-form-item label="客群："
                         prop="customerGroupName">
-            <el-autocomplete v-model="filterForm.customerGroupName"
+            <el-autocomplete v-model.trim="filterForm.customerGroupName"
                              class="inline-input"
-                             :fetch-suggestions="customerQuerySearch"
-                             placeholder="请输入内容"
-                             @select="handleSelect" />
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'customerGroup')}"
+                             placeholder="请输入内容" />
           </el-form-item>
           <el-form-item label="策略："
                         prop="strategyName">
-            <el-autocomplete v-model="filterForm.strategyName"
+            <el-autocomplete v-model.trim="filterForm.strategyName"
                              class="inline-input"
-                             :fetch-suggestions="strategyQuerySearch"
-                             placeholder="请输入内容"
-                             @select="handleSelect" />
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'strategy')}"
+                             placeholder="请输入内容" />
           </el-form-item>
 
           <el-form-item class="filter-item-end">
@@ -61,6 +58,66 @@
             </el-button>
           </el-form-item>
         </el-form>
+      </template>
+      <template v-slot:productInfoListSlot="scope">
+        <template v-if="scope.row.productInfoList && scope.row.productInfoList.length">
+          <el-tooltip placement="top-start"
+                      class="hover-text">
+            <div slot="content">
+              <div v-for="(item,i) of scope.row.productInfoList"
+                   :key="i"
+                   style="margin:5px 0;">
+                {{ item.name }}
+              </div>
+            </div>
+            <span>
+              {{ scope.row.productInfoList.length }}个产品
+            </span>
+          </el-tooltip>
+        </template>
+        <div v-else>
+          无
+        </div>
+      </template>
+      <template v-slot:couponInfoListSlot="scope">
+        <template v-if="scope.row.couponInfoList && scope.row.couponInfoList.length">
+          <el-tooltip placement="top-start"
+                      class="hover-text">
+            <div slot="content">
+              <div v-for="(item,i) of scope.row.couponInfoList"
+                   :key="i"
+                   style="margin:5px 0;">
+                {{ item.name }}
+              </div>
+            </div>
+            <span>
+              {{ scope.row.couponInfoList.length }}个权益
+            </span>
+          </el-tooltip>
+        </template>
+        <div v-else>
+          无
+        </div>
+      </template>
+      <template v-slot:strategyInfoListSlot="scope">
+        <template v-if="scope.row.strategyInfoList && scope.row.strategyInfoList.length">
+          <el-tooltip placement="top-start"
+                      class="hover-text">
+            <div slot="content">
+              <div v-for="(item,i) of scope.row.strategyInfoList"
+                   :key="i"
+                   style="margin:5px 0;">
+                {{ item.channel.label }}
+              </div>
+            </div>
+            <span>
+              {{ scope.row.strategyInfoList.length }}个渠道
+            </span>
+          </el-tooltip>
+        </template>
+        <div v-else>
+          无
+        </div>
       </template>
     </shun-table>
   </div>
@@ -102,30 +159,46 @@ export default {
         {
           prop: 'name',
           label: '策略名',
-          minWidth: 200
+          minWidth: 100
         }, {
           prop: 'useCaseName',
-          label: '用例名',
-          minWidth: 200
-        }, {
+          label: '用例',
+          minWidth: 100
+        },
+        {
+          prop: 'eventName',
+          label: '事件',
+          minWidth: 100
+        },
+        {
           prop: 'customerGroupName',
-          label: '客群名',
+          label: '客群',
           minWidth: 200
+        },
+        {
+          prop: 'productInfoList',
+          label: '产品',
+          width: 100,
+          slot: true
+        },
+        {
+          prop: 'couponInfoList',
+          label: '权益',
+          width: 100,
+          slot: true
+        },
+        {
+          prop: 'strategyInfoList',
+          label: '渠道',
+          width: 100,
+          slot: true
         }
       ],
       tableData: [],
-      useCaseList: [
-        // { 'value': '用例一', 'id': 1 }
-      ],
-      eventList: [
-        // { 'value': '事件一', 'id': 1 }
-      ],
-      customerList: [
-        // { 'value': '产品一', 'id': 1 }
-      ],
-      strategyList: [
-        // { 'value': '策略一', 'id': 1 }
-      ]
+      useCaseList: [],
+      eventList: [],
+      customerGroupList: [],
+      strategyList: []
     }
   },
   computed: {
@@ -136,7 +209,7 @@ export default {
   watch: {},
   created() {
     this.search()
-    this.querySearchList()
+    this.fuzzyAll()
   },
   mounted() {
   },
@@ -149,71 +222,34 @@ export default {
       this.$refs.filterRef.resetFields()
       this.search()
     },
-    querySearchList() {
-      fuzzySearch({ useCaseName: '' }).then(res => {
-        for (const i in res.data) {
-          var j = {}
-          j.value = res.data[i]
-          this.useCaseList.push(j)
-        }
-      })
-      fuzzySearch({ eventName: '' }).then(res => {
-        for (const i in res.data) {
-          var j = {}
-          j.value = res.data[i]
-          this.eventList.push(j)
-        }
-      })
-      fuzzySearch({ customerGroupName: '' }).then(res => {
-        for (const i in res.data) {
-          var j = {}
-          j.value = res.data[i]
-          this.customerList.push(j)
-        }
-      })
-      fuzzySearch({ strategyName: '' }).then(res => {
-        for (const i in res.data) {
-          var j = {}
-          j.value = res.data[i]
-          this.strategyList.push(j)
-        }
+    fuzzySearchList(val) {
+      fuzzySearch({ [val + 'Name']: '' }).then(res => {
+        this[val + 'List'] = res.data.map(n => {
+          return {
+            value: n
+          }
+        })
       })
     },
-    useCaseQuerySearch(queryString, cb) {
-      var useCaseList = this.useCaseList
-      var results = queryString ? useCaseList.filter(this.createFilter(queryString)) : useCaseList
-      // 调用 callback 返回建议列表的数据
-      cb(results)
+    fuzzyAll() {
+      this.fuzzySearchList('useCase')
+      this.fuzzySearchList('event')
+      this.fuzzySearchList('customerGroup')
+      this.fuzzySearchList('strategy')
     },
-    eventQuerySearch(queryString, cb) {
-      var eventList = this.eventList
-      var results = queryString ? eventList.filter(this.createFilter(queryString)) : eventList
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    customerQuerySearch(queryString, cb) {
-      var customerList = this.customerList
-      var results = queryString ? customerList.filter(this.createFilter(queryString)) : customerList
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    strategyQuerySearch(queryString, cb) {
-      var strategyList = this.strategyList
-      var results = queryString ? strategyList.filter(this.createFilter(queryString)) : strategyList
+    queryUnit(queryString, cb, val) {
+      var list = this[val + 'List']
+      var results = queryString ? list.filter(this.createFilter(queryString)) : list
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
     createFilter(queryString) {
       return (n) => {
-        return (n.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+        return (n.value.toLowerCase().indexOf(queryString.toLowerCase()) >= 0)
       }
-    },
-    handleSelect(item) {
-      // console.log(item)
     },
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
-      // console.log(this.searchForm)
       this.getList(1)
     },
     getList(pageNo) {
