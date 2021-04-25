@@ -286,7 +286,7 @@ export default {
         },
         {
           prop: 'productFirstCategoryList',
-          label: '归属产品',
+          label: '关联产品',
           minWidth: 100,
           slot: true
         },

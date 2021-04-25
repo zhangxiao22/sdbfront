@@ -29,13 +29,11 @@
                             }]">
                 <el-button icon="el-icon-plus"
                            type="primary"
-                           plain
                            @click="addStrategy">
                   选择历史策略
                 </el-button>
                 <el-button icon="el-icon-plus"
                            type="primary"
-                           plain
                            @click="addTab">
                   添加空白策略
                 </el-button>
@@ -179,6 +177,7 @@
                                      :key="i"
                                      :prop="item.prop"
                                      :label="item.label"
+                                     :width="item.width"
                                      :min-width="item.minWidth" />
                   </template>
                   <el-table-column fixed="right"
