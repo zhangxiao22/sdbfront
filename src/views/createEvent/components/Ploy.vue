@@ -900,7 +900,7 @@ export default {
           return Object.assign({}, CHANNEL_OPT.find(x => {
             return x.value === m.channel.value
           }), {
-            infoId: m.infoId,
+            // infoId: m.infoId,
             chooseType: m.pushType.value,
             // validPeriod: m.clueEffectDays,
             smsSendMode: m.sendMode?.value,
@@ -917,7 +917,7 @@ export default {
             const obj = {}
             if (m.pushType.value === 1) {
               // 定时型
-              obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+              // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
               // 定时型的值-规则 (每周几或每月)
               obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
               // 定时型的值-规则 (周几或者几号) (多选)
@@ -931,7 +931,7 @@ export default {
               // 规则型的值
               obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
                 return {
-                  pushTimeId: r.pushTimeId,
+                  // pushTimeId: r.pushTimeId,
                   date: r.delay,
                   time: r.moment
                 }
@@ -1068,7 +1068,7 @@ export default {
                       // console.log(cn)
                       return {
                         // 渠道id
-                        infoId: cn.infoId,
+                        // infoId: cn.infoId,
                         // 渠道类型 1:crm 2:短信 3:微信
                         channel: cn.value,
                         // CRM线索有效期
@@ -1095,7 +1095,7 @@ export default {
                         pushTimeInfo: {
                           // 定时型的值
                           schedulePushInfo: cn.chooseType === 1 ? {
-                            pushTimeId: cn.pushTimeId,
+                            // pushTimeId: cn.pushTimeId,
                             startDate: cn.dateRange[0],
                             endDate: cn.dateRange[1],
                             intervalType: cn.timingDateType,
@@ -1105,7 +1105,7 @@ export default {
                           // 规则型的值
                           rulePushInfoList: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
                             return {
-                              pushTimeId: ruleItem.pushTimeId,
+                              // pushTimeId: ruleItem.pushTimeId,
                               delay: ruleItem.date,
                               moment: ruleItem.time
                             }
@@ -1185,9 +1185,9 @@ export default {
         val.forEach((n, i) => {
           // 累加数量
           const newTabName = ++this.group[gi].ployTabIndex
-          this.group[gi].ployTabs.push(
-            this.ployTranslate(n, newTabName)
-          )
+          const obj = this.ployTranslate(n, newTabName)
+          obj.abstractId = undefined
+          this.group[gi].ployTabs.push(obj)
         })
         // this.group[gi].ployTabs.push(...val.map((n, i) => {
         //   return this.ployTranslate(n, i + length)
