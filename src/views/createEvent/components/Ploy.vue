@@ -20,7 +20,7 @@
             </el-tag>
           </div>
           <div class="top">
-            <div class="left">当前群组人数：<b>{{ animatedNumber }}</b></div>
+            <div class="left">当前客群人数：<b>{{ animatedNumber }}</b></div>
             <div>
               <el-form-item style="margin-bottom:0;"
                             :prop="'group.' + gi + '.ployTabs'"
