@@ -21,28 +21,28 @@
                         prop="useCaseName">
             <el-autocomplete v-model.trim="filterForm.useCaseName"
                              class="inline-input"
-                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'useCase')}"
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'useCaseList')}"
                              placeholder="请输入内容" />
           </el-form-item>
           <el-form-item label="事件："
                         prop="eventName">
             <el-autocomplete v-model.trim="filterForm.eventName"
                              class="inline-input"
-                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'event')}"
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'eventList')}"
                              placeholder="请输入内容" />
           </el-form-item>
           <el-form-item label="客群："
                         prop="customerGroupName">
             <el-autocomplete v-model.trim="filterForm.customerGroupName"
                              class="inline-input"
-                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'customerGroup')}"
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'customerGroupList')}"
                              placeholder="请输入内容" />
           </el-form-item>
           <el-form-item label="策略："
                         prop="strategyName">
             <el-autocomplete v-model.trim="filterForm.strategyName"
                              class="inline-input"
-                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'strategy')}"
+                             :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'strategyList')}"
                              placeholder="请输入内容" />
           </el-form-item>
 
@@ -222,9 +222,9 @@ export default {
       this.$refs.filterRef.resetFields()
       this.search()
     },
-    fuzzySearchList(val) {
-      fuzzySearch({ [val + 'Name']: '' }).then(res => {
-        this[val + 'List'] = res.data.map(n => {
+    fuzzySearchList(v1, v2) {
+      fuzzySearch({ [v1]: '' }).then(res => {
+        this[v2] = res.data.map(n => {
           return {
             value: n
           }
@@ -232,21 +232,18 @@ export default {
       })
     },
     fuzzyAll() {
-      this.fuzzySearchList('useCase')
-      this.fuzzySearchList('event')
-      this.fuzzySearchList('customerGroup')
-      this.fuzzySearchList('strategy')
+      this.fuzzySearchList('useCaseName', 'useCaseList')
+      this.fuzzySearchList('eventName', 'eventList')
+      this.fuzzySearchList('customerGroupName', 'customerGroupList')
+      this.fuzzySearchList('strategyName', 'strategyList')
     },
     queryUnit(queryString, cb, val) {
-      var list = this[val + 'List']
-      var results = queryString ? list.filter(this.createFilter(queryString)) : list
+      const list = this[val]
+      const results = queryString ? list.filter(n => {
+        return n.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
+      }) : list
       // 调用 callback 返回建议列表的数据
       cb(results)
-    },
-    createFilter(queryString) {
-      return (n) => {
-        return (n.value.toLowerCase().indexOf(queryString.toLowerCase()) >= 0)
-      }
     },
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
