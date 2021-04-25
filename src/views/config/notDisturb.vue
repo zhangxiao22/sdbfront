@@ -90,6 +90,31 @@
                            :step="5" />
           <span class="unit">天</span>
         </el-form-item>
+        <el-form-item prop="numberOfTimesTheNumberIsNotChecked"
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户最近X次执行记录为空号，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
+            号码勾选非本人次数：
+          </div>
+          <el-input-number v-model="form.numberOfTimesTheNumberIsNotChecked"
+                           controls-position="right"
+                           :min="1"
+                           :max="100" />
+          <span class="unit">次</span>
+        </el-form-item>
+        <el-form-item prop="checkTheNumberOfDaysForNonPersonalFiltering"
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户最近X次执行记录为空号，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
+            号码勾选非本人过滤天数：
+          </div>
+          <el-input-number v-model="form.checkTheNumberOfDaysForNonPersonalFiltering"
+                           controls-position="right"
+                           :min="1"
+                           :max="1000"
+                           :step="5" />
+          <span class="unit">天</span>
+        </el-form-item>
         <el-form-item class="form-item"
                       prop="clark">
           <div slot="label">
@@ -248,6 +273,8 @@ export default {
         hateSaleIntervalDays: null,
         emptyNumbers: null,
         emptyNumbersIntervalDays: null,
+        numberOfTimesTheNumberIsNotChecked: null,
+        checkTheNumberOfDaysForNonPersonalFiltering: null,
         adviserWeeklyDistribution: null,
         personalWeeklyDistribution: null,
         networkManagerWeeklyDistribution: null,
