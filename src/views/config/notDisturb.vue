@@ -98,7 +98,7 @@
           </div>
           <el-input-number v-model="form.notPersonalPhoneTimes"
                            controls-position="right"
-                           :min="1"
+                           :min="0"
                            :max="100" />
           <span class="unit">次</span>
         </el-form-item>
@@ -110,7 +110,7 @@
           </div>
           <el-input-number v-model="form.notPersonalPhoneDays"
                            controls-position="right"
-                           :min="1"
+                           :min="0"
                            :max="1000"
                            :step="5" />
           <span class="unit">天</span>
@@ -273,8 +273,8 @@ export default {
         hateSaleIntervalDays: null,
         emptyNumbers: null,
         emptyNumbersIntervalDays: null,
-        notPersonalPhoneTimes: null,
-        notPersonalPhoneDays: null,
+        notPersonalPhoneTimes: undefined,
+        notPersonalPhoneDays: undefined,
         adviserWeeklyDistribution: null,
         personalWeeklyDistribution: null,
         networkManagerWeeklyDistribution: null,
@@ -311,6 +311,8 @@ export default {
     getList() {
       getNoDisturb().then((res) => {
         this.form = res.data
+        this.form.notPersonalPhoneTimes = res.data.notPersonalPhoneTimes || undefined
+        this.form.notPersonalPhoneDays = res.data.notPersonalPhoneDays || undefined
       })
     },
     onSubmit() {
