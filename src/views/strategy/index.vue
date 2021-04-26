@@ -20,6 +20,7 @@
           <el-form-item label="用例："
                         prop="useCaseName">
             <el-autocomplete v-model.trim="filterForm.useCaseName"
+                             clearable
                              class="inline-input"
                              :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'useCaseList')}"
                              placeholder="请输入内容" />
@@ -27,6 +28,7 @@
           <el-form-item label="事件："
                         prop="eventName">
             <el-autocomplete v-model.trim="filterForm.eventName"
+                             clearable
                              class="inline-input"
                              :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'eventList')}"
                              placeholder="请输入内容" />
@@ -34,6 +36,7 @@
           <el-form-item label="客群："
                         prop="customerGroupName">
             <el-autocomplete v-model.trim="filterForm.customerGroupName"
+                             clearable
                              class="inline-input"
                              :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'customerGroupList')}"
                              placeholder="请输入内容" />
@@ -41,6 +44,7 @@
           <el-form-item label="策略："
                         prop="strategyName">
             <el-autocomplete v-model.trim="filterForm.strategyName"
+                             clearable
                              class="inline-input"
                              :fetch-suggestions="(queryString,cb) => {queryUnit(queryString,cb,'strategyList')}"
                              placeholder="请输入内容" />
