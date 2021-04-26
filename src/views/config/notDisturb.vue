@@ -311,8 +311,8 @@ export default {
     getList() {
       getNoDisturb().then((res) => {
         this.form = res.data
-        this.form.notPersonalPhoneTimes = res.data.notPersonalPhoneTimes || undefined
-        this.form.notPersonalPhoneDays = res.data.notPersonalPhoneDays || undefined
+        this.form.notPersonalPhoneTimes = res.data.notPersonalPhoneTimes === null ? undefined : res.data.notPersonalPhoneTimes
+        this.form.notPersonalPhoneDays = res.data.notPersonalPhoneDays === null ? undefined : res.data.notPersonalPhoneDays
       })
     },
     onSubmit() {
