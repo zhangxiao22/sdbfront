@@ -20,6 +20,17 @@ import * as filters from './filters/index'
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
+Vue.directive('el-imput-blur', {
+  componentUpdated: function (el, bingind, vnode) {
+    const { min, value } = vnode.componentOptions.propsData
+    const $input = el.getElementsByTagName('input')[0]
+    console.log(min, value)
+    if (value === undefined) {
+      $input.value = min || 0
+    }
+  }
+})
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
