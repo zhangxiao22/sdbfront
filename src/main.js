@@ -20,14 +20,13 @@ import * as filters from './filters/index'
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
-Vue.directive('el-imput-blur', {
-  componentUpdated: function (el, bingind, vnode) {
-    const { min, value } = vnode.componentOptions.propsData
+Vue.directive('el-input-blur', {
+  bind(el, binding, vnode) {
     const $input = el.getElementsByTagName('input')[0]
-    console.log(min, value)
-    if (value === undefined) {
-      $input.value = min || 0
-    }
+    const min = vnode.componentOptions.propsData.min || 0
+    $input.addEventListener('blur', function () {
+      this.value = this.value || min
+    })
   }
 })
 
