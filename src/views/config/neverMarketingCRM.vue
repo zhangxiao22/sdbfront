@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="私银客户名单"
+                title="不营销客户名单（CRM）"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"

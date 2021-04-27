@@ -58,7 +58,7 @@ export default {
     return {
       tabIndex: '0',
       tabList: [{
-        label: '理顾指派',
+        label: '理财顾问指派',
         component: 'Appoint',
         loading: false,
         roles: ['线索统筹']
@@ -137,7 +137,7 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '私银客户名单',
+        label: '不营销客户名单（CRM）',
         component: 'NeverMarketingCRM',
         loading: false,
         roles: ['线索统筹']

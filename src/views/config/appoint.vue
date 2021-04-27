@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="理顾指派"
+                title="理财顾问指派"
                 :loading="loading"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
