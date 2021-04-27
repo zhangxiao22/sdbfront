@@ -1185,12 +1185,13 @@ export default {
           // 累加数量
           const newTabName = ++this.group[gi].ployTabIndex
           const obj = this.ployTranslate(n, newTabName)
+          obj.channel.forEach(n => {
+            n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+          })
           obj.abstractId = undefined
           this.group[gi].ployTabs.push(obj)
+          i === val.length - 1 && (this.group[gi].ployTabsValue = newTabName + '')
         })
-        // this.group[gi].ployTabs.push(...val.map((n, i) => {
-        //   return this.ployTranslate(n, i + length)
-        // }))
         this.group[gi].totalPercent = this.getTotalPercent(gi)
         // 修改简介
         this.$parent.ployDetail.ployCount = this.ployCounts
