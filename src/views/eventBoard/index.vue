@@ -34,9 +34,8 @@
                         prop="name">
             <el-input v-model.trim="filterForm.name"
                       style="width:300px"
-                      placeholder="搜索事件名称"
-                      clearable
-                      prefix-icon="el-icon-search" />
+                      placeholder="请填写事件名称"
+                      clearable />
           </el-form-item>
           <el-form-item label="所属用例："
                         prop="useCaseId">
@@ -138,7 +137,7 @@
                  :key="i"
                  class="btn"
                  :style="item.style"
-                 @click="item.clickFn(scope)">
+                 @click="item.clickFn">
               {{ item.name }}
             </div>
           </template>
@@ -153,7 +152,7 @@
                 <el-dropdown-item v-if="item.condition"
                                   :key="i">
                   <div class="btn"
-                       @click="item.clickFn(scope)">
+                       @click="item.clickFn">
                     {{ item.name }}
                   </div>
                 </el-dropdown-item>
@@ -316,14 +315,14 @@ export default {
       return this.$refs.table
     },
     btnList() {
-      return function (scope) {
+      return (scope) => {
         const _this = this
         const btns = [{
           condition: this.roleJudge.downloadCustomer && scope.row.loadType?.value === 1,
           style: {
             color: '#1890FF'
           },
-          clickFn(scope) {
+          clickFn() {
             return _this.handleDownload(scope.row)
           },
           name: '下载名单'
@@ -332,7 +331,7 @@ export default {
           style: {
             color: '#1890FF'
           },
-          clickFn(scope) {
+          clickFn() {
             return _this.handleEdit(scope.row)
           },
           name: '编辑'
@@ -341,7 +340,7 @@ export default {
           style: {
             color: '#1890FF'
           },
-          clickFn(scope) {
+          clickFn() {
             return _this.handleCopy(scope.row)
           },
           name: '复制'
@@ -350,7 +349,7 @@ export default {
           style: {
             color: '#f56c6c'
           },
-          clickFn(scope) {
+          clickFn() {
             return _this.handleOfflineEvent(scope.row)
           },
           name: '下线'
@@ -359,7 +358,7 @@ export default {
           style: {
             color: '#1890FF'
           },
-          clickFn(scope) {
+          clickFn() {
             return _this.handleSyncProduct(scope.row)
           },
           name: '同步产品'
@@ -368,7 +367,7 @@ export default {
           style: {
             color: '#f56c6c'
           },
-          clickFn(scope) {
+          clickFn() {
             return _this.handleDelete(scope.row)
           },
           name: '删除'
