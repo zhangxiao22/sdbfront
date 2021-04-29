@@ -32,8 +32,8 @@
                       @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item label="机构名称："
-                        prop="orgCode">
-            <el-cascader v-model="filterForm.orgCode"
+                        prop="orgId">
+            <el-cascader v-model="filterForm.orgId"
                          style="width:300px"
                          filterable
                          :options="orgOpt"
@@ -48,6 +48,7 @@
                         prop="jobId">
             <el-select v-model="filterForm.jobId"
                        style="width:200px"
+                       filterable
                        placeholder="请选择岗位"
                        clearable>
               <el-option v-for="(item, i) of jobOpt"
@@ -69,12 +70,48 @@
           </el-form-item>
         </el-form>
       </template>
+      <template v-slot:operateSlot="scope">
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleAssign(scope.row)">分配岗位</div>
+        </div>
+      </template>
     </shun-table>
+    <el-dialog title="分配岗位"
+               :visible.sync="showDialog"
+               @open="dialogOpen">
+      <el-form ref="formRef"
+               :model="form">
+        <el-form-item label="选择岗位："
+                      prop="jobId"
+                      :rules="[{
+                        required: true, message: '请选择岗位', trigger: 'blur'
+                      }]"
+                      label-width="110px">
+          <el-select v-model="form.jobId"
+                     style="width:90%;"
+                     placeholder="请选择">
+            <el-option v-for="item in jobOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="cancelAssign">取 消</el-button>
+        <el-button type="primary"
+                   :loading="buttonLoading"
+                   @click="ensureAssign">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getAllJob, getAllBranches, getEmployees, getAllBranchList } from '@/api/api'
+import { getAllJob, getEmployees, getAllBranchList, occupyJob } from '@/api/api'
 
 export default {
   name: 'Employees',
@@ -93,7 +130,13 @@ export default {
         // 员工姓名 员工工号 机构名称 岗位名称
         empName: '',
         empCode: '',
-        orgCode: '',
+        orgId: '',
+        jobId: ''
+      },
+      showDialog: false,
+      buttonLoading: false,
+      form: {
+        empCode: '',
         jobId: ''
       },
       searchForm: {},
@@ -115,6 +158,11 @@ export default {
         {
           prop: 'name',
           label: '岗位'
+        },
+        {
+          prop: 'operate',
+          label: '操作',
+          slot: true
         }
       ],
       tableData: []
@@ -140,10 +188,9 @@ export default {
       this.searchForm = {
         empName: this.filterForm.empName,
         empCode: this.filterForm.empCode,
-        orgCode: this.filterForm.orgCode?.length ? this.filterForm.orgCode[this.filterForm.orgCode.length - 1] : null,
+        orgId: this.filterForm.orgId?.length ? this.filterForm.orgId[this.filterForm.orgId.length - 1] : null,
         jobId: this.filterForm.jobId
       }
-      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     getJobOpt() {
@@ -167,7 +214,7 @@ export default {
     // },
     getBranchListOpt() {
       getAllBranchList().then(res => {
-        this.orgOpt = this.eachReplaceKey(res.data.orgGraphVOList)
+        this.orgOpt = this.eachReplaceKey(res.data)
       })
     },
     eachReplaceKey(array) {
@@ -182,6 +229,41 @@ export default {
         item.push(newData)
       })
       return item
+    },
+    handleAssign(row) {
+      this.showDialog = true
+      this.$nextTick(() => {
+        this.form.empCode = row.empCode
+      })
+    },
+    dialogOpen() {
+      this.$refs['formRef'] && this.$refs['formRef'].resetFields()
+    },
+    cancelAssign() {
+      this.showDialog = false
+    },
+    ensureAssign() {
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          this.buttonLoading = true
+          const data = {}
+          data.userIdList = [this.form.empCode]
+          data.jobId = this.form.jobId
+          occupyJob(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
+        }
+      })
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
