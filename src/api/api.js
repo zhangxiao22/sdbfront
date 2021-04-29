@@ -703,6 +703,13 @@ export function getAllBranches() {
   })
 }
 
+export function getAllBranchList() {
+  return request({
+    url: '/config/role/list',
+    method: 'get'
+  })
+}
+
 // export function totalPurchaseAmount(params) {
 //   return request({
 //     url: api2 + '/purchase_amount',

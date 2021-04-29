@@ -34,12 +34,13 @@
           <el-form-item label="机构名称："
                         prop="orgCode">
             <el-cascader v-model="filterForm.orgCode"
-                         style="width:200px"
+                         style="width:300px"
+                         filterable
                          :options="orgOpt"
-                         :props="{ value: 'org_code',
-                                   label: 'org_name',
-                                   children: 'Children',
-                                   checkStrictly: true }"
+                         :props="{ value: 'value',
+                                   label: 'label',
+                                   children: 'children'
+                         }"
                          placeholder="请选择机构名称"
                          clearable />
           </el-form-item>
@@ -73,7 +74,7 @@
 </template>
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getAllJob, getAllBranches, getEmployees } from '@/api/api'
+import { getAllJob, getAllBranches, getEmployees, getAllBranchList } from '@/api/api'
 
 export default {
   name: 'Employees',
@@ -127,15 +128,22 @@ export default {
   methods: {
     init() {
       this.getJobOpt()
-      this.getBranchOpt()
+      // this.getBranchOpt()
       this.search()
+      this.getBranchListOpt()
     },
     reset() {
       this.$refs.filterRef.resetFields()
       this.search()
     },
     search() {
-      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      this.searchForm = {
+        empName: this.filterForm.empName,
+        empCode: this.filterForm.empCode,
+        orgCode: this.filterForm.orgCode?.length ? this.filterForm.orgCode[this.filterForm.orgCode.length - 1] : null,
+        jobId: this.filterForm.jobId
+      }
+      // this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     getJobOpt() {
@@ -152,10 +160,28 @@ export default {
         })
       })
     },
-    getBranchOpt() {
-      getAllBranches().then(res => {
-        this.orgOpt = res.data
+    // getBranchOpt() {
+    //   getAllBranches().then(res => {
+    //     this.orgOpt = res.data
+    //   })
+    // },
+    getBranchListOpt() {
+      getAllBranchList().then(res => {
+        this.orgOpt = this.eachReplaceKey(res.data.orgGraphVOList)
       })
+    },
+    eachReplaceKey(array) {
+      const item = []
+      array.map(arr => {
+        const newData = {}
+        newData.label = arr.orgName
+        newData.value = arr.orgId
+        if (arr.subOrgList && arr.subOrgList.length) {
+          newData.children = this.eachReplaceKey(arr.subOrgList)
+        }
+        item.push(newData)
+      })
+      return item
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
