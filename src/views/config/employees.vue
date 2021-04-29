@@ -51,7 +51,7 @@
                        filterable
                        placeholder="请选择岗位"
                        clearable>
-              <el-option v-for="(item, i) of jobOpt"
+              <el-option v-for="(item, i) of changeOpt"
                          :key="i"
                          :label="item.label"
                          :value="item.value" />
@@ -82,18 +82,21 @@
                :visible.sync="showDialog"
                @open="dialogOpen">
       <el-form ref="formRef"
+               class="shun-label"
                :model="form">
-        <el-form-item label="选择岗位："
-                      prop="jobId"
-                      :rules="[{
-                        required: true, message: '请选择岗位', trigger: 'blur'
-                      }]"
+        <el-form-item prop="jobId"
                       label-width="110px">
+          <div slot="label">
+            <Info content="未选择时表示未分配" />
+            选择岗位：
+          </div>
           <el-select v-model="form.jobId"
-                     style="width:90%;"
-                     placeholder="请选择">
-            <el-option v-for="item in jobOpt"
-                       :key="item.value"
+                     placeholder="请选择岗位"
+                     clearable
+                     filterable
+                     style="width:90%;">
+            <el-option v-for="(item,i) in jobAssignOpt"
+                       :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
@@ -112,10 +115,12 @@
 <script>
 import ShunTable from '@/components/ShunTable'
 import { getAllJob, getEmployees, getAllBranchList, occupyJob } from '@/api/api'
+import Info from '@/components/Info'
 
 export default {
   name: 'Employees',
   components: {
+    Info,
     ShunTable
   },
   props: {
@@ -131,17 +136,17 @@ export default {
         empName: '',
         empCode: '',
         orgId: '',
-        jobId: ''
+        jobId: null
       },
       showDialog: false,
       buttonLoading: false,
       form: {
         empCode: '',
-        jobId: ''
+        jobId: null
       },
       searchForm: {},
       orgOpt: [],
-      jobOpt: [],
+      jobAssignOpt: [],
       tableColumnList: [
         {
           prop: 'empName',
@@ -169,6 +174,14 @@ export default {
     }
   },
   computed: {
+    changeOpt() {
+      const opt = [{
+        label: '未分配',
+        value: -1
+      }]
+      opt.push(...this.jobAssignOpt)
+      return opt
+    }
   },
   watch: {},
   created() {
@@ -179,31 +192,23 @@ export default {
       // this.getBranchOpt()
       this.search()
       this.getBranchListOpt()
+      console.log(this.changeOpt)
     },
     reset() {
       this.$refs.filterRef.resetFields()
       this.search()
     },
     search() {
-      this.searchForm = {
-        empName: this.filterForm.empName,
-        empCode: this.filterForm.empCode,
-        orgId: this.filterForm.orgId?.length ? this.filterForm.orgId[this.filterForm.orgId.length - 1] : null,
-        jobId: this.filterForm.jobId
-      }
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     getJobOpt() {
       getAllJob().then(res => {
-        this.jobOpt = [{
-          label: '未分配',
-          value: -1
-        }]
-        res.data.forEach(n => {
-          this.jobOpt.push({
+        this.jobAssignOpt = res.data.map(n => {
+          return {
             value: n.id,
             label: n.name
-          })
+          }
         })
       })
     },
@@ -234,6 +239,7 @@ export default {
       this.showDialog = true
       this.$nextTick(() => {
         this.form.empCode = row.empCode
+        this.form.jobId = row.jobId
       })
     },
     dialogOpen() {
@@ -248,7 +254,7 @@ export default {
           this.buttonLoading = true
           const data = {}
           data.userIdList = [this.form.empCode]
-          data.jobId = this.form.jobId
+          data.jobId = this.form.jobId === '' ? null : this.form.jobId
           occupyJob(data).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -267,10 +273,14 @@ export default {
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
-      const data = Object.assign({
-        pageNo: this.currentPage,
-        pageSize: this.pageSize
-      }, this.searchForm)
+      const data = Object.assign(
+        {
+          pageNo: this.currentPage,
+          pageSize: this.pageSize
+        },
+        this.searchForm,
+        { orgId: this.filterForm.orgId?.length ? this.filterForm.orgId[this.filterForm.orgId.length - 1] : null }
+      )
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
       getEmployees(data).then(res => {
