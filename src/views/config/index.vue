@@ -56,7 +56,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '2',
+      tabIndex: '0',
       tabList: [{
         label: '理财顾问指派',
         component: 'Appoint',
