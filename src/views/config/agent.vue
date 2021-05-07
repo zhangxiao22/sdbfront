@@ -66,24 +66,21 @@
                :before-close="cancelAdd"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
-               label-width="110px"
+               label-width="130px"
                :model="form">
+        {{ form.empCode }}
         <el-form-item label="员工名称："
                       :rules="[{
-                        required: true, message: '请选择员工姓名', trigger: 'change'
+                        validator: validateEmpCode,trigger: 'blur'
                       }]"
-                      prop="empCode"
-                      label-width="110px">
-          <el-select v-model="form.empCode"
-                     clearable
-                     filterable
-                     @change="handleSelectEmp">
-            <el-option v-for="item in empListOpt"
-                       :key="item.value"
-                       :disabled="item.disabled"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
+                      prop="empCode">
+          <el-autocomplete v-model="form.empCode"
+                           :trigger-on-focus="false"
+                           clearable
+                           class="inline-input"
+                           :fetch-suggestions="querySearch"
+                           placeholder="请输入内容"
+                           @change="handleSelectEmp" />
         </el-form-item>
         <el-form-item class="shun-label"
                       :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
@@ -104,9 +101,8 @@
                           start-placeholder="开始日期"
                           end-placeholder="结束日期" />
         </el-form-item>
-        <el-form-item label="代办人："
-                      prop="agentCode"
-                      label-width="110px">
+        <!-- <el-form-item label="代办人："
+                      prop="agentCode">
           <el-select v-model="form.agentCode"
                      clearable
                      filterable
@@ -117,7 +113,7 @@
                        :disabled="item.disabled"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="备注："
                       prop="remark">
           <el-input v-model.trim="form.remark"
@@ -181,9 +177,7 @@ export default {
         empCode: '',
         remark: ''
       },
-      empListOpt: [
-
-      ],
+      empListOpt: [],
       searchForm: {
       },
       tableColumnList: [
@@ -262,12 +256,29 @@ export default {
       getEmpInCurrentOrg().then(res => {
         this.empListOpt = res.data.map(n => {
           return {
-            label: n.empCode + '-' + n.empName,
-            value: n.empCode,
+            label: n.empCode,
+            value: n.empCode + '-' + n.empName,
             disabled: false
           }
         })
       })
+    },
+    querySearch(queryString, cb) {
+      const list = this.empListOpt
+      const results = queryString ? list.filter(n => {
+        return n.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
+      }) : list
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    validateEmpCode(rule, value, callback) {
+      this.empListOpt.find(n => {
+        if (!(n.value === this.form.empCode)) {
+          callback(new Error('请输入正确姓名'))
+          return true
+        }
+      })
+      callback()
     },
     handleSelectEmp() {
       this.empListOpt.forEach(n => {
