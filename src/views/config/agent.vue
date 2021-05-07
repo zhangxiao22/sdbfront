@@ -70,13 +70,13 @@
                :model="form">
         <!-- {{ form.empCode }} -->
         <el-form-item label="员工名称："
+                      required
                       :rules="[{
                         validator: validateEmpCode
                       }]"
                       prop="empCode">
           <el-autocomplete v-model="form.empCode"
                            :trigger-on-focus="false"
-                           clearable
                            class="inline-input"
                            :fetch-suggestions="querySearch"
                            placeholder="请输入内容"
@@ -108,7 +108,6 @@
                       prop="agentCode">
           <el-autocomplete v-model="form.agentCode"
                            :trigger-on-focus="false"
-                           clearable
                            class="inline-input"
                            :fetch-suggestions="querySearch"
                            placeholder="请输入内容"
@@ -328,20 +327,19 @@ export default {
             startTime: this.form.dateRange[0],
             endTime: this.form.dateRange[1]
           }
-          console.log(data)
-          // addEmpLeave(data).then(res => {
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.showDialog = false
-          //     this.getList()
-          //   }
-          // }).finally(() => {
-          //   this.buttonLoading = false
-          // })
+          addEmpLeave(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
