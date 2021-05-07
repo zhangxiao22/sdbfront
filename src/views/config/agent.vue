@@ -68,10 +68,10 @@
       <el-form ref="regFormRef"
                label-width="130px"
                :model="form">
-        {{ form.empCode }}
+        <!-- {{ form.empCode }} -->
         <el-form-item label="员工名称："
                       :rules="[{
-                        validator: validateEmpCode,trigger: 'blur'
+                        validator: validateEmpCode
                       }]"
                       prop="empCode">
           <el-autocomplete v-model="form.empCode"
@@ -101,19 +101,19 @@
                           start-placeholder="开始日期"
                           end-placeholder="结束日期" />
         </el-form-item>
-        <!-- <el-form-item label="代办人："
+        <el-form-item label="代办人："
+                      :rules="[{
+                        validator: validateAgentCode
+                      }]"
                       prop="agentCode">
-          <el-select v-model="form.agentCode"
-                     clearable
-                     filterable
-                     @change="handleSelectEmp">
-            <el-option v-for="item in empListOpt"
-                       :key="item.value"
-                       :label="item.label"
-                       :disabled="item.disabled"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
+          <el-autocomplete v-model="form.agentCode"
+                           :trigger-on-focus="false"
+                           clearable
+                           class="inline-input"
+                           :fetch-suggestions="querySearch"
+                           placeholder="请输入内容"
+                           @change="handleSelectEmp" />
+        </el-form-item>
         <el-form-item label="备注："
                       prop="remark">
           <el-input v-model.trim="form.remark"
@@ -272,13 +272,27 @@ export default {
       cb(results)
     },
     validateEmpCode(rule, value, callback) {
-      this.empListOpt.find(n => {
-        if (!(n.value === this.form.empCode)) {
-          callback(new Error('请输入正确姓名'))
-          return true
-        }
+      const hasSome = this.empListOpt.some(n => {
+        return n.value === this.form.empCode
       })
-      callback()
+      if (hasSome) {
+        callback()
+      } else {
+        callback(new Error('请输入匹配项'))
+      }
+    },
+    validateAgentCode(rule, value, callback) {
+      if (!this.form.agentCode) {
+        callback()
+      }
+      const hasSome = this.empListOpt.some(n => {
+        return n.value === this.form.agentCode
+      })
+      if (hasSome) {
+        callback()
+      } else {
+        callback(new Error('请输入匹配项'))
+      }
     },
     handleSelectEmp() {
       this.empListOpt.forEach(n => {
@@ -304,25 +318,30 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const data = {
-            empCode: this.form.empCode,
-            agentCode: this.form.agentCode,
+            empCode: this.empListOpt.find(n => {
+              return n.value === this.form.empCode
+            }).label,
+            agentCode: this.empListOpt.find(n => {
+              return n.value === this.form.agentCode
+            })?.label,
             remark: this.form.remark,
             startTime: this.form.dateRange[0],
             endTime: this.form.dateRange[1]
           }
-          addEmpLeave(data).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.showDialog = false
-              this.getList()
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-          })
+          console.log(data)
+          // addEmpLeave(data).then(res => {
+          //   if (res.code === 200) {
+          //     this.$message({
+          //       message: '保存成功',
+          //       type: 'success',
+          //       duration: '3000'
+          //     })
+          //     this.showDialog = false
+          //     this.getList()
+          //   }
+          // }).finally(() => {
+          //   this.buttonLoading = false
+          // })
         }
       })
     },
