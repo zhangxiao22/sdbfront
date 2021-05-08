@@ -1,9 +1,27 @@
 <template>
   <div class="container">
-    {{ num }}
-    <el-input-number v-model="num"
-                     v-el-imput-blur
-                     :min="66" />
+    <el-autocomplete v-model="state1"
+                     class="inline-input"
+                     :fetch-suggestions="querySearch"
+                     placeholder="请输入内容"
+                     @select="handleSelect">
+      <template slot-scope="{ item }">
+        <div class="opt-item"
+             :class="{disabled:item.disabled}"
+             @click="handleTestClick($event,item)">{{ item.value }}{{ item.disabled }}</div>
+      </template>
+    </el-autocomplete>
+    <el-autocomplete v-model="state2"
+                     class="inline-input"
+                     :fetch-suggestions="querySearch"
+                     placeholder="请输入内容"
+                     @select="handleSelect">
+      <template slot-scope="{ item }">
+        <div class="opt-item"
+             :class="{disabled:item.disabled}"
+             @click="handleTestClick($event,item)">{{ item.value }}{{ item.disabled }}</div>
+      </template>
+    </el-autocomplete>
   </div>
 </template>
 
@@ -12,7 +30,6 @@ import ShunTable from '@/components/ShunTable'
 import { getSmsList, getStragetyList, fuzzySearch } from '@/api/api'
 
 export default {
-  name: 'Sms',
   components: {
   },
   directives: {
@@ -64,7 +81,9 @@ export default {
   },
   data() {
     return {
-      num: undefined
+      restaurants: [],
+      state1: '',
+      state2: ''
     }
   },
   computed: {
@@ -74,9 +93,41 @@ export default {
 
   },
   mounted() {
+    this.restaurants = this.loadAll()
   },
   methods: {
-
+    querySearch(queryString, cb) {
+      var restaurants = this.restaurants
+      var results = queryString ? restaurants.filter(this.createFilter(queryString)) : restaurants
+      // 调用 callback 返回建议列表的数据
+      cb(results)
+    },
+    createFilter(queryString) {
+      return (restaurant) => {
+        return (restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0)
+      }
+    },
+    loadAll() {
+      return [
+        { 'value': '11', disabled: false },
+        { 'value': '22', disabled: false },
+        { 'value': '33', disabled: false },
+        { 'value': '44', disabled: false }]
+    },
+    handleSelect(item) {
+      console.log(item)
+      this.restaurants.some(n => {
+        if (n.value === item.value) {
+          n.disabled = true
+          return true
+        }
+      })
+    },
+    handleTestClick(event, item) {
+      if (item.disabled) {
+        event.stopPropagation()
+      }
+    }
   }
 }
 </script>
@@ -85,5 +136,11 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+}
+.opt-item {
+  &.disabled {
+    color: #ccc;
+    cursor: not-allowed;
+  }
 }
 </style>
