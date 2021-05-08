@@ -75,12 +75,19 @@
                         validator: validateEmpCode
                       }]"
                       prop="empCode">
-          <el-autocomplete v-model="form.empCode"
+          <el-autocomplete ref="empRef"
+                           v-model.trim="form.empCode"
                            :trigger-on-focus="false"
                            class="inline-input"
                            :fetch-suggestions="querySearch"
                            placeholder="请输入内容"
-                           @change="handleSelectEmp" />
+                           clearable
+                           @clear="handleClearEmp"
+                           @change="handleSelectEmp">
+            <template slot-scope="{ item }">
+              <div>{{ item.value }}</div>
+            </template>
+          </el-autocomplete>
         </el-form-item>
         <el-form-item class="shun-label"
                       :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
@@ -106,12 +113,15 @@
                         validator: validateAgentCode
                       }]"
                       prop="agentCode">
-          <el-autocomplete v-model="form.agentCode"
+          <el-autocomplete ref="agentRef"
+                           v-model.trim="form.agentCode"
                            :trigger-on-focus="false"
                            class="inline-input"
                            :fetch-suggestions="querySearch"
+                           clearable
                            placeholder="请输入内容"
-                           @change="handleSelectEmp" />
+                           @change="handleSelectEmp"
+                           @clear="handleClearAgent" />
         </el-form-item>
         <el-form-item label="备注："
                       prop="remark">
@@ -176,7 +186,18 @@ export default {
         empCode: '',
         remark: ''
       },
-      empListOpt: [],
+      empListOpt: [
+        {
+          label: '123',
+          value: '123' + '-' + '张三',
+          disabled: false
+        },
+        {
+          label: '124',
+          value: '124' + '-' + '张四',
+          disabled: false
+        }
+      ],
       searchForm: {
       },
       tableColumnList: [
@@ -211,6 +232,11 @@ export default {
           width: 100
         },
         {
+          prop: 'agentCode',
+          label: '代办人工号',
+          width: 150
+        },
+        {
           prop: 'type',
           label: '类型',
           slot: true,
@@ -237,7 +263,7 @@ export default {
   methods: {
     init() {
       this.search()
-      this.getEmpListOpt()
+      // this.getEmpListOpt()
     },
     resetAll() {
       this.reset()
@@ -250,6 +276,18 @@ export default {
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
+    },
+    handleClearEmp() {
+      this.$refs['empRef'].$el.querySelector('input').blur()
+      this.$nextTick(() => {
+        this.$refs['empRef'].focus()
+      })
+    },
+    handleClearAgent() {
+      this.$refs['agentRef'].$el.querySelector('input').blur()
+      this.$nextTick(() => {
+        this.$refs['agentRef'].focus()
+      })
     },
     getEmpListOpt() {
       getEmpInCurrentOrg().then(res => {
