@@ -77,15 +77,18 @@
                       prop="empCode">
           <el-autocomplete ref="empRef"
                            v-model.trim="form.empCode"
+                           class="autocomplet"
                            :trigger-on-focus="false"
-                           class="inline-input"
                            :fetch-suggestions="querySearch"
                            placeholder="请输入内容"
                            clearable
                            @clear="handleClearEmp"
-                           @change="handleSelectEmp">
+                           @change="handleSelectEmp"
+                           @select="handleSelect">
             <template slot-scope="{ item }">
-              <div>{{ item.value }}</div>
+              <div class="opt-item"
+                   :class="{disabled:!item.disabled}"
+                   @click.stop="handleTestClick(item)">{{ item.value }}{{ item.disabled }}</div>
             </template>
           </el-autocomplete>
         </el-form-item>
@@ -116,7 +119,6 @@
           <el-autocomplete ref="agentRef"
                            v-model.trim="form.agentCode"
                            :trigger-on-focus="false"
-                           class="inline-input"
                            :fetch-suggestions="querySearch"
                            clearable
                            placeholder="请输入内容"
@@ -190,7 +192,7 @@ export default {
         {
           label: '123',
           value: '123' + '-' + '张三',
-          disabled: false
+          disabled: true
         },
         {
           label: '124',
@@ -336,6 +338,14 @@ export default {
         n.disabled = (n.value === this.form.empCode || n.value === this.form.agentCode)
       })
     },
+    handleSelect(val) {
+      console.log('select')
+      if (!val.disabled) return
+    },
+    handleTestClick(val) {
+      console.log('click')
+      if (!val.disabled) return
+    },
     resetDialog() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.empListOpt.forEach(n => {
@@ -425,6 +435,12 @@ export default {
 .container {
   .btn {
     cursor: pointer;
+  }
+}
+.opt-item {
+  &.disabled {
+    color: #ccc;
+    cursor: not-allowed;
   }
 }
 </style>
