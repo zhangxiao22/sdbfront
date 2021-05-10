@@ -60,8 +60,7 @@ export const CHANNEL_OPT = [
       // }
     ],
     model: []
-  }
-  // {
+  }, // {
   //   value: 3,
   //   label: '微信',
   //   disabled: false,
@@ -87,6 +86,15 @@ export const CHANNEL_OPT = [
   //   }],
   //   model: []
   // }
+
+  {
+    value: 4,
+    label: 'STM',
+    disabled: false,
+    icon: 'wechat',
+    iconColor: '#67c23a',
+    dateRange: []
+  }
 ]
 export const TIMING_OPT = [
   {
