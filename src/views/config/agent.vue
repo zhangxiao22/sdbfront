@@ -53,6 +53,12 @@
           新增
         </el-button>
       </template>
+      <template v-slot:empNameSlot="props">
+        {{ props.row.empCode }}-{{ props.row.empName }}
+      </template>
+      <template v-slot:agentNameSlot="props">
+        {{ props.row.agentCode ? props.row.agentCode + '-' + props.row.agentName : '' }}
+      </template>
       <template v-slot:typeSlot="props">
         {{ props.row.type === 1 ? "代办" : "请假" }}
       </template>
@@ -197,13 +203,9 @@ export default {
       tableColumnList: [
         {
           prop: 'empName',
-          label: '员工姓名',
-          width: 100
-        },
-        {
-          prop: 'empCode',
-          label: '员工号',
-          minWidth: 150
+          label: '员工',
+          slot: true,
+          width: 150
         },
         // {
         //   prop: 'orgName',
@@ -223,11 +225,7 @@ export default {
         {
           prop: 'agentName',
           label: '代办人',
-          width: 100
-        },
-        {
-          prop: 'agentCode',
-          label: '代办人工号',
+          slot: true,
           width: 150
         },
         {
@@ -235,6 +233,10 @@ export default {
           label: '类型',
           slot: true,
           width: 100
+        },
+        {
+          prop: 'remark',
+          label: '备注'
         },
         {
           prop: 'operate',
