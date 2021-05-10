@@ -68,22 +68,25 @@
       <el-form ref="regFormRef"
                label-width="130px"
                :model="form">
-        <!-- {{ form.empCode }} -->
-        <el-form-item label="员工名称："
+        {{ form.empCode }}
+        <el-form-item label="员工："
                       required
+                      prop="empCode"
                       :rules="[{
-                        validator: validatorMethod
-                      }]"
-                      prop="empCode">
-          <el-autocomplete ref="empRef"
-                           v-model.trim="form.empCode"
-                           class="autocomplet"
-                           :trigger-on-focus="false"
-                           :fetch-suggestions="querySearch"
-                           placeholder="请输入内容"
-                           clearable
-                           @clear="handleClearEmp"
-                           @change="handleSelectEmp" />
+                        validator: validateMethod
+                      }]">
+          <el-select v-model="form.empCode"
+                     filterable
+                     remote
+                     clearable
+                     placeholder="请输入员工名/员工号"
+                     :remote-method="(query)=>remoteMethod(query,'empListOpt1')"
+                     @clear="empListOpt1=[]">
+            <el-option v-for="item in empListOpt1"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item class="shun-label"
                       :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
@@ -105,18 +108,22 @@
                           end-placeholder="结束日期" />
         </el-form-item>
         <el-form-item label="代办人："
+                      prop="agentCode"
                       :rules="[{
-                        validator: validatorMethod
-                      }]"
-                      prop="agentCode">
-          <el-autocomplete ref="agentRef"
-                           v-model.trim="form.agentCode"
-                           :trigger-on-focus="false"
-                           :fetch-suggestions="querySearch"
-                           clearable
-                           placeholder="请输入内容"
-                           @change="handleSelectEmp"
-                           @clear="handleClearAgent" />
+                        validator: validateMethod
+                      }]">
+          <el-select v-model="form.agentCode"
+                     filterable
+                     remote
+                     clearable
+                     placeholder="请输入员工名/员工号"
+                     :remote-method="(query)=>remoteMethod(query,'empListOpt2')"
+                     @clear="empListOpt2=[]">
+            <el-option v-for="item in empListOpt2"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="备注："
                       prop="remark">
@@ -180,16 +187,9 @@ export default {
         empCode: '',
         remark: ''
       },
-      empListOpt: [
-        // {
-        //   label: '123',
-        //   value: '123' + '-' + '张三'
-        // },
-        // {
-        //   label: '124',
-        //   value: '124' + '-' + '张四'
-        // }
-      ],
+      empListOptOrigin: [],
+      empListOpt1: [],
+      empListOpt2: [],
       searchForm: {
       },
       tableColumnList: [
@@ -281,47 +281,52 @@ export default {
         this.$refs['agentRef'].focus()
       })
     },
+    handleClearEmp() {
+      this.$refs['empRef'].$el.querySelector('input').blur()
+      this.$nextTick(() => {
+        this.$refs['empRef'].focus()
+      })
+    },
+    handleClearAgent() {
+      this.$refs['agentRef'].$el.querySelector('input').blur()
+      this.$nextTick(() => {
+        this.$refs['agentRef'].focus()
+      })
+    },
+
     getEmpListOpt() {
       getEmpInCurrentOrg().then(res => {
-        this.empListOpt = res.data.map(n => {
+        this.empListOptOrigin = res.data.map(n => {
           return {
-            label: n.empCode,
-            value: n.empCode + '-' + n.empName
+            label: n.empCode + '-' + n.empName,
+            value: n.empCode
           }
         })
       })
     },
-    querySearch(queryString, cb) {
-      const list = this.empListOpt
-      const results = queryString ? list.filter(n => {
-        return n.value.toLowerCase().indexOf(queryString.toLowerCase()) !== -1
-      }) : list
-      // 调用 callback 返回建议列表的数据
-      cb(results)
-    },
-    validatorMethod(rule, value, callback, source) {
-      // console.log(Object.keys(source))
-      if (value) {
-        const hasSome = this.empListOpt.some(n => {
-          return n.value === value
+    remoteMethod(query, key) {
+      if (query !== '') {
+        this[key] = this.empListOptOrigin.filter(n => {
+          // const value = key === 'empListOpt1' ? this.form.agentCode : this.form.empCode
+          // n.disabled = n.value === value
+          return n.label.toLowerCase().indexOf(query.toLowerCase()) > -1
         })
-        if (hasSome) {
-          if (this.form.agentCode === this.form.empCode) {
-            callback(new Error('相同员工与代办人'))
-          }
-          callback()
-        } else {
-          callback(new Error('请输入匹配项'))
-        }
-      } else if (Object.keys(source)[0] === 'empCode') {
-        callback(new Error('请输入匹配项'))
       } else {
-        callback()
+        this[key] = []
       }
     },
-    handleSelectEmp() {
-      this.$refs.regFormRef.validateField('empCode')
-      this.$refs.regFormRef.validateField('agentCode')
+    validateMethod(rule, value, callback, source) {
+      if (value) {
+        if (this.form.agentCode === this.form.empCode) {
+          return callback(new Error('员工和代办人不能相同'))
+        }
+        callback()
+      } else {
+        if (Object.keys(source)[0] === 'empCode') {
+          return callback(new Error('请选择员工'))
+        }
+        callback()
+      }
     },
     resetDialog() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
@@ -339,12 +344,12 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const data = {
-            empCode: this.empListOpt.find(n => {
-              return n.value === this.form.empCode
-            }).label,
-            agentCode: this.empListOpt.find(n => {
-              return n.value === this.form.agentCode
-            })?.label,
+            // empCode: this.empListOpt.find(n => {
+            //   return n.value === this.form.empCode
+            // }).label,
+            // agentCode: this.empListOpt.find(n => {
+            //   return n.value === this.form.agentCode
+            // })?.label,
             remark: this.form.remark,
             startTime: this.form.dateRange[0],
             endTime: this.form.dateRange[1]
