@@ -72,7 +72,7 @@
         <el-form-item label="员工名称："
                       required
                       :rules="[{
-                        validator: validateEmpCode
+                        validator: validatorMethod
                       }]"
                       prop="empCode">
           <el-autocomplete ref="empRef"
@@ -83,14 +83,7 @@
                            placeholder="请输入内容"
                            clearable
                            @clear="handleClearEmp"
-                           @change="handleSelectEmp"
-                           @select="handleSelect">
-            <template slot-scope="{ item }">
-              <div class="opt-item"
-                   :class="{disabled:!item.disabled}"
-                   @click.stop="handleTestClick(item)">{{ item.value }}{{ item.disabled }}</div>
-            </template>
-          </el-autocomplete>
+                           @change="handleSelectEmp" />
         </el-form-item>
         <el-form-item class="shun-label"
                       :rules="[{required: true, message: '请选择请假时间', trigger: 'blur'
@@ -113,7 +106,7 @@
         </el-form-item>
         <el-form-item label="代办人："
                       :rules="[{
-                        validator: validateAgentCode
+                        validator: validatorMethod
                       }]"
                       prop="agentCode">
           <el-autocomplete ref="agentRef"
@@ -171,7 +164,6 @@ export default {
           return dateTime < testStartTime
         }
       },
-      participantsOptions: [],
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -189,16 +181,14 @@ export default {
         remark: ''
       },
       empListOpt: [
-        {
-          label: '123',
-          value: '123' + '-' + '张三',
-          disabled: true
-        },
-        {
-          label: '124',
-          value: '124' + '-' + '张四',
-          disabled: false
-        }
+        // {
+        //   label: '123',
+        //   value: '123' + '-' + '张三'
+        // },
+        // {
+        //   label: '124',
+        //   value: '124' + '-' + '张四'
+        // }
       ],
       searchForm: {
       },
@@ -265,7 +255,7 @@ export default {
   methods: {
     init() {
       this.search()
-      // this.getEmpListOpt()
+      this.getEmpListOpt()
     },
     resetAll() {
       this.reset()
@@ -296,8 +286,7 @@ export default {
         this.empListOpt = res.data.map(n => {
           return {
             label: n.empCode,
-            value: n.empCode + '-' + n.empName,
-            disabled: false
+            value: n.empCode + '-' + n.empName
           }
         })
       })
@@ -310,47 +299,32 @@ export default {
       // 调用 callback 返回建议列表的数据
       cb(results)
     },
-    validateEmpCode(rule, value, callback) {
-      const hasSome = this.empListOpt.some(n => {
-        return n.value === this.form.empCode
-      })
-      if (hasSome) {
-        callback()
-      } else {
+    validatorMethod(rule, value, callback, source) {
+      // console.log(Object.keys(source))
+      if (value) {
+        const hasSome = this.empListOpt.some(n => {
+          return n.value === value
+        })
+        if (hasSome) {
+          if (this.form.agentCode === this.form.empCode) {
+            callback(new Error('相同员工与代办人'))
+          }
+          callback()
+        } else {
+          callback(new Error('请输入匹配项'))
+        }
+      } else if (Object.keys(source)[0] === 'empCode') {
         callback(new Error('请输入匹配项'))
-      }
-    },
-    validateAgentCode(rule, value, callback) {
-      if (!this.form.agentCode) {
-        callback()
-      }
-      const hasSome = this.empListOpt.some(n => {
-        return n.value === this.form.agentCode
-      })
-      if (hasSome) {
-        callback()
       } else {
-        callback(new Error('请输入匹配项'))
+        callback()
       }
     },
     handleSelectEmp() {
-      this.empListOpt.forEach(n => {
-        n.disabled = (n.value === this.form.empCode || n.value === this.form.agentCode)
-      })
-    },
-    handleSelect(val) {
-      console.log('select')
-      if (!val.disabled) return
-    },
-    handleTestClick(val) {
-      console.log('click')
-      if (!val.disabled) return
+      this.$refs.regFormRef.validateField('empCode')
+      this.$refs.regFormRef.validateField('agentCode')
     },
     resetDialog() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-      this.empListOpt.forEach(n => {
-        n.disabled = false
-      })
     },
     handleAddList() {
       this.resetDialog()
@@ -435,12 +409,6 @@ export default {
 .container {
   .btn {
     cursor: pointer;
-  }
-}
-.opt-item {
-  &.disabled {
-    color: #ccc;
-    cursor: not-allowed;
   }
 }
 </style>
