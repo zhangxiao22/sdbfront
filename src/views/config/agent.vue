@@ -68,7 +68,7 @@
       <el-form ref="regFormRef"
                label-width="130px"
                :model="form">
-        {{ form.empCode }}
+        <!-- {{ form.empCode }} -->
         <el-form-item label="员工："
                       required
                       prop="empCode"
@@ -80,9 +80,10 @@
                      remote
                      clearable
                      placeholder="请输入员工名/员工号"
-                     :remote-method="(query)=>remoteMethod(query,'empListOpt1')"
-                     @clear="empListOpt1=[]">
-            <el-option v-for="item in empListOpt1"
+                     :remote-method="(query)=>remoteMethod(query,'empListOptEmp')"
+                     @clear="empListOptEmp=[]"
+                     @change="handleChange">
+            <el-option v-for="item in empListOptEmp"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
@@ -117,9 +118,10 @@
                      remote
                      clearable
                      placeholder="请输入员工名/员工号"
-                     :remote-method="(query)=>remoteMethod(query,'empListOpt2')"
-                     @clear="empListOpt2=[]">
-            <el-option v-for="item in empListOpt2"
+                     :remote-method="(query)=>remoteMethod(query,'empListOptAgent')"
+                     @clear="empListOptAgent=[]"
+                     @change="handleChange">
+            <el-option v-for="item in empListOptAgent"
                        :key="item.value"
                        :label="item.label"
                        :value="item.value" />
@@ -188,8 +190,8 @@ export default {
         remark: ''
       },
       empListOptOrigin: [],
-      empListOpt1: [],
-      empListOpt2: [],
+      empListOptEmp: [],
+      empListOptAgent: [],
       searchForm: {
       },
       tableColumnList: [
@@ -269,31 +271,6 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-    handleClearEmp() {
-      this.$refs['empRef'].$el.querySelector('input').blur()
-      this.$nextTick(() => {
-        this.$refs['empRef'].focus()
-      })
-    },
-    handleClearAgent() {
-      this.$refs['agentRef'].$el.querySelector('input').blur()
-      this.$nextTick(() => {
-        this.$refs['agentRef'].focus()
-      })
-    },
-    handleClearEmp() {
-      this.$refs['empRef'].$el.querySelector('input').blur()
-      this.$nextTick(() => {
-        this.$refs['empRef'].focus()
-      })
-    },
-    handleClearAgent() {
-      this.$refs['agentRef'].$el.querySelector('input').blur()
-      this.$nextTick(() => {
-        this.$refs['agentRef'].focus()
-      })
-    },
-
     getEmpListOpt() {
       getEmpInCurrentOrg().then(res => {
         this.empListOptOrigin = res.data.map(n => {
@@ -307,13 +284,15 @@ export default {
     remoteMethod(query, key) {
       if (query !== '') {
         this[key] = this.empListOptOrigin.filter(n => {
-          // const value = key === 'empListOpt1' ? this.form.agentCode : this.form.empCode
-          // n.disabled = n.value === value
           return n.label.toLowerCase().indexOf(query.toLowerCase()) > -1
         })
       } else {
         this[key] = []
       }
+    },
+    handleChange() {
+      this.$refs.regFormRef.validateField('empCode')
+      this.$refs.regFormRef.validateField('agentCode')
     },
     validateMethod(rule, value, callback, source) {
       if (value) {
@@ -344,16 +323,13 @@ export default {
         if (valid) {
           this.buttonLoading = true
           const data = {
-            // empCode: this.empListOpt.find(n => {
-            //   return n.value === this.form.empCode
-            // }).label,
-            // agentCode: this.empListOpt.find(n => {
-            //   return n.value === this.form.agentCode
-            // })?.label,
+            empCode: this.form.empCode,
+            agentCode: this.form.agentCode,
             remark: this.form.remark,
             startTime: this.form.dateRange[0],
             endTime: this.form.dateRange[1]
           }
+          // console.log(data)
           addEmpLeave(data).then(res => {
             if (res.code === 200) {
               this.$message({
