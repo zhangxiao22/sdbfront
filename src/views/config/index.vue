@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '0',
+      tabIndex: '1',
       tabList: [{
         label: '理财顾问指派',
         component: 'Appoint',
@@ -130,7 +130,7 @@ export default {
         label: '分配规则',
         component: 'Rule',
         loading: false,
-        roles: ['业务管理']
+        roles: ['业务管理', '用例管理']
       },
       {
         label: '防打扰名单（CRM）',
