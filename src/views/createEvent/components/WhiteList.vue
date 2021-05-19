@@ -39,13 +39,13 @@
         </el-form-item>
         <el-form-item>
           <div slot="label">
-            <Info content="维度不能超过10个" />
+            <Info content="可选择多个维度" />
             维度补充：
           </div>
           <el-select v-model="paramValue"
                      style="max-width:800px;width:100%;"
                      multiple
-                     :multiple-limit="10"
+                     :multiple-limit="0"
                      filterable
                      placeholder="可输入搜索匹配项">
             <el-option v-for="item in paramOpt"

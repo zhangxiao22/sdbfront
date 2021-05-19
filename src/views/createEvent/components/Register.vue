@@ -2,7 +2,7 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="baseInfo"
-             label-width="100px"
+             label-width="130px"
              class="reg-form">
       <el-form-item label="事件名称："
                     :rules="[{
@@ -80,6 +80,19 @@
                     :label="item.value">{{ item.label }}</el-radio>
         </el-radio-group>
       </el-form-item>
+      <el-form-item prop="effectDay"
+                    :rules="{required: true, message: '请输入线索有效期', trigger: 'change'}"
+                    class="shun-label">
+        <div slot="label">
+          <Info content="默认7天" />
+          线索有效期：
+        </div>
+        <el-input-number v-model.trim="baseInfo.effectDay"
+                         style="margin-right:10px;"
+                         controls-position="right"
+                         :min="1"
+                         :max="10000" />天
+      </el-form-item>
       <el-form-item label="事件描述："
                     prop="desc">
         <el-input v-model.trim="baseInfo.desc"
@@ -118,6 +131,7 @@ const DEFAULT_BASEINFO = {
   control: 5,
   // 抽样方式
   sample: 1,
+  effectDay: 7,
   desc: ''
 }
 export default {
@@ -166,6 +180,7 @@ export default {
       data.control = this.baseInfo.control
       // 抽样方式
       data.sample = this.baseInfo.sample
+      data.effectDay = this.baseInfo.effectDay
       data.desc = this.baseInfo.desc
       return data
     }
@@ -230,6 +245,7 @@ export default {
           this.baseInfo.trial = data.trial
           this.baseInfo.sample = data.sample.value
           this.baseInfo.control = data.control
+          this.baseInfo.effectDay = data.effectDay
           this.baseInfo.desc = data.desc
         }).finally(() => {
           this.mainLoading = false
