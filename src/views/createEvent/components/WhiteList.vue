@@ -42,17 +42,22 @@
             <Info content="可选择多个维度" />
             维度补充：
           </div>
-          <el-select v-model="paramValue"
-                     style="max-width:800px;width:100%;"
-                     multiple
-                     :multiple-limit="0"
-                     filterable
-                     placeholder="可输入搜索匹配项">
-            <el-option v-for="item in paramOpt"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
+          <div class="param-box">
+            <el-select v-model="paramValue"
+                       style="max-width:800px;width:100%;"
+                       multiple
+                       :multiple-limit="10"
+                       filterable
+                       placeholder="可输入搜索匹配项">
+              <el-option v-for="item in paramOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+            <el-button type="text"
+                       class="text-button"
+                       @click="clickChooseAll">{{ paramValue.length === paramOpt.length ? '取消全选' : '全选' }}</el-button>
+          </div>
         </el-form-item>
       </el-form>
 
@@ -264,7 +269,14 @@ export default {
         }
       })
     },
-
+    clickChooseAll() {
+      const flag = this.paramValue.length === this.paramOpt.length
+      if (flag) {
+        this.paramValue = []
+      } else {
+        this.paramValue = this.paramOpt.map(n => n.value)
+      }
+    },
     download() {
       window.open('/static/template.xlsx', '_self')
     },
@@ -390,6 +402,12 @@ export default {
   .form {
     width: 600px;
     margin: 20px auto 0;
+    .param-box {
+      display: flex;
+      .text-button {
+        padding-left: 10px;
+      }
+    }
   }
   .table-container {
     width: 100%;
