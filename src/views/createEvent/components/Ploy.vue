@@ -449,7 +449,7 @@
                               </div>
                               <div v-show="scope.row.isHover"
                                    slot="reference"
-                                   class="table-edit touch-tap"
+                                   class="table-edit touch-tap-x"
                                    @click="scope.row._content = scope.row.content">
                                 <i class="el-icon-edit" />
                               </div>

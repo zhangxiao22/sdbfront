@@ -1,7 +1,7 @@
 <template>
   <div class="shun-drawer-container">
     <el-drawer :title="title"
-               class="el-drawer_product"
+               class="el-drawer_box"
                :visible="show"
                size="80%"
                direction="rtl"
@@ -76,7 +76,7 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .shun-drawer-container {
-  .el-drawer_product {
+  .el-drawer_box {
     ::v-deep .el-drawer {
       background: #f8f8fa;
       .el-drawer__body {
