@@ -235,6 +235,7 @@ export default {
       const el = document.querySelector('#event-table tbody')
       this.sortable = Sortable.create(el, {
         disabled: true,
+        animation: 150,
         onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
           const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
           _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
@@ -304,7 +305,7 @@ export default {
   #event-table {
     &.move.el-table {
       ::v-deep tr {
-        cursor: move;
+        cursor: grab;
       }
 
       ::v-deep tr.sortable-chosen.sortable-ghost td {

@@ -1138,3 +1138,74 @@ export function getEmpInCurrentOrg(params) {
     params
   })
 }
+
+/** ************************************************ 分配规则 ************************************************************/
+
+// 获取分配规则列表
+export function getRuleList(data) {
+  return request({
+    url: '/distribution/selectPage',
+    method: 'post',
+    data
+  })
+}
+
+// 添加分配规则
+export function addRule(data) {
+  return request({
+    url: '/distribution/insert',
+    method: 'post',
+    data
+  })
+}
+// 修改分配规则
+export function editRule(data) {
+  return request({
+    url: '/distribution/updateById',
+    method: 'post',
+    data
+  })
+}
+// 删除分配规则
+export function delRule(params) {
+  return request({
+    url: '/distribution/deleteById',
+    method: 'get',
+    params
+  })
+}
+
+// 运行分配规则
+export function runRule(params) {
+  return request({
+    url: '/distribution/updateStatusById',
+    method: 'get',
+    params
+  })
+}
+
+// 获取分配规则的规则
+export function getRuleDetail(params) {
+  return request({
+    url: '/distribution/getWithDetail',
+    method: 'get',
+    params
+  })
+}
+// 获取规则的调用类选项
+export function ruleClassList(params) {
+  return request({
+    url: '/distribution/returnDistributionTypeEnum',
+    method: 'get',
+    params
+  })
+}
+
+// 更新列表的规则
+export function updateRule(data) {
+  return request({
+    url: '/distributionDetail/updateData',
+    method: 'post',
+    data
+  })
+}

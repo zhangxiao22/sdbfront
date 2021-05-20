@@ -26,6 +26,7 @@ import Agent from './agent'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
+import Rule from './rule'
 import GlobalOutletDistribute from './globalOutletDistribute'
 import UseCaseOutletDistribute from './usecaseOutletDistribute'
 import JobOccupy from './jobOccupy'
@@ -44,6 +45,7 @@ export default {
     Appoint,
     Assign,
     NotDisturb,
+    Rule,
     GlobalOutletDistribute,
     UseCaseOutletDistribute,
     JobOccupy,
@@ -123,6 +125,12 @@ export default {
         component: 'Agent',
         loading: false,
         roles: ['支行业务管理', '业务管理']
+      },
+      {
+        label: '分配规则',
+        component: 'Rule',
+        loading: false,
+        roles: ['线索统筹']
       },
       {
         label: '防打扰名单（CRM）',
