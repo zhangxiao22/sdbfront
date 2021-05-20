@@ -30,11 +30,6 @@ export const COMMON_COLUMN_LIST = [
     slot: true
   },
   {
-    prop: 'description',
-    label: '产品描述',
-    minWidth: 100
-  },
-  {
     prop: 'userId',
     label: '上传人',
     width: 100
@@ -47,9 +42,13 @@ export const COMMON_COLUMN_LIST = [
   {
     prop: 'modifyTime',
     label: '最后修改时间',
-    width: 180
+    minWidth: 150
+  },
+  {
+    prop: 'description',
+    label: '产品描述',
+    minWidth: 100
   }
-
 ]
 
 // 按产品类型区分不同字段

@@ -88,7 +88,7 @@ export const CHANNEL_OPT = [
   // }
 
   {
-    value: 4,
+    value: 5,
     label: 'STM',
     disabled: false,
     icon: 'wechat',

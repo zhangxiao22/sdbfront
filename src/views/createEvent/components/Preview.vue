@@ -221,7 +221,7 @@
                                            show-overflow-tooltip
                                            label="话术内容" />
                           <el-table-column prop="category.label"
-                                           width="100"
+                                           width="150"
                                            label="话术分类" />
                         </el-table>
                         <el-table v-show="channelItem.advanceSMSInfoList.length"
