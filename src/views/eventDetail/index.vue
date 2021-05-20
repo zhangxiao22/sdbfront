@@ -404,12 +404,13 @@ export default {
       position: absolute;
       content: "";
       left: -20px;
-      width: 1px;
+      // width: 1px;
       top: 10px;
       bottom: -25px;
-      background: #cdd7f5;
+      // background: #cdd7f5;
       opacity: 0.5;
       transform: translateX(4px);
+      border-left: 1px dashed#cdd7f5;
     }
     &.last {
       // margin-bottom: 0;
@@ -424,9 +425,9 @@ export default {
       .circle {
         position: absolute;
         content: "";
-        left: -20px;
-        width: 10px;
-        height: 10px;
+        left: -18px;
+        width: 5px;
+        height: 5px;
         top: 50%;
         background: #cdd7f5;
         border-radius: 50%;
