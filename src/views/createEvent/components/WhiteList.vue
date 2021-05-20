@@ -46,7 +46,7 @@
             <el-select v-model="paramValue"
                        style="max-width:800px;width:100%;"
                        multiple
-                       :multiple-limit="10"
+                       :multiple-limit="0"
                        filterable
                        placeholder="可输入搜索匹配项">
               <el-option v-for="item in paramOpt"
@@ -56,7 +56,7 @@
             </el-select>
             <el-button type="text"
                        class="text-button"
-                       @click="clickChooseAll">{{ paramValue.length === paramOpt.length ? '取消全选' : '全选' }}</el-button>
+                       @click="clickChooseAll">{{ paramValue.length === paramOpt.length ? '清空' : '全选' }}</el-button>
           </div>
         </el-form-item>
       </el-form>
