@@ -23,45 +23,35 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleEditButton(scope.row)">修改</div>
+               @click="handleEditRule(scope.row)">分配规则</div>
+          <div v-if="scope.row.status.value!==1"
+               class="btn"
+               style="color:#1890FF;"
+               @click="handleRunButton(scope.row)">运行</div>
           <div class="btn"
+               style="color:#1890FF;"
+               @click="handleEditButton(scope.row)">编辑</div>
+          <div v-if="scope.row.status.value!==1"
+               class="btn"
                style="color:#f56c6c;"
                @click="handleDeleteButton(scope.row)">删除</div>
         </div>
       </template>
     </shun-table>
     <!-- 右侧边 -->
-    <el-drawer title="我是标题"
+    <el-drawer title="分配规则"
                size="80%"
                class="el-drawer-customer"
                :visible.sync="showDrawer">
       <div class="drawer-container">
-        <el-form :inline="true"
-                 :model="drawerForm">
-          <el-form-item label="名称：">
-            <el-input v-model="drawerForm.name"
-                      placeholder="请填写名称" />
-          </el-form-item>
-
-          <el-form-item label="描述：">
-            <el-input v-model="drawerForm.desc"
-                      type="textarea"
-                      style="width:500px;"
-                      :rows="2"
-                      placeholder="请输入描述" />
-          </el-form-item>
-        </el-form>
-        {{ drawerForm.rule }}
+        <!-- {{ rules }} -->
         <div class="rule-container">
-          <div class="el-form-item__label">
-            规则：
-            <el-button type="primary"
-                       class="add-outside"
-                       icon="el-icon-plus"
-                       @click="handleAddOutside">添加</el-button>
-          </div>
+          <el-button type="primary"
+                     class="add-outside"
+                     icon="el-icon-plus"
+                     @click="handleAddOutside">添加网点规则</el-button>
           <div class="rule-list">
-            <div v-for="(item,pi) of drawerForm.rule"
+            <div v-for="(item,pi) of rules"
                  :key="item.id"
                  class="p-item">
               <div class="item-header">
@@ -73,15 +63,24 @@
                               effect="dark"
                               content="强制退出"
                               placement="top">
-                    <i v-show="item.stop"
-                       class="el-icon-remove" />
+                    <svg-icon icon-class="stop"
+                              class="remove icon" />
+                    <!-- <i v-show="item.forceClose"
+                       class="el-icon-remove" /> -->
                   </el-tooltip>
                   <el-tooltip class="item"
                               effect="dark"
-                              :content="item.desc||'无描述'"
+                              content="强制匹配"
                               placement="top">
-                    <div>{{ item.name }}</div>
+                    <i v-show="item.forceMatch"
+                       class="el-icon-lock icon" />
                   </el-tooltip>
+                  <!-- <el-tooltip class="item"
+                              effect="dark"
+                              :content="item.desc||'无描述'"
+                              placement="top"> -->
+                  <div>{{ item.name }}</div>
+                  <!-- </el-tooltip> -->
                 </span>
                 <div class="right">
                   <el-tooltip class="item"
@@ -116,19 +115,51 @@
               </div>
               <div class="item-content">
                 <div :key="item.key"
-                     class="inside-box">
+                     class="inside-box"
+                     :pindex="pi">
                   <div v-for="(child,i) of item.children"
                        :key="child.name"
                        class="c-item-box">
-                    <div class="c-item">
-                      <div class="el-icon-rank item-handle center-center bg" />
-                      <div class="c-item-content bg">
+                    <div class="c-item bg">
+                      <div class="el-icon-rank item-handle center-center" />
+                      <div class="c-item-content"
+                           @mouseover="child.hover=true"
+                           @mouseout="child.hover=false">
                         <div class="num">{{ String(i + 1).padStart(2,'0') }}</div>
-                        <div class="name">{{ child.name }}</div>
-                      </div>
-                      <div class="right bg">
-                        <div class="btn touch-tap el-icon-edit" />
-                        <div class="btn touch-tap el-icon-delete" />
+                        <div class="name">
+                          <svg-icon v-show="child.forceClose"
+                                    icon-class="stop"
+                                    class="remove icon" />
+                          <!-- <i v-show="child.forceClose"
+                             class="el-icon-remove icon" /> -->
+                          <i v-show="child.forceMatch"
+                             class="el-icon-lock icon" />
+                          {{ child.name }}
+                        </div>
+                        <transition name="el-fade-in-linear">
+                          <div v-show="child.hover"
+                               class="right abs">
+                            <div class="btn el-icon-view"
+                                 @click="handleInsideEdit(pi,i)" />
+                            <el-popover v-model="child.showPop"
+                                        placement="top"
+                                        width="160">
+                              <p>确定删除吗？</p>
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="child.showPop = false">取消</el-button>
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleInsideDel(pi,i);child.showPop = false">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="btn el-icon-delete" />
+                            </el-popover>
+                          </div>
+                          <!-- <div v-show="show"
+                               class="transition-box">.el-fade-in-linear</div> -->
+                        </transition>
                       </div>
                     </div>
                     <div class="el-icon-right arrow" />
@@ -150,7 +181,10 @@
       </div>
       <div class="drawer-bottom">
         <el-button type="primary"
-                   style="max-width:400px;width:100%;">
+                   :loading="drawerButtonLoading"
+                   :disabled="rowStatus===1"
+                   style="max-width:400px;width:100%;"
+                   @click="handleSureDrawer">
           确 认
         </el-button>
       </div>
@@ -159,7 +193,7 @@
     <el-dialog title="规则"
                :visible.sync="showDialog"
                @close="handleCloseDialog">
-      <el-form ref="drawerFormRef"
+      <el-form ref="dialogFormRef"
                style="width:500px;margin:0 auto;"
                label-width="100px"
                :model="dialogForm">
@@ -171,18 +205,33 @@
                     clearable
                     style="width:90%;" />
         </el-form-item>
-        <el-form-item label="强制退出："
-                      prop="stop">
-          <el-switch v-model="dialogForm.stop" />
+        <el-form-item label="调用类："
+                      prop="clazz"
+                      :rules="[{required: true, message: '请选择调用类', trigger: 'change'}]">
+          <el-select v-model="dialogForm.clazz"
+                     placeholder="请选择">
+            <el-option v-for="item in dialogStatus.position === 'outside' ? parentOptions : childOptions"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="描述："
+        <el-form-item label="强制匹配："
+                      prop="forceMatch">
+          <el-switch v-model="dialogForm.forceMatch" />
+        </el-form-item>
+        <el-form-item label="强制退出："
+                      prop="forceClose">
+          <el-switch v-model="dialogForm.forceClose" />
+        </el-form-item>
+        <!-- <el-form-item label="描述："
                       prop="desc">
           <el-input v-model="dialogForm.desc"
                     type="textarea"
                     style="width:90%;"
                     :rows="2"
                     placeholder="请输入描述" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -192,6 +241,40 @@
                    @click="ensureDialog">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- dialog2 -->
+    <el-dialog title="规则"
+               :visible.sync="showTableDialog"
+               @close="handleCloseTableDialog">
+      <el-form ref="dialogTableFormRef"
+               style="width:500px;margin:0 auto;"
+               label-width="100px"
+               :model="dialogTableForm">
+        <el-form-item label="名称："
+                      prop="name"
+                      :rules="[{required: true, message: '请填写名称', trigger: 'blur'}]">
+          <el-input v-model.trim="dialogTableForm.name"
+                    placeholder="请填写名称"
+                    clearable
+                    style="width:90%;" />
+        </el-form-item>
+        <el-form-item label="描述："
+                      prop="desc">
+          <el-input v-model="dialogTableForm.desc"
+                    type="textarea"
+                    style="width:90%;"
+                    :rows="2"
+                    placeholder="请输入描述" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="showTableDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   :loading="dialogButtonTableLoading"
+                   @click="ensureTableDialog">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -199,7 +282,16 @@
 import ShunTable from '@/components/ShunTable'
 import Sortable from 'sortablejs'
 
-import { } from '@/api/api'
+import {
+  getRuleList,
+  addRule,
+  editRule,
+  delRule,
+  runRule,
+  getRuleDetail,
+  ruleClassList,
+  updateRule
+} from '@/api/api'
 export default {
   name: 'Rule',
   components: {
@@ -210,102 +302,105 @@ export default {
   data() {
     return {
       loading: false,
-      aaaa: 1,
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      showDrawer: true,
+      showDrawer: false,
       showDialog: false,
+      showTableDialog: false,
       dialogButtonLoading: false,
+      dialogButtonTableLoading: false,
+      drawerButtonLoading: false,
+      rowStatus: '',
+      dialogStatus: {},
       filterForm: {
       },
       form: {
       },
       searchForm: {
       },
-      drawerForm: {
-        rule: [
-          // {
-          //   id: '1',
-          //   name: 'sdfasfasdf',
-          //   dragging: false,
-          //   key: 1,
-          //   children: [{
-          //     id: '1',
-          //     name: '111111111111'
-          //   }, {
-          //     id: '2',
-          //     name: '22222222222'
-          //   }, {
-          //     id: '3',
-          //     name: '333333333'
-          //   }, {
-          //     id: '4',
-          //     name: '4444444444'
-          //   }, {
-          //     id: '5',
-          //     name: '5555555555'
-          //   }]
-          // }, {
-          //   id: '2',
-          //   name: '222',
-          //   dragging: false,
-          //   children: []
-          // }, {
-          //   id: '3',
-          //   name: '333',
-          //   dragging: false,
-          //   children: []
-          // }
-        ]
+      parentOptions: [],
+      childOptions: [],
+      rules: [
+        // {
+        //   id: '1',
+        //   name: 'sdfasfasdf',
+        //   dragging: false,
+        //   key: 1,
+        //   children: [{
+        //     id: '1',
+        //     name: '111111111111'
+        //   }, {
+        //     id: '2',
+        //     name: '22222222222'
+        //   }, {
+        //     id: '3',
+        //     name: '333333333'
+        //   }, {
+        //     id: '4',
+        //     name: '4444444444'
+        //   }, {
+        //     id: '5',
+        //     name: '5555555555'
+        //   }]
+        // }, {
+        //   id: '2',
+        //   name: '222',
+        //   dragging: false,
+        //   children: []
+        // }, {
+        //   id: '3',
+        //   name: '333',
+        //   dragging: false,
+        //   children: []
+        // }
+      ],
+      dialogTableForm: {
+        id: '',
+        name: '',
+        desc: ''
       },
       dialogForm: {
         name: '',
-        stop: false,
-        desc: ''
+        forceMatch: false,
+        forceClose: false,
+        clazz: ''
+        // desc: ''
       },
       tableColumnList: [
         {
           prop: 'id',
           label: 'ID',
-          width: 100
+          width: 50
         },
         {
           prop: 'name',
           label: '名称',
-          width: 100
+          width: 200
         },
         {
-          prop: 'status',
+          prop: 'status.label',
           label: '状态',
           width: 100
         },
         {
-          prop: 'modifyTime',
+          prop: 'mtime',
           label: '更新时间',
-          width: 150
+          width: 180
         },
         {
-          prop: 'description',
+          prop: 'detail',
           label: '描述'
         },
         {
           prop: 'operate',
           label: '操作',
-          width: 200,
+          width: 250,
           fixed: 'right',
           slot: true
         }
       ],
-      tableData: [
-        {
-          id: 1,
-          name: '123',
-          description: '11111',
-          status: '运行中',
-          modifyTime: '1'
-        }
-      ]
+      tableData: []
     }
   },
   computed: {
@@ -319,11 +414,12 @@ export default {
   methods: {
     init() {
       this.search()
-      setTimeout(() => {
-        this.renderOutSideSortable()
-        // const el = document.querySelectorAll('.inside-box')[0]
-        // this.renderInSideSortable(el)
-      }, 1000)
+      this.getRuleClassOpt()
+      // setTimeout(() => {
+      //   this.renderOutSideSortable()
+      // }, 3000)
+      // const el = document.querySelectorAll('.inside-box')[0]
+      // this.renderInSideSortable(el)
     },
     resetAll() {
       this.reset()
@@ -337,6 +433,14 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
+    dictionary(obj) {
+      return {
+        name: obj.name,
+        forceMatch: obj.forceMatch,
+        forceClose: obj.forceClose,
+        clazz: obj.clazz
+      }
+    },
     renderOutSideSortable() {
       const _this = this
       const el = document.querySelector('.rule-list')
@@ -344,8 +448,8 @@ export default {
         animation: 150,
         handle: '.drag-handle',
         onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-          const currRow = _this.drawerForm.rule.splice(oldIndex, 1)[0] // 删除拖拽项
-          _this.drawerForm.rule.splice(newIndex, 0, currRow) // 添加至指定位置
+          const currRow = _this.rules.splice(oldIndex, 1)[0] // 删除拖拽项
+          _this.rules.splice(newIndex, 0, currRow) // 添加至指定位置
           // console.log(_this.aaa.toArray())
         },
         onChoose: function (/** Event*/evt) {
@@ -365,7 +469,7 @@ export default {
     renderInSideSortable(el) {
       const _this = this
       // const el = document.querySelectorAll('.inside-box')
-      console.log('el>>>>???', el)
+      // console.log('el>>>>???', el)
       Sortable.create(el, {
         animation: 150,
         handle: '.item-handle',
@@ -373,17 +477,53 @@ export default {
         draggable: '.c-item-box',
         onStart: function (evt) {
           // console.log(evt.oldIndex)
-          _this.drawerForm.rule[0].dragging = true
+          _this.rules[0].dragging = true
           // evt.oldIndex // element index within parent
         },
-        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
-          const currRow = _this.drawerForm.rule[0].children.splice(oldIndex, 1)[0] // 删除拖拽项
-          _this.drawerForm.rule[0].children.splice(newIndex, 0, currRow) // 添加至指定位置
-          _this.drawerForm.rule[0].dragging = false
+        onEnd(event) { // oldIIndex拖放前的位置， newIndex拖放后的位置
+          // console.log(event)
+          const { oldIndex, newIndex, target } = event
+          const pindex = event.target.getAttribute('pindex')
+          // console.log(this.$refs[])
+          const currRow = _this.rules[pindex].children.splice(oldIndex, 1)[0] // 删除拖拽项
+          _this.rules[pindex].children.splice(newIndex, 0, currRow) // 添加至指定位置
+          _this.rules[pindex].dragging = false
           // 重新渲染组件
-          _this.drawerForm.rule[0].key += 1
+          _this.rules[pindex].key += 1
           _this.$nextTick(() => {
-            _this.renderInSideSortable(document.querySelectorAll('.inside-box')[0])
+            _this.renderInSideSortable(document.querySelectorAll('.inside-box')[pindex])
+          })
+        }
+      })
+    },
+    handleCloseTableDialog() {
+      this.$refs['dialogTableFormRef'].resetFields()
+      this.dialogTableForm.id = ''
+    },
+    ensureTableDialog() {
+      // dialogTableFormRef
+      this.$refs['dialogTableFormRef'].validate((valid) => {
+        if (valid) {
+          // console.log(this.dialogTableForm)
+          const ajax = this.dialogTableForm.id ? editRule : addRule
+          const data = {
+            name: this.dialogTableForm.name,
+            detail: this.dialogTableForm.desc,
+            id: this.dialogTableForm.id
+          }
+          this.dialogButtonTableLoading = true
+          ajax(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showTableDialog = false
+              this.getList()
+            }
+          }).finally(() => {
+            this.dialogButtonTableLoading = false
           })
         }
       })
@@ -398,78 +538,112 @@ export default {
       }
       this.showDialog = true
     },
-    handleAddInside(i) {
+    handleAddInside(pi) {
       this.dialogStatus = {
         position: 'inside',
         status: 'new'
       }
-      this.insideIndex = i
+      this.outsideIndex = pi
       this.showDialog = true
     },
     handleOutsideEdit(pi) {
-      console.log(pi)
+      // console.log(pi)
       this.dialogStatus = {
         position: 'outside',
         status: 'edit'
       }
       this.outsideIndex = pi
-      this.dialogForm = JSON.parse(JSON.stringify(this.drawerForm.rule[pi]))
+      this.dialogForm = JSON.parse(JSON.stringify(this.rules[pi]))
       this.showDialog = true
     },
     handleOutsideDel(pi) {
-      console.log(pi)
-      this.drawerForm.rule.splice(pi, 1)
+      // console.log(pi)
+      this.rules.splice(pi, 1)
+    },
+    handleInsideEdit(pi, i) {
+      console.log(pi, i)
+      this.dialogStatus = {
+        position: 'inside',
+        status: 'edit'
+      }
+      this.outsideIndex = pi
+      this.insideIndex = i
+      this.dialogForm = JSON.parse(JSON.stringify(this.rules[pi].children[i]))
+      this.showDialog = true
+    },
+    handleInsideDel(pi, i) {
+      // console.log(pi, i)
+      this.rules[pi].children.splice(i, 1)
     },
     ensureDialog() {
-      this.$refs['drawerFormRef'].validate((valid) => {
+      this.$refs['dialogFormRef'].validate((valid) => {
         if (valid) {
           console.log(this.dialogForm)
           if (this.dialogStatus.position === 'outside') {
             if (this.dialogStatus.status === 'new') {
               // outside new
-              this.drawerForm.rule.push({
-                id: new Date().getTime(),
-                name: this.dialogForm.name,
-                desc: this.dialogForm.desc,
-                stop: this.dialogForm.stop,
-                children: []
-              })
+              this.rules.push(
+                Object.assign({}, this.dictionary(this.dialogForm), {
+                  id: new Date().getTime(), /* 重要 */
+                  key: 1, /* 重要 */
+                  dragging: false,
+                  showPop: false,
+                  children: []
+                })
+              )
               // 初始化
               this.$nextTick(() => {
-                const el = document.querySelectorAll('.inside-box')[this.drawerForm.rule.length - 1]
+                const el = document.querySelectorAll('.inside-box')[this.rules.length - 1]
                 this.renderInSideSortable(el)
               })
             } else {
               // outside edit
-              console.log(this.outsideIndex)
-              this.drawerForm.rule[this.outsideIndex].name = this.dialogForm.name
-              this.drawerForm.rule[this.outsideIndex].stop = this.dialogForm.stop
-              this.drawerForm.rule[this.outsideIndex].desc = this.dialogForm.desc
+              // console.log(this.outsideIndex)
+              // this.rules[this.outsideIndex].name = this.dialogForm.name
+              // this.rules[this.outsideIndex].forceMatch = this.dialogForm.forceMatch
+              // this.rules[this.outsideIndex].forceClose = this.dialogForm.forceClose
+              // this.rules[this.outsideIndex].clazz = this.dialogForm.clazz
+              this.rules[this.outsideIndex] = Object.assign(
+                {},
+                this.rules[this.outsideIndex],
+                this.dictionary(this.dialogForm)
+              )
             }
           } else if (this.dialogStatus.position === 'inside') {
             if (this.dialogStatus.status === 'new') {
               // inside new
-              this.drawerForm.rule[this.insideIndex].children.push({
-                id: new Date().getTime(),
-                name: this.dialogForm.name,
-                desc: this.dialogForm.desc,
-                stop: this.dialogForm.stop
-              })
+              this.rules[this.outsideIndex].children.push(
+                Object.assign(
+                  {},
+                  this.dictionary(this.dialogForm),
+                  {
+                    id: new Date().getTime(),
+                    showPop: false,
+                    hover: false
+                  }
+                )
+              )
             } else {
               // inside edit
+              let child = this.rules[this.outsideIndex].children[this.insideIndex]
+              child = Object.assign(child, this.dictionary(this.dialogForm))
+              // child.name = this.dialogForm.name
+              // child.forceMatch = this.dialogForm.forceMatch
+              // child.forceClose = this.dialogForm.forceClose
+              // child.clazz = this.dialogForm.clazz
+              // child.desc = this.dialogForm.desc
             }
           }
-
           this.showDialog = false
         }
       })
     },
 
     resetDialog() {
-      this.$refs['drawerFormRef'] && this.$refs['drawerFormRef'].resetFields()
+      this.$refs['dialogFormRef'].resetFields()
     },
     handleAddList() {
-      this.showDrawer = true
+      this.showTableDialog = true
     },
     cancelAdd() {
       // this.$refs['regFormRef'].resetFields()
@@ -479,32 +653,134 @@ export default {
       this.showDrawer = false
       this.getList()
     },
-    handleEditButton(row) {
-      console.log(row)
+    // 分配规则
+    handleEditRule(row) {
+      this.showDrawer = true
+      this.rowStatus = row.status.value
+      this.ruleId = row.id
+      getRuleDetail({ id: row.id }).then(res => {
+        this.rules = res.data.details.map(n => {
+          return Object.assign({}, this.dictionary(n), {
+            id: n.id, /* 重要 */
+            key: 1, /* 重要 */
+            dragging: false,
+            showPop: false,
+            children: n.subDetails.map(m => {
+              return Object.assign({}, this.dictionary(m), {
+                id: m.id,
+                showPop: false,
+                hover: false
+              })
+            })
+          })
+        })
+        this.$nextTick(() => {
+          this.renderOutSideSortable()
+          const el = document.querySelectorAll('.inside-box')
+          el.forEach(n => {
+            this.renderInSideSortable(n)
+          })
+        })
+      })
     },
-
+    // 运行
+    handleRunButton(row) {
+      // runRule()
+      this.$confirm(`运行后将不可还原，是否确认运行规则（${row.name || ''}）？`)
+        .then(() => {
+          this.loading = true
+          runRule({ id: row.id })
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '操作成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.getList()
+              }
+            })
+            .finally(() => {
+              this.loading = false
+            })
+        })
+    },
+    // 编辑
+    handleEditButton(row) {
+      this.dialogTableForm.id = row.id
+      this.dialogTableForm.name = row.name
+      this.dialogTableForm.desc = row.detail
+      // this
+      this.showTableDialog = true
+    },
+    // 删除
     handleDeleteButton(row) {
       this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
         .then(() => {
-          // this.loading = true
-          // delEmpLeave({ empCode: row.id })
-          //   .then(res => {
-          //     if (res.code === 200) {
-          //       this.$message({
-          //         message: '删除成功',
-          //         type: 'success',
-          //         duration: '3000'
-          //       })
-          //       this.getList()
-          //     }
-          //   })
-          //   .finally(() => {
-          //     this.loading = false
-          //   })
+          this.loading = true
+          delRule({ id: row.id })
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '删除成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.getList(1)
+              }
+            })
+            .finally(() => {
+              this.loading = false
+            })
         })
     },
-    handleEdit() { },
-    handleDel() { },
+    // 确认分配规则
+    handleSureDrawer() {
+      // console.log(this.rules)
+      if (this.rules.length) {
+        const details = this.rules.map(n => {
+          return Object.assign({}, this.dictionary(n), {
+            detail: n.children.map(m => {
+              return this.dictionary(m)
+            })
+          })
+        })
+        console.log(JSON.stringify(details))
+        const data = {
+          id: this.ruleId,
+          details
+        }
+        this.drawerButtonLoading = true
+        updateRule(data).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: '3000'
+            })
+            this.showDrawer = false
+            // this.getList(1)
+          }
+        }).finally(() => {
+          this.drawerButtonLoading = false
+        })
+        //
+      } else {
+        this.$message({
+          message: '请选择规则',
+          type: 'error',
+          duration: '3000'
+        })
+      }
+    },
+    getRuleClassOpt() {
+      ruleClassList({ type: 1 }).then(res => {
+        this.parentOptions = res.data
+      })
+      ruleClassList({ type: 0 }).then(res => {
+        this.childOptions = res.data
+      })
+    },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       const data = Object.assign({
@@ -512,15 +788,15 @@ export default {
         pageSize: this.pageSize
       }, this.searchForm)
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
-      // this.loading = true
-      // getEmpLeave(data)
-      //   .then(res => {
-      //     this.tableData = res.data.resultList
-      //     this.total = res.pagination.totalItemCount
-      //   })
-      //   .finally(() => {
-      //     this.loading = false
-      //   })
+      this.loading = true
+      getRuleList(data)
+        .then(res => {
+          this.tableData = res.data.resultList
+          this.total = res.pagination.totalItemCount
+        })
+        .finally(() => {
+          this.loading = false
+        })
     }
 
   }
@@ -556,7 +832,7 @@ export default {
           display: flex;
         }
         .rule-list {
-          margin-top: 10px;
+          margin-top: 20px;
           .p-item {
             width: 100%;
             // background: #fff;
@@ -617,9 +893,14 @@ export default {
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                i {
+                .el-icon-lock {
+                  color: $blue;
+                  font-size: 16px;
+                  margin-right: 6px;
+                }
+                .remove {
                   color: $red;
-                  font-size: 18px;
+                  font-size: 16px;
                   margin-right: 6px;
                 }
               }
@@ -654,6 +935,7 @@ export default {
                 display: inline-flex;
                 flex-wrap: wrap;
                 position: relative;
+                margin-bottom: -10px;
                 // padding: 10px;
                 .c-item-box {
                   box-sizing: border-box;
@@ -680,7 +962,7 @@ export default {
                   }
                   .c-item {
                     background: #fefdfc;
-                    padding-right: 10px;
+                    // padding-right: 10px;
                     height: 100%;
                     border-radius: 4px;
                     border: 1px solid #ebeef5;
@@ -701,33 +983,57 @@ export default {
                       flex: 1;
                       display: flex;
                       align-items: center;
+                      position: relative;
+                      min-width: 70px;
                       .num {
                         font-weight: lighter;
                         margin: 0 10px;
                       }
                       .name {
-                        margin-right: 10px;
-                      }
-                    }
-
-                    .right {
-                      height: 100%;
-                      display: flex;
-                      align-items: center;
-                      .btn {
-                        cursor: pointer;
-                        margin-left: 5px;
-                        font-size: 14px;
-                        // height: 100%;
-                        &:hover {
-                          opacity: 0.6;
+                        margin-right: 12px;
+                        .icon {
+                          margin-right: 4px;
+                        }
+                        .el-icon-lock {
+                          color: $blue;
+                        }
+                        .remove {
+                          color: $red;
                         }
                       }
-                      .el-icon-edit {
-                        color: $blue;
-                      }
-                      .el-icon-delete {
-                        color: $red;
+
+                      .right {
+                        height: 100%;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: #fefdfc;
+                        .btn {
+                          text-align: center;
+                          width: 30px;
+                          height: 30px;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          border-radius: 4px;
+                          background: #f4f4f4;
+                          cursor: pointer;
+                          // margin-left: 10px;
+                          font-size: 14px;
+                          color: #fff;
+                          transition: all 0.3s;
+                          // height: 100%;
+                          &:hover {
+                            opacity: 0.6;
+                          }
+                        }
+                        .el-icon-view {
+                          background: $blue;
+                          margin-right: 10px;
+                        }
+                        .el-icon-delete {
+                          background: $red;
+                        }
                       }
                     }
                   }
@@ -741,6 +1047,7 @@ export default {
               .add-inside {
                 border-style: dashed;
                 height: 40px;
+                margin-bottom: 10px;
                 // margin-left: 12px;
               }
             }

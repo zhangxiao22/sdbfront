@@ -359,7 +359,7 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.getList()
+              this.getList(1)
             }
           }).finally(() => {
             this.loading = false
