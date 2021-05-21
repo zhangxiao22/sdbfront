@@ -91,8 +91,15 @@ export const CHANNEL_OPT = [
     value: 5,
     label: 'STM',
     disabled: false,
-    icon: 'wechat',
-    iconColor: '#67c23a',
+    icon: 'stm',
+    iconColor: '#990099',
+    chooseType: 1,
+    type: [{
+      id: 1,
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    }],
+    // 定时型的值-起止时间
     dateRange: []
   }
 ]
