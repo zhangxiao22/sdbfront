@@ -945,7 +945,7 @@ export default {
         const data = res.data
         this.funnelData = [
           { label: '线索数量', value: data.total },
-          { label: '线索执行', value: data.executed },
+          { label: '线索执行', value: data.executed || 0 },
           { label: '联系成功', value: data.success },
           { label: '成功购买', value: data.purchase }
         ]
@@ -1057,7 +1057,7 @@ export default {
     // 点击一级选项
     handleRateTabClick() {
       this.rateFilter.rateTypeOpt = this.rateTypeOpt_origin[this.rateFilter.activeName]
-      this.rateFilter.rateType = this.rateFilter.rateTypeOpt[0].value
+      this.rateFilter.rateType = this.rateFilter.rateTypeOpt?.[0].value
       this.renderRate()
     },
     // 点击二级选项
@@ -1108,7 +1108,7 @@ export default {
       this.resultFilter.resultTypeOpt = this.resultTabs.find(n => {
         return this.resultFilter.activeName === n.value
       }).children
-      this.resultFilter.resultType = this.resultFilter.resultTypeOpt[0].value
+      this.resultFilter.resultType = this.resultFilter.resultTypeOpt?.[0].value
       // 改变原始数据
       this.renderResult()
     },
@@ -1282,7 +1282,7 @@ export default {
       this.amountFilter.amountTypeOpt = this.amountTabs.find(n => {
         return this.amountFilter.activeName === n.value
       }).children
-      this.amountFilter.amountType = this.amountFilter.amountTypeOpt[0].value
+      this.amountFilter.amountType = this.amountFilter.amountTypeOpt?.[0].value
       // 改变原始数据
       this.renderAmount()
     },
