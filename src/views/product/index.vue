@@ -127,7 +127,36 @@
           无
         </div>
       </template>
+      <template v-slot:operateSlot="scope">
+        <div class="btn"
+             style="color:#1890FF;"
+             @click="handleEdit(scope.row)">修改</div>
+      </template>
     </shun-table>
+    <el-dialog title="产品修改"
+               :before-close="cancelEdit"
+               :visible.sync="showDialog">
+      <el-form ref="regFormRef"
+               label-width="110px"
+               :model="form">
+        <el-form-item label="产品类型："
+                      prop="orgCodes"
+                      label-width="110px">
+          <el-cascader v-model="form.category"
+                       style="width:300px;"
+                       :options="categoryOpt"
+                       :props="{ checkStrictly: true,expandTrigger: 'hover' }"
+                       clearable />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="cancelEdit">取 消</el-button>
+        <el-button type="primary"
+                   :loading="buttonLoading"
+                   @click="ensureEdit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -169,9 +198,12 @@ export default {
       uploadProductFile,
       // 全量上传
       loading: false,
+      buttonLoading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
+      form: {},
+      showDialog: false,
       filterForm: {
         name: '',
         category: [],
@@ -224,12 +256,21 @@ export default {
         this.tableColumnList = COMMON_COLUMN_LIST
       }
     },
-    handleFileChange(file) {
-      this.file = file.raw
+    handleEdit(row) {
+      this.showDialog = true
+      this.$nextTick(() => {
+        this.isEdit = true
+        this.form.id = row.id
+        // this.form.name = row.post
+        // this.form.role = row.role.value
+      })
     },
-    resetFile() {
-      this.file = ''
-      this.$refs.uploadRef.clearFiles()
+    cancelEdit() {
+      // this.$refs['regFormRef'].resetFields()
+      this.showDialog = false
+    },
+    ensureEdit() {
+      console.log(this.form)
     },
     // 下载模版
     downloadModel() {
@@ -350,5 +391,8 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  .btn {
+    cursor: pointer;
+  }
 }
 </style>
