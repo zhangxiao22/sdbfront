@@ -2,9 +2,6 @@
   <div class="dialog-container">
     <el-dialog :title="isEdit?'修改产品':'新增产品'"
                :visible.sync="showDialog"
-               :close-on-click-modal="false"
-               :close-on-press-escape="false"
-               :show-close="false"
                @close="showDialog=false"
                @open="dialogOpen">
       <el-form ref="regFormRef"
