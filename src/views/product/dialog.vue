@@ -18,6 +18,9 @@
                     maxlength="50" />
         </el-form-item>
         <el-form-item label="产品类型："
+                      :rules="[{
+                        required: true, message: '请输入产品类型', trigger: 'change'
+                      }]"
                       prop="category">
           <el-cascader v-model="addInfo.category"
                        class="form-item"
