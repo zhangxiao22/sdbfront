@@ -187,7 +187,8 @@
                          class="timing right-left">
                       <!-- 定时型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate }}</div>
-                      <div class="item-box"
+                      <div v-show="channelItem.timingDateValue.length"
+                           class="item-box"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.timingDateValue"
                              :key="timeIndex"
@@ -250,7 +251,7 @@
                         </el-table>
                       </div>
                       <!-- 短息、微信 模版 -->
-                      <div v-else
+                      <div v-if="channelItem.value===2||channelItem.value===3"
                            class="preview-table-contaiber model">
                         <el-table :data="channelItem.meterialInfoList"
                                   class="preview-table"
@@ -263,6 +264,10 @@
                                            width="100"
                                            label="短息分类" />
                         </el-table>
+                      </div>
+                      <!-- stm -->
+                      <div v-if="channelItem.value===5">
+                        <div style="font-size:14px;color:#888;">智能柜面助手</div>
                       </div>
                     </div>
                   </div>
@@ -824,6 +829,9 @@ export default {
           // padding: 10px;
           // display: flex;
           margin-bottom: 15px;
+          &:last-of-type {
+            margin-bottom: 0;
+          }
 
           .box {
             display: flex;

@@ -908,7 +908,7 @@ export default {
               // 定时型
               // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
               // 定时型的值-规则 (每周几或每月)
-              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
+              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
               // 定时型的值-规则 (周几或者几号) (多选)
               obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
               // 定时型的值-时间
@@ -1076,7 +1076,7 @@ export default {
                         followSMSIds: cn.value === 1 ? cn.afterSms.map(n => n.id) : undefined,
                         // 模版id
                         materialIdList: cn.value !== 1 && cn.value !== 5 ? cn.model.map(n => n.id) : undefined,
-                        smsAttr: cn.model?.[0].smsAttr || {},
+                        smsAttr: cn.model?.[0]?.smsAttr || {},
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
