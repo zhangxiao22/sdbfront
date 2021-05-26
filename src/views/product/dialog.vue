@@ -52,12 +52,11 @@
                     placeholder="请输入产品说明" />
         </el-form-item>
         <div v-for="(pItem,pi) of productParams"
-             :key="pi"
-             class="condition-item">
+             :key="pi">
           <!-------------------------- input -------------------------->
           <template v-if="pItem.formatType==='input'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`">
+                          :label="`${pItem.desc}：`">
               <el-input v-model="addInfo[pItem.fieldName]"
                         class="form-item"
                         controls-position="right" />
@@ -66,18 +65,17 @@
           <!-------------------------- rate -------------------------->
           <template v-if="pItem.formatType==='rate'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`">
+                          :label="`${pItem.desc}：`">
               <el-input-number v-model="addInfo[pItem.fieldName]"
                                :precision="2"
                                :step="0.1"
-                               class="form-item"
                                controls-position="right" />
             </el-form-item>
           </template>
           <!-------------------------- date -------------------------->
           <template v-if="pItem.formatType==='date'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`">
+                          :label="`${pItem.desc}：`">
               <el-date-picker v-model="addInfo[pItem.fieldName]"
                               value-format="yyyy-MM-dd"
                               type="date"
@@ -88,11 +86,11 @@
           <!-------------------------- select -------------------------->
           <template v-if="pItem.formatType==='select'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`">
+                          :label="`${pItem.desc}：`">
               <el-select v-model="addInfo[pItem.fieldName]"
                          class="form-item"
                          placeholder="请选择">
-                <el-option v-for="(item,i) of [1]"
+                <el-option v-for="(item,i) of pItem.formatContent"
                            :key="i"
                            :label="item"
                            :value="item" />
@@ -193,6 +191,7 @@ export default {
             type: 'success',
             duration: '3000'
           })
+          this.$emit('getList')
         }
       }).finally(() => {
         this.buttonLoading = false

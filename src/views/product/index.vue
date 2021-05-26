@@ -142,7 +142,8 @@
     </shun-table>
     <Dialog ref="dialog"
             :use-case-list-opt="useCaseListOpt"
-            :category-opt="categoryOpt" />
+            :category-opt="categoryOpt"
+            @getList="getList()" />
   </div>
 </template>
 

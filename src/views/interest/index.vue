@@ -211,7 +211,7 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="生效范围："
+        <el-form-item label="生效日期："
                       prop="dateRange">
           <el-date-picker v-model="addInfo.validateDate"
                           value-format="yyyy-MM-dd"
@@ -239,7 +239,7 @@
                     resize="none"
                     placeholder="请输入权益说明" />
         </el-form-item>
-        <el-form-item label="参数说明："
+        <!-- <el-form-item label="参数说明："
                       prop="parameterDescription">
           <el-input v-model.trim="addInfo.parameterDescription"
                     style="width:90%;"
@@ -247,7 +247,7 @@
                     :rows="3"
                     resize="none"
                     placeholder="请输入参数说明" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -348,11 +348,11 @@ export default {
           label: '权益说明',
           minWidth: 200
         },
-        {
-          prop: 'parameterDescription',
-          label: '参数说明',
-          minWidth: 200
-        },
+        // {
+        //   prop: 'parameterDescription',
+        //   label: '参数说明',
+        //   minWidth: 200
+        // },
         {
           prop: 'operate',
           label: '操作',
