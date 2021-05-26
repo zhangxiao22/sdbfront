@@ -140,134 +140,7 @@
              @click="handleEdit(scope.row)">修改</div>
       </template>
     </shun-table>
-    <el-dialog :title="isEdit?'修改产品':'新增产品'"
-               :visible.sync="showDialog"
-               @open="dialogOpen">
-      <el-form ref="regFormRef"
-               label-width="110px"
-               :model="addInfo">
-        <el-form-item label="产品名称："
-                      :rules="[{
-                        required: true, message: '请输入产品名称', trigger: 'blur'
-                      }]"
-                      prop="name">
-          <el-input v-model.trim="addInfo.name"
-                    show-word-limit
-                    style="width:90%;"
-                    maxlength="50" />
-        </el-form-item>
-        <el-form-item label="产品类型："
-                      prop="category"
-                      label-width="110px">
-          <el-cascader v-model="addInfo.category"
-                       style="width:300px;"
-                       :options="categoryOpt"
-                       :props="{ expandTrigger: 'hover' }"
-                       clearable
-                       @change="changeProductParams" />
-        </el-form-item>
-        <el-form-item label="产品用例："
-                      prop="attributionUseCaseList">
-          <el-select v-model="addInfo.attributionUseCaseList"
-                     multiple
-                     style="width:300px;"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="item in useCaseListOpt"
-                       :key="item.value"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="产品说明："
-                      prop="description">
-          <el-input v-model.trim="addInfo.description"
-                    style="width:90%;"
-                    type="textarea"
-                    :rows="3"
-                    resize="none"
-                    placeholder="请输入产品说明" />
-        </el-form-item>
-        <div v-for="(pItem,pi) of productParams"
-             :key="pi"
-             class="condition-item">
-          <!-------------------------- input -------------------------->
-          <template v-if="pItem.formatType==='input'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
-              <el-input v-model="addInfo[pItem.fieldName]"
-                        style="width:90%;"
-                        controls-position="right" />
-            </el-form-item>
-          </template>
-          <!-------------------------- rate -------------------------->
-          <template v-if="pItem.formatType==='rate'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
-              <el-input-number v-model="addInfo[pItem.fieldName]"
-                               :precision="2"
-                               :step="0.1"
-                               controls-position="right" />
-            </el-form-item>
-          </template>
-          <!-------------------------- date -------------------------->
-          <template v-if="pItem.formatType==='date'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
-              <el-date-picker v-model="addInfo[pItem.fieldName]"
-                              type="date"
-                              placeholder="选择日期" />
-            </el-form-item>
-          </template>
-          <!-------------------------- select -------------------------->
-          <template v-if="pItem.formatType==='select'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
-              <el-select v-model="addInfo[pItem.fieldName]"
-                         placeholder="请选择">
-                <el-option v-for="(item,i) of [1]"
-                           :key="i"
-                           :label="item"
-                           :value="item" />
-              </el-select>
-            </el-form-item>
-          </template>
-        </div>
-      </el-form>
-      <div slot="footer"
-           class="dialog-footer">
-        <el-button @click="cancelEdit">取 消</el-button>
-        <el-button type="primary"
-                   :loading="buttonLoading"
-                   @click="ensureEdit">确 定</el-button>
-      </div>
-    </el-dialog>
     <Dialog ref="dialog"
-            :is-edit="isEdit"
-            :cancel-edit-test="cancelEditTest"
-            :show-dialog-test="showDialogTest"
-            :all-params="allParams"
-            :product-params="productParams"
             :use-case-list-opt="useCaseListOpt"
             :category-opt="categoryOpt" />
   </div>
@@ -333,15 +206,11 @@ export default {
             type: 'int'
           }
         ],
-      showDialog: false,
-      showDialogTest: false,
       filterForm: {
         name: '',
         category: [],
         attributionUseCaseList: []
       },
-      allParams: [],
-      productParams: [],
       categoryOpt: [],
       useCaseListOpt: [],
       searchForm: {},
@@ -392,51 +261,17 @@ export default {
     },
     getExtraParams() {
       getProductExtraParams().then(res => {
-        this.allParams = res.data
+        this.$refs['dialog'].init(res.data)
       })
     },
-    changeProductParams(val) {
-      console.log(val)
-      if (this.addInfo.category[0]) {
-        this.productParams = this.allParams.find(n => n.type === this.addInfo.category[0]).array
-      } else {
-        this.productParams = this.allParams.find(n => n.type === this.addInfo.category[0]).array
-      }
-      console.log(this.productParams)
-    },
-    dialogOpen() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-    },
-    handleAdd() {
-      this.isEdit = false
-      this.addInfo.id = ''
-      this.showDialog = true
-    },
-    // handleEdit(row) {
+    // 新增单个产品
+    // handleAdd() {
+    //   this.addInfo.id = ''
     //   this.showDialog = true
-    //   this.$nextTick(() => {
-    //     this.isEdit = true
-    //     this.addInfo.id = row.id
-    //     // 基础字段
-    //     this.addInfo.name = row.name
-    //     this.addInfo.category = row.secondCategory.value ? [row.firstCategory.value, row.secondCategory.value] : [row.firstCategory.value]
-    //     this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(n => n.value)
-    //     this.addInfo.description = row.description
-    //     this.productParams = this.allParams.find(n => n.type === this.addInfo.category[0]).array
-    //   })
     // },
+    // 编辑单个产品
     handleEdit(row) {
-      this.showDialogTest = true
-    },
-    cancelEditTest() {
-      this.showDialogTest = false
-    },
-    cancelEdit() {
-      // this.$refs['regFormRef'].resetFields()
-      this.showDialog = false
-    },
-    ensureEdit() {
-      console.log(this.addInfo)
+      this.$refs['dialog'].edit(row)
     },
     // 下载模版
     downloadModel() {

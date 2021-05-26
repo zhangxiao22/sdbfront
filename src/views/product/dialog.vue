@@ -1,10 +1,14 @@
 <template>
   <div class="dialog-container">
     <el-dialog :title="isEdit?'修改产品':'新增产品'"
-               :visible.sync="showDialogTest"
+               :visible.sync="showDialog"
+               :close-on-click-modal="false"
+               :close-on-press-escape="false"
+               :show-close="false"
+               @close="showDialog=false"
                @open="dialogOpen">
       <el-form ref="regFormRef"
-               label-width="110px"
+               label-width="170px"
                :model="addInfo">
         <el-form-item label="产品名称："
                       :rules="[{
@@ -13,24 +17,23 @@
                       prop="name">
           <el-input v-model.trim="addInfo.name"
                     show-word-limit
-                    style="width:90%;"
+                    class="form-item"
                     maxlength="50" />
         </el-form-item>
         <el-form-item label="产品类型："
-                      prop="category"
-                      label-width="110px">
+                      prop="category">
           <el-cascader v-model="addInfo.category"
-                       style="width:300px;"
+                       class="form-item"
                        :options="categoryOpt"
                        :props="{ expandTrigger: 'hover' }"
                        clearable
-                       @change="changeProductParams" />
+                       @change="changeCategory" />
         </el-form-item>
         <el-form-item label="产品用例："
                       prop="attributionUseCaseList">
           <el-select v-model="addInfo.attributionUseCaseList"
                      multiple
-                     style="width:300px;"
+                     class="form-item"
                      clearable
                      placeholder="请选择">
             <el-option v-for="item in useCaseListOpt"
@@ -42,7 +45,7 @@
         <el-form-item label="产品说明："
                       prop="description">
           <el-input v-model.trim="addInfo.description"
-                    style="width:90%;"
+                    class="form-item"
                     type="textarea"
                     :rows="3"
                     resize="none"
@@ -54,56 +57,40 @@
           <!-------------------------- input -------------------------->
           <template v-if="pItem.formatType==='input'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
+                          :label="`${pItem.desc}:`">
               <el-input v-model="addInfo[pItem.fieldName]"
-                        style="width:90%;"
+                        class="form-item"
                         controls-position="right" />
             </el-form-item>
           </template>
           <!-------------------------- rate -------------------------->
           <template v-if="pItem.formatType==='rate'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
+                          :label="`${pItem.desc}:`">
               <el-input-number v-model="addInfo[pItem.fieldName]"
                                :precision="2"
                                :step="0.1"
+                               class="form-item"
                                controls-position="right" />
             </el-form-item>
           </template>
           <!-------------------------- date -------------------------->
           <template v-if="pItem.formatType==='date'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
+                          :label="`${pItem.desc}:`">
               <el-date-picker v-model="addInfo[pItem.fieldName]"
+                              value-format="yyyy-MM-dd"
                               type="date"
+                              class="form-item"
                               placeholder="选择日期" />
             </el-form-item>
           </template>
           <!-------------------------- select -------------------------->
           <template v-if="pItem.formatType==='select'">
             <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}:`"
-                          class="shun-label"
-                          :rules="[{
-                            // required: true, validator: (rule, value, callback) => {validateNumber(rule, value, callback,pItem.type,pItem.range,pItem.name)},trigger: 'blur'
-                            required: true, message: '请填写'
-                          }]">
+                          :label="`${pItem.desc}:`">
               <el-select v-model="addInfo[pItem.fieldName]"
+                         class="form-item"
                          placeholder="请选择">
                 <el-option v-for="(item,i) of [1]"
                            :key="i"
@@ -116,7 +103,7 @@
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="cancelEditTest">取 消</el-button>
+        <el-button @click="cancelEdit">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
                    @click="ensureEdit">确 定</el-button>
@@ -126,56 +113,33 @@
 </template>
 
 <script>
-import { Notification } from 'element-ui'
+import { updateProduct } from '@/api/api'
+
 export default {
   props: {
-    isEdit: {
-      type: Boolean,
-      default: false
-    },
-    showDialogTest: {
-      type: Boolean,
-      default: false
-    },
-    // 全部参数
-    allParams: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    // 对应参数
-    productParams: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
-    // category
+    // 产品分类Opt
     categoryOpt: {
       type: Array,
       default() {
         return []
       }
     },
-    // useCaseList
+    // 产品用例Opt
     useCaseListOpt: {
       type: Array,
       default() {
         return []
       }
-    },
-    // quxiao
-    cancelEditTest: {
-      type: Function,
-      default() {
-        return
-      }
     }
   },
   data() {
     return {
+      // 是否编辑
+      isEdit: false,
+      showDialog: false,
       buttonLoading: false,
+      allParams: [],
+      productParams: [],
       addInfo: {
         id: '',
         name: '',
@@ -186,28 +150,54 @@ export default {
     }
   },
   watch: {
-
   },
-
   methods: {
+    init(data) {
+      this.allParams = data
+    },
+    edit(row) {
+      this.showDialog = true
+      this.isEdit = true
+      this.$nextTick(() => {
+        this.addInfo.id = row.id
+        // 基础字段
+        this.addInfo.name = row.name
+        this.addInfo.category = row.secondCategory.value ? [row.firstCategory.value, row.secondCategory.value] : [row.firstCategory.value]
+        this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(n => n.value)
+        this.addInfo.description = row.description
+        this.productParams = this.allParams.find(n => n.type === row.firstCategory.value).array
+        this.productParams.forEach(n => {
+          this.addInfo = Object.assign({}, this.addInfo, {
+            [n.fieldName]: row[n.fieldName]
+          })
+        })
+      })
+    },
     dialogOpen() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
     },
-    changeProductParams(val) {
-      console.log(val)
-      if (this.addInfo.category[0]) {
-        this.productParams = this.allParams.find(n => n.type === this.addInfo.category[0]).array
-      } else {
-        this.productParams = this.allParams.find(n => n.type === this.addInfo.category[0]).array
-      }
-      console.log(this.productParams)
+    changeCategory(val) {
+      this.productParams = this.allParams.find(n => n.type === val[0]).array
     },
     cancelEdit() {
       // this.$refs['regFormRef'].resetFields()
-      this.showDialogTest = false
+      this.showDialog = false
     },
     ensureEdit() {
       console.log(this.addInfo)
+      this.buttonLoading = true
+      updateProduct(this.addInfo).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+        this.buttonLoading = false
+        this.showDialog = false
+      })
     }
   }
 }
@@ -215,4 +205,9 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
+.dialog-container {
+  .form-item {
+    width: 90%;
+  }
+}
 </style>

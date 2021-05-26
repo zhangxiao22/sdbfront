@@ -61,6 +61,15 @@ export function getProductExtraParams() {
   })
 }
 
+// 编辑产品
+export function updateProduct(data) {
+  return request({
+    url: '/resource/updateData',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 话术 ************************************************************/
 // 获取话术列表
 export function getWordList(data) {
