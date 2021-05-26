@@ -53,6 +53,14 @@ export function delProduct(params) {
   })
 }
 
+// 获取产品私有属性 useCase/getProductExtraFieldEnum
+export function getProductExtraParams() {
+  return request({
+    url: '/resource/getProductExtraFieldEnum',
+    method: 'get'
+  })
+}
+
 /** ************************************************ 话术 ************************************************************/
 // 获取话术列表
 export function getWordList(data) {
@@ -113,6 +121,15 @@ export function delInterests(params) {
     url: '/interests/delInterests',
     method: 'get',
     params
+  })
+}
+
+// 修改权益
+export function updateInterests(data) {
+  return request({
+    url: '/interests/updateData',
+    method: 'post',
+    data
   })
 }
 
