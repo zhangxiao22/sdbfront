@@ -18,13 +18,6 @@
                       :description="DESCRIPTION.uploadSome"
                       :upload-method="uploadProductFile"
                       @afterUploadSuccess="resetAll" />
-        <!-- <el-button class="button"
-                   type="primary"
-                   icon="el-icon-plus"
-                   plain
-                   @click="handleAdd">
-          新增权益
-        </el-button> -->
         <el-tooltip class="item"
                     effect="dark"
                     :content="DESCRIPTION.downloadSome"
@@ -141,19 +134,24 @@
       </template>
     </shun-table>
     <Dialog ref="dialog"
+            :visible.sync="showDialog"
             :use-case-list-opt="useCaseListOpt"
             :category-opt="categoryOpt"
-            @getList="getList()" />
+            @afterEnsure="getList(1)" />
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST, downloadFile, DESCRIPTION } from '@/utils'
-import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList, delProduct, getProductExtraParams } from '@/api/api'
+import {
+  getProductList,
+  getProductCategoryList,
+  uploadProductFile,
+  getAttributionUseCaseEnumList,
+  delProduct
+} from '@/api/api'
 import UploadButton from '@/components/UploadButton'
-
-import qs from 'qs'
 import Dialog from './dialog.vue'
 export default {
   name: 'Product',
@@ -183,6 +181,7 @@ export default {
   data() {
     return {
       DESCRIPTION,
+      showDialog: false,
       // 增量更新
       uploadProductFile,
       // 是否编辑
@@ -230,7 +229,6 @@ export default {
     this.productCategoryList()
     this.attributionUseCaseEnumList()
     this.search()
-    this.getExtraParams()
   },
   methods: {
     resetAll() {
@@ -260,11 +258,7 @@ export default {
         this.tableColumnList = COMMON_COLUMN_LIST
       }
     },
-    getExtraParams() {
-      getProductExtraParams().then(res => {
-        this.$refs['dialog'].init(res.data)
-      })
-    },
+
     // 新增单个产品
     // handleAdd() {
     //   this.addInfo.id = ''
@@ -272,6 +266,7 @@ export default {
     // },
     // 编辑单个产品
     handleEdit(row) {
+      this.showDialog = true
       this.$refs['dialog'].edit(row)
     },
     // 下载模版

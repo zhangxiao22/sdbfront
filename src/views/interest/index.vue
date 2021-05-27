@@ -162,10 +162,11 @@
              @click="handleEdit(scope.row)">修改</div>
       </template>
     </shun-table>
+    <!-- dialog -->
     <el-dialog :title="isEdit?'修改权益':'新增权益'"
                :visible.sync="showDialog"
-               @open="dialogOpen">
-      <el-form ref="regFormRef"
+               @close="handleCloseDialog">
+      <el-form ref="formRef"
                label-width="110px"
                :model="addInfo">
         <el-form-item label="权益名称："
@@ -262,10 +263,16 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getInterestList, uploadInterestFile, getAttributionUseCaseEnumList, getProductCategoryList, delInterests, updateInterests } from '@/api/api'
+import {
+  getInterestList,
+  uploadInterestFile,
+  getAttributionUseCaseEnumList,
+  getProductCategoryList,
+  delInterests,
+  updateInterests
+} from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 import { DESCRIPTION } from '@/utils'
-import { conversionTag } from '@antv/g2plot/lib/adaptor/conversion-tag'
 
 export default {
   name: 'Interest',
@@ -388,52 +395,52 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
+    resetDialog() {
+      this.$refs['formRef'].resetFields()
+      this.addInfo.id = ''
+    },
     handleAdd() {
       this.isEdit = false
-      this.addInfo.id = ''
       this.showDialog = true
     },
     handleEdit(row) {
       this.showDialog = true
-      this.$nextTick(() => {
-        this.isEdit = true
-        this.addInfo.id = row.id
-        this.addInfo.name = row.name
-        this.addInfo.content = row.content
-        this.addInfo.description = row.description
-        this.addInfo.parameterDescription = row.parameterDescription
-        this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(n => n.value)
-        this.addInfo.productFirstCategoryList = row.productFirstCategoryList?.map(n => n.value)
-        this.addInfo.validateDate = [row.validateStartDate || '', row.validateEndDate || '']
-      })
+      this.isEdit = true
+      this.addInfo = {
+        id: row.id,
+        name: row.name,
+        content: row.content,
+        description: row.description,
+        attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
+        productFirstCategoryList: row.productFirstCategoryList?.map(n => n.value),
+        validateDate: [row.validateStartDate || '', row.validateEndDate || '']
+      }
     },
-    dialogOpen() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+    handleCloseDialog() {
+      this.resetDialog()
     },
     cancelAddList() {
-      // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
     ensureAddList() {
-      this.$refs['regFormRef'].validate((valid) => {
+      this.$refs['formRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
           let ajxj
           const data = {}
-          if (this.addInfo.id) {
+          if (this.isEdit) {
             data.id = this.addInfo.id
             ajxj = updateInterests
           } else {
-            ajxj = updateInterests
+            // ajxj = updateInterests
           }
           data.name = this.addInfo.name
           data.content = this.addInfo.content
           data.description = this.addInfo.description
-          data.parameterDescription = this.addInfo.parameterDescription
           data.attributionUseCaseList = this.addInfo.attributionUseCaseList
           data.productFirstCategoryList = this.addInfo.productFirstCategoryList
-          data.validateStartDate = this.addInfo.validateDate[0]
-          data.validateEndDate = this.addInfo.validateDate[1]
+          data.validateStartDate = this.addInfo.validateDate?.[0]
+          data.validateEndDate = this.addInfo.validateDate?.[1]
           ajxj(data).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -442,7 +449,7 @@ export default {
                 duration: '3000'
               })
               this.showDialog = false
-              this.getList()
+              this.getList(1)
             }
           }).finally(() => {
             this.buttonLoading = false

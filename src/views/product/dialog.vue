@@ -1,12 +1,12 @@
 <template>
   <div class="dialog-container">
     <el-dialog :title="isEdit?'修改产品':'新增产品'"
-               :visible.sync="showDialog"
-               @close="showDialog=false"
-               @open="dialogOpen">
-      <el-form ref="regFormRef"
+               :visible="visible"
+               @close="handleClose">
+      <el-form ref="formRef"
                label-width="170px"
                :model="addInfo">
+        <!-- 基本信息 -->
         <el-form-item label="产品名称："
                       :rules="[{
                         required: true, message: '请输入产品名称', trigger: 'blur'
@@ -42,7 +42,7 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="产品说明："
+        <el-form-item label="产品描述："
                       prop="description">
           <el-input v-model.trim="addInfo.description"
                     class="form-item"
@@ -51,42 +51,34 @@
                     resize="none"
                     placeholder="请输入产品说明" />
         </el-form-item>
-        <div v-for="(pItem,pi) of productParams"
-             :key="pi">
+        <!-- 额外信息 -->
+        <div class="extra-items">
           <!-------------------------- input -------------------------->
-          <template v-if="pItem.formatType==='input'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}：`">
+          <el-form-item v-for="(pItem,pi) of productParams"
+                        :key="pi"
+                        :prop="`${pItem.fieldName}`"
+                        :label="`${pItem.desc}：`">
+            <template v-if="pItem.formatType==='input'">
               <el-input v-model="addInfo[pItem.fieldName]"
-                        class="form-item"
-                        controls-position="right" />
-            </el-form-item>
-          </template>
-          <!-------------------------- rate -------------------------->
-          <template v-if="pItem.formatType==='rate'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}：`">
+                        class="form-item" />
+            </template>
+            <!-------------------------- rate -------------------------->
+            <template v-if="pItem.formatType==='rate'">
               <el-input-number v-model="addInfo[pItem.fieldName]"
                                :precision="2"
                                :step="0.1"
                                controls-position="right" />
-            </el-form-item>
-          </template>
-          <!-------------------------- date -------------------------->
-          <template v-if="pItem.formatType==='date'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}：`">
+            </template>
+            <!-------------------------- date -------------------------->
+            <template v-if="pItem.formatType==='date'">
               <el-date-picker v-model="addInfo[pItem.fieldName]"
                               value-format="yyyy-MM-dd"
                               type="date"
                               class="form-item"
                               placeholder="选择日期" />
-            </el-form-item>
-          </template>
-          <!-------------------------- select -------------------------->
-          <template v-if="pItem.formatType==='select'">
-            <el-form-item :prop="`${pItem.fieldName}`"
-                          :label="`${pItem.desc}：`">
+            </template>
+            <!-------------------------- select -------------------------->
+            <template v-if="pItem.formatType==='select'">
               <el-select v-model="addInfo[pItem.fieldName]"
                          class="form-item"
                          placeholder="请选择">
@@ -95,13 +87,13 @@
                            :label="item"
                            :value="item" />
               </el-select>
-            </el-form-item>
-          </template>
+            </template>
+          </el-form-item>
         </div>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
-        <el-button @click="cancelEdit">取 消</el-button>
+        <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
                    @click="ensureEdit">确 定</el-button>
@@ -111,10 +103,18 @@
 </template>
 
 <script>
-import { updateProduct } from '@/api/api'
+
+import { updateProduct, getProductExtraParams } from '@/api/api'
 
 export default {
   props: {
+    // 是否显示
+    visible: {
+      type: Boolean,
+      default() {
+        return false
+      }
+    },
     // 产品分类Opt
     categoryOpt: {
       type: Array,
@@ -128,6 +128,13 @@ export default {
       default() {
         return []
       }
+    },
+    // 弹窗数据
+    dialogData: {
+      type: Object,
+      default() {
+        return {}
+      }
     }
   },
   data() {
@@ -136,7 +143,7 @@ export default {
       isEdit: false,
       showDialog: false,
       buttonLoading: false,
-      allParams: [],
+      // allParams: [],
       productParams: [],
       addInfo: {
         id: '',
@@ -149,21 +156,30 @@ export default {
   },
   watch: {
   },
+  created() {
+    this.getExtraParams()
+  },
   methods: {
-    init(data) {
-      this.allParams = data
+    getExtraParams() {
+      getProductExtraParams().then(res => {
+        this.allParams = res.data
+      })
+    },
+    handleClose() {
+      // this.$emit('update:visible', false)
+      this.$refs['formRef'].resetFields()
+      this.addInfo.id = ''
     },
     edit(row) {
-      this.showDialog = true
       this.isEdit = true
-      this.$nextTick(() => {
-        this.addInfo.id = row.id
+      this.addInfo.id = row.id
+      setTimeout(() => {
         // 基础字段
         this.addInfo.name = row.name
-        this.addInfo.category = row.secondCategory.value ? [row.firstCategory.value, row.secondCategory.value] : [row.firstCategory.value]
+        this.addInfo.category = [row.firstCategory.value, row.secondCategory.value].filter(n => n)
         this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(n => n.value)
         this.addInfo.description = row.description
-        this.productParams = this.allParams.find(n => n.type === row.firstCategory.value).array
+        this.changeCategory([row.firstCategory.value])
         this.productParams.forEach(n => {
           this.addInfo = Object.assign({}, this.addInfo, {
             [n.fieldName]: row[n.fieldName]
@@ -171,20 +187,11 @@ export default {
         })
       })
     },
-    dialogOpen() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-    },
     changeCategory(val) {
-      this.productParams = this.allParams.find(n => n.type === val[0]).array
-    },
-    cancelEdit() {
-      // this.$refs['regFormRef'].resetFields()
-      this.showDialog = false
+      this.productParams = this.allParams.find(n => n.type === val?.[0])?.array || []
     },
     ensureEdit() {
-      // console.log(this.addInfo)
-      this.buttonLoading = true
-      let data = {
+      const data = {
         id: this.addInfo.id,
         name: this.addInfo.name,
         category: this.addInfo.category,
@@ -192,10 +199,9 @@ export default {
         description: this.addInfo.description
       }
       this.productParams.forEach(n => {
-        data = Object.assign({}, data, {
-          [n.fieldName]: this.addInfo[n.fieldName]
-        })
+        data[n.fieldName] = this.addInfo[n.fieldName]
       })
+      this.buttonLoading = true
       updateProduct(data).then(res => {
         if (res.code === 200) {
           this.$message({
@@ -203,11 +209,11 @@ export default {
             type: 'success',
             duration: '3000'
           })
-          this.$emit('getList')
+          this.$emit('update:visible', false)
+          this.$emit('afterEnsure')
         }
       }).finally(() => {
         this.buttonLoading = false
-        this.showDialog = false
       })
     }
   }
