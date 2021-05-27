@@ -185,6 +185,11 @@ export default {
       // console.log(this.addInfo)
       this.buttonLoading = true
       let data = {
+        id: this.addInfo.id,
+        name: this.addInfo.name,
+        category: this.addInfo.category,
+        attributionUseCaseList: this.addInfo.attributionUseCaseList,
+        description: this.addInfo.description
       }
       this.productParams.forEach(n => {
         data = Object.assign({}, data, {
