@@ -182,9 +182,16 @@ export default {
       this.showDialog = false
     },
     ensureEdit() {
-      console.log(this.addInfo)
+      // console.log(this.addInfo)
       this.buttonLoading = true
-      updateProduct(this.addInfo).then(res => {
+      let data = {
+      }
+      this.productParams.forEach(n => {
+        data = Object.assign({}, data, {
+          [n.fieldName]: this.addInfo[n.fieldName]
+        })
+      })
+      updateProduct(data).then(res => {
         if (res.code === 200) {
           this.$message({
             message: '保存成功',
