@@ -159,11 +159,11 @@
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#1890FF;"
-             @click="handleEdit(scope.row)">修改</div>
+             @click="handleEdit(scope.row)">编辑</div>
       </template>
     </shun-table>
     <!-- dialog -->
-    <el-dialog :title="isEdit?'修改权益':'新增权益'"
+    <el-dialog :title="isEdit?'编辑权益':'新增权益'"
                :visible.sync="showDialog"
                @close="handleCloseDialog">
       <el-form ref="formRef"
@@ -406,15 +406,17 @@ export default {
     handleEdit(row) {
       this.showDialog = true
       this.isEdit = true
-      this.addInfo = {
-        id: row.id,
-        name: row.name,
-        content: row.content,
-        description: row.description,
-        attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
-        productFirstCategoryList: row.productFirstCategoryList?.map(n => n.value),
-        validateDate: [row.validateStartDate || '', row.validateEndDate || '']
-      }
+      this.$nextTick(() => {
+        this.addInfo = {
+          id: row.id,
+          name: row.name,
+          content: row.content,
+          description: row.description,
+          attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
+          productFirstCategoryList: row.productFirstCategoryList?.map(n => n.value),
+          validateDate: [row.validateStartDate || '', row.validateEndDate || '']
+        }
+      })
     },
     handleCloseDialog() {
       this.resetDialog()
