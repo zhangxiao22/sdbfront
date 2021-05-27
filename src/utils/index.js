@@ -28,7 +28,28 @@ export const COMMON_COLUMN_LIST = [
     label: '产品用例',
     minWidth: 100,
     slot: true
+  },
+  {
+    prop: 'description',
+    label: '产品描述',
+    minWidth: 100
+  },
+  {
+    prop: 'userId',
+    label: '上传人',
+    width: 100
+  },
+  // {
+  //   prop: 'reviser',
+  //   label: '最后修改人',
+  //   width: 100
+  // },
+  {
+    prop: 'modifyTime',
+    label: '最后修改时间',
+    width: 180
   }
+
 ]
 
 // 按产品类型区分不同字段
@@ -292,12 +313,8 @@ export const SELF_COLUMN_LIST = [
       prop: 'guaranteeMethod',
       label: '担保方式',
       minWidth: 100
-    },
-    {
-      prop: 'description',
-      label: '产品说明',
-      minWidth: 100
-    }]
+    }
+    ]
   },
   {
     // 通用类产品
@@ -479,4 +496,13 @@ export function translate(data, opt = {}) {
     })
   }
   return refn(data)
+}
+
+// 按钮注释
+export const DESCRIPTION = {
+  uploadSome: '上传并增加数据',
+  uploadAll: '上传并覆盖原数据',
+  downloadSome: '下载已选项',
+  downloadSearch: '全部下载当前搜索结果',
+  delSome: '删除已选项'
 }

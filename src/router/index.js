@@ -2,7 +2,6 @@ import Vue from 'vue'
 import Router from 'vue-router'
 
 Vue.use(Router)
-
 /* Layout */
 import Layout from '@/layout'
 
@@ -23,7 +22,7 @@ export const constantRoutes = [
   }
 ]
 
-export const asyncRoutes = [
+let asyncRoutes = [
   {
     path: '/',
     redirect: '/home',
@@ -41,7 +40,7 @@ export const asyncRoutes = [
         name: 'UseCase',
         component: () => import('@/views/useCase/index'),
         meta: {
-          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹']
+          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批']
         }
       },
       {
@@ -124,24 +123,45 @@ export const asyncRoutes = [
         meta: { title: '成效看板', icon: 'board' }
       },
       {
-        path: 'test',
-        name: 'Test',
-        component: () => import('@/views/test/index'),
-        meta: { title: 'test', icon: 'bug', roles: ['admin'] }
+        // 总看板Copy
+        path: 'totalBoard2',
+        name: 'TotalBoard2',
+        component: () => import('@/views/totalBoard2/index'),
+        meta: { title: '成效看板', icon: 'board', hide: true }
+      },
+      {
+        path: 'crmAndOds',
+        name: 'CrmAndOds',
+        component: () => import('@/views/crmAndOds/index'),
+        meta: { title: 'crm与ods反馈数据的查询列表', icon: 'crmAndOds' }
       },
       {
         // 设置
         path: 'config',
         name: 'Config',
         component: () => import('@/views/config/index'),
-        meta: { title: '系统配置', icon: 'config', roles: ['用例管理', '线索统筹', '业务管理'] }
+        meta: { title: '系统配置', icon: 'config', roles: ['用例管理', '线索统筹', '业务管理', '支行业务管理'] }
       }
     ]
   },
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
-
+const testRoutes = [{
+  path: '/',
+  redirect: '/home',
+  component: Layout,
+  children: [{
+    path: 'test',
+    name: 'Test',
+    component: () => import('@/views/test/index'),
+    meta: { title: 'test', icon: 'bug' }
+  }]
+}]
+if (process.env.NODE_ENV === 'development') {
+  asyncRoutes = asyncRoutes.concat(testRoutes)
+}
+export { asyncRoutes }
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),

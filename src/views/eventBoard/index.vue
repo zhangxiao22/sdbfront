@@ -34,9 +34,8 @@
                         prop="name">
             <el-input v-model.trim="filterForm.name"
                       style="width:300px"
-                      placeholder="搜索事件名称"
-                      clearable
-                      prefix-icon="el-icon-search" />
+                      placeholder="请填写事件名称"
+                      clearable />
           </el-form-item>
           <el-form-item label="所属用例："
                         prop="useCaseId">
@@ -133,12 +132,36 @@
       </template>
       <template v-slot:operateSlot="scope">
         <div class="operate-btns">
-          <!-- <div class="btn"
-               style="color:#1890FF"
-               @click="eventDetail(scope.row.id)">
-            查看
-          </div> -->
-          <div v-if="roleJudge.downloadCustomer && scope.row.loadType && scope.row.loadType.value === 1"
+          <template v-for="(item,i) of btnList(scope).slice(0,3)">
+            <div v-if="item.condition"
+                 :key="i"
+                 class="btn"
+                 :style="item.style"
+                 @click="item.clickFn">
+              {{ item.name }}
+            </div>
+          </template>
+          <el-dropdown v-if="btnList(scope).length>3"
+                       trigger="click">
+            <span class="el-dropdown-link center-center">
+              ...
+            </span>
+            <el-dropdown-menu slot="dropdown"
+                              class="operate-drop">
+              <template v-for="(item,i) of btnList(scope).slice(3)">
+                <el-dropdown-item v-if="item.condition"
+                                  :key="i">
+                  <div class="btn"
+                       @click="item.clickFn">
+                    {{ item.name }}
+                  </div>
+                </el-dropdown-item>
+              </template>
+              <el-dropdown-item />
+            </el-dropdown-menu>
+          </el-dropdown>
+
+          <!-- <div v-if="roleJudge.downloadCustomer && scope.row.loadType && scope.row.loadType.value === 1"
                class="btn"
                style="color:#1890FF;"
                @click="handleDownload(scope.row)">下载名单</div>
@@ -156,10 +179,14 @@
                class="btn"
                style="color:#f56c6c;"
                @click="handleOfflineEvent(scope.row)">下线</div>
+          <div v-if="scope.row.reviewer === user.userName && judgeStatus(scope.row.status.value) === 4"
+               class="btn"
+               style="color:#1890FF;"
+               @click="handleSyncProduct(scope.row)">同步产品</div>
           <div v-if="judgeStatus(scope.row.status.value) === 2"
                class="btn"
                style="color:#f56c6c;"
-               @click="handleDelete(scope.row)">删除</div>
+               @click="handleDelete(scope.row)">删除</div> -->
         </div>
       </template>
     </shun-table>
@@ -177,6 +204,7 @@ import {
   getEventStatus,
   getAllUseCase,
   copyEvent,
+  syncProduct,
   offlineEvent,
   deleteEvent
 } from '@/api/api'
@@ -269,7 +297,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
-          width: 200,
+          width: 220,
           fixed: 'right',
           slot: true
         }
@@ -285,6 +313,67 @@ export default {
     ]),
     parentRef() {
       return this.$refs.table
+    },
+    btnList() {
+      return (scope) => {
+        const _this = this
+        const btns = [{
+          condition: this.roleJudge.downloadCustomer && scope.row.loadType?.value === 1,
+          style: {
+            color: '#1890FF'
+          },
+          clickFn() {
+            return _this.handleDownload(scope.row)
+          },
+          name: '下载名单'
+        }, {
+          condition: this.judgeStatus(scope.row.status.value) === 2,
+          style: {
+            color: '#1890FF'
+          },
+          clickFn() {
+            return _this.handleEdit(scope.row)
+          },
+          name: '编辑'
+        }, {
+          condition: this.roleJudge.createEvent && (this.judgeStatus(scope.row.status.value) === 4 || this.judgeStatus(scope.row.status.value) === 5),
+          style: {
+            color: '#1890FF'
+          },
+          clickFn() {
+            return _this.handleCopy(scope.row)
+          },
+          name: '复制'
+        }, {
+          condition: scope.row.reviewer === this.user.userName && this.judgeStatus(scope.row.status.value) === 4,
+          style: {
+            color: '#f56c6c'
+          },
+          clickFn() {
+            return _this.handleOfflineEvent(scope.row)
+          },
+          name: '下线'
+        }, {
+          condition: scope.row.reviewer === this.user.userName && this.judgeStatus(scope.row.status.value) === 4,
+          style: {
+            color: '#1890FF'
+          },
+          clickFn() {
+            return _this.handleSyncProduct(scope.row)
+          },
+          name: '同步产品'
+        }, {
+          condition: this.judgeStatus(scope.row.status.value) === 2,
+          style: {
+            color: '#f56c6c'
+          },
+          clickFn() {
+            return _this.handleDelete(scope.row)
+          },
+          name: '删除'
+        }]
+        return btns.filter(n => n.condition)
+      }
     }
     // useCaseId() {
     //   return +this.$route.query.id
@@ -307,6 +396,47 @@ export default {
     })
   },
   methods: {
+    // btnList(scope) {
+    //   const _this = this
+    //   const btns = [{
+    //     condition: _this.roleJudge.downloadCustomer && scope.row.loadType?.value === 1,
+    //     style: {
+    //       color: '#1890FF'
+    //     },
+    //     clickFn(scope) {
+    //       return _this.handleDownload(scope.row)
+    //     },
+    //     name: '下载名单'
+    //   }, {
+    //     condition: _this.judgeStatus(scope.row.status.value) === 2,
+    //     style: {
+    //       color: '#1890FF'
+    //     },
+    //     clickFn(scope) {
+    //       return _this.handleEdit(scope.row)
+    //     },
+    //     name: '编辑'
+    //   }, {
+    //     condition: _this.roleJudge.createEvent && (_this.judgeStatus(scope.row.status.value) === 4 || _this.judgeStatus(scope.row.status.value) === 5),
+    //     style: {
+    //       color: '#1890FF'
+    //     },
+    //     clickFn(scope) {
+    //       return _this.handleCopy(scope.row)
+    //     },
+    //     name: '复制'
+    //   }, {
+    //     condition: scope.row.reviewer === _this.user.userName && _this.judgeStatus(scope.row.status.value) === 4,
+    //     style: {
+    //       color: '#f56c6c'
+    //     },
+    //     clickFn(scope) {
+    //       return _this.handleOfflineEvent(scope.row)
+    //     },
+    //     name: '下线'
+    //   }]
+    //   return btns.filter(n => n.condition)
+    // },
     // 判断事件大状态
     judgeStatus(subId) {
       return this.tabList.find(n => {
@@ -491,6 +621,7 @@ export default {
     },
     // 下载客群名单
     handleDownload(row) {
+      console.log(row, '????')
       if (row.group.length) {
         window.open(process.env.VUE_APP_BASE_API + '/customer/customerDownload?baseId=' + row.id, '_self')
       } else {
@@ -546,8 +677,41 @@ export default {
           this.loading = false
         })
     },
+    handleSyncProduct(row) {
+      const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件（${row.name} ）同步产品？`]
+      const newDatas = []
+      const h = this.$createElement
+      for (const i in confirmText) {
+        newDatas.push(h('p', null, confirmText[i]))
+      }
+      this.$confirm(
+        '提示',
+        {
+          title: '提示',
+          message: h('div', null, newDatas),
+          type: 'warning'
+        }
+      )
+        // this.$confirm(`同步时间较长，请勿重复点击，是否确认事件（${row.name} ）同步产品？`)
+        .then(() => {
+          this.loading = true
+          syncProduct({ eventId: row.id }).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.resetAll()
+            }
+          })
+        })
+        .finally(() => {
+          this.loading = false
+        })
+    },
     handleDelete(row) {
-      this.$confirm(`是否确认删除事件（${row.name}）？`)
+      this.$confirm(`是否确认删除事件（${row.name} ）？`)
         .then(() => {
           this.loading = true
           deleteEvent({ baseId: row.id }).then(res => {

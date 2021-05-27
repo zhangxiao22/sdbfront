@@ -13,20 +13,26 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-        <UploadButton button-name="批量上传"
+        <UploadButton button-name="增量更新"
                       class="button"
+                      :description="DESCRIPTION.uploadSome"
                       :upload-method="uploadProductFile"
                       @afterUploadSuccess="resetAll" />
-        <el-button class="button"
-                   icon="el-icon-download"
-                   type="success"
-                   plain
-                   @click="downloadSome">
-          批量下载
-        </el-button>
         <el-tooltip class="item"
                     effect="dark"
-                    content="全部下载当前搜索结果"
+                    :content="DESCRIPTION.downloadSome"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-download"
+                     type="success"
+                     plain
+                     @click="downloadSome">
+            批量下载
+          </el-button>
+        </el-tooltip>
+        <el-tooltip class="item"
+                    effect="dark"
+                    :content="DESCRIPTION.downloadSearch"
                     placement="top">
           <el-button class="button"
                      icon="el-icon-download"
@@ -36,13 +42,18 @@
             全部下载
           </el-button>
         </el-tooltip>
-        <el-button class="button"
-                   icon="el-icon-delete"
-                   type="danger"
-                   plain
-                   @click="delSome">
-          批量删除
-        </el-button>
+        <el-tooltip class="item"
+                    effect="dark"
+                    :content="DESCRIPTION.delSome"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-delete"
+                     type="danger"
+                     plain
+                     @click="delSome">
+            批量删除
+          </el-button>
+        </el-tooltip>
         <el-link type="primary"
                  class="button"
                  @click="downloadModel">模版下载</el-link>
@@ -122,7 +133,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
-import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST, downloadFile } from '@/utils'
+import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST, downloadFile, DESCRIPTION } from '@/utils'
 import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList, delProduct } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 
@@ -153,7 +164,8 @@ export default {
   },
   data() {
     return {
-      // 批量上传
+      DESCRIPTION,
+      // 增量更新
       uploadProductFile,
       // 全量上传
       loading: false,

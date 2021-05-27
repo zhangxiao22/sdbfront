@@ -28,7 +28,8 @@
           </div>
         </div>
       </div>
-      <div class="group-target">
+      <div v-show="detail.eventAchieveList.length"
+           class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
              :key="i"
              class="item">
@@ -38,7 +39,8 @@
           </el-tag>
         </div>
       </div>
-      <div class="desc">{{ detail.desc }}</div>
+      <div v-show="detail.desc"
+           class="desc">{{ detail.desc }}</div>
     </div>
     <!-- group -->
     <div class="swiper-container group-swiper-container">
@@ -49,7 +51,7 @@
              :class="{active:item.active}"
              @click="handleClickSwiperSlider(i)">
           <div class="tooltip">
-            <div class="g-name elip">{{ item.groupName }}</div>
+            <div class="g-name">{{ item.groupName }}</div>
             <el-tooltip class="item"
                         effect="dark"
                         :content="item.desc"
@@ -193,7 +195,7 @@
                              :key="timeIndex"
                              class="item">
                           <div class="date">{{ timeItem.timerTime }} </div>
-                          <div class="time">09:00</div>
+                          <div class="time">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.moment }}</div>
                         </div>
                       </div>
                     </div>
@@ -216,10 +218,34 @@
                         <el-table :data="channelItem.scriptInfoList"
                                   class="preview-table"
                                   size="mini"
-                                  style="width: 100%">
+                                  style="width: 100%;">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
                                            label="话术内容" />
+                          <el-table-column prop="category.label"
+                                           width="100"
+                                           label="话术分类" />
+                        </el-table>
+                        <el-table v-show="channelItem.advanceSMSInfoList.length"
+                                  :data="channelItem.advanceSMSInfoList"
+                                  class="preview-table"
+                                  size="mini"
+                                  style="width: 100%;border-top:1px solid #eaeef4">
+                          <el-table-column prop="content"
+                                           show-overflow-tooltip
+                                           label="预热短信内容" />
+                          <el-table-column prop="category.label"
+                                           width="100"
+                                           label="话术分类" />
+                        </el-table>
+                        <el-table v-show="channelItem.followSMSInfoList.length"
+                                  :data="channelItem.followSMSInfoList"
+                                  class="preview-table"
+                                  size="mini"
+                                  style="width: 100%;border-top:1px solid #eaeef4;">
+                          <el-table-column prop="content"
+                                           show-overflow-tooltip
+                                           label="跟进短信内容" />
                           <el-table-column prop="category.label"
                                            width="100"
                                            label="话术分类" />
@@ -506,13 +532,18 @@ export default {
       color: #888;
       margin-top: 15px;
       display: flex;
-      align-items: center;
+      // align-items: center;
+      align-items: baseline;
       .param {
         margin-left: 10px;
+        flex: 1;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
+        margin-bottom: -8px;
         .param-item {
           margin-right: 8px;
+          margin-bottom: 8px;
         }
       }
     }
@@ -552,7 +583,7 @@ export default {
     }
     .swiper-slide {
       width: 160px;
-      height: 100px;
+      // height: 100px;
       border: 1px solid #cdcdcd;
       border-radius: 4px;
       opacity: 0.5;
@@ -575,7 +606,7 @@ export default {
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 0 10px;
+        padding: 12px 10px;
         justify-content: center;
       }
       .g-name {
@@ -701,7 +732,7 @@ export default {
       .preview-table-contaiber {
         border: 1px solid #ebeef5;
         overflow: hidden;
-        display: flex;
+        // display: flex;
         // min-height: 100px;
         margin-top: 15px;
         border-radius: 4px;

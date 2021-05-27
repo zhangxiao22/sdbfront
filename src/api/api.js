@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 const api2 = process.env.VUE_APP_BASE_API_2 + '/odsEffect'
-// const api3 = process.env.VUE_APP_BASE_API_3
+const api3 = process.env.VUE_APP_BASE_API_2
 // 获取用户信息
 export function getUserInfo(params) {
   return request({
@@ -70,7 +70,7 @@ export function getWordCategory() {
   })
 }
 
-// 批量上传话术
+// 增量更新话术
 export function uploadScriptFile(data) {
   return request({
     url: '/script/uploadScript',
@@ -98,7 +98,7 @@ export function getInterestList(data) {
   })
 }
 
-// 批量上传权益
+// 增量更新权益
 export function uploadInterestFile(data) {
   return request({
     url: '/interests/uploadInterests',
@@ -123,6 +123,39 @@ export function getSmsList(data) {
     url: '/material/sms/select',
     method: 'post',
     data
+  })
+}
+// 上传短信
+export function uploadSmsFile(data) {
+  return request({
+    url: '/material/uploadSMS',
+    method: 'post',
+    data
+  })
+}
+
+// 删除短信
+export function delSms(params) {
+  return request({
+    url: '/material/delSMS',
+    method: 'get',
+    params
+  })
+}/** ************************************************ 策略 ************************************************************/
+// 获取策略库
+export function getStragetyList(params) {
+  return request({
+    url: '/strategy/history_template',
+    method: 'get',
+    params
+  })
+}
+// list 联想搜索
+export function fuzzySearch(params) {
+  return request({
+    url: '/strategy/fuzzy_search',
+    method: 'get',
+    params
   })
 }
 
@@ -382,6 +415,15 @@ export function setEventDistributeLimit(data) {
   })
 }
 
+// 同步产品按钮
+export function syncProduct(data) {
+  return request({
+    url: 'event/sync_product',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件审批 ************************************************************/
 // 事件审批
 export function isPass(data) {
@@ -545,6 +587,14 @@ export function getApproverList() {
   })
 }
 
+// 获取分发模式选项
+export function getDitributeModeList() {
+  return request({
+    url: '/useCase/distributeEnum',
+    method: 'get'
+  })
+}
+
 // 新建用例
 export function saveUseCase(data) {
   return request({
@@ -645,6 +695,21 @@ export function totalAchieveRate(params) {
     params
   })
 }
+
+export function getAllBranches() {
+  return request({
+    url: api3 + '/branches',
+    method: 'get'
+  })
+}
+
+export function getAllBranchList() {
+  return request({
+    url: '/config/role/list',
+    method: 'get'
+  })
+}
+
 // export function totalPurchaseAmount(params) {
 //   return request({
 //     url: api2 + '/purchase_amount',
@@ -710,6 +775,127 @@ export function totalRank(params) {
 //   })
 // }
 
+// Copy
+//
+export function totalOverviewCopy(params) {
+  return request({
+    url: '/report/summary',
+    method: 'get',
+    params
+  })
+}
+
+// AUM LUM 信用卡小图
+export function totalIncreaseCopy(params) {
+  return request({
+    url: '/report/increase',
+    method: 'get',
+    params
+  })
+}
+
+// 漏斗图
+export function totalFunnelCopy(params) {
+  return request({
+    url: '/report/sales_funnel',
+    method: 'get',
+    params
+  })
+}
+
+// 饼图
+export function totalPieCopy(params) {
+  return request({
+    url: '/report/channel_distribution',
+    method: 'get',
+    params
+  })
+}
+
+// 获取rateOpt
+export function rateOptCopy() {
+  return request({
+    url: '/report/rate_labels',
+    method: 'get'
+  })
+}
+
+// rate
+export function totalRateCopy(params) {
+  return request({
+    url: '/report/rate_by_batch',
+    method: 'get',
+    params
+  })
+}
+// rateRank
+export function totalRateRankCopy(params) {
+  return request({
+    url: '/report/rate_by_Executor',
+    method: 'get',
+    params
+  })
+}
+
+// 获取resultOpt
+export function resultOptCopy() {
+  return request({
+    url: '/report/value_labels',
+    method: 'get'
+  })
+}
+
+// result
+export function totalResultCopy(params) {
+  return request({
+    url: '/report/data_by_batch',
+    method: 'get',
+    params
+  })
+}
+// resultRank
+export function totalResultRankCopy(params) {
+  return request({
+    url: '/report/data_by_Executor',
+    method: 'get',
+    params
+  })
+}
+
+// 获取effectOpt
+export function effectOptCopy() {
+  return request({
+    url: '/report/target_labels',
+    method: 'get'
+  })
+}
+
+// effect
+export function totalEffectCopy(params) {
+  return request({
+    url: '/report/target_by_batch',
+    method: 'get',
+    params
+  })
+}
+// effectRank
+export function totalEffectRankCopy(params) {
+  return request({
+    url: '/report/target_by_Executor',
+    method: 'get',
+    params
+  })
+}
+
+/** ************************************************ crm与ods ************************************************************/
+
+export function getRecordPage(data) {
+  return request({
+    url: '/clue/selectRecordPage',
+    method: 'post',
+    data
+  })
+}
 /** ************************************************ 系统配置 ************************************************************/
 // 防打扰修改
 export function updateNoDisturb(data) {
@@ -725,6 +911,15 @@ export function getNoDisturb() {
   return request({
     url: '/config/getNoDisturb',
     method: 'get'
+  })
+}
+
+// Notdisturb页面测试分发按钮接口
+export function testAllocateClue(params) {
+  return request({
+    url: '/bmp2crm/test_allocate_clue',
+    method: 'get',
+    params
   })
 }
 
@@ -866,5 +1061,151 @@ export function downloadTest(params) {
     method: 'get',
     responseType: 'blob',
     params
+  })
+}
+
+// 获取员工
+export function getEmployees(data) {
+  return request({
+    url: '/user/queryPageEmp',
+    method: 'post',
+    data
+  })
+}
+
+/** ************************************************ 理财顾问 ************************************************************/
+
+// 获取理顾指派列表数据
+export function getAppointList(data) {
+  return request({
+    url: '/emp/select_by_page',
+    method: 'post',
+    data
+  })
+}
+
+// 获取理顾指派列表数据
+export function appointEmp(params) {
+  return request({
+    url: '/emp/update_by_emp',
+    method: 'get',
+    params
+  })
+}
+
+// 全量更新理顾指派列表数据
+export function empUpdate(data) {
+  return request({
+    url: '/emp/upload',
+    method: 'post',
+    data
+  })
+}
+
+/** ************************************************ 请假代办 ************************************************************/
+
+// 获取请假代办列表数据
+export function getEmpLeave(data) {
+  return request({
+    url: '/empLeave/get_emp_leave',
+    method: 'post',
+    data
+  })
+}
+
+export function addEmpLeave(data) {
+  return request({
+    url: '/empLeave/insert_leave',
+    method: 'post',
+    data
+  })
+}
+
+// 删除请假代办列表某个数据
+export function delEmpLeave(params) {
+  return request({
+    url: '/empLeave/delete_by_code',
+    method: 'get',
+    params
+  })
+}
+
+// 删除请假代办列表某个数据
+export function getEmpInCurrentOrg(params) {
+  return request({
+    url: '/empLeave/get_emp_in_current_org',
+    method: 'get',
+    params
+  })
+}
+
+/** ************************************************ 分配规则 ************************************************************/
+
+// 获取分配规则列表
+export function getRuleList(data) {
+  return request({
+    url: '/distribution/selectPage',
+    method: 'post',
+    data
+  })
+}
+
+// 添加分配规则
+export function addRule(data) {
+  return request({
+    url: '/distribution/insert',
+    method: 'post',
+    data
+  })
+}
+// 修改分配规则
+export function editRule(data) {
+  return request({
+    url: '/distribution/updateById',
+    method: 'post',
+    data
+  })
+}
+// 删除分配规则
+export function delRule(params) {
+  return request({
+    url: '/distribution/deleteById',
+    method: 'get',
+    params
+  })
+}
+
+// 运行分配规则
+export function runRule(params) {
+  return request({
+    url: '/distribution/updateStatusById',
+    method: 'get',
+    params
+  })
+}
+
+// 获取分配规则的规则
+export function getRuleDetail(params) {
+  return request({
+    url: '/distribution/getWithDetail',
+    method: 'get',
+    params
+  })
+}
+// 获取规则的调用类选项
+export function ruleClassList(params) {
+  return request({
+    url: '/distribution/returnDistributionTypeEnum',
+    method: 'get',
+    params
+  })
+}
+
+// 更新列表的规则
+export function updateRule(data) {
+  return request({
+    url: '/distributionDetail/updateData',
+    method: 'post',
+    data
   })
 }

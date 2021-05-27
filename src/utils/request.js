@@ -17,9 +17,15 @@ const service = axios.create({
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-    if (store.getters.token) {
-      // config.headers['X-Token'] = getToken()
-      config.headers.tokenId = getToken()
+    // if (store.getters.token) {
+    //   // config.headers['X-Token'] = getToken()
+    //   config.headers.tokenId = getToken()
+    // }
+    if (process.env.NODE_ENV === 'development') {
+      // config.headers.userNo = '01' + '01957' // 线索统筹
+      config.headers.userNo = '01' + '00752' // 用例管理
+      // config.headers.userNo = '01' + '10440' // 审批
+      // config.headers.userNo = '01' + '01479' // 业务管理
     }
     return config
   },

@@ -174,6 +174,7 @@
 <script>
 import { MAX_NUMBER, translate } from '@/utils'
 import {
+  getDitributeModeList,
   getUseCaseType,
   getUseCaseParticipant,
   getTargetList,
@@ -221,18 +222,18 @@ export default {
       },
       {
         value: 3,
-        label: '小贷挂靠-白名单-主办-高频-历史'
+        label: '白名单-小贷挂靠-主办-高频-历史'
       },
       {
         value: 4,
-        label: '小贷挂靠-白名单-高频-主办-历史'
+        label: '白名单-小贷挂靠-高频-主办-历史'
       },
       {
         value: 5,
-        label: '消贷挂靠-白名单-主办-高频-历史'
+        label: '白名单-消贷挂靠-主办-高频-历史'
       }, {
         value: 6,
-        label: '消贷挂靠-白名单-高频-主办-历史'
+        label: '白名单-消贷挂靠-高频-主办-历史'
       }],
       cluePriorityOptions: [],
       approverOptions: []
@@ -268,6 +269,7 @@ export default {
 
   },
   created() {
+    this.getDitributeModeOptions()
     this.getType()
     this.getApproverOpt()
     this.getParticipant()
@@ -327,6 +329,11 @@ export default {
             value: n.empCode
           }
         })
+      })
+    },
+    getDitributeModeOptions() {
+      getDitributeModeList().then(res => {
+        this.ditributeModeOptions = res.data
       })
     },
     getUseCaseById() {

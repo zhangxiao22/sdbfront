@@ -6,7 +6,7 @@
                :inline="true"
                :model="filterForm"
                class="shun-filter-container">
-        <el-form-item label="营销用例："
+        <!-- <el-form-item label="营销用例："
                       prop="useCase">
           <el-select v-model="filterForm.useCase"
                      class="long-text"
@@ -20,8 +20,8 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="营销事件："
+        </el-form-item> -->
+        <!-- <el-form-item label="营销事件："
                       prop="event">
           <el-select v-model="filterForm.event"
                      clearable
@@ -31,19 +31,41 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="机构："
-                      prop="agency">
-          <el-select v-model="filterForm.agency"
+        </el-form-item> -->
+        <!-- branch -->
+        <!-- <el-form-item label="支行："
+                      prop="branch">
+          <el-select v-model="filterForm.branch"
                      clearable
                      placeholder="请选择">
-            <el-option v-for="(item,i) in agencyOpt"
+            <el-option v-for="(item,i) in branchOpt"
                        :key="i"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
+        </el-form-item> -->
+        <!-- <el-form-item label="网点："
+                      prop="org">
+          <el-select v-model="filterForm.org"
+                     clearable
+                     placeholder="请选择">
+            <el-option v-for="(item,i) in orgOpt"
+                       :key="i"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item> -->
+        <el-form-item label="机构："
+                      prop="branch">
+          <el-cascader v-model="filterForm.branch"
+                       style="width:300px"
+                       :options="allBranchOpt"
+                       :props="{ value: 'org_code',
+                                 label: 'org_name',
+                                 children: 'Children',checkStrictly: true }"
+                       clearable />
         </el-form-item>
-        <el-form-item label="渠道："
+        <!-- <el-form-item label="渠道："
                       prop="channel">
           <el-select v-model="filterForm.channel"
                      clearable
@@ -53,8 +75,8 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="批次："
+        </el-form-item> -->
+        <!-- <el-form-item label="批次："
                       prop="batch">
           <el-select v-model="filterForm.batch"
                      clearable
@@ -64,8 +86,8 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
-        <el-form-item label="岗位："
+        </el-form-item> -->
+        <!-- <el-form-item label="岗位："
                       prop="post">
           <el-select v-model="filterForm.post"
                      clearable
@@ -75,7 +97,7 @@
                        :label="item.label"
                        :value="item.value" />
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item class="filter-item-end">
           <el-button type="primary"
                      icon="el-icon-search"
@@ -444,7 +466,8 @@ import {
   // totalRankOrg,
   // totalRankBrancg,
   totalRank,
-  // getAllJob,
+  getAllBranches,
+  getAllJob,
   getAllUseCase,
   getEventList
 } from '@/api/api'
@@ -483,18 +506,19 @@ export default {
       lineChartLoading6: false,
       filterForm: {
         // 2241884
-        useCase: [],
-        event: '',
-        agency: '',
-        channel: '',
-        batch: '',
-        post: ''
+        // useCase: [],
+        // event: '',
+        branch: ''
+        // channel: '',
+        // batch: '',
+        // post: ''
       },
       searchForm: {
       },
+      getParams: {},
       useCaseOpt: [],
       eventOpt: [],
-      agencyOpt: [{
+      branchOpt: [{
         value: 1,
         label: '机构1'
       }, {
@@ -510,6 +534,8 @@ export default {
         value: 5,
         label: '机构5'
       }],
+      allBranchOpt: [],
+      orgOpt: [],
       channelOptVal: 1,
       channelOpt: [{
         value: 1,
@@ -728,7 +754,8 @@ export default {
   },
   watch: {},
   created() {
-    this.render()
+    this.getBranches()
+    this.render(this.getParams)
 
     // this.getStatistics()
   },
@@ -738,28 +765,42 @@ export default {
   methods: {
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
+      // console.log(this.searchForm)
+      if (this.searchForm.branch?.length) {
+        this.getParams = {
+          branch: this.searchForm.branch[0],
+          org: this.searchForm.branch[1]
+        }
+      } else {
+        this.getParams = {
+          branch: '',
+          org: ''
+        }
+      }
+      this.render(this.getParams)
     },
     reset() {
       this.$refs.filterRef.resetFields()
+      // this.getUseCase()
       this.search()
     },
-    render() {
+    render(val) {
       // 获取岗位
       // this.getPostOpt()
       //
-      this.getOverview()
-      this.getFunnel()
-      this.getPie()
+      this.getOverview(val)
+      this.getFunnel(val)
+      this.getPie(val)
       // 实际达成率
-      this.getLineChartData(0, 1)
-      this.getLineChartData(1, 2)
-      this.getLineChartData(2, 3)
-      this.getLineChartData(3, 4)
-      this.getLineChartData(4, 5)
-      this.getLineChartData(5, 6)
+      this.getLineChartData(0, 1, val)
+      this.getLineChartData(1, 2, val)
+      this.getLineChartData(2, 3, val)
+      this.getLineChartData(3, 4, val)
+      this.getLineChartData(4, 5, val)
+      this.getLineChartData(5, 6, val)
 
-      this.getUseCase()
-      this.getCluesUseCase()
+      // this.getUseCase()
+      this.getCluesUseCase(val)
       // 旧接口
       // this.getAchieveRate()
       // this.getAchieveRate(1, 1)
@@ -772,16 +813,16 @@ export default {
 
       // 成效统计
 
-      this.getStatistics()
+      this.getStatistics(val)
 
       // 支行网点员工排名
-      this.getRankOrg()
-      this.getRankBranch()
-      this.getRankEmp()
+      this.getRankOrg(val)
+      this.getRankBranch(val)
+      this.getRankEmp(val)
     },
-    getOverview() {
+    getOverview(val) {
       this.loading.baseInfoLoading = true
-      totalOverview().then(res => {
+      totalOverview(val).then(res => {
         const data = res.data
         this.baseInfo[0].value = data.total_use_case
         this.baseInfo[1].value = data.total_event
@@ -793,9 +834,9 @@ export default {
         this.loading.baseInfoLoading = false
       })
     },
-    getFunnel() {
+    getFunnel(val) {
       this.loading.funnelChartLoading = true
-      totalFunnel().then(res => {
+      totalFunnel(val).then(res => {
         const data = res.data
         this.funnelData = [
           { label: '线索数量', value: data.total_clues },
@@ -810,11 +851,11 @@ export default {
         this.loading.funnelChartLoading = false
       })
     },
-    getPie() {
+    getPie(val) {
       this.loading.chartPieLoading = true
-      totalPie({ type: this.channelCluePieChart }).then(res => {
+      totalPie(Object.assign({ type: this.channelCluePieChart }, val)).then(res => {
         const data = res.data
-        this.channelPieData = res.data.map(n => {
+        this.channelPieData = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
@@ -855,10 +896,10 @@ export default {
     //     })
     //   })
     // },
-    getCluesUseCase() {
+    getCluesUseCase(val) {
       this.loading.usecaseBarLoading = true
-      totalCluesUseCase({ type: this.funnelSel, channel: this.channelOptVal }).then(res => {
-        this.usecaseBarData = res.data.map(n => {
+      totalCluesUseCase(Object.assign({ type: this.funnelSel, channel: this.channelOptVal }, val)).then(res => {
+        this.usecaseBarData = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
@@ -871,7 +912,7 @@ export default {
       totalAchieveRate({ channel_id }).then(res => {
         this['lineChartData' + unm] = [
           ...(res.data.control || [])
-            .map(n => {
+            ?.map(n => {
               return {
                 label: n.label,
                 value: +n.value,
@@ -879,7 +920,7 @@ export default {
               }
             }),
           ...(res.data.exec || [])
-            .map(n => {
+            ?.map(n => {
               return {
                 label: n.label,
                 value: +n.value,
@@ -889,9 +930,9 @@ export default {
         ]
       })
     },
-    getLineChartData(typeKey, i) {
+    getLineChartData(typeKey, i, val) {
       this['lineChartLoading' + i] = true
-      getActualRate({ type: typeKey }).then(res => {
+      getActualRate(Object.assign({ type: typeKey }, val)).then(res => {
         this['lineChartData' + i] = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value * 100
@@ -907,24 +948,33 @@ export default {
     //   })
     // },
     // 获取用例列表
-    getUseCase() {
+    // getUseCase() {
+    //   return new Promise((resolve) => {
+    //     getAllUseCase().then(res => {
+    //       this.useCaseOpt = res.data.map(n => {
+    //         return {
+    //           label: n.name,
+    //           value: n.id
+    //         }
+    //       })
+    //       resolve()
+    //     })
+    //   })
+    // },
+    // 获取支行网点列表
+    getBranches() {
       return new Promise((resolve) => {
-        getAllUseCase().then(res => {
-          this.useCaseOpt = res.data.map(n => {
-            return {
-              label: n.name,
-              value: n.id
-            }
-          })
+        getAllBranches().then(res => {
+          this.allBranchOpt = res.data
           resolve()
         })
       })
     },
-    // 获取事件
+    // 根据用例获取事件
     getEvent(useCase) {
       if (this.filterForm.useCase?.length === 1) {
         getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0], status: [4, 6, 11, 13] }).then(res => {
-          this.eventOpt = res.data.resultList.map(n => {
+          this.eventOpt = res.data.resultList?.map(n => {
             return {
               label: n.eventBaseInfo.name,
               value: n.eventBaseInfo.id
@@ -933,7 +983,7 @@ export default {
         })
       } else {
         this.eventOpt = []
-        this.filterForm.event = ''
+        // this.filterForm.event = ''
       }
     },
     expandOpen() {
@@ -949,17 +999,17 @@ export default {
       }
     },
 
-    getStatistics() {
+    getStatistics(val) {
       this.loading.chartBarLoading = true
       this.loading.chartLineLoading = true
-      if (this.filterForm.useCase.length === 1) {
-        totalStatisticsOne({ case: this.filterForm.useCase.join(',') }).then(res => {
-          this.statistics = res.data.map(n => {
+      if (this.filterForm.useCase?.length === 1) {
+        totalStatisticsOne(Object.assign({ case: this.filterForm.useCase?.join(',') }, val)).then(res => {
+          this.statistics = res.data?.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
             })
           })
-          this.statistics2 = this.statistics.slice(0).sort((a, b) => {
+          this.statistics2 = this.statistics?.slice(0).sort((a, b) => {
             return b.value - a.value
           })
         }).finally(() => {
@@ -967,13 +1017,13 @@ export default {
           this.loading.chartLineLoading = false
         })
       } else {
-        totalStatisticsOne({ case: 2241884 }).then(res => {
-          this.statistics = res.data.map(n => {
+        totalStatisticsOne(Object.assign({ case: 2241884 }, val)).then(res => {
+          this.statistics = res.data?.map(n => {
             return Object.assign({}, n, {
               value: +n.value / 1000
             })
           })
-          this.statistics2 = this.statistics.slice(0).sort((a, b) => {
+          this.statistics2 = this.statistics?.slice(0).sort((a, b) => {
             return b.value - a.value
           })
         }).finally(() => {
@@ -982,41 +1032,41 @@ export default {
         })
       }
     },
-    getRankOrg() {
+    getRankOrg(val) {
       this.loading.orgRankLoading = true
-      totalRank({ content: 0, type: this.rankSelVal1 }).then(res => {
-        this.rankChartData1 = res.data.map(n => {
+      totalRank(Object.assign({ content: 0, type: this.rankSelVal1 }, val)).then(res => {
+        this.rankChartData1 = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +(n.value / 10000).toFixed(2)
           })
-        }).slice(0, 10)
-        console.log(this.rankChartData1)
+        })?.slice(0, 10)
+        // console.log(this.rankChartData1)
       })
         .finally(() => {
           this.loading.orgRankLoading = false
         })
     },
-    getRankBranch() {
+    getRankBranch(val) {
       this.loading.branchRankLoading = true
-      totalRank({ content: 1, type: this.rankSelVal2 }).then(res => {
-        this.rankChartData2 = res.data.map(n => {
+      totalRank(Object.assign({ content: 1, type: this.rankSelVal2 }, val)).then(res => {
+        this.rankChartData2 = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +(n.value / 10000).toFixed(2)
           })
-        }).slice(0, 10)
+        })?.slice(0, 10)
       })
         .finally(() => {
           this.loading.branchRankLoading = false
         })
     },
-    getRankEmp() {
+    getRankEmp(val) {
       this.loading.empRankLoading = true
-      totalRank({ content: 2, type: this.rankSelVal3 }).then(res => {
-        this.rankChartData3 = res.data.map(n => {
+      totalRank(Object.assign({ content: 2, type: this.rankSelVal3 }, val)).then(res => {
+        this.rankChartData3 = res.data?.map(n => {
           return Object.assign({}, n, {
             value: +n.value
           })
-        }).slice(0, 10)
+        })?.slice(0, 10)
       })
         .finally(() => {
           this.loading.empRankLoading = false

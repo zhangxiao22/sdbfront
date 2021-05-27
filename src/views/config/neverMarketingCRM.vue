@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="特定免打扰客户名单"
+                title="不营销客户名单（CRM）"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -65,6 +65,7 @@
         </el-button>
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
+                      :description="DESCRIPTION.uploadAll"
                       button-name="全量更新"
                       :upload-params="{
                         category: 3,
@@ -73,7 +74,8 @@
                       @afterUploadSuccess="resetAll" />
         <UploadButton :upload-method="batchUploadFile"
                       class="button"
-                      button-name="批量更新"
+                      :description="DESCRIPTION.uploadSome"
+                      button-name="增量更新"
                       :upload-params="{
                         category: 3,
                         updateType: 1
@@ -81,7 +83,7 @@
                       @afterUploadSuccess="resetAll" />
         <el-tooltip class="item"
                     effect="dark"
-                    content="全部下载所有名单"
+                    :content="DESCRIPTION.downloadSearch"
                     placement="top">
           <el-button class="button"
                      icon="el-icon-download"
@@ -123,9 +125,6 @@
                     maxlength="11" />
         </el-form-item>
         <el-form-item label="客户名称："
-                      :rules="[{
-                        required: true, message: '请输入客户名称', trigger: 'blur'
-                      }]"
                       prop="name">
           <el-input v-model.trim="addInfo.name"
                     show-word-limit
@@ -157,7 +156,7 @@
 import ShunTable from '@/components/ShunTable'
 import { getHateMarketingList, addCustomerToBlackList, batchUploadFile, deleteHateMarketingListById } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
-import { downloadFile } from '@/utils'
+import { downloadFile, DESCRIPTION } from '@/utils'
 
 export default {
   name: 'NeverMarketingCRM',
@@ -185,8 +184,9 @@ export default {
   },
   data() {
     return {
+      DESCRIPTION,
       loading: false,
-      currentPage: 2,
+      currentPage: 1,
       pageSize: 10,
       batchUploadFile,
       // category: 3 不营销人员名单
@@ -214,13 +214,14 @@ export default {
         },
         {
           prop: 'name',
-          label: '客户姓名'
+          label: '客户姓名',
+          minWidth: 100
           // sortable: true
         },
         {
-          prop: 'createTime',
+          prop: 'startDate',
           label: '加入日期',
-          minWidth: 150
+          minWidth: 160
         },
         {
           prop: 'remarks',

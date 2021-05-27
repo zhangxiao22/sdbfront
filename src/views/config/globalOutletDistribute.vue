@@ -3,12 +3,91 @@
   <div class="container">
     <el-form ref="regFormRef"
              :model="form"
-             label-width="200px"
              class="main-form">
-      <el-form-item class="form-item">
-        <div slot="label">
-          <Info content="默认100%" />
-          全局网点分配比例：
+      <el-form-item class="form-item"
+                    style="border-bottom:1px dashed #DCDFE6;margin-bottom:0;">
+        <div class="form-header">
+          <el-form-item required
+                        class="item"
+                        label="网点："
+                        style="flex:1;" />
+          <el-form-item required
+                        class="item"
+                        label="比例："
+                        style="width:200px;" />
+          <el-form-item required
+                        class="item"
+                        label="有效期："
+                        style="width:300px;" />
+        </div>
+        <div v-for="(globalOutletItem,i) of form.globalOutlets"
+             :key="i"
+             class="block-item">
+          <el-form-item>
+            <el-select v-model="globalOutletItem.globalItem"
+                       disabled
+                       class="item-input">
+              <el-option v-for="item of globalOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <!-- <el-form-item style="flex:1;">
+            全局
+          </el-form-item> -->
+          <el-form-item :prop="'globalOutlets.'+i+'.globalValue'"
+                        :rules="{
+                          required: true, message: '请输入分配比例', trigger: 'change'
+                        }">
+            <el-input-number v-model="globalOutletItem.globalValue"
+                             style="width:200px;"
+                             :disabled="!globalOutletItem.globalItem"
+                             :min="0"
+                             :max="200"
+                             :step="10"
+                             controls-position="right"
+                             placeholder="请输入分配比例"
+                             class="item-input number-input" />
+            <div class="unit">%</div>
+          </el-form-item>
+          <el-form-item :prop="'globalOutlets.'+i+'.globalDateRange'"
+                        :rules="[{
+                          required: true, message: '请输入有效期', trigger: 'blur'
+                        }]">
+            <el-date-picker v-model="globalOutletItem.globalDateRange"
+                            style="width:300px;"
+                            value-format="yyyy-MM-dd"
+                            class="item-date"
+                            type="daterange"
+                            :picker-options="pickerOptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
+          </el-form-item>
+          <!-- <i class="el-icon-delete delete"
+               @click="delOutletItem(i)" /> -->
+        </div>
+        <!-- <el-button v-if="form.outlets.length < outletOpt.length"
+                     class="add"
+                     icon="el-icon-plus"
+                     @click="addOutlet" /> -->
+      </el-form-item>
+      <el-form-item class="form-item"
+                    style="margin-top:10px;">
+        <div class="form-header">
+          <el-form-item required
+                        class="item"
+                        label="网点："
+                        style="flex:1;" />
+          <el-form-item required
+                        class="item"
+                        label="比例："
+                        style="width:200px;" />
+          <el-form-item required
+                        class="item"
+                        label="有效期："
+                        style="width:300px;" />
         </div>
         <div v-for="(outletItem,i) of form.outlets"
              :key="i"
@@ -29,12 +108,12 @@
                          :value="optItem.value" />
             </el-select>
           </el-form-item>
-          <span class="compare">:</span>
           <el-form-item :prop="'outlets.'+i+'.value'"
                         :rules="{
                           required: true, message: '请输入分配比例', trigger: 'change'
                         }">
             <el-input-number v-model="outletItem.value"
+                             style="width:200px;"
                              :disabled="!outletItem.item"
                              :min="0"
                              :max="200"
@@ -43,6 +122,20 @@
                              placeholder="请输入分配比例"
                              class="item-input number-input" />
             <div class="unit">%</div>
+          </el-form-item>
+          <el-form-item :prop="'outlets.'+i+'.dateRange'"
+                        :rules="[{
+                          required: true, message: '请输入有效期', trigger: 'blur'
+                        }]">
+            <el-date-picker v-model="outletItem.dateRange"
+                            style="width:300px;"
+                            value-format="yyyy-MM-dd"
+                            class="item-date"
+                            type="daterange"
+                            :picker-options="pickerOptions"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期" />
           </el-form-item>
           <i class="el-icon-delete delete"
              @click="delOutletItem(i)" />
@@ -67,11 +160,10 @@
 
 <script>
 import { getOutletAllot, insertOutletAllotBatch, getOutletList } from '@/api/api'
-import Info from '@/components/Info'
+import { parseTime } from '@/utils'
 
 export default {
   components: {
-    Info
   },
   props: {
     loading: {
@@ -81,25 +173,60 @@ export default {
   },
   data() {
     return {
+      pickerOptions: {
+        disabledDate(time) {
+          const testStartTime = parseTime(new Date(), '{y}-{m}-{d}')
+          const dateTime = parseTime(time, '{y}-{m}-{d}')
+          return dateTime < testStartTime
+        }
+      },
       form: {
         outlets: [
           {
             item: '',
-            proportion: ''
+            value: '',
+            dateRange: []
+          }
+        ],
+        globalOutlets: [
+          {
+            globalItem: 999,
+            globalValue: '100',
+            globalDateRange: []
           }
         ]
       },
+      globalOpt: [{
+        label: '全局',
+        value: 999
+      }],
       outletOpt: []
     }
   },
   computed: {
+    // 获取全局分配比例数据
+    getGlobalData() {
+      const data = {}
+      data.outletAllotList = this.form.globalOutlets.map(n => {
+        return {
+          outletId: n.globalItem,
+          proportion: n.globalValue,
+          startDate: n.globalDateRange[0],
+          endDate: n.globalDateRange[1]
+        }
+      })
+      data.category = 3
+      return data
+    },
     // 获取数据
     getData() {
       const data = {}
       data.outletAllotList = this.form.outlets.map(n => {
         return {
           outletId: n.item,
-          proportion: n.value
+          proportion: n.value,
+          startDate: n.dateRange[0],
+          endDate: n.dateRange[1]
         }
       })
       data.category = 0
@@ -121,43 +248,76 @@ export default {
       })
     },
     reset() {
-      this.form.outlets = [{
-        item: '',
-        value: 100
-      }]
-      this.$nextTick(() => {
-        this.$refs['regFormRef'].resetFields()
-        this.resetOutLet()
-        this.$emit('update:loading', false)
-      })
+      // this.form.outlets = [{
+      //   item: '',
+      //   value: 100
+      // }]
+      // this.$nextTick(() => {
+      //   this.$refs['regFormRef'].resetFields()
+      //   this.resetOutLet()
+      //   this.$emit('update:loading', false)
+      // })
+      this.getDetail()
     },
     getDetail() {
       getOutletAllot({ category: 0 }).then(res => {
         // 获取网点加分配比例值
-        this.form.outlets = res.data.map(item => {
-          return {
-            item: item.outletId,
-            value: item.proportion
-          }
-        })
+        if (res.data.length) {
+          this.form.outlets = res.data.map(item => {
+            return {
+              dateRange: item.startDate ? [item.startDate, item.endDate] : [],
+              item: item.outletId,
+              value: item.proportion
+            }
+          })
+        }
         this.resetOutLet()
+      })
+      getOutletAllot({ category: 3 }).then(res => {
+        // 获取网点加分配比例值
+        if (res.data.length) {
+          this.form.globalOutlets = res.data.map(item => {
+            return {
+              globalDateRange: item.startDate ? [item.startDate, item.endDate] : [],
+              globalItem: item.outletId,
+              globalValue: item.proportion
+            }
+          })
+        }
+      })
+    },
+    saveGlobal() {
+      insertOutletAllotBatch(this.getGlobalData).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '保存全局数据成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+        this.$emit('update:loading', false)
+      })
+    },
+    saveOutlet() {
+      insertOutletAllotBatch(this.getData).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '保存网点数据成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+        this.$emit('update:loading', false)
       })
     },
     save() {
       this.$refs['regFormRef'].validate((valid) => {
         if (valid) {
           this.$emit('update:loading', true)
-          insertOutletAllotBatch(this.getData).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-            }
-          }).finally(() => {
-            this.$emit('update:loading', false)
-          })
+          this.saveGlobal()
+          this.saveOutlet()
         }
       })
     },
@@ -219,26 +379,33 @@ export default {
 
 .container {
   .main-form {
-    width: 700px;
     margin: 20px auto;
-
+    width: 715px;
     .form-item {
+      .form-header {
+        display: flex;
+        .item {
+          margin-right: 10px;
+          margin-bottom: 0;
+          // border: 1px solid;
+          &:last-of-type {
+            margin-right: 0;
+          }
+        }
+      }
       .block-item {
         display: flex;
         position: relative;
-        .compare {
-          width: 10px;
-          margin: 0 10px;
-          color: #888;
-          text-align: center;
-        }
+        margin-bottom: 2px;
         .el-form-item {
-          flex: 1;
           position: relative;
+          margin-right: 10px;
+          &:last-of-type {
+            margin-right: 0;
+          }
           .item-input {
             width: 100%;
             position: relative;
-
             &.number-input {
               ::v-deep .el-input__inner {
                 padding-right: 80px;
@@ -248,7 +415,7 @@ export default {
           }
           .unit {
             position: absolute;
-            top: 0;
+            bottom: 0;
             right: 42px;
           }
         }
