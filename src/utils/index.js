@@ -47,7 +47,7 @@ export const COMMON_COLUMN_LIST = [
   {
     prop: 'modifyTime',
     label: '最后修改时间',
-    width: 180
+    minWidth: 180
   }
 
 ]
