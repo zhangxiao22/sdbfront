@@ -159,11 +159,11 @@
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#1890FF;"
-             @click="handleEdit(scope.row)">修改</div>
+             @click="handleEdit(scope.row)">编辑</div>
       </template>
     </shun-table>
     <!-- dialog -->
-    <el-dialog :title="isEdit?'修改权益':'新增权益'"
+    <el-dialog :title="isEdit?'编辑':'新增'"
                :visible.sync="showDialog"
                @close="handleCloseDialog">
       <el-form ref="formRef"

@@ -130,7 +130,7 @@
       <template v-slot:operateSlot="scope">
         <div class="btn"
              style="color:#1890FF;"
-             @click="handleEdit(scope.row)">修改</div>
+             @click="handleEdit(scope.row)">编辑</div>
       </template>
     </shun-table>
     <Dialog ref="dialog"
