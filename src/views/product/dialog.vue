@@ -1,6 +1,6 @@
 <template>
   <div class="dialog-container">
-    <el-dialog :title="isEdit?'修改产品':'新增产品'"
+    <el-dialog :title="isEdit?'编辑产品':'新增产品'"
                :visible="visible"
                @close="handleClose">
       <el-form ref="formRef"
@@ -166,7 +166,7 @@ export default {
       })
     },
     handleClose() {
-      // this.$emit('update:visible', false)
+      this.$emit('update:visible', false)
       this.$refs['formRef'].resetFields()
       this.addInfo.id = ''
     },
@@ -191,29 +191,33 @@ export default {
       this.productParams = this.allParams.find(n => n.type === val?.[0])?.array || []
     },
     ensureEdit() {
-      const data = {
-        id: this.addInfo.id,
-        name: this.addInfo.name,
-        category: this.addInfo.category,
-        attributionUseCaseList: this.addInfo.attributionUseCaseList,
-        description: this.addInfo.description
-      }
-      this.productParams.forEach(n => {
-        data[n.fieldName] = this.addInfo[n.fieldName]
-      })
-      this.buttonLoading = true
-      updateProduct(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '保存成功',
-            type: 'success',
-            duration: '3000'
+      this.$refs['formRef'].validate((valid) => {
+        if (valid) {
+          const data = {
+            id: this.addInfo.id,
+            name: this.addInfo.name,
+            category: this.addInfo.category,
+            attributionUseCaseList: this.addInfo.attributionUseCaseList,
+            description: this.addInfo.description
+          }
+          this.productParams.forEach(n => {
+            data[n.fieldName] = this.addInfo[n.fieldName]
           })
-          this.$emit('update:visible', false)
-          this.$emit('afterEnsure')
+          this.buttonLoading = true
+          updateProduct(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.$emit('update:visible', false)
+              this.$emit('afterEnsure')
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
-      }).finally(() => {
-        this.buttonLoading = false
       })
     }
   }
