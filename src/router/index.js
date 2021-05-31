@@ -103,10 +103,10 @@ let asyncRoutes = [
       },
       {
         // 规则库
-        path: 'trigger',
-        name: 'Trigger',
-        component: () => import('@/views/trigger/index'),
-        meta: { title: '规则库', icon: 'trigger', roles: ['事件注册', '用例管理'] }
+        path: 'rule',
+        name: 'Rule',
+        component: () => import('@/views/rule/index'),
+        meta: { title: '规则库', icon: 'rule', roles: ['事件注册', '用例管理'] }
       },
       {
         // 模型库

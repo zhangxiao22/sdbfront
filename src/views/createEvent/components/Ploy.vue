@@ -1,7 +1,7 @@
 <template>
   <div ref="ployRef"
        class="ploy-container">
-    <el-form ref="refCustomerForm"
+    <el-form ref="customerFormRef"
              :model="{group}"
              label-width="120px"
              @validate="validateForm">
@@ -392,49 +392,63 @@
                     </template>
                     <!-- 触发型 -->
                     <template v-if="channelCardItem.chooseType===3">
-                      <el-form-item label="触发规则："
-                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.triggerId'"
+                      <el-form-item label="起止日期："
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.dateRange'"
                                     :rules="[{
-                                      required: true, message: '请选择触发规则', type: 'array'
+                                      required: true, message: '请选择起止日期', trigger: 'change'
                                     }]">
-                        <el-button icon="el-icon-plus"
-                                   @click="handleAddRule(channelCardItem,ci)">
-                          选择规则
-                        </el-button>
-                        <!-- {{ channelCardItem.triggerId }} -->
+                        <el-date-picker v-model="channelCardItem.dateRange"
+                                        type="daterange"
+                                        range-separator="至"
+                                        value-format="yyyy-MM-dd"
+                                        :picker-options="pickerOptions"
+                                        start-placeholder="开始日期"
+                                        end-placeholder="结束日期" />
                       </el-form-item>
-                      <el-form-item class="rule-form"
-                                    required
-                                    label="推送时间："
-                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.triggerValue'"
-                                    :rules="[{
-                                      validator: validateRule
-                                    }]">
-                        <div v-for="(item,rule_i) of channelCardItem.triggerValue"
+                      <div class="rule-form">
+                        <div v-for="(item,rule_i) of channelCardItem.trigger"
                              :key="rule_i"
-                             class="rule-item">
-                          <Info content="规则触发日" />
-                          <span class="text-text">T</span>
-                          <span class="plus-text">+</span>
-                          <el-input-number v-model="item.date"
-                                           style="margin-right:10px;"
-                                           controls-position="right"
-                                           :min="0"
-                                           @blur="item.date=item.date||0" />天
-                          <el-time-picker v-model="item.time"
-                                          style="width:150px;margin-left:10px;"
-                                          :clearable="false"
-                                          format="HH:mm"
-                                          value-format="HH:mm"
-                                          @blur="handleTimeBlur($event,item)" />
-                          <i v-if="channelCardItem.triggerValue.length > 1"
+                             class="item-box">
+                          <el-form-item label="触发规则："
+                                        required
+                                        :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.trigger.' + rule_i + '.id'"
+                                        :rules="[{
+                                          validator: validateTrigger
+                                        }]">
+                            <el-button icon="el-icon-plus"
+                                       @click="handleAddRule(channelCardItem,ci,rule_i)">
+                              选择规则
+                            </el-button>
+                          </el-form-item>
+                          <el-form-item required
+                                        label="推送时间：">
+                            <div class="rule-time-item">
+                              <Info content="规则触发日" />
+                              <span class="text-text">T</span>
+                              <span class="plus-text">+</span>
+                              <el-input-number v-model="item.date"
+                                               style="margin-right:10px;"
+                                               controls-position="right"
+                                               :min="0"
+                                               @blur="item.date=item.date||0" />天
+                              <el-time-picker v-model="item.time"
+                                              style="width:150px;margin-left:10px;"
+                                              :clearable="false"
+                                              format="HH:mm"
+                                              value-format="HH:mm"
+                                              @blur="handleTimeBlur($event,item)" />
+                            </div>
+                          </el-form-item>
+                          <i v-if="channelCardItem.trigger.length > 1"
                              class="el-icon-delete delete"
                              @click="delTriggerItem(channelCardItem,rule_i,ci)" />
                         </div>
                         <el-button class="add"
                                    icon="el-icon-plus"
-                                   @click="addTriggerItem(channelCardItem,ci)" />
-                      </el-form-item>
+                                   @click="addTriggerItem(channelCardItem,ci)">
+                          添加规则
+                        </el-button>
+                      </div>
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
@@ -772,7 +786,7 @@ export default {
       this.ployDetail().then(() => {
         this.$nextTick(() => {
           this.beforeHandleGroupTabClick(0)
-          this.$refs['refCustomerForm'].clearValidate()
+          this.$refs['customerFormRef'].clearValidate()
         })
       })
     },
@@ -895,7 +909,7 @@ export default {
     },
     // 切换策略
     handleChangeTab() {
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
     },
     validateForm(rule, validate, message) {
       // console.log(a, b, c)
@@ -926,6 +940,13 @@ export default {
       } else {
         callback()
       }
+    },
+    validateTrigger(rule, value, callback) {
+      console.log('value:', value)
+      if (!value) {
+        return callback(new Error('请选择规则'))
+      }
+      callback()
     },
     validateRule(rule, value, callback) {
       let hasSame = false
@@ -967,7 +988,7 @@ export default {
     validateAndNext() {
       this.isSubmit = true
       return new Promise((resolve, reject) => {
-        this.$refs.refCustomerForm.validate((valid, field) => {
+        this.$refs.customerFormRef.validate((valid, field) => {
           // console.log('valid:', valid, 'field:', field)
           if (valid) {
             // 客群
@@ -1108,9 +1129,9 @@ export default {
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
       this.$nextTick(() => {
         // 校验策略是否为空
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
         // 校验策略名是否重复
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
       })
 
       // 修改简介
@@ -1146,9 +1167,9 @@ export default {
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
       // this.$nextTick(() => {
       //   // 校验策略是否为空
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
       //   // 校验策略名是否重复
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
       // })
 
       // 修改简介
@@ -1176,9 +1197,9 @@ export default {
 
           this.$nextTick(() => {
             // 校验策略是否为空
-            this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+            this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
             // 校验策略名是否重复
-            this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+            this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
           })
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
@@ -1196,23 +1217,23 @@ export default {
       // 之前的做法：切换推送类型就校验被选中类型下的选项
       // 缺点：1.判断过于复杂 2.有一些没必要的校验
       // if (val === 1) {
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
       // } else if (val === 2) {
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
       // } else if (val === 3) {
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`)
-      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`)
+      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
       // }
-      // 现在的做法：切换tab就全部清楚校验
+      // 现在的做法：切换tab就全部清除校验
       const validateArr = [
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
+        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
       ]
-      this.$refs.refCustomerForm.clearValidate(validateArr)
+      this.$refs.customerFormRef.clearValidate(validateArr)
       // })
     },
     handlePercentChange() {
@@ -1223,7 +1244,7 @@ export default {
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.totalPercent`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.totalPercent`)
     },
     handlePercentBlur(item) {
       if (!item.percent) {
@@ -1245,7 +1266,7 @@ export default {
       // console.log(item.product, row)
       item.product.splice(i, 1)
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
     },
     // 选择产品-确定
     submitProduct() {
@@ -1254,7 +1275,7 @@ export default {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -1281,7 +1302,7 @@ export default {
     deleteInterest(item, i) {
       item.interest.splice(i, 1)
       // 校验
-      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+      // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
     },
     // 选择权益-确定
     submitInterest() {
@@ -1290,7 +1311,7 @@ export default {
         this.showInterest = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
         // 校验
-        // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+        // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -1343,7 +1364,7 @@ export default {
         n.disabled = item.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
     },
     // 删除渠道
     deleteChannel(ployItem, ci) {
@@ -1354,7 +1375,7 @@ export default {
         n.disabled = ployItem.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
     },
     addRuleItem(item, ci) {
       item.ruleValue.push({
@@ -1363,28 +1384,29 @@ export default {
       })
       this.channelIndex = ci
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
     },
     delRuleItem(item, i, ci) {
       item.ruleValue.splice(i, 1)
       this.channelIndex = ci
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
     },
     addTriggerItem(item, ci) {
-      item.triggerValue.push({
+      item.trigger.push({
+        id: '',
         date: 0,
         time: '00:00'
       })
       this.channelIndex = ci
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
+      // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
     },
     delTriggerItem(item, i, ci) {
-      item.triggerValue.splice(i, 1)
+      item.trigger.splice(i, 1)
       this.channelIndex = ci
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
+      // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
     },
 
     handleMouseEnter(row, column, cell, event) {
@@ -1396,14 +1418,16 @@ export default {
       row.isHover = false
     },
     // 触发规则
-    handleAddRule(item, ci) {
+    handleAddRule(item, ci, rule_i) {
+      console.log(123)
       this.channelIndex = ci
       const arr = [
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
+        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
+        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${rule_i}.id`
       ]
-      this.$refs.refCustomerForm.clearValidate(arr)
+      this.$refs.customerFormRef.clearValidate(arr)
     },
     // crm选择话术
     addCRMWords(item, ci) {
@@ -1440,7 +1464,7 @@ export default {
       this.channelIndex = ci
 
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
     },
     // 选择话术-确认
     submitWord() {
@@ -1457,7 +1481,7 @@ export default {
           })
         )
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -1478,7 +1502,7 @@ export default {
           })
         })
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -1491,9 +1515,9 @@ export default {
     handleTestSms(channelIndex) {
       this.validateList = []
       // 校验model
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`)
       // 校验phone
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`)
       const data = {}
       // console.log(this.validateList)
       const validate = this.validateList.every(n => {
@@ -1651,26 +1675,27 @@ export default {
       padding-bottom: 2px;
     }
     .rule-form {
-      width: 470px;
-      .rule-item {
-        display: flex;
+      margin-bottom: 18px;
+      // width: 470px;
+      .item-box {
         position: relative;
-        margin-bottom: 10px;
-        // height: 32px;
-        .text-text {
-          margin: 0 10px 0 5px;
-          font-size: 16px;
+        padding-top: 18px;
+        background: #fff;
+        border: 1px solid #ebeef5;
+        border-radius: 4px;
+        margin-bottom: 18px;
+        .rule-time-item {
+          display: flex;
+          position: relative;
+          .text-text {
+            margin: 0 10px 0 5px;
+            font-size: 16px;
+          }
+          .plus-text {
+            font-size: 18px;
+            margin-right: 10px;
+          }
         }
-        .plus-text {
-          font-size: 18px;
-          margin-right: 10px;
-        }
-        // .el-form-item {
-        //   flex: 1;
-        // }
-        // .target-item-input {
-        //   width: 100%;
-        // }
         .delete {
           color: $red;
           display: inline-block;
@@ -1681,8 +1706,9 @@ export default {
           font-size: 18px;
           line-height: 32px;
           position: absolute;
-          right: -30px;
-          top: 0;
+          right: 10px;
+          top: 10px;
+          // transform: translateY(-50%);
           &:hover {
             opacity: 0.8;
           }

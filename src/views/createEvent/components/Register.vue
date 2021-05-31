@@ -29,8 +29,9 @@
         </el-select>
       </el-form-item>
       <el-form-item label="起止日期："
+                    required
                     :rules="[{
-                      required: true, message: '请选择起止日期', trigger: 'change'
+                      validator: validateDate
                     }]"
                     prop="date">
         <el-date-picker v-model="baseInfo.date"
@@ -111,8 +112,10 @@
 <script>
 import bus from '../bus'
 import Info from '@/components/Info'
-import { mapGetters } from 'vuex'
+// import { mapGetters } from 'vuex'
 import { parseTime } from '@/utils'
+import moment from 'moment'
+
 import {
   getSampleList,
   saveEventBaseInfo,
@@ -120,6 +123,7 @@ import {
   getUseCaseICanChoose
 } from '@/api/api'
 
+const TODAY = moment().format('YYYY-MM-DD')
 const DEFAULT_BASEINFO = {
   name: '',
   useCaseId: '',
@@ -230,6 +234,16 @@ export default {
         })
         // this.$refs['regFormRef'].resetFields()
       }
+    },
+    validateDate(rule, value, callback) {
+      console.log(value)
+      if (!value.length) {
+        return callback('请选择起止日期')
+      }
+      if (value[1] <= TODAY) {
+        return callback('结束日期不能早于今天')
+      }
+      callback()
     },
     // 获取详情
     getDetail() {
