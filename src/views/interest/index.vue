@@ -163,11 +163,7 @@
       </template>
     </shun-table>
     <!-- dialog -->
-<<<<<<< HEAD
     <el-dialog :title="isEdit?'编辑':'新增'"
-=======
-    <el-dialog :title="isEdit?'编辑权益':'新增权益'"
->>>>>>> 5f77b65dd543edc0d2e5dbde1e72367de7336470
                :visible.sync="showDialog"
                @close="handleCloseDialog">
       <el-form ref="formRef"
