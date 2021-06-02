@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="规则库1"
+                title="规则库"
                 :loading="loading"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
