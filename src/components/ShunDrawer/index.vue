@@ -13,6 +13,7 @@
       </div>
       <div class="drawer-bottom">
         <el-button type="primary"
+                   :loading="loading"
                    style="max-width:400px;width:100%;"
                    @click="submit()">
           确 认
@@ -33,6 +34,12 @@ export default {
       }
     },
     show: {
+      type: Boolean,
+      default() {
+        return false
+      }
+    },
+    loading: {
       type: Boolean,
       default() {
         return false
