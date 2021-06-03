@@ -211,6 +211,18 @@
                         </div>
                       </div>
                     </div>
+                    <div v-if="channelItem.pushType.value === 3"
+                         class="rule right-left">
+                      <!-- 触发型 -->
+                      <div class="item-box">
+                        <div v-for="(timeItem,timeIndex) of channelItem.ruleValue"
+                             :key="timeIndex"
+                             class="item">
+                          <div class="date">T + {{ timeItem.delay }}</div>
+                          <div class="time">{{ timeItem.moment }}</div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="right-right">
                       <!-- crm 话术 -->
                       <div v-if="channelItem.value===1"
