@@ -880,6 +880,15 @@ export default {
                               time: r.moment
                             }
                           })
+                        } else if (m.pushType.value === 3) {
+                          obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+                          obj.trigger = m.pushTimeInfo.triggerRuleList.map(t => {
+                            return {
+                              id: t.triggerId,
+                              date: t.triggerDate,
+                              time: t.triggerTime
+                            }
+                          })
                         }
                         return obj
                       })())
