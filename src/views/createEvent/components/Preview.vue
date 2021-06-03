@@ -219,6 +219,8 @@
                         <div v-for="(ruleItem,ruleIndex) of channelItem.triggerInfoList.triggerRuleList"
                              :key="ruleIndex"
                              class="item">
+                          <!-- 触发型规则名字 -->
+                          <div class="name">{{ ruleItem.name.length > 10 ? ruleItem.name.slice(0,9) + '...' :ruleItem.name }}</div>
                           <div class="date">T + {{ ruleItem.date }}</div>
                           <div class="time">{{ ruleItem.time }}</div>
                         </div>
