@@ -1048,7 +1048,21 @@ export default {
                               delay: ruleItem.date,
                               moment: ruleItem.time
                             }
-                          }) : undefined
+                          }) : undefined,
+                          // 触发型的值
+                          triggerInfoList: cn.chooseType === 3 ? {
+                            // pushTimeId: cn.pushTimeId,
+                            startDate: cn.dateRange[0],
+                            endDate: cn.dateRange[1],
+                            triggerRuleList: cn.trigger.map(triggerItem => {
+                              return {
+                                triggerId: triggerItem.id,
+                                triggerDate: triggerItem.date,
+                                triggerTime: triggerItem.time
+                              }
+                            })
+                          }
+                            : undefined
                         }
                       }
                     })
