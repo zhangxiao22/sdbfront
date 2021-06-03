@@ -214,12 +214,13 @@
                     <div v-if="channelItem.pushType.value === 3"
                          class="rule right-left">
                       <!-- 触发型 -->
+                      <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate }}</div>
                       <div class="item-box">
-                        <div v-for="(timeItem,timeIndex) of channelItem.ruleValue"
-                             :key="timeIndex"
+                        <div v-for="(ruleItem,ruleIndex) of channelItem.triggerInfoList.triggerRuleList"
+                             :key="ruleIndex"
                              class="item">
-                          <div class="date">T + {{ timeItem.delay }}</div>
-                          <div class="time">{{ timeItem.moment }}</div>
+                          <div class="date">T + {{ ruleItem.date }}</div>
+                          <div class="time">{{ ruleItem.time }}</div>
                         </div>
                       </div>
                     </div>
