@@ -880,6 +880,15 @@ export default {
                               time: r.moment
                             }
                           })
+                        } else if (m.pushType.value === 3) {
+                          obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+                          obj.trigger = m.pushTimeInfo.triggerRuleList.map(t => {
+                            return {
+                              id: t.triggerId,
+                              date: t.triggerDate,
+                              time: t.triggerTime
+                            }
+                          })
                         }
                         return obj
                       })())
@@ -1048,7 +1057,21 @@ export default {
                               delay: ruleItem.date,
                               moment: ruleItem.time
                             }
-                          }) : undefined
+                          }) : undefined,
+                          // 触发型的值
+                          triggerInfoList: cn.chooseType === 3 ? {
+                            // pushTimeId: cn.pushTimeId,
+                            startDate: cn.dateRange[0],
+                            endDate: cn.dateRange[1],
+                            triggerRuleList: cn.trigger.map(triggerItem => {
+                              return {
+                                triggerId: triggerItem.id,
+                                triggerDate: triggerItem.date,
+                                triggerTime: triggerItem.time
+                              }
+                            })
+                          }
+                            : undefined
                         }
                       }
                     })
@@ -1394,7 +1417,7 @@ export default {
     },
     addTriggerItem(item, ci) {
       item.trigger.push({
-        id: '',
+        id: 1,
         date: 0,
         time: '00:00'
       })

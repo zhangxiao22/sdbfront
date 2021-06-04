@@ -211,6 +211,21 @@
                         </div>
                       </div>
                     </div>
+                    <div v-if="channelItem.pushType.value === 3"
+                         class="rule right-left">
+                      <!-- 触发型 -->
+                      <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate }}</div>
+                      <div class="item-box">
+                        <div v-for="(ruleItem,ruleIndex) of channelItem.triggerInfoList.triggerRuleList"
+                             :key="ruleIndex"
+                             class="item">
+                          <!-- 触发型规则名字 -->
+                          <div class="name">{{ ruleItem.name.length > 10 ? ruleItem.name.slice(0,9) + '...' :ruleItem.name }}</div>
+                          <div class="date">T + {{ ruleItem.date }}</div>
+                          <div class="time">{{ ruleItem.time }}</div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="right-right">
                       <!-- crm 话术 -->
                       <div v-if="channelItem.value===1"
