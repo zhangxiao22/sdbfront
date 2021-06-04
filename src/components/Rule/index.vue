@@ -101,7 +101,7 @@
       <div v-if="condition.list.length > 1"
            class="and-or root">
         <div class="text"
-             @click="checkrRelation(condition)">{{ condition.relation ? '且' : '或' }}</div>
+             @click="checkRelation(condition)">{{ condition.relation ? '且' : '或' }}</div>
       </div>
     </div>
   </div>
@@ -127,12 +127,6 @@ export default {
         }
       }
     },
-    ruleOpt: {
-      type: Array,
-      default() {
-        return []
-      }
-    },
     originData: {
       type: Array,
       default() {
@@ -148,15 +142,25 @@ export default {
     return {
       group: [],
       stringOptions: [],
-      MAX_NUMBER
+      MAX_NUMBER,
+      ruleOpt: [{
+        label: '1111',
+        value: '1111',
+        children: [{
+          label: '字符串',
+          value: '字符串',
+          type: 'string'
+        }, {
+          label: '数字',
+          value: '数字',
+          type: 'number'
+        }]
+      }]
     }
   },
   computed: {
-    $form() {
-      return this.$refs.form
-    },
-    id() {
-      return +this.$route.query.id
+    firstRuleOption() {
+      return [this.ruleOpt[0].value, this.ruleOpt[0].children[0].value]
     }
     // rules() {
     //   return [{
@@ -172,8 +176,6 @@ export default {
   },
 
   methods: {
-    reset() {
-    },
     // validateNumber(rule, value, callback) {
     //   const index = rule.field.split('.')[1]
     //   if (this.condition[index].conditionValue.minVal === undefined && this.condition[index].conditionValue.maxVal === undefined) {
@@ -312,13 +314,14 @@ export default {
     },
 
     selectCondition(val, i) {
-      for (let j = 0; j < this.originData.length; j++) {
-        if (this.originData[j].id === val[3]) {
-          this.condition.splice(i, 1, this.resetOpt(val[3], val))
-          break
-        }
-      }
+      // for (let j = 0; j < this.originData.length; j++) {
+      //   if (this.originData[j].id === val[3]) {
+      //     this.condition.splice(i, 1, this.resetOpt(val[3], val))
+      //     break
+      //   }
+      // }
     },
+    // 添加规则（总）
     addRuleBox() {
       this.condition.list.push({
         list: [{
@@ -328,19 +331,21 @@ export default {
         relation: true
       })
     },
+    // 添加规则（子）
     addRuleItem(pi) {
       this.condition.list[pi].list.push({
-        list: [],
-        relation: true
+        list: []
+        // relation: true
       })
     },
+    // 删除规则（子）
     delRuleItem(pi, i) {
       this.condition.list[pi].list.splice(i, 1)
       if (this.condition.list[pi].list.length === 0) {
         this.condition.list.splice(pi, 1)
       }
     },
-    checkrRelation(item) {
+    checkRelation(item) {
       item.relation = !item.relation
     }
   }
