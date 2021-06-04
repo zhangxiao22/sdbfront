@@ -58,7 +58,9 @@
                 :loading="drawerButtonLoading"
                 @submit="handleSureDrawer()">
       <template v-slot:container>
-        <div>123</div>
+        <div>
+          <Rule />
+        </div>
       </template>
     </ShunDrawer>
   </div>
@@ -68,12 +70,14 @@
 import ShunTable from '@/components/ShunTable'
 import { getSmsList } from '@/api/api'
 import ShunDrawer from '@/components/ShunDrawer'
+import Rule from '@/components/Rule'
 
 export default {
   name: 'Sms',
   components: {
     ShunTable,
-    ShunDrawer
+    ShunDrawer,
+    Rule
   },
   props: {
 
@@ -84,7 +88,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      showDrawer: false,
+      showDrawer: true,
       drawerButtonLoading: false,
       filterForm: {
         content: ''
