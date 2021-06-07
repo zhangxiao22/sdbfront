@@ -216,13 +216,13 @@
                       <!-- 触发型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate }}</div>
                       <div class="item-box">
-                        <div v-for="(ruleItem,ruleIndex) of channelItem.triggerInfoList.triggerRuleList"
+                        <div v-for="(ruleItem,ruleIndex) of channelItem.pushTimeInfo.triggerInfoList.triggerRuleList"
                              :key="ruleIndex"
                              class="item">
                           <!-- 触发型规则名字 -->
-                          <div class="name">{{ ruleItem.name.length > 10 ? ruleItem.name.slice(0,9) + '...' :ruleItem.name }}</div>
-                          <div class="date">T + {{ ruleItem.date }}</div>
-                          <div class="time">{{ ruleItem.time }}</div>
+                          <!-- <div class="name">{{ ruleItem.name.length > 10 ? ruleItem.name.slice(0,9) + '...' :ruleItem.name }}</div> -->
+                          <div class="date">T + {{ ruleItem.triggerDate }}</div>
+                          <div class="time">{{ ruleItem.triggerTime }}</div>
                         </div>
                       </div>
                     </div>

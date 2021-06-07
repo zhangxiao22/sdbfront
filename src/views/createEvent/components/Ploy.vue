@@ -881,8 +881,8 @@ export default {
                             }
                           })
                         } else if (m.pushType.value === 3) {
-                          obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
-                          obj.trigger = m.pushTimeInfo.triggerRuleList.map(t => {
+                          obj.dateRange = [m.pushTimeInfo.triggerInfoList.startDate, m.pushTimeInfo.triggerInfoList.endDate]
+                          obj.trigger = m.pushTimeInfo.triggerInfoList.triggerRuleList.map(t => {
                             return {
                               id: t.triggerId,
                               date: t.triggerDate,
