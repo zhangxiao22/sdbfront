@@ -78,38 +78,38 @@
       </template>
     </ShunDrawer>
     <!-- dialog -->
-        <el-dialog title="规则"
-                   :visible.sync="showTableDialog"
-                   @close="handleCloseTableDialog">
-          <el-form ref="dialogTableFormRef"
-                   style="width:500px;margin:0 auto;"
-                   label-width="100px"
-                   :model="dialogTableForm">
-            <el-form-item label="名称："
-                          prop="name"
-                          :rules="[{required: true, message: '请填写名称', trigger: 'blur'}]">
-              <el-input v-model.trim="dialogTableForm.name"
-                        placeholder="请填写名称"
-                        clearable
-                        style="width:90%;" />
-            </el-form-item>
-            <el-form-item label="描述："
-                          prop="detail">
-              <el-input v-model="dialogTableForm.detail"
-                        type="textarea"
-                        style="width:90%;"
-                        :rows="2"
-                        placeholder="请输入描述" />
-            </el-form-item>
-          </el-form>
-          <div slot="footer"
-               class="dialog-footer">
-            <el-button @click="showTableDialog = false">取 消</el-button>
-            <el-button type="primary"
-                       :loading="dialogButtonTableLoading"
-                       @click="ensureTableDialog">确 定</el-button>
-          </div>
-        </el-dialog>
+    <el-dialog title="规则"
+               :visible.sync="showTableDialog"
+               @close="handleCloseTableDialog">
+      <el-form ref="dialogTableFormRef"
+               style="width:500px;margin:0 auto;"
+               label-width="100px"
+               :model="dialogTableForm">
+        <el-form-item label="名称："
+                      prop="name"
+                      :rules="[{required: true, message: '请填写名称', trigger: 'blur'}]">
+          <el-input v-model.trim="dialogTableForm.name"
+                    placeholder="请填写名称"
+                    clearable
+                    style="width:90%;" />
+        </el-form-item>
+        <el-form-item label="描述："
+                      prop="detail">
+          <el-input v-model="dialogTableForm.detail"
+                    type="textarea"
+                    style="width:90%;"
+                    :rows="2"
+                    placeholder="请输入描述" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="showTableDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   :loading="dialogButtonTableLoading"
+                   @click="ensureTableDialog">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -219,20 +219,20 @@ export default {
       this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
         .then(() => {
           this.loading = true
-            delEventRule({ id: row.id })
-              .then(res => {
-                if (res.code === 200) {
-                  this.$message({
-                    message: '删除成功',
-                    type: 'success',
-                    duration: '3000'
-                  })
-                  this.getList(1)
-                }
-              })
-              .finally(() => {
-                this.loading = false
-              })
+          delEventRule({ id: row.id })
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '删除成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.getList(1)
+              }
+            })
+            .finally(() => {
+              this.loading = false
+            })
         })
     },
     handleAddList() {
