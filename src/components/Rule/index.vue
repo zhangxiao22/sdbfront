@@ -22,8 +22,9 @@
                          filterable
                          :show-all-levels="false"
                          :options="ruleOpt"
-                         @change="selectCondition($event,ci)" />
+                         @change="selectCondition($event,pi,i)" />
           </el-tooltip>
+          {{ conditionItem.type }}
           <!-- 比较符 -->
           <el-select v-model="conditionItem.compare"
                      class="item"
@@ -160,13 +161,11 @@ export default {
   },
   computed: {
     firstRuleOption() {
-      return [this.ruleOpt[0].value, this.ruleOpt[0].children[0].value]
+      return {
+        value: [this.ruleOpt[0].value, this.ruleOpt[0].children[0].value],
+        type: this.ruleOpt[0].children[0].type
+      }
     }
-    // rules() {
-    //   return [{
-    //     required: this.required, message: '请选择规则', type: 'array'
-    //   }]
-    // }
   },
   watch: {
   },
@@ -313,20 +312,22 @@ export default {
       }
     },
 
-    selectCondition(val, i) {
-      // for (let j = 0; j < this.originData.length; j++) {
-      //   if (this.originData[j].id === val[3]) {
-      //     this.condition.splice(i, 1, this.resetOpt(val[3], val))
-      //     break
-      //   }
-      // }
+    selectCondition(val, pi, i) {
+      console.log(val, pi, i)
+      var type = this.ruleOpt.find(a => {
+        return a.value === val[0]
+      }).children.find(b => {
+        return b.value === val[1]
+      }).type
+      // console.log(type)
+      this.condition.list[pi].list[i].type = type
     },
     // 添加规则（总）
     addRuleBox() {
       this.condition.list.push({
         list: [{
-          list: [],
-          relation: true
+          conditionSelect: this.firstRuleOption.value,
+          type: this.firstRuleOption.type
         }],
         relation: true
       })
@@ -334,8 +335,8 @@ export default {
     // 添加规则（子）
     addRuleItem(pi) {
       this.condition.list[pi].list.push({
-        list: []
-        // relation: true
+        conditionSelect: this.firstRuleOption.value,
+        type: this.firstRuleOption.type
       })
     },
     // 删除规则（子）
@@ -414,7 +415,7 @@ export default {
         font-size: 10px;
         height: 24px;
         width: 46px;
-        line-height: 24px;
+        line-height: 22px;
         padding: 0;
         // transform: translateY(-50%);
 
