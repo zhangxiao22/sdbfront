@@ -1209,3 +1209,46 @@ export function updateRule(data) {
     data
   })
 }
+
+/** ************************************************ 事件驱动 ************************************************************/
+
+// 查询事件驱动规则
+export function getEventRuleList(data) {
+  return request({
+    url: 'rule/select',
+    method: 'post',
+    data
+  })
+}
+
+// 删除事件驱动规则
+export function delEventRule(params) {
+  return request({
+    url: '/rule/deleteById',
+    method: 'get',
+    params
+  })
+}
+
+// 新增
+export function addEventRule(data) {
+  return request({
+    url: 'rule/insert',
+    method: 'post',
+    data
+  })
+}
+
+// 编辑
+export function editEventRule(data) {
+  return request({
+    url: 'rule/update',
+    method: 'post',
+    data
+  })
+}
+
+
+
+
+
