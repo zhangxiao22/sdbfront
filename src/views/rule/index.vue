@@ -31,11 +31,11 @@
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
-          <el-form-item label="创建人名称："
+          <el-form-item label="创建人："
                         prop="creatorName">
             <el-input v-model.trim="filterForm.creatorName"
                       style="width:300px"
-                      placeholder="请输入创建人名称"
+                      placeholder="请输入创建人"
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
@@ -56,7 +56,7 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleEdit(scope.row)">编辑</div>
+               @click="handleEdit(scope.row)">编辑1</div>
           <div class="btn"
                style="color:#1890FF;"
                @click="handleEditButton(scope.row)">编辑</div>
@@ -152,12 +152,12 @@ export default {
       tableColumnList: [
         {
           prop: 'name',
-          label: '名称',
+          label: '规则名称',
           minWidth: 200
         },
         {
           prop: 'creatorName',
-          label: '创建人姓名',
+          label: '创建人',
           minWidth: 200
         },
         {
@@ -169,6 +169,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
+          width: 180,
           slot: true
         }
       ],
@@ -207,7 +208,7 @@ export default {
       }, this.searchForm)
       this.loading = true
       getEventRuleList(data).then(res => {
-        this.tableData = res.data
+        this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
@@ -219,7 +220,7 @@ export default {
       this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
         .then(() => {
           this.loading = true
-          delEventRule({ id: row.id })
+          delEventRule({ ruleId: row.id })
             .then(res => {
               if (res.code === 200) {
                 this.$message({
@@ -242,7 +243,7 @@ export default {
     handleEditButton(row) {
       this.dialogTableForm.id = row.id
       this.dialogTableForm.name = row.name
-      this.dialogTableForm.desc = row.detail
+      this.dialogTableForm.detail = row.detail
       // this
       this.showTableDialog = true
     },

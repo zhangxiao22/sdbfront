@@ -1247,8 +1247,3 @@ export function editEventRule(data) {
     data
   })
 }
-
-
-
-
-
