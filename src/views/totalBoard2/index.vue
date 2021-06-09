@@ -536,7 +536,7 @@ export default {
         activeName: '',
         rateTypeOpt: [],
         rateType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         // type: '执行率',
         rankType: 1
       },
@@ -567,7 +567,7 @@ export default {
         activeName: '',
         resultTypeOpt: [],
         resultType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         rankType: 1
       },
       resultRankData_origin: [],
@@ -650,7 +650,7 @@ export default {
         activeName: '',
         effectTypeOpt: [],
         effectType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         rankType: 1
       },
       effectTabs: [
@@ -677,7 +677,7 @@ export default {
         crmSmsType: '',
         amountTypeOpt: [],
         amountType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         rankType: 1
         // rankT
       },
