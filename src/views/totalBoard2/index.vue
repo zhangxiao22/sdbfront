@@ -520,7 +520,7 @@ export default {
       },
       // total
       totalFilter: {
-        totalTimeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
+        totalTimeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
       },
       // rate 的tab
       rateTabs: [{
@@ -1004,11 +1004,11 @@ export default {
         _data.forEach(n => {
           data.push({
             label: n.label,
-            value: n.value,
+            value: +(n.value * 100),
             category: '执行组'
           }, {
             label: n.label,
-            value: n.compare,
+            value: +(n.compare * 100),
             category: '对照组'
           })
         })
@@ -1273,8 +1273,8 @@ export default {
     // ------------------- amount ---------------------------------------------------------------------------------------------------------
 
     changeAmountUseCase() {
-      const data = this.getResultParams()
-      this.getResultRank(data)
+      const data = this.getAmountParams()
+      this.getAmountRank(data)
     },
 
     // 点击一级选项
@@ -1348,7 +1348,7 @@ export default {
       })
       this.stackedBarData_amount = rd
     },
-    // 获取result排名数据
+    // 获取amount排名数据
     changeAmountRankData() {
       // 排名
       this.amountRankData = this.amountRankData_origin[this.amountFilter.amountType]
