@@ -21,9 +21,12 @@
 </template>
 
 <script>
+import Employees from './employees'
+import Agent from './agent'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
+import Rule from './rule'
 import GlobalOutletDistribute from './globalOutletDistribute'
 import UseCaseOutletDistribute from './usecaseOutletDistribute'
 import JobOccupy from './jobOccupy'
@@ -37,9 +40,12 @@ import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    Employees,
+    Agent,
     Appoint,
     Assign,
     NotDisturb,
+    Rule,
     GlobalOutletDistribute,
     UseCaseOutletDistribute,
     JobOccupy,
@@ -54,7 +60,7 @@ export default {
     return {
       tabIndex: '0',
       tabList: [{
-        label: '理顾指派',
+        label: '理财顾问指派',
         component: 'Appoint',
         loading: false,
         roles: ['线索统筹']
@@ -109,6 +115,24 @@ export default {
         roles: ['业务管理']
       },
       {
+        label: '岗位员工',
+        component: 'Employees',
+        loading: false,
+        roles: ['业务管理']
+      },
+      {
+        label: '请假代办',
+        component: 'Agent',
+        loading: false,
+        roles: ['线索统筹']
+      },
+      // {
+      //   label: '分配规则',
+      //   component: 'Rule',
+      //   loading: false,
+      //   roles: ['线索统筹']
+      // },
+      {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
         loading: false,
@@ -121,12 +145,11 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '私银客户名单',
+        label: '不营销客户名单（CRM）',
         component: 'NeverMarketingCRM',
         loading: false,
         roles: ['线索统筹']
       }
-
       ]
     }
   },

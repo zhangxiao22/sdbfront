@@ -318,6 +318,7 @@ export default {
     top: 0;
     bottom: 0;
     padding: 20px;
+    padding-right: 0;
     overflow: auto;
     // .el-step {
     //   cursor: pointer;

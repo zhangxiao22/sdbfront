@@ -508,6 +508,7 @@ export default {
       const el = document.querySelector('#group-tabs .el-tabs__nav')
       const _this = this
       var sortable = Sortable.create(el, {
+        animation: 150,
         onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
           const currRow = _this.labelTabs.splice(oldIndex, 1)[0] // 鼠标拖拽当前的el-tabs-pane
           _this.labelTabs.splice(newIndex, 0, currRow) // tableData 是存放所以el-tabs-pane的数组

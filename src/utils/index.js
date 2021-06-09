@@ -35,19 +35,19 @@ export const COMMON_COLUMN_LIST = [
     minWidth: 100
   },
   {
-    prop: 'uploader',
+    prop: 'userId',
     label: '上传人',
     width: 100
   },
-  {
-    prop: 'reviser',
-    label: '最后修改人',
-    width: 100
-  },
+  // {
+  //   prop: 'reviser',
+  //   label: '最后修改人',
+  //   width: 100
+  // },
   {
     prop: 'modifyTime',
     label: '最后修改时间',
-    width: 180
+    minWidth: 180
   }
 
 ]

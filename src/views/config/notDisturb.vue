@@ -6,7 +6,7 @@
              label-width="300px"
              class="form">
       <div class="block">
-        <div class="block-title">免打扰开关</div>
+        <div class="block-title">防打扰设置</div>
         <el-form-item prop="intervalDays"
                       class="form-item">
           <div slot="label">
@@ -14,6 +14,19 @@
             防打扰间隔天数：
           </div>
           <el-input-number v-model="form.intervalDays"
+                           controls-position="right"
+                           :min="1"
+                           :max="1000"
+                           :step="5" />
+          <span class="unit">天</span>
+        </el-form-item>
+        <el-form-item prop="hateSaleIntervalDays"
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户上次执行记录为厌恶营销，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
+            厌恶营销防打扰间隔天数：
+          </div>
+          <el-input-number v-model="form.hateSaleIntervalDays"
                            controls-position="right"
                            :min="1"
                            :max="1000"
@@ -51,19 +64,7 @@
                            @blur="handleBlurMaxAge" />
           <span class="unit">岁</span>
         </el-form-item>
-        <el-form-item prop="hateSaleIntervalDays"
-                      class="form-item">
-          <div slot="label">
-            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户上次执行记录为厌恶营销，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
-            厌恶营销防打扰间隔天数：
-          </div>
-          <el-input-number v-model="form.hateSaleIntervalDays"
-                           controls-position="right"
-                           :min="1"
-                           :max="1000"
-                           :step="5" />
-          <span class="unit">天</span>
-        </el-form-item>
+
         <el-form-item prop="emptyNumbers"
                       class="form-item">
           <div slot="label">
@@ -85,6 +86,31 @@
           <el-input-number v-model="form.emptyNumbersIntervalDays"
                            controls-position="right"
                            :min="1"
+                           :max="1000"
+                           :step="5" />
+          <span class="unit">天</span>
+        </el-form-item>
+        <el-form-item prop="notPersonalPhoneTimes"
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户最近X次执行记录为号码有误，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
+            号码勾选非本人次数：
+          </div>
+          <el-input-number v-model="form.notPersonalPhoneTimes"
+                           controls-position="right"
+                           :min="0"
+                           :max="100" />
+          <span class="unit">次</span>
+        </el-form-item>
+        <el-form-item prop="notPersonalPhoneDays"
+                      class="form-item">
+          <div slot="label">
+            <Info content="线索分发时将逐条线索查询客户的CRM历史执行记录，若客户最近X次执行记录为号码有误，且线索生效日距离上次CRM执行时间低于设置的防打扰间隔天数，则该线索跳过分发，直接弃用" />
+            号码勾选非本人过滤天数：
+          </div>
+          <el-input-number v-model="form.notPersonalPhoneDays"
+                           controls-position="right"
+                           :min="0"
                            :max="1000"
                            :step="5" />
           <span class="unit">天</span>
@@ -154,7 +180,38 @@
           <span class="unit">条</span>
         </el-form-item>
       </div>
-
+      <div class="block">
+        <div class="block-title">分发模式</div>
+        <el-form-item class="form-item"
+                      prop="distributeMode">
+          <div slot="label">
+            <Info content="选择分发模式" />
+            分发模式：
+          </div>
+          <!-- <el-tooltip :content="form.clark?'发送':'不发送'"
+                      placement="top">
+            <el-switch v-model="form.clark"
+                       :active-value="1"
+                       :inactive-value="0" />
+          </el-tooltip> -->
+          <el-select v-model="form.distributeMode"
+                     disabled
+                     placeholder="请选择">
+            <el-option v-for="item in distributeModeOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item class="form-item">
+          <el-button type="primary"
+                     style="width:100px;"
+                     icon="el-icon-thumb"
+                     disabled
+                     plain
+                     @click="handleTest">测试分发</el-button>
+        </el-form-item>
+      </div>
       <!-- <el-form-item prop="smsIntervalDays"
                     label="短信黑名单持续天数：">
         <el-input-number v-model="form.smsIntervalDays"
@@ -179,7 +236,7 @@
   </div>
 </template>
 <script>
-import { getNoDisturb, updateNoDisturb } from '@/api/api'
+import { getNoDisturb, updateNoDisturb, testAllocateClue } from '@/api/api'
 import { Loading } from 'element-ui'
 import Info from '@/components/Info'
 
@@ -195,6 +252,20 @@ export default {
   },
   data() {
     return {
+      distributeModeOpt: [
+        {
+          label: '最老版本',
+          value: 0
+        },
+        {
+          label: '最新版本',
+          value: 1
+        },
+        {
+          label: '上一个版本',
+          value: 2
+        }
+      ],
       form: {
         intervalDays: null,
         minAge: null,
@@ -202,10 +273,13 @@ export default {
         hateSaleIntervalDays: null,
         emptyNumbers: null,
         emptyNumbersIntervalDays: null,
+        notPersonalPhoneTimes: undefined,
+        notPersonalPhoneDays: undefined,
         adviserWeeklyDistribution: null,
         personalWeeklyDistribution: null,
         networkManagerWeeklyDistribution: null,
         networkClerkWeeklyDistribution: null,
+        distributeMode: 0,
         clark: 0
       }
     }
@@ -237,6 +311,8 @@ export default {
     getList() {
       getNoDisturb().then((res) => {
         this.form = res.data
+        this.form.notPersonalPhoneTimes = res.data.notPersonalPhoneTimes === null ? undefined : res.data.notPersonalPhoneTimes
+        this.form.notPersonalPhoneDays = res.data.notPersonalPhoneDays === null ? undefined : res.data.notPersonalPhoneDays
       })
     },
     onSubmit() {
@@ -255,6 +331,20 @@ export default {
             this.$emit('update:loading', false)
           })
         }
+      })
+    },
+    handleTest() {
+      this.$emit('update:loading', true)
+      testAllocateClue({ publish: 0 }).then(res => {
+        if (res.code === 200) {
+          this.$message({
+            message: '测试成功',
+            type: 'success',
+            duration: '3000'
+          })
+        }
+      }).finally(() => {
+        this.$emit('update:loading', false)
       })
     },
     reset() {

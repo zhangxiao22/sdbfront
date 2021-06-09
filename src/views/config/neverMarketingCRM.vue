@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="私银客户名单"
+                title="不营销客户名单（CRM）"
                 :loading="loading"
                 :show-selection="showSelection"
                 :page-size.sync="pageSize"
@@ -125,9 +125,6 @@
                     maxlength="11" />
         </el-form-item>
         <el-form-item label="客户名称："
-                      :rules="[{
-                        required: true, message: '请输入客户名称', trigger: 'blur'
-                      }]"
                       prop="name">
           <el-input v-model.trim="addInfo.name"
                     show-word-limit

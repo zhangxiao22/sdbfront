@@ -28,7 +28,8 @@
           </div>
         </div>
       </div>
-      <div class="group-target">
+      <div v-show="detail.eventAchieveList.length"
+           class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
              :key="i"
              class="item">
@@ -38,7 +39,8 @@
           </el-tag>
         </div>
       </div>
-      <div class="desc">{{ detail.desc }}</div>
+      <div v-show="detail.desc"
+           class="desc">{{ detail.desc }}</div>
     </div>
     <!-- group -->
     <div class="swiper-container group-swiper-container">
@@ -530,13 +532,18 @@ export default {
       color: #888;
       margin-top: 15px;
       display: flex;
-      align-items: center;
+      // align-items: center;
+      align-items: baseline;
       .param {
         margin-left: 10px;
+        flex: 1;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
+        margin-bottom: -8px;
         .param-item {
           margin-right: 8px;
+          margin-bottom: 8px;
         }
       }
     }
