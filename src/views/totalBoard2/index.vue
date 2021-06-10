@@ -687,10 +687,10 @@ export default {
         value: 'amount',
         children: [{
           label: '成功购买金额',
-          value: '成功购买金额'
+          value: 'purchasedAmount'
         }, {
           label: 'AUM提升',
-          value: 'AUM提升'
+          value: 'aumUp'
         }]
 
       }],
@@ -1017,10 +1017,18 @@ export default {
           type: 'double'
         }
       } else {
+        const data = []
+        const _data = this.lineChartData_crm_origin.find(n => {
+          return this.rateFilter.rateType === n.key
+        }).data
+        _data.forEach(n => {
+          data.push({
+            label: n.label,
+            value: +(n.value * 100)
+          })
+        })
         this.lineChartData_crm = {
-          data: this.lineChartData_crm_origin.find(n => {
-            return this.rateFilter.rateType === n.key
-          }).data,
+          data,
           type: 'single'
         }
       }
