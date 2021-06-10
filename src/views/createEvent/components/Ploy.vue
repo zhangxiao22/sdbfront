@@ -318,7 +318,7 @@
                                         start-placeholder="开始日期"
                                         end-placeholder="结束日期" />
                       </el-form-item>
-                      <el-form-item v-if="channelCardItem.value!==5"
+                      <el-form-item v-if="channelCardItem.value!==5 && channelCardItem.value!==6"
                                     label="推送时间："
                                     required>
                         <div style="display:flex">
@@ -618,6 +618,8 @@
                     </template>
                     <!-- stm -->
                     <template v-if="channelCardItem.value===5" />
+                    <!-- AI -->
+                    <template v-if="channelCardItem.value===6" />
                     <!-- 渠道：{{ channelCardItem.value }}
                     类型：{{ channelCardItem.chooseType }}
                     定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
@@ -1058,7 +1060,7 @@ export default {
                       return {
                         // 渠道id
                         // infoId: cn.infoId,
-                        // 渠道类型 1:crm 2:短信 3:微信 5:stm
+                        // 渠道类型 1:crm 2:短信 3:微信 5:stm 6:AI
                         channel: cn.value,
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
