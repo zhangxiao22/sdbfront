@@ -269,6 +269,10 @@
                       <div v-if="channelItem.value===5">
                         <div style="font-size:14px;color:#888;">智能柜面助手</div>
                       </div>
+                      <!-- AI -->
+                      <div v-if="channelItem.value===6">
+                        <div style="font-size:14px;color:#888;">智能客服</div>
+                      </div>
                     </div>
                   </div>
                 </div>

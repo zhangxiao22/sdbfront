@@ -103,10 +103,10 @@ export const CHANNEL_OPT = [
   },
   {
     value: 6,
-    label: 'AI客服',
+    label: '智能客服',
     disabled: false,
-    icon: 'chat',
-    iconColor: '#7092be',
+    icon: 'kf3',
+    iconColor: '#f56c6c',
     chooseType: 1,
     type: [{
       id: 1,
