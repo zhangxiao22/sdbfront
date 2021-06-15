@@ -220,6 +220,11 @@ export default {
           width: 100
         },
         {
+          prop: 'distributeMode.label',
+          label: '分发规则',
+          minWidth: 250
+        },
+        {
           prop: 'crmWeekClueLimit',
           label: 'CRM每周线索分发数',
           width: 100
