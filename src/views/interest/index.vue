@@ -318,6 +318,11 @@ export default {
       // typeOpt: [],
       tableColumnList: [
         {
+          prop: 'id',
+          label: 'ID',
+          minWidth: 50
+        },
+        {
           prop: 'name',
           label: '权益名称',
           minWidth: 200

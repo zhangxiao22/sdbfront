@@ -84,7 +84,7 @@
                     :rules="{required: true, message: '请输入线索有效期', trigger: 'change'}"
                     class="shun-label">
         <div slot="label">
-          <Info content="默认7天" />
+          <Info content="线索有效期不超过营销事件截止日期，线索有效期为线索发送至CRM日期加上有效期或截止日期中有效期较短的日期" />
           线索有效期：
         </div>
         <el-input-number v-model.trim="baseInfo.effectDay"

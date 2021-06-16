@@ -9,6 +9,11 @@ export function formatMoney(val) {
 // 产品公共字段
 export const COMMON_COLUMN_LIST = [
   {
+    prop: 'id',
+    label: 'ID',
+    minWidth: 50
+  },
+  {
     prop: 'name',
     label: '产品名称',
     minWidth: 200

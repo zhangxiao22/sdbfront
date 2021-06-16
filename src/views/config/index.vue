@@ -124,14 +124,14 @@ export default {
         label: '请假代办',
         component: 'Agent',
         loading: false,
-        roles: ['支行业务管理', '业务管理']
-      },
-      {
-        label: '分配规则',
-        component: 'Rule',
-        loading: false,
         roles: ['线索统筹']
       },
+      // {
+      //   label: '分配规则',
+      //   component: 'Rule',
+      //   loading: false,
+      //   roles: ['线索统筹']
+      // },
       {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',

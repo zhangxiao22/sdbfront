@@ -251,7 +251,7 @@
                                            label="话术分类" />
                         </el-table>
                       </div>
-                      <!-- 短息、微信 模版 -->
+                      <!-- 短信、微信 模版 -->
                       <div v-else
                            class="preview-table-contaiber model">
                         <el-table :data="channelItem.meterialInfoList"
@@ -260,10 +260,10 @@
                                   style="width: 100%">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
-                                           label="短息内容" />
+                                           label="短信内容" />
                           <el-table-column prop="category.label"
                                            width="100"
-                                           label="短息分类" />
+                                           label="短信分类" />
                         </el-table>
                       </div>
                     </div>
