@@ -190,6 +190,9 @@
         </div>
       </template>
     </shun-table>
+    <Dialog ref="dialog"
+            :visible.sync="showDialog"
+            @afterEnsure="getList(1)" />
   </div>
 </template>
 
@@ -209,10 +212,12 @@ import {
   deleteEvent
 } from '@/api/api'
 import { mapGetters } from 'vuex'
+import Dialog from './dialog.vue'
 
 export default {
   name: 'EventBoard',
   components: {
+    Dialog,
     ShunTable
   },
   props: {
@@ -235,6 +240,7 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
       // 权限判断
       roleJudge: {},
       loading: false,
@@ -336,6 +342,16 @@ export default {
           },
           name: '编辑'
         }, {
+          condition: this.judgeStatus(scope.row.status.value) === 4,
+          style: {
+            color: '#1890FF'
+          },
+          clickFn() {
+            return _this.handleUpdate(scope.row)
+          },
+          name: '更新'
+        },
+        {
           condition: this.roleJudge.createEvent && (this.judgeStatus(scope.row.status.value) === 4 || this.judgeStatus(scope.row.status.value) === 5),
           style: {
             color: '#1890FF'
@@ -638,6 +654,10 @@ export default {
           id: row.id
         }
       })
+    },
+    handleUpdate(row) {
+      this.showDialog = true
+      this.$refs['dialog'].update(row)
     },
     handleCopy(row) {
       this.$confirm(`确定复制事件（${row.name}）？`)
