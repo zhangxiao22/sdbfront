@@ -106,6 +106,11 @@ export default {
       searchForm: {},
       tableColumnList: [
         {
+          prop: 'id',
+          label: 'ID',
+          minWidth: 50
+        },
+        {
           prop: 'content',
           label: '短信内容',
           minWidth: 300,
