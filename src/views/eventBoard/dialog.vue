@@ -288,17 +288,15 @@
 </template>
 
 <script>
-import { savePloy, getPloyDetail, testSms } from '@/api/api'
+import { updateStrategy, getPloyDetail } from '@/api/api'
 import gsap from 'gsap'
-import Info from '@/components/Info'
+
 import ShunDrawer from '@/components/ShunDrawer'
-import TextToHtml from '@/components/TextToHtml'
-import Strategy from '@/views/strategy/index'
+
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
-import Sms from '@/views/sms/index'
-import { isPhone } from '@/utils/validate'
+
 import { MessageBox, Message } from 'element-ui'
 import { parseTime, SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
 import { CHANNEL_OPT } from '@/views/createEvent/constant'
@@ -448,13 +446,6 @@ export default {
         return a[0] - b[0]
       })
     },
-    // translate(obj, paramPropStr) {
-    //   let val = obj
-    //   paramPropStr.split('.').forEach(n => {
-    //     val = val[n]
-    //   })
-    //   return val
-    // },
     ployTranslate(ployObj, ployName) {
       // console.log(ployObj, ployIndex)
       // ployIndex tab的index下标
@@ -554,27 +545,10 @@ export default {
                   productIdList: pn.product.map(n => n.id),
                   // 权益id
                   couponIdList: pn.interest.map(n => n.id),
-                  // 渠道
-                  // strategyInfoList: pn.channel.map((cn, ci) => {
-                  //   // console.log(cn)
-                  //   return {
-                  //     // 渠道id
-                  //     // infoId: cn.infoId,
-                  //     // 渠道类型 1:crm 2:短信 3:微信
-                  //     channel: cn.value,
-                  //     // 话术id
-                  //     scriptList: cn.value === 1 ? cn.model.map(n => {
-                  //       return {
-                  //         scriptId: n.id,
-                  //         scriptContent: n.content,
-                  //         scriptInstId: n.scriptInstId
-                  //       }
-                  //     }) : undefined
-                  //   }
-                  // }),
+                  // 话术
                   scriptList: pn.channel.find(item => {
                     return item.value === 1
-                  }).model.map(n => {
+                  })?.model.map(n => {
                     return {
                       scriptId: n.id,
                       scriptContent: n.content,
@@ -593,8 +567,16 @@ export default {
           }
           console.log('param', param)
           this.buttonLoading = true
-          savePloy(param).then(res => {
+          updateStrategy(param).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
           }).finally(() => {
+            this.$emit('update:visible', false)
             this.buttonLoading = false
           })
         } else {
