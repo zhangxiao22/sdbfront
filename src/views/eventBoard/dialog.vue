@@ -555,21 +555,30 @@ export default {
                   // 权益id
                   couponIdList: pn.interest.map(n => n.id),
                   // 渠道
-                  strategyInfoList: pn.channel.map((cn, ci) => {
-                    // console.log(cn)
+                  // strategyInfoList: pn.channel.map((cn, ci) => {
+                  //   // console.log(cn)
+                  //   return {
+                  //     // 渠道id
+                  //     // infoId: cn.infoId,
+                  //     // 渠道类型 1:crm 2:短信 3:微信
+                  //     channel: cn.value,
+                  //     // 话术id
+                  //     scriptList: cn.value === 1 ? cn.model.map(n => {
+                  //       return {
+                  //         scriptId: n.id,
+                  //         scriptContent: n.content,
+                  //         scriptInstId: n.scriptInstId
+                  //       }
+                  //     }) : undefined
+                  //   }
+                  // }),
+                  scriptList: pn.channel.find(item => {
+                    return item.value === 1
+                  }).model.map(n => {
                     return {
-                      // 渠道id
-                      // infoId: cn.infoId,
-                      // 渠道类型 1:crm 2:短信 3:微信
-                      channel: cn.value,
-                      // 话术id
-                      scriptList: cn.value === 1 ? cn.model.map(n => {
-                        return {
-                          scriptId: n.id,
-                          scriptContent: n.content,
-                          scriptInstId: n.scriptInstId
-                        }
-                      }) : undefined
+                      scriptId: n.id,
+                      scriptContent: n.content,
+                      scriptInstId: n.scriptInstId
                     }
                   })
                 }
@@ -583,8 +592,10 @@ export default {
             strategySaveCriteriaList: data
           }
           console.log('param', param)
+          this.buttonLoading = true
           savePloy(param).then(res => {
-          }).catch(() => {
+          }).finally(() => {
+            this.buttonLoading = false
           })
         } else {
           // console.log(field)
@@ -601,7 +612,6 @@ export default {
               this.group[gi].ployTabsValue = this.group[gi].ployTabs[pi].name
             }
           })
-          this.isSubmit = false
         }
       })
     },
