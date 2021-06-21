@@ -202,18 +202,7 @@ export default {
           notShowOverflowTooltip: true,
           slot: true
         },
-        {
-          prop: 'caseTarget',
-          label: '目标',
-          minWidth: 300,
-          notShowOverflowTooltip: true,
-          slot: true
-        },
-        {
-          prop: 'modifyTime',
-          label: '修改时间',
-          width: 180
-        },
+
         {
           prop: 'userName',
           label: '归属人',
@@ -233,6 +222,18 @@ export default {
           prop: 'smsWeekClueLimit',
           label: '短信每周线索分发数',
           width: 100
+        },
+        {
+          prop: 'caseTarget',
+          label: '目标',
+          minWidth: 300,
+          notShowOverflowTooltip: true,
+          slot: true
+        },
+        {
+          prop: 'modifyTime',
+          label: '修改时间',
+          width: 180
         },
         {
           prop: 'description',
