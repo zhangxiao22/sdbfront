@@ -14,7 +14,7 @@
                    type="primary"
                    icon="el-icon-plus"
                    plain
-                   @click="addRule">
+                   @click="handleAddList">
           新增规则
         </el-button>
       </template>
@@ -23,11 +23,19 @@
                  :inline="true"
                  :model="filterForm"
                  class="filter-container">
-          <el-form-item label="名称："
-                        prop="content">
-            <el-input v-model.trim="filterForm.content"
+          <el-form-item label="规则名称："
+                        prop="name">
+            <el-input v-model.trim="filterForm.name"
                       style="width:300px"
-                      placeholder="请输入短信内容"
+                      placeholder="请输入规则名称"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="创建人名称："
+                        prop="creatorName">
+            <el-input v-model.trim="filterForm.creatorName"
+                      style="width:300px"
+                      placeholder="请输入创建人名称"
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
@@ -49,26 +57,65 @@
           <div class="btn"
                style="color:#1890FF;"
                @click="handleEdit(scope.row)">编辑</div>
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleEditButton(scope.row)">编辑</div>
+          <div class="btn"
+               style="color:#f56c6c;"
+               @click="handleDeleteButton(scope.row)">删除</div>
         </div>
       </template>
     </shun-table>
     <!-- 右侧边 -->
-    <ShunDrawer title="123"
+    <ShunDrawer title="规则"
                 :show.sync="showDrawer"
                 :loading="drawerButtonLoading"
-                @submit="handleSureDrawer()">
+                @submit="handleSureDrawer">
       <template v-slot:container>
         <div>
-          <Rule />
+          <Rule ref="ruleRef" />
         </div>
       </template>
     </ShunDrawer>
+    <!-- dialog -->
+    <el-dialog title="规则"
+               :visible.sync="showTableDialog"
+               @close="handleCloseTableDialog">
+      <el-form ref="dialogTableFormRef"
+               style="width:500px;margin:0 auto;"
+               label-width="100px"
+               :model="dialogTableForm">
+        <el-form-item label="名称："
+                      prop="name"
+                      :rules="[{required: true, message: '请填写名称', trigger: 'blur'}]">
+          <el-input v-model.trim="dialogTableForm.name"
+                    placeholder="请填写名称"
+                    clearable
+                    style="width:90%;" />
+        </el-form-item>
+        <el-form-item label="描述："
+                      prop="detail">
+          <el-input v-model="dialogTableForm.detail"
+                    type="textarea"
+                    style="width:90%;"
+                    :rows="2"
+                    placeholder="请输入描述" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="showTableDialog = false">取 消</el-button>
+        <el-button type="primary"
+                   :loading="dialogButtonTableLoading"
+                   @click="ensureTableDialog">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getSmsList } from '@/api/api'
+import { getEventRuleList, delEventRule, editEventRule, addEventRule, updateRuleData } from '@/api/api'
 import ShunDrawer from '@/components/ShunDrawer'
 import Rule from '@/components/Rule'
 
@@ -84,6 +131,8 @@ export default {
   },
   data() {
     return {
+      dialogButtonTableLoading: false,
+      showTableDialog: false,
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -91,13 +140,29 @@ export default {
       showDrawer: true,
       drawerButtonLoading: false,
       filterForm: {
-        content: ''
+        name: '',
+        creatorName: ''
+      },
+      dialogTableForm: {
+        id: '',
+        name: '',
+        detail: ''
       },
       searchForm: {},
       tableColumnList: [
         {
-          prop: 'content',
+          prop: 'name',
           label: '名称',
+          minWidth: 200
+        },
+        {
+          prop: 'creatorName',
+          label: '创建人姓名',
+          minWidth: 200
+        },
+        {
+          prop: 'detail',
+          label: '描述',
           minWidth: 300,
           notShowOverflowTooltip: true
         },
@@ -141,12 +206,76 @@ export default {
         pageSize: this.pageSize
       }, this.searchForm)
       this.loading = true
-      getSmsList(data).then(res => {
+      getEventRuleList(data).then(res => {
         this.tableData = res.data.resultList
         this.total = res.pagination.totalItemCount
         this.loading = false
       }).catch(() => {
         this.loading = false
+      })
+    },
+    // 删除
+    handleDeleteButton(row) {
+      this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
+        .then(() => {
+          this.loading = true
+          delEventRule({ id: row.id })
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '删除成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.getList(1)
+              }
+            })
+            .finally(() => {
+              this.loading = false
+            })
+        })
+    },
+    handleAddList() {
+      this.showTableDialog = true
+    },
+    // 编辑
+    handleEditButton(row) {
+      this.dialogTableForm.id = row.id
+      this.dialogTableForm.name = row.name
+      this.dialogTableForm.desc = row.detail
+      // this
+      this.showTableDialog = true
+    },
+    handleCloseTableDialog() {
+      this.$refs['dialogTableFormRef'].resetFields()
+      this.dialogTableForm.id = ''
+    },
+    ensureTableDialog() {
+      // dialogTableFormRef
+      this.$refs['dialogTableFormRef'].validate((valid) => {
+        if (valid) {
+          // console.log(this.dialogTableForm)
+          const ajax = this.dialogTableForm.id ? editEventRule : addEventRule
+          const data = {
+            name: this.dialogTableForm.name,
+            detail: this.dialogTableForm.detail,
+            id: this.dialogTableForm.id
+          }
+          this.dialogButtonTableLoading = true
+          ajax(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showTableDialog = false
+              this.getList()
+            }
+          }).finally(() => {
+            this.dialogButtonTableLoading = false
+          })
+        }
       })
     },
     handleEdit() {
@@ -155,7 +284,33 @@ export default {
     addRule() {
       this.showDrawer = true
     },
-    handleSureDrawer() { }
+    handleSureDrawer() {
+      this.$refs.ruleRef.validate((valid) => {
+        if (valid) {
+          const condition = this.$refs.ruleRef.finalData
+          if (!condition.list.length) {
+            return this.$message({
+              message: '请选择规则',
+              type: 'error',
+              duration: 5000
+            })
+          }
+          const data = {
+            id: 123,
+            condition
+          }
+          updateRuleData(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          })
+        }
+      })
+    }
 
   }
 }

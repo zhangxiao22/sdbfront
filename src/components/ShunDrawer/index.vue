@@ -92,15 +92,17 @@ export default {
       }
     }
     .drawer-container {
-      padding: 0 20px;
+      padding: 0 20px 20px;
       flex: 1;
       min-height: 0;
       overflow: auto;
     }
     .drawer-bottom {
       margin-top: auto;
+      background: #fff;
       padding: 20px;
       text-align: center;
+      border-top: 1px solid #eee;
     }
   }
 }
