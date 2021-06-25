@@ -617,7 +617,18 @@
                       </el-table>
                     </template>
                     <!-- stm -->
-                    <template v-if="channelCardItem.value===5" />
+                    <template v-if="channelCardItem.value===5">
+                      <el-form-item label="大额存单："
+                                    required
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.isBigDeposit'">
+                        <el-radio-group v-model="channelCardItem.isBigDeposit">
+                          <el-radio v-for="(item,i) of isBigDepositOpt"
+                                    :key="i"
+                                    :label="item.value"
+                                    @blur="channelCardItem.isBigDeposit=channelCardItem.isBigDeposit||1">{{ item.label }}</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </template>
                     <!-- AI -->
                     <template v-if="channelCardItem.value===6" />
                     <!-- 渠道：{{ channelCardItem.value }}
@@ -758,6 +769,10 @@ export default {
         { label: '重复下发', value: 0 },
         { label: '均分下发', value: 1 }
       ],
+      isBigDepositOpt: [
+        { label: '不推送', value: 0 },
+        { label: '推送', value: 1 }
+      ],
       // 定时型 下拉选项
       timingOpt: JSON.parse(JSON.stringify(TIMING_OPT)),
       group: [
@@ -895,6 +910,7 @@ export default {
             chooseType: m.pushType.value,
             // validPeriod: m.clueEffectDays,
             smsSendMode: m.sendMode?.value,
+            isBigDeposit: m.isBigDeposit?.value,
             model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
               return Object.assign({}, n, {
                 _content: n.content,
@@ -1064,6 +1080,8 @@ export default {
                         channel: cn.value,
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
+                        // 大额存单
+                        isBigDeposit: cn.value === 5 ? cn.isBigDeposit : undefined,
                         // 话术id
                         scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {

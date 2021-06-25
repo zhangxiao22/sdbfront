@@ -93,6 +93,7 @@ export const CHANNEL_OPT = [
     icon: 'stm',
     iconColor: '#990099',
     chooseType: 1,
+    isBigDeposit: 0,
     type: [{
       id: 1,
       name: '定时型',
