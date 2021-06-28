@@ -31,11 +31,11 @@
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
-          <el-form-item label="创建人名称："
+          <el-form-item label="创建人："
                         prop="creatorName">
             <el-input v-model.trim="filterForm.creatorName"
                       style="width:300px"
-                      placeholder="请输入创建人名称"
+                      placeholder="请输入创建人"
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
@@ -56,10 +56,10 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleEdit(scope.row)">编辑</div>
+               @click="handleEditButton(scope.row)">编辑</div>
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleEditButton(scope.row)">编辑</div>
+               @click="handleEditRule(scope.row)">规则</div>
           <div class="btn"
                style="color:#f56c6c;"
                @click="handleDeleteButton(scope.row)">删除</div>
@@ -115,12 +115,18 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventRuleList, delEventRule, editEventRule, addEventRule, updateRuleData } from '@/api/api'
+import {
+  getEventRuleList,
+  delEventRule,
+  editEventRule,
+  addEventRule,
+  updateRuleData,
+  RuleDetail
+} from '@/api/api'
 import ShunDrawer from '@/components/ShunDrawer'
 import Rule from '@/components/Rule'
 
 export default {
-  name: 'Sms',
   components: {
     ShunTable,
     ShunDrawer,
@@ -137,7 +143,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      showDrawer: true,
+      showDrawer: false,
       drawerButtonLoading: false,
       filterForm: {
         name: '',
@@ -152,12 +158,12 @@ export default {
       tableColumnList: [
         {
           prop: 'name',
-          label: '名称',
+          label: '规则名称',
           minWidth: 200
         },
         {
           prop: 'creatorName',
-          label: '创建人姓名',
+          label: '创建人',
           minWidth: 200
         },
         {
@@ -169,6 +175,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
+          width: 180,
           slot: true
         }
       ],
@@ -219,7 +226,7 @@ export default {
       this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
         .then(() => {
           this.loading = true
-          delEventRule({ id: row.id })
+          delEventRule({ ruleId: row.id })
             .then(res => {
               if (res.code === 200) {
                 this.$message({
@@ -242,7 +249,7 @@ export default {
     handleEditButton(row) {
       this.dialogTableForm.id = row.id
       this.dialogTableForm.name = row.name
-      this.dialogTableForm.desc = row.detail
+      this.dialogTableForm.detail = row.detail
       // this
       this.showTableDialog = true
     },
@@ -278,11 +285,12 @@ export default {
         }
       })
     },
-    handleEdit() {
-
-    },
-    addRule() {
+    handleEditRule(row) {
+      this.drawerId = row.id
       this.showDrawer = true
+      RuleDetail({ id: row.id }).then(res => {
+        // this.condition = res.data.
+      })
     },
     handleSureDrawer() {
       this.$refs.ruleRef.validate((valid) => {
@@ -296,9 +304,10 @@ export default {
             })
           }
           const data = {
-            id: 123,
+            id: this.drawerId,
             condition
           }
+          this.drawerButtonLoading = true
           updateRuleData(data).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -306,7 +315,10 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
+              this.showDrawer = true
             }
+          }).finally(() => {
+            this.drawerButtonLoading = false
           })
         }
       })

@@ -1266,4 +1266,12 @@ export function updateRuleData(data) {
     data
   })
 }
+// 获取规则详情
+export function RuleDetail(params) {
+  return request({
+    url: 'rule/getRuleCascade',
+    method: 'get',
+    params
+  })
+}
 
