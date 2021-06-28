@@ -48,8 +48,12 @@ export const COMMON_COLUMN_LIST = [
     prop: 'modifyTime',
     label: '最后修改时间',
     minWidth: 180
+  },
+  {
+    prop: 'description',
+    label: '产品描述',
+    minWidth: 100
   }
-
 ]
 
 // 按产品类型区分不同字段
