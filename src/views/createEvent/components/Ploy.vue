@@ -318,7 +318,8 @@
                                         start-placeholder="开始日期"
                                         end-placeholder="结束日期" />
                       </el-form-item>
-                      <el-form-item label="推送时间："
+                      <el-form-item v-if="channelCardItem.value!==5 && channelCardItem.value!==6"
+                                    label="推送时间："
                                     required>
                         <div style="display:flex">
                           <el-form-item style="margin-bottom:0;margin-right:10px;">
@@ -360,7 +361,6 @@
                           </el-form-item>
                         </div>
                       </el-form-item>
-
                     </template>
                     <!-- 规则型 -->
                     <template v-if="channelCardItem.chooseType===2">
@@ -398,17 +398,6 @@
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
-                      <!-- <el-form-item required
-                                    class="rule-form"
-                                    label="线索有效期："
-                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.validPeriod'">
-                        <el-input-number v-model="channelCardItem.validPeriod"
-                                         style="margin-right:10px;"
-                                         controls-position="right"
-                                         :min="0"
-                                         :max="10000"
-                                         @blur="channelCardItem.validPeriod=channelCardItem.validPeriod||0" />天
-                      </el-form-item> -->
                       <el-form-item label="推荐话术："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
                                     :rules="[{
@@ -419,7 +408,6 @@
                           添加话术
                         </el-button>
                       </el-form-item>
-                      <!-- {{ channelCardItem.model }} -->
                       <el-table v-show="channelCardItem.model.length"
                                 :data="channelCardItem.model"
                                 border
@@ -628,6 +616,21 @@
                                          label="短信分类" />
                       </el-table>
                     </template>
+                    <!-- stm -->
+                    <template v-if="channelCardItem.value===5">
+                      <el-form-item label="大额存单："
+                                    required
+                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.isBigDeposit'">
+                        <el-radio-group v-model="channelCardItem.isBigDeposit">
+                          <el-radio v-for="(item,i) of isBigDepositOpt"
+                                    :key="i"
+                                    :label="item.value"
+                                    @blur="channelCardItem.isBigDeposit=channelCardItem.isBigDeposit||1">{{ item.label }}</el-radio>
+                        </el-radio-group>
+                      </el-form-item>
+                    </template>
+                    <!-- AI -->
+                    <template v-if="channelCardItem.value===6" />
                     <!-- 渠道：{{ channelCardItem.value }}
                     类型：{{ channelCardItem.chooseType }}
                     定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
@@ -766,6 +769,10 @@ export default {
         { label: '重复下发', value: 0 },
         { label: '均分下发', value: 1 }
       ],
+      isBigDepositOpt: [
+        { label: '不推送', value: 0 },
+        { label: '推送', value: 1 }
+      ],
       // 定时型 下拉选项
       timingOpt: JSON.parse(JSON.stringify(TIMING_OPT)),
       group: [
@@ -903,6 +910,7 @@ export default {
             chooseType: m.pushType.value,
             // validPeriod: m.clueEffectDays,
             smsSendMode: m.sendMode?.value,
+            isBigDeposit: m.isBigDeposit?.value,
             model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
               return Object.assign({}, n, {
                 _content: n.content,
@@ -918,7 +926,7 @@ export default {
               // 定时型
               // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
               // 定时型的值-规则 (每周几或每月)
-              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
+              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
               // 定时型的值-规则 (周几或者几号) (多选)
               obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
               // 定时型的值-时间
@@ -1068,12 +1076,12 @@ export default {
                       return {
                         // 渠道id
                         // infoId: cn.infoId,
-                        // 渠道类型 1:crm 2:短信 3:微信
+                        // 渠道类型 1:crm 2:短信 3:微信 5:stm 6:AI
                         channel: cn.value,
-                        // CRM线索有效期
-                        // clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
+                        // 大额存单
+                        isBigDeposit: cn.value === 5 ? cn.isBigDeposit : undefined,
                         // 话术id
                         scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {
@@ -1087,8 +1095,8 @@ export default {
                         // 跟尾短信ids
                         followSMSIds: cn.value === 1 ? cn.afterSms.map(n => n.id) : undefined,
                         // 模版id
-                        materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
-                        smsAttr: cn.model[0].smsAttr || {},
+                        materialIdList: cn.value !== 1 && cn.value !== 5 && cn.value !== 6 ? cn.model.map(n => n.id) : undefined,
+                        smsAttr: cn.model?.[0]?.smsAttr || {},
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
@@ -1786,7 +1794,7 @@ export default {
     .channel-card-title {
       font-weight: bold;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       float: left;
     }
     .channel-card-delete {
