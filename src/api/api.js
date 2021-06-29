@@ -1267,7 +1267,7 @@ export function updateRuleData(data) {
   })
 }
 // 获取规则详情
-export function RuleDetail(params) {
+export function ruleDetail(params) {
   return request({
     url: 'rule/getRuleCascade',
     method: 'get',

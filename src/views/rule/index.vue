@@ -73,7 +73,9 @@
                 @submit="handleSureDrawer">
       <template v-slot:container>
         <div>
-          <Rule ref="ruleRef" />
+          <Rule ref="ruleRef"
+                :rule-opt="ruleOpt"
+                :origin-data="condition" />
         </div>
       </template>
     </ShunDrawer>
@@ -121,7 +123,8 @@ import {
   editEventRule,
   addEventRule,
   updateRuleData,
-  RuleDetail
+  ruleDetail,
+  ruleTag
 } from '@/api/api'
 import ShunDrawer from '@/components/ShunDrawer'
 import Rule from '@/components/Rule'
@@ -180,7 +183,9 @@ export default {
         }
       ],
       tableData: [],
-      selection: []
+      // selection: []
+      ruleOpt: [],
+      condition: {}
     }
   },
   computed: {
@@ -191,6 +196,7 @@ export default {
   watch: {},
   created() {
     this.search()
+    this.getRuleTags()
   },
   methods: {
     resetAll() {
@@ -226,7 +232,7 @@ export default {
       this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
         .then(() => {
           this.loading = true
-          delEventRule({ ruleId: row.id })
+          delEventRule({ id: row.id })
             .then(res => {
               if (res.code === 200) {
                 this.$message({
@@ -285,11 +291,18 @@ export default {
         }
       })
     },
+    // 获取标签
+    getRuleTags() {
+      ruleTag().then(res => {
+        this.ruleOpt = res.data
+      })
+    },
     handleEditRule(row) {
       this.drawerId = row.id
       this.showDrawer = true
-      RuleDetail({ id: row.id }).then(res => {
-        // this.condition = res.data.
+      // console.log(row.id)
+      ruleDetail({ id: row.id }).then(res => {
+        this.condition = res.data.condition
       })
     },
     handleSureDrawer() {
@@ -315,7 +328,7 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.showDrawer = true
+              this.showDrawer = false
             }
           }).finally(() => {
             this.drawerButtonLoading = false

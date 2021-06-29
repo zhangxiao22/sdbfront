@@ -356,24 +356,25 @@ import { ruleTag } from '@/api/api'
 import { MAX_NUMBER } from '@/utils'
 import Info from '@/components/Info'
 
+const DEFAULT_CONDITION = {
+  list: [],
+  relation: true /* true: and; false: or*/
+}
 export default {
   components: {
     Info
   },
   props: {
-    condition: {
-      type: Object,
-      default() {
-        return {
-          list: [],
-          relation: true /* true: and; false: or*/
-        }
-      }
-    },
-    originData: {
+    ruleOpt: {
       type: Array,
       default() {
         return []
+      }
+    },
+    originData: {
+      type: Object,
+      default() {
+        return {}
       }
     },
     buttonLoading: {
@@ -383,6 +384,7 @@ export default {
   },
   data() {
     return {
+      condition: DEFAULT_CONDITION,
       group: [],
       stringOptions: [],
       MAX_NUMBER,
@@ -520,38 +522,40 @@ export default {
             value: 'after'
           }]
         }]
-      },
-      ruleOpt: [{
-        label: '1111',
-        value: '1111',
-        children: [{
-          label: '数字',
-          value: '数字',
-          type: 'number'
-        }, {
-          label: '字符串',
-          value: '字符串',
-          type: 'string',
-          options: [{
-            label: 'aaa',
-            value: 'aaa'
-          }, {
-            label: 'bbb',
-            value: 'bbb'
-          }, {
-            label: 'ccc',
-            value: 'ccc'
-          }]
-        }, {
-          label: '布尔',
-          value: '布尔',
-          type: 'boolean'
-        }, {
-          label: '日期',
-          value: '日期',
-          type: 'date'
-        }]
-      }]
+      }
+      // ruleOpt: [
+      // {
+      //   label: '1111',
+      //   value: '1111',
+      //   children: [{
+      //     label: '数字',
+      //     value: '数字',
+      //     type: 'number'
+      //   }, {
+      //     label: '字符串',
+      //     value: '字符串',
+      //     type: 'string',
+      //     options: [{
+      //       label: 'aaa',
+      //       value: 'aaa'
+      //     }, {
+      //       label: 'bbb',
+      //       value: 'bbb'
+      //     }, {
+      //       label: 'ccc',
+      //       value: 'ccc'
+      //     }]
+      //   }, {
+      //     label: '布尔',
+      //     value: '布尔',
+      //     type: 'boolean'
+      //   }, {
+      //     label: '日期',
+      //     value: '日期',
+      //     type: 'date'
+      //   }]
+      // }
+      // ]
     }
   },
   computed: {
@@ -585,11 +589,42 @@ export default {
     }
   },
   watch: {
+    originData(nval, oval) {
+      // console.log(this.condition)
+      const data = Object.assign({}, DEFAULT_CONDITION, nval)
+      // console.log(data.list)
+      this.condition = {
+        list: data.list.map(a => {
+          return {
+            list: a.list.map(b => {
+              // console.log('b,', b)
+              const [compare, ...extraCompare] = b.compare.split('_')
+              const leafItem = this.findLeaf(b.tagId)
+              // console.log('leafItem', leafItem)
+              const compareOpt = this.relations.find(n => {
+                return n.type === leafItem.type
+              }).options
+              return {
+                conditionSelect: b.tagId,
+                compare,
+                extraCompare,
+                type: leafItem.type,
+                compareOpt: compareOpt,
+                conditionValue: b.params,
+                options: leafItem.options
+              }
+            }),
+            relation: a.relation === 'and'
+          }
+        }),
+        relation: data.relation === 'and'
+      }
+    }
   },
   mounted() {
   },
   created() {
-    this.getRuleTags()
+    // this.getRuleTags()
   },
 
   methods: {
@@ -644,17 +679,20 @@ export default {
       }
     },
     // 获取标签
-    getRuleTags() {
-      ruleTag().then(res => {
-        console.log(res)
-        this.ruleOpt = res.data
-      })
-    },
+    // getRuleTags() {
+    //   ruleTag().then(res => {
+    //     this.ruleOpt = res.data
+    //   })
+    // },
     getCompareOpt(type) {
       return this.relations.find(n => {
         return n.type === type
       }).options
     },
+    /**
+     * 通过值找到叶子节点数据
+     * val : 及联选择的值，如：[1,2,3]
+     */
     findLeaf(val) {
       let obj
       for (let i = 0; i < val.length; i++) {
@@ -678,7 +716,7 @@ export default {
     },
     // 添加规则（总）
     handelAddRuleBox(val) {
-      console.log(val)
+      // console.log(val)
       // if (val === 'attribute') {
       this.condition.list.push({
         list: [JSON.parse(JSON.stringify(this.defaultObj))],
