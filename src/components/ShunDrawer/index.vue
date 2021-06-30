@@ -1,10 +1,10 @@
 <template>
   <div class="shun-drawer-container">
-    <el-drawer :title="title"
-               class="el-drawer_box"
+    <el-drawer class="el-drawer_box"
                :visible="show"
-               size="80%"
-               direction="rtl"
+               v-bind="$attrs"
+               :size="size"
+               v-on="$listeners"
                @open="handleOpen"
                @close="handleClose">
       <div class="drawer-container">
@@ -15,7 +15,7 @@
         <el-button type="primary"
                    :loading="loading"
                    style="max-width:400px;width:100%;"
-                   @click="submit()">
+                   @click="submit">
           确 认
         </el-button>
       </div>
@@ -27,31 +27,20 @@
 export default {
   name: 'ShunDrawer',
   props: {
-    title: {
-      type: String,
-      default() {
-        return '请选择'
-      }
-    },
     show: {
       type: Boolean,
       default() {
         return false
       }
     },
+    size: {
+      type: String,
+      default: '80%'
+    },
     loading: {
       type: Boolean,
-      default() {
-        return false
-      }
+      default: false
     }
-    // tableColumnList: {
-    //   type: Array,
-    //   default() {
-    //     return []
-    //   }
-    // }
-
   },
   data() {
     return {
@@ -63,7 +52,8 @@ export default {
   watch: {
 
   },
-
+  created() {
+  },
   methods: {
     submit() {
       this.$emit('submit')
@@ -81,27 +71,26 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
-.shun-drawer-container {
-  .el-drawer_box {
-    ::v-deep .el-drawer {
-      background: #f8f8fa;
-      .el-drawer__body {
-        display: flex;
-        flex-direction: column;
-      }
+.el-drawer_box {
+  ::v-deep .el-drawer {
+    background: #f8f8fa;
+    .el-drawer__body {
+      display: flex;
+      flex-direction: column;
     }
-    .drawer-container {
-      padding: 0 20px;
-      flex: 1;
-      min-height: 0;
-      overflow: auto;
-    }
-    .drawer-bottom {
-      margin-top: auto;
-      padding: 20px;
-      text-align: center;
-    }
+  }
+  .drawer-container {
+    padding: 0 20px 20px;
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+  }
+  .drawer-bottom {
+    margin-top: auto;
+    background: #fff;
+    padding: 20px;
+    text-align: center;
+    border-top: 1px solid #eee;
   }
 }
 </style>

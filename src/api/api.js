@@ -1247,3 +1247,31 @@ export function editEventRule(data) {
     data
   })
 }
+
+/** ************************************************ 规则库 ************************************************************/
+// 获取标签
+export function ruleTag(params) {
+  return request({
+    url: 'rule/getEventDrivenLabelEnum',
+    method: 'get',
+    params
+  })
+}
+
+// 更新规则
+export function updateRuleData(data) {
+  return request({
+    url: 'rule/updateDataMethod',
+    method: 'post',
+    data
+  })
+}
+// 获取规则详情
+export function ruleDetail(params) {
+  return request({
+    url: 'rule/getRuleCascade',
+    method: 'get',
+    params
+  })
+}
+

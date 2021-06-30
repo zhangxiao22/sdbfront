@@ -1,18 +1,24 @@
 <template>
   <div class="container">
-    <div>222</div>
-    <div class="box">
-      <span>12341324</span>
-      <span>21341234123412341324</span>
-      <span>31243124123</span>
-      <span>213413413241324</span>
-    </div>
+    {{ ruleForm }}
+    <el-form ref="ruleForm"
+             :model="ruleForm"
+             label-width="100px">
+      <el-form-item label="活动名称"
+                    :rules="[{
+                      required: true, message: '请输入值',trigger: 'blur'
+                    }]"
+                    prop="number.0">
+        <el-input-number v-model="ruleForm.number[0]"
+                         controls-position="right" />
+      </el-form-item>
+
+    </el-form>
+
   </div>
 </template>
 
 <script>
-import ShunTable from '@/components/ShunTable'
-import { getSmsList, getStragetyList, fuzzySearch } from '@/api/api'
 
 export default {
   components: {
@@ -21,18 +27,25 @@ export default {
   },
   data() {
     return {
+      ruleForm: {
+        number: []
+      }
     }
   },
   computed: {
   },
   watch: {},
   created() {
-
   },
   mounted() {
+
   },
   methods: {
-
+    click() {
+      this.arr.push({
+        val: []
+      })
+    }
   }
 }
 </script>

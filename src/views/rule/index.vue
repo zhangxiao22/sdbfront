@@ -3,6 +3,7 @@
     <shun-table ref="table"
                 title="规则库"
                 :loading="loading"
+                :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
@@ -56,10 +57,10 @@
         <div class="operate-btns">
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleEdit(scope.row)">编辑1</div>
+               @click="handleEditButton(scope.row)">编辑</div>
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleEditButton(scope.row)">编辑</div>
+               @click="handleEditRule(scope.row)">规则</div>
           <div class="btn"
                style="color:#f56c6c;"
                @click="handleDeleteButton(scope.row)">删除</div>
@@ -67,18 +68,23 @@
       </template>
     </shun-table>
     <!-- 右侧边 -->
-    <ShunDrawer title="123"
+    <ShunDrawer title="规则"
                 :show.sync="showDrawer"
+                :append-to-body="true"
                 :loading="drawerButtonLoading"
-                @submit="handleSureDrawer()">
+                @closed="handleCloseDrawer"
+                @submit="handleSureDrawer">
       <template v-slot:container>
         <div>
-          <Rule />
+          <Rule ref="ruleRef"
+                :rule-opt="ruleOpt"
+                :origin-data="condition" />
         </div>
       </template>
     </ShunDrawer>
     <!-- dialog -->
     <el-dialog title="规则"
+               :append-to-body="true"
                :visible.sync="showTableDialog"
                @close="handleCloseTableDialog">
       <el-form ref="dialogTableFormRef"
@@ -115,12 +121,19 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getEventRuleList, delEventRule, editEventRule, addEventRule } from '@/api/api'
+import {
+  getEventRuleList,
+  delEventRule,
+  editEventRule,
+  addEventRule,
+  updateRuleData,
+  ruleDetail,
+  ruleTag
+} from '@/api/api'
 import ShunDrawer from '@/components/ShunDrawer'
 import Rule from '@/components/Rule'
 
 export default {
-  name: 'Sms',
   components: {
     ShunTable,
     ShunDrawer,
@@ -137,7 +150,7 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      showDrawer: true,
+      showDrawer: false,
       drawerButtonLoading: false,
       filterForm: {
         name: '',
@@ -174,7 +187,9 @@ export default {
         }
       ],
       tableData: [],
-      selection: []
+      // selection: [],
+      ruleOpt: [],
+      condition: {}
     }
   },
   computed: {
@@ -185,8 +200,12 @@ export default {
   watch: {},
   created() {
     this.search()
+    this.getRuleTags()
   },
   methods: {
+    aaa() {
+      console.log('aaa')
+    },
     resetAll() {
       this.reset()
       this.$refs.table.resetSelection()
@@ -220,7 +239,7 @@ export default {
       this.$confirm(`是否确认删除规则（${row.name || ''}）？`)
         .then(() => {
           this.loading = true
-          delEventRule({ ruleId: row.id })
+          delEventRule({ id: row.id })
             .then(res => {
               if (res.code === 200) {
                 this.$message({
@@ -279,13 +298,55 @@ export default {
         }
       })
     },
-    handleEdit() {
-
+    // 获取标签
+    getRuleTags() {
+      ruleTag().then(res => {
+        this.ruleOpt = res.data
+      })
     },
-    addRule() {
+    handleEditRule(row) {
+      this.drawerId = row.id
       this.showDrawer = true
+      // console.log(row.id)
+      ruleDetail({ id: row.id }).then(res => {
+        this.condition = res.data.condition
+      })
     },
-    handleSureDrawer() { }
+    handleCloseDrawer() {
+      this.drawerId = ''
+      this.condition = null
+    },
+    handleSureDrawer() {
+      this.$refs.ruleRef.validate((valid) => {
+        if (valid) {
+          const condition = this.$refs.ruleRef.finalData
+          if (!condition.list.length) {
+            return this.$message({
+              message: '请选择规则',
+              type: 'error',
+              duration: 5000
+            })
+          }
+          const data = {
+            id: this.drawerId,
+            condition
+          }
+          this.drawerButtonLoading = true
+          updateRuleData(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDrawer = false
+            }
+          }).finally(() => {
+            this.drawerButtonLoading = false
+          })
+        }
+      })
+    }
 
   }
 }
