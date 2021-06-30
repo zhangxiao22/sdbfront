@@ -16,22 +16,23 @@ export const CHANNEL_OPT = [
       time: '00:00'
     }],
     // 触发型的值-触发规则
-    triggerId: '',
-    // 触发型的值-时间
-    triggerValue: [{
-      date: 0,
-      time: '00:00'
-    }],
+    trigger: [
+      {
+        id: [],
+        date: 0,
+        time: '00:00'
+      }
+    ],
     type: [{
       id: 1,
       icon: 'el-icon-alarm-clock',
       name: '定时型'
+    },
+    {
+      id: 3,
+      icon: 'el-icon-position',
+      name: '触发型'
     }
-      // {
-      //   id: 3,
-      //   icon: 'el-icon-position',
-      //   name: '触发型'
-      // }
     ],
     validPeriod: 0,
     model: []
@@ -59,7 +60,7 @@ export const CHANNEL_OPT = [
     // 触发型的值-触发规则
     trigger: [
       {
-        id: '',
+        id: [],
         date: 0,
         time: '00:00'
       }

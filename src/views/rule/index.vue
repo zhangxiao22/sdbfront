@@ -140,7 +140,10 @@ export default {
     Rule
   },
   props: {
-
+    showSelection: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {

@@ -420,6 +420,35 @@
                               选择规则
                             </el-button>
                           </el-form-item>
+                          <!-- //  规则--- -->
+                          <el-table v-show="item.id.length > 0"
+                                    :data="item.id"
+                                    border
+                                    style="width: 100%;margin-bottom:18px;">
+                            <el-table-column prop="id"
+                                             width="100"
+                                             label="ID" />
+                            <el-table-column prop="name"
+                                             min-width="200"
+                                             label="规则名称" />
+                            <el-table-column prop="detail"
+                                             show-overflow-tooltip
+                                             min-width="300"
+                                             label="描述" />
+                            <el-table-column label="操作"
+                                             width="100">
+                              <template slot-scope="scope">
+                                <el-popconfirm title="确定删除吗？"
+                                               @onConfirm="deleteRule(item,ci,scope.$index)">
+                                  <el-button slot="reference"
+                                             type="text"
+                                             style="color:#f56c6c;"
+                                             size="small">删除</el-button>
+                                </el-popconfirm>
+                              </template>
+                            </el-table-column>
+                          </el-table>
+                          <!-- // 规则 -->
                           <el-form-item required
                                         label="推送时间：">
                             <div class="rule-time-item">
@@ -972,7 +1001,7 @@ export default {
     },
     validateTrigger(rule, value, callback) {
       console.log('value:', value)
-      if (!value) {
+      if (!value.length) {
         return callback(new Error('请选择规则'))
       }
       callback()
@@ -1085,7 +1114,9 @@ export default {
                             endDate: cn.dateRange[1],
                             triggerRuleList: cn.trigger.map(triggerItem => {
                               return {
-                                triggerId: triggerItem.id,
+                                triggerId: triggerItem.id.map(n => {
+                                  return n.id
+                                }),
                                 triggerDate: triggerItem.date,
                                 triggerTime: triggerItem.time
                               }
@@ -1437,7 +1468,7 @@ export default {
     },
     addTriggerItem(item, ci) {
       item.trigger.push({
-        id: 1,
+        id: [],
         date: 0,
         time: '00:00'
       })
@@ -1451,6 +1482,14 @@ export default {
       // 校验
       // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
     },
+    // 删除规则 ？
+    deleteRule(item, ci, i) {
+      item.id.splice(i, 1)
+      this.channelIndex = ci
+      this.ruleIndex = i
+      // 校验
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.id`)
+    },
 
     handleMouseEnter(row, column, cell, event) {
       // console.log(row)
@@ -1460,10 +1499,26 @@ export default {
       // console.log(row)
       row.isHover = false
     },
+    // // 选择产品
+    // addProduct(item) {
+    //   // console.log(item.product)
+    //   // this.$refs.productRef && this.$refs.productRef.resetAll()
+    //   this.showProduct = true
+    //   this.$nextTick(() => {
+    //     this.$refs.productRef.reset()
+    //     this.$refs.productRef.parentRef.setSelection(item.product)
+    //   })
+    // }
+
     // 触发规则
     handleAddRule(item, ci, rule_i) {
       this.showRule = true
       this.channelIndex = ci
+      this.ruleIndex = rule_i
+      this.$nextTick(() => {
+        this.$refs.ruleRef.reset()
+        this.$refs.ruleRef.parentRef.setSelection(item.trigger[rule_i].id)
+      })
       // const arr = [
       //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${rule_i}.id`
       // ]
@@ -1550,7 +1605,24 @@ export default {
         })
       }
     },
-    submitRule() { },
+    submitRule() {
+      const val = this.$refs.ruleRef.parentRef.getVal()
+      console.log(val)
+      if (val.length) {
+        this.showRule = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].trigger[this.ruleIndex].id = val.map(n => {
+          return n
+        })
+        // 校验
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.id`)
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
     // 精准内侧
     handleTestSms(channelIndex) {
       this.validateList = []
