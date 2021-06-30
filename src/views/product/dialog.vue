@@ -2,6 +2,7 @@
   <div class="dialog-container">
     <el-dialog :title="isEdit?'编辑产品':'新增产品'"
                :visible="visible"
+               append-to-body
                @close="handleClose">
       <el-form ref="formRef"
                label-width="170px"
