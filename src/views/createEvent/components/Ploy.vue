@@ -624,37 +624,47 @@
     <!-- 产品 -->
     <ShunDrawer title="选择产品"
                 :show.sync="showProduct"
-                @submit="submitProduct()">
+                @submit="submitProduct">
       <template v-slot:container>
-        <product ref="productRef"
+        <Product ref="productRef"
                  :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 权益 -->
     <ShunDrawer title="选择权益"
                 :show.sync="showInterest"
-                @submit="submitInterest()">
+                @submit="submitInterest">
       <template v-slot:container>
-        <interest ref="interestRef"
+        <Interest ref="interestRef"
                   :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 话术 -->
     <ShunDrawer title="选择话术"
                 :show.sync="showCRMWord"
-                @submit="submitWord()">
+                @submit="submitWord">
       <template v-slot:container>
-        <word ref="wordRef"
+        <Word ref="wordRef"
               :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showSms"
-                @submit="submitSms()">
+                @submit="submitSms">
       <template v-slot:container>
-        <sms ref="smsRef"
+        <Sms ref="smsRef"
              :show-selection="true" />
+      </template>
+    </ShunDrawer>
+    <!-- 规则 -->
+    <ShunDrawer title="选择规则"
+                size="90%"
+                :show.sync="showRule"
+                @submit="submitRule">
+      <template v-slot:container>
+        <Rule ref="ruleRef"
+              :show-selection="true" />
       </template>
     </ShunDrawer>
   </div>
@@ -670,6 +680,7 @@ import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
 import Sms from '@/views/sms/index'
+import Rule from '@/views/rule/index'
 import { isPhone } from '@/utils/validate'
 import { MessageBox, Message } from 'element-ui'
 import { parseTime, SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
@@ -679,7 +690,14 @@ import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 
 export default {
   components: {
-    Product, Info, Interest, Word, ShunDrawer, Sms, TextToHtml
+    Product,
+    Info,
+    Interest,
+    Word,
+    ShunDrawer,
+    Sms,
+    Rule,
+    TextToHtml
   },
   data() {
     const _this = this
@@ -700,6 +718,8 @@ export default {
       showCRMWord: false,
       // 短信侧边栏
       showSms: false,
+      // 规则侧边栏
+      showRule: false,
       // 定时型 下拉选项
       timingOpt: JSON.parse(JSON.stringify(TIMING_OPT)),
       group: [
@@ -1442,19 +1462,15 @@ export default {
     },
     // 触发规则
     handleAddRule(item, ci, rule_i) {
-      console.log(123)
+      this.showRule = true
       this.channelIndex = ci
-      const arr = [
-        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
-        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${rule_i}.id`
-      ]
-      this.$refs.customerFormRef.clearValidate(arr)
+      // const arr = [
+      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${rule_i}.id`
+      // ]
+      // this.$refs.customerFormRef.clearValidate(arr)
     },
     // crm选择话术
     addCRMWords(item, ci) {
-      //
       this.showCRMWord = true
       this.$nextTick(() => {
         this.$refs.wordRef.reset()
@@ -1534,6 +1550,7 @@ export default {
         })
       }
     },
+    submitRule() { },
     // 精准内侧
     handleTestSms(channelIndex) {
       this.validateList = []

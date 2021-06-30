@@ -3,6 +3,7 @@
     <shun-table ref="table"
                 title="规则库"
                 :loading="loading"
+                :show-selection="showSelection"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
                 :total="total"
@@ -69,7 +70,9 @@
     <!-- 右侧边 -->
     <ShunDrawer title="规则"
                 :show.sync="showDrawer"
+                :append-to-body="true"
                 :loading="drawerButtonLoading"
+                @closed="handleCloseDrawer"
                 @submit="handleSureDrawer">
       <template v-slot:container>
         <div>
@@ -81,6 +84,7 @@
     </ShunDrawer>
     <!-- dialog -->
     <el-dialog title="规则"
+               :append-to-body="true"
                :visible.sync="showTableDialog"
                @close="handleCloseTableDialog">
       <el-form ref="dialogTableFormRef"
@@ -183,7 +187,7 @@ export default {
         }
       ],
       tableData: [],
-      // selection: []
+      // selection: [],
       ruleOpt: [],
       condition: {}
     }
@@ -199,6 +203,9 @@ export default {
     this.getRuleTags()
   },
   methods: {
+    aaa() {
+      console.log('aaa')
+    },
     resetAll() {
       this.reset()
       this.$refs.table.resetSelection()
@@ -304,6 +311,10 @@ export default {
       ruleDetail({ id: row.id }).then(res => {
         this.condition = res.data.condition
       })
+    },
+    handleCloseDrawer() {
+      this.drawerId = ''
+      this.condition = null
     },
     handleSureDrawer() {
       this.$refs.ruleRef.validate((valid) => {

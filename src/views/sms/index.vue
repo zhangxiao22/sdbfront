@@ -87,6 +87,7 @@ export default {
       type: Boolean,
       default: true
     },
+    //
     commonTemplate: {
       type: Boolean,
       default: false

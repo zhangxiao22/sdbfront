@@ -590,6 +590,7 @@ export default {
   },
   watch: {
     originData(nval, oval) {
+      // console.log('nval?????', nval)
       // console.log(this.condition)
       const data = Object.assign({}, DEFAULT_CONDITION, nval)
       // console.log(data.list)
