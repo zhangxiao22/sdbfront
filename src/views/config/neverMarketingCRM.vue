@@ -98,9 +98,11 @@
 
       </template>
       <template v-slot:operateSlot="scope">
-        <div class="btn"
-             style="color:#f56c6c;"
-             @click="handleDelete(scope.row)">删除</div>
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#f56c6c;"
+               @click="handleDelete(scope.row)">删除</div>
+        </div>
       </template>
       <template v-slot:paramsSlot="props">
         <pre>{{ props.row.params }}</pre>
@@ -347,10 +349,4 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
-.container {
-  .btn {
-    cursor: pointer;
-  }
-}
 </style>
