@@ -292,7 +292,8 @@
                               required: true, message: '请选择', trigger:'change'
                             }]">
                 <el-select v-model="conditionItem.extraCompare[0]"
-                           style="width:100px">
+                           style="width:100px"
+                           @blur="handleRelativeBetweenBlur(pi, i)">
                   <el-option v-for="item in dateOptions.relative"
                              :key="item.value"
                              :label="item.label"
@@ -325,6 +326,8 @@
                 <span class="item middle-line">天</span>
                 <span class="item middle-line">之内</span>
               </el-form-item>
+              <Info class="middle-line"
+                    :content="`${getRelativeBetweenInfo(conditionItem.extraCompare[0],conditionItem.conditionValue[0],conditionItem.conditionValue[1])}`" />
             </div>
           </template>
           <!-- 按钮 -->
@@ -568,17 +571,24 @@ export default {
         const date = this.getDate(a, b)
         if (a === 'past') {
           if (c === 'within') {
-            return '时间范围：' + `${date}` + '至' + `${this.today}` + '包含开始和结束时间'
+            return '时间范围：' + `${date}` + '至' + `${this.today}` + '，包含开始和结束时间'
           } else {
             return '时间范围：' + `${date}` + '之前，包含' + `${date}`
           }
         } else {
           if (c === 'within') {
-            return '时间范围：' + `${this.today}` + '至' + `${date}` + '包含开始和结束时间'
+            return '时间范围：' + `${this.today}` + '至' + `${date}` + '，包含开始和结束时间'
           } else {
             return '时间范围：' + `${date}` + '之后，包含' + `${date}`
           }
         }
+      }
+    },
+    getRelativeBetweenInfo() {
+      return function (a, b, c) {
+        const date1 = this.getDate(a, b)
+        const date2 = this.getDate(a, c)
+        return '时间范围：' + `${date1}` + '至' + `${date2}` + '，包含开始和结束时间'
       }
     },
     getDate() {
@@ -656,6 +666,15 @@ export default {
   },
 
   methods: {
+    handleRelativeBetweenBlur(pi, i) {
+      console.log(pi, i)
+      console.log('extraCompare', this.condition.list[pi].list[i].extraCompare)
+      console.log('extraCompare', this.condition.list[pi].list[i].conditionValue)
+      const [start, end] = this.condition.list[pi].list[i].conditionValue
+      if (this.condition.list[pi].list[i].extraCompare[0] === 'past') {
+        this.condition.list[pi].list[i].conditionValue = [end, start]
+      }
+    },
     // 数字区间
     validateNumber(rule, value, callback) {
       const [min, max] = value
