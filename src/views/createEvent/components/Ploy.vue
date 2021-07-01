@@ -411,7 +411,7 @@
                              class="item-box">
                           <el-form-item label="触发规则："
                                         required
-                                        :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.trigger.' + rule_i + '.id'"
+                                        :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.trigger.' + rule_i + '.rule'"
                                         :rules="[{
                                           validator: validateTrigger
                                         }]">
@@ -421,33 +421,36 @@
                             </el-button>
                           </el-form-item>
                           <!-- //  规则--- -->
-                          <el-table v-show="item.id.length > 0"
-                                    :data="item.id"
-                                    border
-                                    style="width: 100%;margin-bottom:18px;">
-                            <el-table-column prop="id"
-                                             width="100"
-                                             label="ID" />
-                            <el-table-column prop="name"
-                                             min-width="200"
-                                             label="规则名称" />
-                            <el-table-column prop="detail"
-                                             show-overflow-tooltip
-                                             min-width="300"
-                                             label="描述" />
-                            <el-table-column label="操作"
-                                             width="100">
-                              <template slot-scope="scope">
-                                <el-popconfirm title="确定删除吗？"
-                                               @onConfirm="deleteRule(item,ci,scope.$index)">
-                                  <el-button slot="reference"
-                                             type="text"
-                                             style="color:#f56c6c;"
-                                             size="small">删除</el-button>
-                                </el-popconfirm>
-                              </template>
-                            </el-table-column>
-                          </el-table>
+                          <div v-show="item.rule.length > 0"
+                               style="margin-bottom:18px;padding:0 18px;">
+                            <el-table :data="item.rule"
+                                      style="width:100%;"
+                                      border>
+                              <el-table-column prop="id"
+                                               width="100"
+                                               label="ID" />
+                              <el-table-column prop="name"
+                                               min-width="200"
+                                               label="规则名称" />
+                              <el-table-column prop="detail"
+                                               show-overflow-tooltip
+                                               min-width="300"
+                                               label="描述" />
+                              <el-table-column label="操作"
+                                               width="100">
+                                <template slot-scope="scope">
+                                  <el-popconfirm title="确定删除吗？"
+                                                 @onConfirm="deleteRule(item,ci,scope.$index)">
+                                    <el-button slot="reference"
+                                               type="text"
+                                               style="color:#f56c6c;"
+                                               size="small">删除</el-button>
+                                  </el-popconfirm>
+                                </template>
+                              </el-table-column>
+                            </el-table>
+                          </div>
+
                           <!-- // 规则 -->
                           <el-form-item required
                                         label="推送时间：">
@@ -933,7 +936,7 @@ export default {
                           obj.dateRange = [m.pushTimeInfo.triggerInfoList.startDate, m.pushTimeInfo.triggerInfoList.endDate]
                           obj.trigger = m.pushTimeInfo.triggerInfoList.triggerRuleList.map(t => {
                             return {
-                              id: [t.triggerId],
+                              rule: [t.triggerId],
                               date: t.triggerDate,
                               time: t.triggerTime
                             }
@@ -1114,7 +1117,7 @@ export default {
                             endDate: cn.dateRange[1],
                             triggerRuleList: cn.trigger.map(triggerItem => {
                               return {
-                                triggerId: triggerItem.id.map(n => {
+                                triggerId: triggerItem.rule.map(n => {
                                   return n.id
                                 }),
                                 triggerDate: triggerItem.date,
@@ -1484,11 +1487,11 @@ export default {
     },
     // 删除规则 ？
     deleteRule(item, ci, i) {
-      item.id.splice(i, 1)
+      item.rule.splice(i, 1)
       this.channelIndex = ci
       this.ruleIndex = i
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.id`)
+      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`)
     },
 
     handleMouseEnter(row, column, cell, event) {
@@ -1517,7 +1520,7 @@ export default {
       this.ruleIndex = rule_i
       this.$nextTick(() => {
         this.$refs.ruleRef.reset()
-        this.$refs.ruleRef.parentRef.setSelection(item.trigger[rule_i].id)
+        this.$refs.ruleRef.parentRef.setSelection(item.trigger[rule_i].rule)
       })
       // const arr = [
       //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${rule_i}.id`
@@ -1610,11 +1613,11 @@ export default {
       console.log(val)
       if (val.length) {
         this.showRule = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].trigger[this.ruleIndex].id = val.map(n => {
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].trigger[this.ruleIndex].rule = val.map(n => {
           return n
         })
         // 校验
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.id`)
+        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`)
       } else {
         Message({
           message: '请选择至少一项',

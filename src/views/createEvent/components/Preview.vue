@@ -225,7 +225,7 @@
                             <div slot="content">
                               {{ ruleItem.triggerId.name }}
                             </div>
-                            <div class="name">
+                            <div class="rule-name elip">
                               {{ ruleItem.triggerId.name }}
                             </div>
                           </el-tooltip>
@@ -951,25 +951,28 @@ export default {
                     margin-top: 5px;
                     border: 1px solid #ebeef5;
                     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.02);
-                    padding: 5px 0;
+                    // padding: 5px 0;
                     border-radius: 4px;
-                    // margin: 0 5px;
                     font-size: 12px;
                     width: 160px;
-                    .name {
+                    .rule-name {
+                      text-align: center;
+                      border-bottom: 1px solid #ebeef5;
+                      padding: 5px;
                     }
                     .time-block {
-                      display: inline-flex;
+                      // padding-top: 5px;
+                      display: flex;
                       align-items: center;
                       .date {
-                        width: 60%;
+                        padding: 5px 0;
+                        width: 50%;
                         text-align: center;
                         border-right: 1px solid #ebeef5;
-                        // padding-right: 10px;
                       }
                       .time {
-                        width: 40%;
-                        // padding-right: 10px;
+                        padding: 5px 0;
+                        width: 50%;
                         text-align: center;
                       }
                     }

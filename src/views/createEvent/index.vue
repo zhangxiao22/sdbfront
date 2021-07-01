@@ -199,7 +199,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 3
+      stepActive: 2
     }
   },
   computed: {

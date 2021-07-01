@@ -18,7 +18,7 @@ export const CHANNEL_OPT = [
     // 触发型的值-触发规则
     trigger: [
       {
-        id: [],
+        rule: [],
         date: 0,
         time: '00:00'
       }
@@ -60,7 +60,7 @@ export const CHANNEL_OPT = [
     // 触发型的值-触发规则
     trigger: [
       {
-        id: [],
+        rule: [],
         date: 0,
         time: '00:00'
       }
