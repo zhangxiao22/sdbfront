@@ -214,7 +214,7 @@
                                   default-time="00:00:00" />
                   <span class="item middle-line">之间</span>
                   <Info class="middle-line"
-                        content="区间包含起始和结束时间" />
+                        content="区间包含起始和结束时间。输入时间格式为 yyyy-mm-dd hh:ii。" />
                 </el-form-item>
                 <!-- 绝对时间 - 非区间 -->
                 <el-form-item v-else
@@ -279,7 +279,7 @@
                 </el-select>
               </el-form-item>
               <Info class="middle-line"
-                    content="时间范围：xxxx-xx-xx 至 xxxx-xx-xx 包含开始和结束时间" />
+                    :content="`${getRelativeInfo(conditionItem.extraCompare[0],conditionItem.conditionValue[0],conditionItem.extraCompare[1])}`" />
             </template>
             <!-- 相对当前时间区间 -->
             <div v-if="conditionItem.compare==='relativeBetween'"
@@ -388,6 +388,7 @@ export default {
   data() {
     return {
       condition: DEFAULT_CONDITION,
+      today: TODAY,
       group: [],
       stringOptions: [],
       MAX_NUMBER,
@@ -562,6 +563,29 @@ export default {
     }
   },
   computed: {
+    getRelativeInfo() {
+      return function (a, b, c) {
+        const date = this.getDate(a, b)
+        if (a === 'past') {
+          if (c === 'within') {
+            return '时间范围：' + `${date}` + '至' + `${this.today}` + '包含开始和结束时间'
+          } else {
+            return '时间范围：' + `${date}` + '之前，包含' + `${date}`
+          }
+        } else {
+          if (c === 'within') {
+            return '时间范围：' + `${this.today}` + '至' + `${date}` + '包含开始和结束时间'
+          } else {
+            return '时间范围：' + `${date}` + '之后，包含' + `${date}`
+          }
+        }
+      }
+    },
+    getDate() {
+      return function (a, b) {
+        return a === 'past' ? moment().subtract(b, 'days').format('YYYY-MM-DD') : moment().subtract(-b, 'days').format('YYYY-MM-DD')
+      }
+    },
     // 取值
     finalData() {
       return {

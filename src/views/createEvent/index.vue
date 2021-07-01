@@ -199,7 +199,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 2
+      stepActive: process.env.NODE_ENV === 'development' ? 2 : 0
     }
   },
   computed: {

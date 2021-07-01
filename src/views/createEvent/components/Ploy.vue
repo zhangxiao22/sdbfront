@@ -1471,7 +1471,7 @@ export default {
     },
     addTriggerItem(item, ci) {
       item.trigger.push({
-        id: [],
+        rule: [],
         date: 0,
         time: '00:00'
       })
