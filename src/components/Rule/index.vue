@@ -293,7 +293,7 @@
                             }]">
                 <el-select v-model="conditionItem.extraCompare[0]"
                            style="width:100px"
-                           @blur="handleRelativeBetweenBlur(pi, i)">
+                           @change="autoFixRelativeBetween(pi, i)">
                   <el-option v-for="item in dateOptions.relative"
                              :key="item.value"
                              :label="item.label"
@@ -311,7 +311,8 @@
                                  :min="1"
                                  :max="MAX_NUMBER"
                                  step-strictly
-                                 controls-position="right" />
+                                 controls-position="right"
+                                 @blur="autoFixRelativeBetween(pi, i)" />
                 <span class="item middle-line">天</span>
                 <span class="item middle-line">至</span>
                 <!-- 过去、未来 -->
@@ -322,7 +323,8 @@
                                  :min="1"
                                  :max="MAX_NUMBER"
                                  step-strictly
-                                 controls-position="right" />
+                                 controls-position="right"
+                                 @blur="autoFixRelativeBetween(pi, i)" />
                 <span class="item middle-line">天</span>
                 <span class="item middle-line">之内</span>
               </el-form-item>
@@ -666,13 +668,15 @@ export default {
   },
 
   methods: {
-    handleRelativeBetweenBlur(pi, i) {
+    autoFixRelativeBetween(pi, i) {
       console.log(pi, i)
-      console.log('extraCompare', this.condition.list[pi].list[i].extraCompare)
-      console.log('extraCompare', this.condition.list[pi].list[i].conditionValue)
+      const extraCompare = this.condition.list[pi].list[i].extraCompare[0]
       const [start, end] = this.condition.list[pi].list[i].conditionValue
-      if (this.condition.list[pi].list[i].extraCompare[0] === 'past') {
-        this.condition.list[pi].list[i].conditionValue = [end, start]
+      if (extraCompare === 'past' && start < end) {
+        this.condition.list[pi].list[i].conditionValue.reverse()
+      }
+      if (extraCompare === 'future' && start > end) {
+        this.condition.list[pi].list[i].conditionValue.reverse()
       }
     },
     // 数字区间
@@ -702,8 +706,6 @@ export default {
       const [startDay, endDay] = value
       if (!startDay || !endDay) {
         callback('请选择区间的起始天数和结束天数')
-      } else if (startDay >= endDay) {
-        callback('区间的起始天数必须小于结束天数')
       } else {
         callback()
       }
