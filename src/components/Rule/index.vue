@@ -355,6 +355,9 @@
 import { ruleTag } from '@/api/api'
 import { MAX_NUMBER } from '@/utils'
 import Info from '@/components/Info'
+import moment from 'moment'
+
+const TODAY = moment().format('YYYY-MM-DD')
 
 const DEFAULT_CONDITION = {
   list: [],

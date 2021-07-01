@@ -933,7 +933,7 @@ export default {
                           obj.dateRange = [m.pushTimeInfo.triggerInfoList.startDate, m.pushTimeInfo.triggerInfoList.endDate]
                           obj.trigger = m.pushTimeInfo.triggerInfoList.triggerRuleList.map(t => {
                             return {
-                              id: t.triggerId,
+                              id: [t.triggerId],
                               date: t.triggerDate,
                               time: t.triggerTime
                             }

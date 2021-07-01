@@ -220,9 +220,19 @@
                              :key="ruleIndex"
                              class="item">
                           <!-- 触发型规则名字 -->
-                          <!-- <div class="name">{{ ruleItem.name.length > 10 ? ruleItem.name.slice(0,9) + '...' :ruleItem.name }}</div> -->
-                          <div class="date">T + {{ ruleItem.triggerDate }}</div>
-                          <div class="time">{{ ruleItem.triggerTime }}</div>
+                          <el-tooltip effect="dark"
+                                      placement="top">
+                            <div slot="content">
+                              {{ ruleItem.triggerId.name }}
+                            </div>
+                            <div class="name">
+                              {{ ruleItem.triggerId.name }}
+                            </div>
+                          </el-tooltip>
+                          <div class="time-block">
+                            <div class="date">T + {{ ruleItem.triggerDate }}</div>
+                            <div class="time">{{ ruleItem.triggerTime }}</div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -946,18 +956,22 @@ export default {
                     // margin: 0 5px;
                     font-size: 12px;
                     width: 160px;
-                    display: inline-flex;
-                    align-items: center;
-                    .date {
-                      width: 60%;
-                      text-align: center;
-                      border-right: 1px solid #ebeef5;
-                      // padding-right: 10px;
+                    .name {
                     }
-                    .time {
-                      width: 40%;
-                      // padding-right: 10px;
-                      text-align: center;
+                    .time-block {
+                      display: inline-flex;
+                      align-items: center;
+                      .date {
+                        width: 60%;
+                        text-align: center;
+                        border-right: 1px solid #ebeef5;
+                        // padding-right: 10px;
+                      }
+                      .time {
+                        width: 40%;
+                        // padding-right: 10px;
+                        text-align: center;
+                      }
                     }
                   }
                 }
