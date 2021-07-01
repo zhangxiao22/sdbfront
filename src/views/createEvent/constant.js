@@ -84,8 +84,7 @@ export const CHANNEL_OPT = [
     }
     ],
     model: []
-  }
-  // {
+  }, // {
   //   value: 3,
   //   label: '微信',
   //   disabled: false,
@@ -111,6 +110,22 @@ export const CHANNEL_OPT = [
   //   }],
   //   model: []
   // }
+
+  {
+    value: 5,
+    label: 'STM',
+    disabled: false,
+    icon: 'stm',
+    iconColor: '#990099',
+    chooseType: 1,
+    type: [{
+      id: 1,
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    }],
+    // 定时型的值-起止时间
+    dateRange: []
+  }
 ]
 export const TIMING_OPT = [
   {

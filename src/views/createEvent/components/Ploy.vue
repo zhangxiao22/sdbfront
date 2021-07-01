@@ -312,11 +312,9 @@
                                         start-placeholder="开始日期"
                                         end-placeholder="结束日期" />
                       </el-form-item>
-                      <el-form-item label="推送时间："
-                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.timingDateValue'"
-                                    :rules="[{
-                                      validator: validateTiming
-                                    }]">
+                      <el-form-item v-if="channelCardItem.value!==5"
+                                    label="推送时间："
+                                    required>
                         <div style="display:flex">
                           <div style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateType"
@@ -353,7 +351,6 @@
                           </div>
                         </div>
                       </el-form-item>
-
                     </template>
                     <!-- 规则型 -->
                     <template v-if="channelCardItem.chooseType===2">
@@ -484,15 +481,6 @@
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
-                      <el-form-item required
-                                    label="线索有效期："
-                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.validPeriod'">
-                        <el-input-number v-model="channelCardItem.validPeriod"
-                                         style="margin-right:10px;"
-                                         controls-position="right"
-                                         :min="0"
-                                         @blur="channelCardItem.validPeriod=channelCardItem.validPeriod||0" />天
-                      </el-form-item>
                       <el-form-item label="推荐话术："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.model'"
                                     :rules="[{
@@ -503,7 +491,6 @@
                           添加话术
                         </el-button>
                       </el-form-item>
-                      <!-- {{ channelCardItem.model }} -->
                       <el-table v-show="channelCardItem.model.length"
                                 :data="channelCardItem.model"
                                 border
@@ -638,6 +625,8 @@
                                          label="短信分类" />
                       </el-table>
                     </template>
+                    <!-- stm -->
+                    <template v-if="channelCardItem.value===5" />
                     <!-- 渠道：{{ channelCardItem.value }}
                     类型：{{ channelCardItem.chooseType }}
                     定时型的值1（规则）：{{ channelCardItem.timingDateValue }}
@@ -867,7 +856,76 @@ export default {
     //   })
     //   return val
     // },
-
+    ployTranslate(ployObj, ployName) {
+      // console.log(ployObj, ployIndex)
+      // ployIndex tab的index下标
+      return {
+        abstractId: ployObj.abstractId,
+        // 策略名称
+        title: ployObj.name,
+        // 策略分发范围
+        percent: ployObj.range,
+        // 策略tab id
+        name: ployName + '',
+        // 产品
+        product: ployObj.productInfoList.map((product) => {
+          return Object.assign({}, product, product.extraField)
+        }),
+        // 权益
+        interest: ployObj.couponInfoList,
+        channel: ployObj.strategyInfoList.map(m => {
+          // console.log(m)
+          return Object.assign({}, CHANNEL_OPT.find(x => {
+            return x.value === m.channel.value
+          }), {
+            // infoId: m.infoId,
+            chooseType: m.pushType.value,
+            // validPeriod: m.clueEffectDays,
+            smsSendMode: m.sendMode?.value,
+            model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                isHover: false
+              })
+            }) : m.meterialInfoList,
+            beforeSms: m.advanceSMSInfoList || [],
+            afterSms: m.followSMSInfoList || []
+          }, (() => {
+            const obj = {}
+            if (m.pushType.value === 1) {
+              // 定时型
+              // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+              // 定时型的值-规则 (每周几或每月)
+              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
+              // 定时型的值-规则 (周几或者几号) (多选)
+              obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+              // 定时型的值-时间
+              obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
+              // 定时型的值-起止时间
+              obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+            } else if (m.pushType.value === 2) {
+              // 规则型
+              // 规则型的值
+              obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
+                return {
+                  // pushTimeId: r.pushTimeId,
+                  date: r.delay,
+                  time: r.moment
+                }
+              })
+            }
+            return obj
+          })())
+        }),
+        channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
+          return Object.assign({}, c, {
+            // 已选择的渠道禁止选择
+            disabled: ployObj.strategyInfoList.some(x => x.channel.value === c.value)
+          })
+        })
+      }
+    },
     ployDetail() {
       return new Promise((resolve, reject) => {
         getPloyDetail({ baseId: this.id }).then(res => {
@@ -1075,10 +1133,11 @@ export default {
                       // console.log(cn.model)
                       return {
                         // 渠道id
-                        infoId: cn.infoId,
-                        // 渠道类型 1:crm 2:短信 3:微信
+                        // infoId: cn.infoId,
+                        // 渠道类型 1:crm 2:短信 3:微信 5:stm
                         channel: cn.value,
-                        clueEffectDays: cn.value === 1 ? cn.validPeriod : undefined,
+                        // SMS发送模式（重复均分）
+                        sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
                         // 话术id
                         scriptList: cn.value === 1 ? cn.model.map(n => {
                           return {
@@ -1088,8 +1147,8 @@ export default {
                           }
                         }) : undefined,
                         // 模版id
-                        materialIdList: cn.value !== 1 ? cn.model.map(n => n.id) : undefined,
-                        smsAttr: cn.model[0].smsAttr || {},
+                        materialIdList: cn.value !== 1 && cn.value !== 5 ? cn.model.map(n => n.id) : undefined,
+                        smsAttr: cn.model?.[0]?.smsAttr || {},
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
@@ -1775,7 +1834,7 @@ export default {
     .channel-card-title {
       font-weight: bold;
       display: flex;
-      align-items: flex-start;
+      align-items: center;
       float: left;
     }
     .channel-card-delete {
