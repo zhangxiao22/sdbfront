@@ -20,6 +20,16 @@ import * as filters from './filters/index'
 Object.keys(filters).forEach(key => {
   Vue.filter(key, filters[key])
 })
+Vue.directive('el-input-blur', {
+  bind(el, binding, vnode) {
+    const $input = el.getElementsByTagName('input')[0]
+    const min = vnode.componentOptions.propsData.min || 0
+    $input.addEventListener('blur', function () {
+      this.value = this.value || min
+    })
+  }
+})
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -28,10 +38,10 @@ Object.keys(filters).forEach(key => {
  * Currently MockJs will be used in the production environment,
  * please remove it before going online ! ! !
  */
-if (process.env.NODE_ENV === 'production') {
-  const { mockXHR } = require('../mock')
-  mockXHR()
-}
+// if (process.env.NODE_ENV === 'production') {
+//   const { mockXHR } = require('../mock')
+//   mockXHR()
+// }
 
 // set ElementUI lang to EN
 // Vue.use(ElementUI, { locale })

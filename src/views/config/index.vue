@@ -26,6 +26,7 @@ import Agent from './agent'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
+import AssignRule from './assignRule'
 import GlobalOutletDistribute from './globalOutletDistribute'
 import UseCaseOutletDistribute from './usecaseOutletDistribute'
 import JobOccupy from './jobOccupy'
@@ -44,6 +45,7 @@ export default {
     Appoint,
     Assign,
     NotDisturb,
+    AssignRule,
     GlobalOutletDistribute,
     UseCaseOutletDistribute,
     JobOccupy,
@@ -58,7 +60,7 @@ export default {
     return {
       tabIndex: '0',
       tabList: [{
-        label: '理顾指派',
+        label: '理财顾问指派',
         component: 'Appoint',
         loading: false,
         roles: ['线索统筹']
@@ -93,12 +95,12 @@ export default {
       //   loading: false,
       //   roles: ['用例管理']
       // },
-      {
-        label: '事件管理',
-        component: 'EventPriority',
-        loading: false,
-        roles: ['用例管理']
-      },
+      // {
+      //   label: '事件管理',
+      //   component: 'EventPriority',
+      //   loading: false,
+      //   roles: ['用例管理']
+      // },
       {
         label: '岗位管理',
         component: 'Assign',
@@ -122,8 +124,14 @@ export default {
         label: '请假代办',
         component: 'Agent',
         loading: false,
-        roles: ['支行业务管理']
+        roles: ['线索统筹']
       },
+      // {
+      //   label: '分配规则',
+      //   component: 'Rule',
+      //   loading: false,
+      //   roles: ['线索统筹']
+      // },
       {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
@@ -137,7 +145,7 @@ export default {
         roles: ['线索统筹']
       },
       {
-        label: '私银客户名单',
+        label: '不营销客户名单（CRM）',
         component: 'NeverMarketingCRM',
         loading: false,
         roles: ['线索统筹']

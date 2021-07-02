@@ -199,7 +199,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: 0
+      stepActive: process.env.NODE_ENV === 'development' ? 2 : 0
     }
   },
   computed: {
@@ -280,7 +280,7 @@ export default {
         this.mainLoading = false
       }).catch(err => {
         this.mainLoading = false
-        console.log(err)
+        console.log('err:', err)
       })
     },
     prev() {

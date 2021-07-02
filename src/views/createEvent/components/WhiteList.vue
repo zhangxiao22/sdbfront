@@ -39,9 +39,26 @@
         </el-form-item>
         <el-form-item>
           <div slot="label">
+            <!-- <Info content="可选择多个维度" /> -->
             <Info content="维度不能超过10个" />
             维度补充：
           </div>
+          <!-- <div class="param-box">
+            <el-select v-model="paramValue"
+                       style="max-width:800px;width:100%;"
+                       multiple
+                       :multiple-limit="0"
+                       filterable
+                       placeholder="可输入搜索匹配项">
+              <el-option v-for="item in paramOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+            <el-button type="text"
+                       class="text-button"
+                       @click="clickChooseAll">{{ paramValue.length === paramOpt.length ? '清空' : '全选' }}</el-button>
+          </div> -->
           <el-select v-model="paramValue"
                      style="max-width:800px;width:100%;"
                      multiple
@@ -91,7 +108,7 @@
                 </div>
                 <div v-show="scope.row.isHover"
                      slot="reference"
-                     class="table-edit touch-tap"
+                     class="table-edit touch-tap-x"
                      @click="scope.row._desc = scope.row.desc">
                   <i class="el-icon-edit" />
                 </div>
@@ -264,7 +281,14 @@ export default {
         }
       })
     },
-
+    // clickChooseAll() {
+    //   const flag = this.paramValue.length === this.paramOpt.length
+    //   if (flag) {
+    //     this.paramValue = []
+    //   } else {
+    //     this.paramValue = this.paramOpt.map(n => n.value)
+    //   }
+    // },
     download() {
       window.open('/static/template.xlsx', '_self')
     },
@@ -390,6 +414,12 @@ export default {
   .form {
     width: 600px;
     margin: 20px auto 0;
+    // .param-box {
+    //   display: flex;
+    //   .text-button {
+    //     padding-left: 10px;
+    //   }
+    // }
   }
   .table-container {
     width: 100%;

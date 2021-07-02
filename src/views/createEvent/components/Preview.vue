@@ -28,7 +28,8 @@
           </div>
         </div>
       </div>
-      <div class="group-target">
+      <div v-show="detail.eventAchieveList.length"
+           class="group-target">
         <div v-for="(item,i) of detail.eventAchieveList"
              :key="i"
              class="item">
@@ -38,7 +39,8 @@
           </el-tag>
         </div>
       </div>
-      <div class="desc">{{ detail.desc }}</div>
+      <div v-show="detail.desc"
+           class="desc">{{ detail.desc }}</div>
     </div>
     <!-- group -->
     <div class="swiper-container group-swiper-container">
@@ -209,6 +211,31 @@
                         </div>
                       </div>
                     </div>
+                    <div v-if="channelItem.pushType.value === 3"
+                         class="rule right-left">
+                      <!-- 触发型 -->
+                      <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate }}</div>
+                      <div class="item-box">
+                        <div v-for="(ruleItem,ruleIndex) of channelItem.pushTimeInfo.triggerInfoList.triggerRuleList"
+                             :key="ruleIndex"
+                             class="item">
+                          <!-- 触发型规则名字 -->
+                          <el-tooltip effect="dark"
+                                      placement="top">
+                            <div slot="content">
+                              {{ ruleItem.triggerId.name }}
+                            </div>
+                            <div class="rule-name elip">
+                              {{ ruleItem.triggerId.name }}
+                            </div>
+                          </el-tooltip>
+                          <div class="time-block">
+                            <div class="date">T + {{ ruleItem.triggerDate }}</div>
+                            <div class="time">{{ ruleItem.triggerTime }}</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="right-right">
                       <!-- crm 话术 -->
                       <div v-if="channelItem.value===1"
@@ -249,7 +276,7 @@
                                            label="话术分类" />
                         </el-table>
                       </div>
-                      <!-- 短息、微信 模版 -->
+                      <!-- 短信、微信 模版 -->
                       <div v-else
                            class="preview-table-contaiber model">
                         <el-table :data="channelItem.meterialInfoList"
@@ -258,10 +285,10 @@
                                   style="width: 100%">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
-                                           label="短息内容" />
+                                           label="短信内容" />
                           <el-table-column prop="category.label"
                                            width="100"
-                                           label="短息分类" />
+                                           label="短信分类" />
                         </el-table>
                       </div>
                     </div>
@@ -530,13 +557,18 @@ export default {
       color: #888;
       margin-top: 15px;
       display: flex;
-      align-items: center;
+      // align-items: center;
+      align-items: baseline;
       .param {
         margin-left: 10px;
+        flex: 1;
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
+        margin-bottom: -8px;
         .param-item {
           margin-right: 8px;
+          margin-bottom: 8px;
         }
       }
     }
@@ -919,23 +951,30 @@ export default {
                     margin-top: 5px;
                     border: 1px solid #ebeef5;
                     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.02);
-                    padding: 5px 0;
+                    // padding: 5px 0;
                     border-radius: 4px;
-                    // margin: 0 5px;
                     font-size: 12px;
                     width: 160px;
-                    display: inline-flex;
-                    align-items: center;
-                    .date {
-                      width: 60%;
+                    .rule-name {
                       text-align: center;
-                      border-right: 1px solid #ebeef5;
-                      // padding-right: 10px;
+                      border-bottom: 1px solid #ebeef5;
+                      padding: 5px;
                     }
-                    .time {
-                      width: 40%;
-                      // padding-right: 10px;
-                      text-align: center;
+                    .time-block {
+                      // padding-top: 5px;
+                      display: flex;
+                      align-items: center;
+                      .date {
+                        padding: 5px 0;
+                        width: 50%;
+                        text-align: center;
+                        border-right: 1px solid #ebeef5;
+                      }
+                      .time {
+                        padding: 5px 0;
+                        width: 50%;
+                        text-align: center;
+                      }
                     }
                   }
                 }

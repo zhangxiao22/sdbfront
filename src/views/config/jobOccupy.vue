@@ -343,7 +343,6 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
 .job-container {
   // background: #fff;
   height: 100%;
@@ -358,6 +357,7 @@ export default {
       // background: #fff;
       display: flex;
       align-items: center;
+      margin: 0;
       .top-select {
         flex: 1;
         display: flex;
@@ -375,11 +375,5 @@ export default {
   .left-select {
     display: inline-block;
   }
-}
-</style>
-<style>
-body {
-  line-height: 1.15 !important;
-  color: #444 !important;
 }
 </style>

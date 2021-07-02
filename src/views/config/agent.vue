@@ -53,6 +53,12 @@
           新增
         </el-button>
       </template>
+      <template v-slot:empNameSlot="props">
+        {{ props.row.empCode }}-{{ props.row.empName }}
+      </template>
+      <template v-slot:agentNameSlot="props">
+        {{ props.row.agentCode ? props.row.agentCode + '-' + props.row.agentName : '' }}
+      </template>
       <template v-slot:typeSlot="props">
         {{ props.row.type === 1 ? "代办" : "请假" }}
       </template>
@@ -66,21 +72,25 @@
                :before-close="cancelAdd"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
-               label-width="110px"
+               label-width="130px"
                :model="form">
-        <el-form-item label="员工名称："
-                      :rules="[{
-                        required: true, message: '请选择员工姓名', trigger: 'change'
-                      }]"
+        <!-- {{ form.empCode }} -->
+        <el-form-item label="员工："
+                      required
                       prop="empCode"
-                      label-width="110px">
+                      :rules="[{
+                        validator: validateMethod
+                      }]">
           <el-select v-model="form.empCode"
-                     clearable
                      filterable
-                     @change="handleSelectEmp">
-            <el-option v-for="item in empListOpt"
+                     remote
+                     clearable
+                     placeholder="请输入员工名/员工号"
+                     :remote-method="(query)=>remoteMethod(query,'empListOptEmp')"
+                     @clear="empListOptEmp=[]"
+                     @change="handleChange">
+            <el-option v-for="item in empListOptEmp"
                        :key="item.value"
-                       :disabled="item.disabled"
                        :label="item.label"
                        :value="item.value" />
           </el-select>
@@ -106,15 +116,20 @@
         </el-form-item>
         <el-form-item label="代办人："
                       prop="agentCode"
-                      label-width="110px">
+                      :rules="[{
+                        validator: validateMethod
+                      }]">
           <el-select v-model="form.agentCode"
-                     clearable
                      filterable
-                     @change="handleSelectEmp">
-            <el-option v-for="item in empListOpt"
+                     remote
+                     clearable
+                     placeholder="请输入员工名/员工号"
+                     :remote-method="(query)=>remoteMethod(query,'empListOptAgent')"
+                     @clear="empListOptAgent=[]"
+                     @change="handleChange">
+            <el-option v-for="item in empListOptAgent"
                        :key="item.value"
                        :label="item.label"
-                       :disabled="item.disabled"
                        :value="item.value" />
           </el-select>
         </el-form-item>
@@ -164,7 +179,6 @@ export default {
           return dateTime < testStartTime
         }
       },
-      participantsOptions: [],
       loading: false,
       currentPage: 1,
       pageSize: 10,
@@ -181,21 +195,17 @@ export default {
         empCode: '',
         remark: ''
       },
-      empListOpt: [
-
-      ],
+      empListOptOrigin: [],
+      empListOptEmp: [],
+      empListOptAgent: [],
       searchForm: {
       },
       tableColumnList: [
         {
           prop: 'empName',
-          label: '员工姓名',
-          width: 100
-        },
-        {
-          prop: 'empCode',
-          label: '员工号',
-          minWidth: 150
+          label: '员工',
+          slot: true,
+          width: 150
         },
         // {
         //   prop: 'orgName',
@@ -215,13 +225,18 @@ export default {
         {
           prop: 'agentName',
           label: '代办人',
-          width: 100
+          slot: true,
+          width: 150
         },
         {
           prop: 'type',
           label: '类型',
           slot: true,
           width: 100
+        },
+        {
+          prop: 'remark',
+          label: '备注'
         },
         {
           prop: 'operate',
@@ -260,25 +275,42 @@ export default {
     },
     getEmpListOpt() {
       getEmpInCurrentOrg().then(res => {
-        this.empListOpt = res.data.map(n => {
+        this.empListOptOrigin = res.data.map(n => {
           return {
             label: n.empCode + '-' + n.empName,
-            value: n.empCode,
-            disabled: false
+            value: n.empCode
           }
         })
       })
     },
-    handleSelectEmp() {
-      this.empListOpt.forEach(n => {
-        n.disabled = (n.value === this.form.empCode || n.value === this.form.agentCode)
-      })
+    remoteMethod(query, key) {
+      if (query !== '') {
+        this[key] = this.empListOptOrigin.filter(n => {
+          return n.label.toLowerCase().indexOf(query.toLowerCase()) > -1
+        })
+      } else {
+        this[key] = []
+      }
+    },
+    handleChange() {
+      this.$refs.regFormRef.validateField('empCode')
+      this.$refs.regFormRef.validateField('agentCode')
+    },
+    validateMethod(rule, value, callback, source) {
+      if (value) {
+        if (this.form.agentCode === this.form.empCode) {
+          return callback(new Error('员工和代办人不能相同'))
+        }
+        callback()
+      } else {
+        if (Object.keys(source)[0] === 'empCode') {
+          return callback(new Error('请选择员工'))
+        }
+        callback()
+      }
     },
     resetDialog() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
-      this.empListOpt.forEach(n => {
-        n.disabled = false
-      })
     },
     handleAddList() {
       this.resetDialog()
@@ -299,6 +331,7 @@ export default {
             startTime: this.form.dateRange[0],
             endTime: this.form.dateRange[1]
           }
+          // console.log(data)
           addEmpLeave(data).then(res => {
             if (res.code === 200) {
               this.$message({
@@ -326,7 +359,7 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.getList()
+              this.getList(1)
             }
           }).finally(() => {
             this.loading = false

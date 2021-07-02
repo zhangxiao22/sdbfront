@@ -116,6 +116,15 @@ export function delInterests(params) {
   })
 }
 
+// 修改权益
+export function updateInterests(data) {
+  return request({
+    url: '/interests/updateData',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 短信 ************************************************************/
 // 获取短信库
 export function getSmsList(data) {
@@ -424,6 +433,23 @@ export function syncProduct(data) {
   })
 }
 
+// 获取产品私有属性 useCase/getProductExtraFieldEnum
+export function getProductExtraParams() {
+  return request({
+    url: '/resource/getProductExtraFieldEnum',
+    method: 'get'
+  })
+}
+
+// 编辑产品
+export function updateProduct(data) {
+  return request({
+    url: '/resource/updateData',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件审批 ************************************************************/
 // 事件审批
 export function isPass(data) {
@@ -699,6 +725,13 @@ export function totalAchieveRate(params) {
 export function getAllBranches() {
   return request({
     url: api3 + '/branches',
+    method: 'get'
+  })
+}
+
+export function getAllBranchList() {
+  return request({
+    url: '/config/role/list',
     method: 'get'
   })
 }
@@ -1131,3 +1164,140 @@ export function getEmpInCurrentOrg(params) {
     params
   })
 }
+
+/** ************************************************ 分配规则 ************************************************************/
+
+// 获取分配规则列表
+export function getRuleList(data) {
+  return request({
+    url: '/distribution/selectPage',
+    method: 'post',
+    data
+  })
+}
+
+// 添加分配规则
+export function addRule(data) {
+  return request({
+    url: '/distribution/insert',
+    method: 'post',
+    data
+  })
+}
+// 修改分配规则
+export function editRule(data) {
+  return request({
+    url: '/distribution/updateById',
+    method: 'post',
+    data
+  })
+}
+// 删除分配规则
+export function delRule(params) {
+  return request({
+    url: '/distribution/deleteById',
+    method: 'get',
+    params
+  })
+}
+
+// 运行分配规则
+export function runRule(params) {
+  return request({
+    url: '/distribution/updateStatusById',
+    method: 'get',
+    params
+  })
+}
+
+// 获取分配规则的规则
+export function getRuleDetail(params) {
+  return request({
+    url: '/distribution/getWithDetail',
+    method: 'get',
+    params
+  })
+}
+// 获取规则的调用类选项
+export function ruleClassList(params) {
+  return request({
+    url: '/distribution/returnDistributionTypeEnum',
+    method: 'get',
+    params
+  })
+}
+
+// 更新列表的规则
+export function updateRule(data) {
+  return request({
+    url: '/distributionDetail/updateData',
+    method: 'post',
+    data
+  })
+}
+
+/** ************************************************ 事件驱动 ************************************************************/
+
+// 查询事件驱动规则
+export function getEventRuleList(data) {
+  return request({
+    url: '/rule/select',
+    method: 'post',
+    data
+  })
+}
+
+// 删除事件驱动规则
+export function delEventRule(params) {
+  return request({
+    url: '/rule/deleteById',
+    method: 'get',
+    params
+  })
+}
+
+// 新增
+export function addEventRule(data) {
+  return request({
+    url: '/rule/insert',
+    method: 'post',
+    data
+  })
+}
+
+// 编辑
+export function editEventRule(data) {
+  return request({
+    url: '/rule/update',
+    method: 'post',
+    data
+  })
+}
+
+/** ************************************************ 规则库 ************************************************************/
+// 获取标签
+export function ruleTag(params) {
+  return request({
+    url: '/rule/getEventDrivenLabelEnum',
+    method: 'get',
+    params
+  })
+}
+
+// 更新规则
+export function updateRuleData(data) {
+  return request({
+    url: '/rule/updateDataMethod',
+    method: 'post',
+    data
+  })
+}
+// 获取规则详情
+export function ruleDetail(params) {
+  return request({
+    url: '/rule/getRuleCascade',
+    method: 'get',
+    params
+  })
+}
+

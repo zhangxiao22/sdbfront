@@ -9,6 +9,11 @@ export function formatMoney(val) {
 // 产品公共字段
 export const COMMON_COLUMN_LIST = [
   {
+    prop: 'id',
+    label: 'ID',
+    minWidth: 50
+  },
+  {
     prop: 'name',
     label: '产品名称',
     minWidth: 200
@@ -35,19 +40,26 @@ export const COMMON_COLUMN_LIST = [
     minWidth: 100
   },
   {
-    prop: 'uploader',
+    prop: 'userId',
     label: '上传人',
     width: 100
   },
-  {
-    prop: 'reviser',
-    label: '最后修改人',
-    width: 100
-  },
+  // {
+  //   prop: 'reviser',
+  //   label: '最后修改人',
+  //   width: 100
+  // },
   {
     prop: 'modifyTime',
     label: '最后修改时间',
     width: 180
+  },
+  {
+    prop: 'operate',
+    label: '操作',
+    width: 120,
+    fixed: 'right',
+    slot: true
   }
 
 ]
