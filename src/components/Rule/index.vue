@@ -279,7 +279,7 @@
                 </el-select>
               </el-form-item>
               <Info class="middle-line"
-                    :content="`${getRelativeInfo(conditionItem.extraCompare[0],conditionItem.conditionValue[0],conditionItem.extraCompare[1])}`" />
+                    :content="'时间范围：' + getRelativeInfo(conditionItem.extraCompare,conditionItem.conditionValue[0])" />
             </template>
             <!-- 相对当前时间区间 -->
             <div v-if="conditionItem.compare==='relativeBetween'"
@@ -329,7 +329,7 @@
                 <span class="item middle-line">之内</span>
               </el-form-item>
               <Info class="middle-line"
-                    :content="`${getRelativeBetweenInfo(conditionItem.extraCompare[0],conditionItem.conditionValue[0],conditionItem.conditionValue[1])}`" />
+                    :content="'时间范围：' + getRelativeBetweenInfo(conditionItem.extraCompare[0],conditionItem.conditionValue)" />
             </div>
           </template>
           <!-- 按钮 -->
@@ -362,8 +362,6 @@ import { MAX_NUMBER } from '@/utils'
 import Info from '@/components/Info'
 import moment from 'moment'
 
-const TODAY = moment().format('YYYY-MM-DD')
-
 const DEFAULT_CONDITION = {
   list: [],
   relation: true /* true: and; false: or*/
@@ -393,7 +391,7 @@ export default {
   data() {
     return {
       condition: DEFAULT_CONDITION,
-      today: TODAY,
+      today: moment().format('YYYY-MM-DD'),
       group: [],
       stringOptions: [],
       MAX_NUMBER,
@@ -569,33 +567,44 @@ export default {
   },
   computed: {
     getRelativeInfo() {
-      return function (a, b, c) {
-        const date = this.getDate(a, b)
-        if (a === 'past') {
-          if (c === 'within') {
-            return '时间范围：' + `${date}` + '至' + `${this.today}` + '，包含开始和结束时间'
-          } else {
-            return '时间范围：' + `${date}` + '之前，包含' + `${date}`
+      return function (compareArr, day) {
+        const [compare_a, compare_b] = compareArr
+        // const date = this.getDate(a, b)
+        if (compare_a === 'past') {
+          // 过去
+          if (compare_b === 'within') {
+            // 之内
+            return `${this.getDate(-day)} 至 ${this.today}，包含开始和结束时间`
           }
-        } else {
-          if (c === 'within') {
-            return '时间范围：' + `${this.today}` + '至' + `${date}` + '，包含开始和结束时间'
-          } else {
-            return '时间范围：' + `${date}` + '之后，包含' + `${date}`
+          if (compare_b === 'before') {
+            // 之前
+            return `${this.getDate(-day)}之前，包含${this.getDate(-day)}`
           }
         }
+        if (compare_a === 'future') {
+          // 未来
+          if (compare_b === 'within') {
+            // 之内
+            return `${this.today} 至 ${this.getDate(day)}，包含开始和结束时间`
+          }
+          if (compare_b === 'after') {
+            // 之后
+            return `${this.getDate(day)}之后，包含${this.getDate(day)}`
+          }
+        }
+        return ''
       }
     },
     getRelativeBetweenInfo() {
-      return function (a, b, c) {
-        const date1 = this.getDate(a, b)
-        const date2 = this.getDate(a, c)
-        return '时间范围：' + `${date1}` + '至' + `${date2}` + '，包含开始和结束时间'
-      }
-    },
-    getDate() {
-      return function (a, b) {
-        return a === 'past' ? moment().subtract(b, 'days').format('YYYY-MM-DD') : moment().subtract(-b, 'days').format('YYYY-MM-DD')
+      return function (compare, dayArr) {
+        const [sday, eday] = dayArr
+        if (compare === 'past') {
+          return `${this.getDate(-sday)} 至 ${this.getDate(-eday)}，包含开始和结束时间`
+        }
+        if (compare === 'future') {
+          return `${this.getDate(sday)} 至 ${this.getDate(eday)}，包含开始和结束时间`
+        }
+        return ''
       }
     },
     // 取值
@@ -668,6 +677,10 @@ export default {
   },
 
   methods: {
+    // 换算加减日期
+    getDate(day) {
+      return moment().add(day, 'days').format('YYYY-MM-DD')
+    },
     autoFixRelativeBetween(pi, i) {
       console.log(pi, i)
       const extraCompare = this.condition.list[pi].list[i].extraCompare[0]
