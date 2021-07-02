@@ -110,13 +110,28 @@ export const CHANNEL_OPT = [
   //   }],
   //   model: []
   // }
-
   {
     value: 5,
     label: 'STM',
     disabled: false,
     icon: 'stm',
     iconColor: '#990099',
+    chooseType: 1,
+    isBigDeposit: 0,
+    type: [{
+      id: 1,
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    }],
+    // 定时型的值-起止时间
+    dateRange: []
+  },
+  {
+    value: 6,
+    label: '智能客服',
+    disabled: false,
+    icon: 'kf3',
+    iconColor: '#f56c6c',
     chooseType: 1,
     type: [{
       id: 1,

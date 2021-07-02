@@ -256,6 +256,11 @@ export default {
       productListOpt: [],
       tableColumnList: [
         {
+          prop: 'id',
+          label: 'ID',
+          minWidth: 50
+        },
+        {
           prop: 'content',
           label: '话术内容',
           minWidth: 300,

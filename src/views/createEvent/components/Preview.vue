@@ -189,8 +189,7 @@
                          class="timing right-left">
                       <!-- 定时型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate }}</div>
-                      <div v-show="channelItem.timingDateValue.length"
-                           class="item-box"
+                      <div class="item-box"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.timingDateValue"
                              :key="timeIndex"
@@ -249,7 +248,7 @@
                                            show-overflow-tooltip
                                            label="话术内容" />
                           <el-table-column prop="category.label"
-                                           width="150"
+                                           width="100"
                                            label="话术分类" />
                         </el-table>
                         <el-table v-show="channelItem.advanceSMSInfoList.length"
@@ -277,8 +276,8 @@
                                            label="话术分类" />
                         </el-table>
                       </div>
-                      <!-- 短息、微信 模版 -->
-                      <div v-if="channelItem.value===2||channelItem.value===3"
+                      <!-- 短信、微信 模版 -->
+                      <div v-else
                            class="preview-table-contaiber model">
                         <el-table :data="channelItem.meterialInfoList"
                                   class="preview-table"
@@ -286,15 +285,11 @@
                                   style="width: 100%">
                           <el-table-column prop="content"
                                            show-overflow-tooltip
-                                           label="短息内容" />
+                                           label="短信内容" />
                           <el-table-column prop="category.label"
                                            width="100"
-                                           label="短息分类" />
+                                           label="短信分类" />
                         </el-table>
-                      </div>
-                      <!-- stm -->
-                      <div v-if="channelItem.value===5">
-                        <div style="font-size:14px;color:#888;">智能柜面助手</div>
                       </div>
                     </div>
                   </div>
@@ -861,9 +856,6 @@ export default {
           // padding: 10px;
           // display: flex;
           margin-bottom: 15px;
-          &:last-of-type {
-            margin-bottom: 0;
-          }
 
           .box {
             display: flex;

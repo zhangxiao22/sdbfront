@@ -119,14 +119,14 @@ let asyncRoutes = [
         // 总看板
         path: 'totalBoard',
         name: 'TotalBoard',
-        component: () => import('@/views/totalBoard/index'),
+        component: () => import('@/views/totalBoard2/index'),
         meta: { title: '成效看板', icon: 'board' }
       },
       {
         // 总看板Copy
         path: 'totalBoard2',
         name: 'TotalBoard2',
-        component: () => import('@/views/totalBoard2/index'),
+        component: () => import('@/views/totalBoard/index'),
         meta: { title: '成效看板', icon: 'board', hide: true }
       },
       {
@@ -140,7 +140,7 @@ let asyncRoutes = [
         path: 'config',
         name: 'Config',
         component: () => import('@/views/config/index'),
-        meta: { title: '系统配置', icon: 'config', roles: ['用例管理', '线索统筹', '业务管理', '支行业务管理'] }
+        meta: { title: '系统配置', icon: 'config', roles: ['线索统筹', '业务管理', '支行业务管理'] }
       }
     ]
   },
