@@ -752,6 +752,8 @@ export default {
       showCRMWord: false,
       // 短信侧边栏
       showSms: false,
+      // 规则侧边栏
+      showRule: false,
       // 短信发送模式的选项
       smsSendModeOpt: [
         { label: '重复下发', value: 0 },
