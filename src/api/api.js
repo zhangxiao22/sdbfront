@@ -116,6 +116,15 @@ export function delInterests(params) {
   })
 }
 
+// 修改权益
+export function updateInterests(data) {
+  return request({
+    url: '/interests/updateData',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 短信 ************************************************************/
 // 获取短信库
 export function getSmsList(data) {
@@ -419,6 +428,23 @@ export function setEventDistributeLimit(data) {
 export function syncProduct(data) {
   return request({
     url: 'event/sync_product',
+    method: 'post',
+    data
+  })
+}
+
+// 获取产品私有属性 useCase/getProductExtraFieldEnum
+export function getProductExtraParams() {
+  return request({
+    url: '/resource/getProductExtraFieldEnum',
+    method: 'get'
+  })
+}
+
+// 编辑产品
+export function updateProduct(data) {
+  return request({
+    url: '/resource/updateData',
     method: 'post',
     data
   })
