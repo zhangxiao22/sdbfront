@@ -168,6 +168,8 @@ const DEFAULT_DATA = {
     ployCount: 0
   }
 }
+const ENV = process.env.NODE_ENV
+
 export default {
   components: {
     Register,
@@ -199,7 +201,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: process.env.NODE_ENV === 'development' ? 2 : 0
+      stepActive: ENV === 'development' ? 2 : 0
     }
   },
   computed: {
