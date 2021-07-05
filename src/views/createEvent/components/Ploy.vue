@@ -975,6 +975,8 @@ export default {
           this.beforeHandleGroupTabClick(0)
           this.$refs['customerFormRef'].clearValidate()
         })
+      }).catch(err => {
+        console.error(err)
       })
     },
     // 从字符串中获取gi pi, 如 group.0.ployTabs.0.title => [0,0]
@@ -1120,7 +1122,7 @@ export default {
                           // 定时型
                           obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
                           // 定时型的值-规则 (每周几或每月)
-                          obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType.value
+                          obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
                           // 定时型的值-规则 (周几或者几号) (多选)
                           obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
                           // 定时型的值-时间
@@ -1168,8 +1170,8 @@ export default {
           } else {
             reject()
           }
-        }).catch(() => {
-          reject()
+        }).catch(err => {
+          reject(err)
         })
       })
     },

@@ -59,9 +59,9 @@ export const COMMON_COLUMN_LIST = [
     label: '操作',
     width: 120,
     fixed: 'right',
-    slot: true
+    slot: true,
+    hide: true // 详情页隐藏
   }
-
 ]
 
 // 按产品类型区分不同字段

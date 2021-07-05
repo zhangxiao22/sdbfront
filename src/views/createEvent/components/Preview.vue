@@ -88,7 +88,7 @@
                              size="mini"
                              inline
                              class="demo-table-expand">
-                      <div v-for="(selfItem,selfItemIndex) in getTableColumnListByType(scope.row.firstCategory.value)"
+                      <div v-for="(selfItem,selfItemIndex) of getTableColumnListByType(scope.row.firstCategory.value)"
                            :key="selfItemIndex">
                         <el-form-item :label="selfItem.label + '：'">
                           <span>{{ scope.row[selfItem.prop] }}</span>
@@ -97,9 +97,10 @@
                     </el-form>
                   </template>
                 </el-table-column>
-                <template v-for="(commonItem,commonItemIndex) of COMMON_COLUMN_LIST">
+                <template v-for="(commonItem,commonItemIndex) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
                   <el-table-column v-if="commonItem.prop === 'attributionUseCaseList'"
                                    :key="commonItemIndex"
+                                   :show-overflow-tooltip="!item.notShowOverflowTooltip"
                                    :prop="commonItem.prop"
                                    :label="commonItem.label"
                                    :min-width="commonItem.minWidth">
@@ -130,6 +131,7 @@
                                    :key="commonItemIndex"
                                    :prop="commonItem.prop"
                                    :label="commonItem.label"
+                                   :show-overflow-tooltip="!item.notShowOverflowTooltip"
                                    :min-width="commonItem.minWidth" />
                 </template>
               </el-table>
@@ -190,7 +192,7 @@
                       <!-- 定时型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate }}</div>
                       <div v-show="channelItem.timingDateValue.length"
-                           class="item-box"
+                           class="item-box interval"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.timingDateValue"
                              :key="timeIndex"
@@ -216,7 +218,7 @@
                          class="rule right-left">
                       <!-- 触发型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate }}</div>
-                      <div class="item-box">
+                      <div class="item-box trigger">
                         <div v-for="(ruleItem,ruleIndex) of channelItem.pushTimeInfo.triggerInfoList.triggerRuleList"
                              :key="ruleIndex"
                              class="item">
@@ -923,6 +925,7 @@ export default {
             .right {
               flex: 1;
               min-width: 0;
+              min-height: 80px;
               margin-left: -40px;
               // border: 1px solid #ebeef5;
               border-radius: 4px;
@@ -963,29 +966,50 @@ export default {
                     margin-top: 5px;
                     border: 1px solid #ebeef5;
                     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.02);
-                    // padding: 5px 0;
                     border-radius: 4px;
                     font-size: 12px;
                     width: 160px;
-                    .rule-name {
-                      text-align: center;
-                      border-bottom: 1px solid #ebeef5;
-                      padding: 5px;
-                    }
-                    .time-block {
-                      // padding-top: 5px;
-                      display: flex;
+                  }
+                  &.interval {
+                    .item {
+                      padding: 5px 0;
+                      display: inline-flex;
                       align-items: center;
                       .date {
-                        padding: 5px 0;
-                        width: 50%;
+                        width: 60%;
                         text-align: center;
                         border-right: 1px solid #ebeef5;
+                        // padding-right: 10px;
                       }
                       .time {
-                        padding: 5px 0;
-                        width: 50%;
+                        width: 40%;
+                        // padding-right: 10px;
                         text-align: center;
+                      }
+                    }
+                  }
+                  &.trigger {
+                    .item {
+                      .rule-name {
+                        text-align: center;
+                        border-bottom: 1px solid #ebeef5;
+                        padding: 5px;
+                      }
+                      .time-block {
+                        // padding-top: 5px;
+                        display: flex;
+                        align-items: center;
+                        .date {
+                          padding: 5px 0;
+                          width: 50%;
+                          text-align: center;
+                          border-right: 1px solid #ebeef5;
+                        }
+                        .time {
+                          padding: 5px 0;
+                          width: 50%;
+                          text-align: center;
+                        }
                       }
                     }
                   }
