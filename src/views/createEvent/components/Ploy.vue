@@ -1108,19 +1108,24 @@ export default {
                       }), {
                         infoId: m.infoId,
                         chooseType: m.pushType.value,
-                        validPeriod: m.clueEffectDays,
+                        smsSendMode: m.sendMode?.value,
+                        isBigDeposit: m.isBigDeposit?.value,
+                        // validPeriod: m.clueEffectDays,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
                             _content: n.content,
                             isEdit: false,
                             isHover: false
                           })
-                        }) : m.meterialInfoList
+                        }) : m.meterialInfoList,
+                        beforeSms: m.advanceSMSInfoList || [],
+                        afterSms: m.followSMSInfoList || []
+
                       }, (() => {
                         const obj = {}
                         if (m.pushType.value === 1) {
                           // 定时型
-                          obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+                          // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
                           // 定时型的值-规则 (每周几或每月)
                           obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
                           // 定时型的值-规则 (周几或者几号) (多选)
@@ -1309,7 +1314,7 @@ export default {
                         pushTimeInfo: {
                           // 定时型的值
                           schedulePushInfo: cn.chooseType === 1 ? {
-                            pushTimeId: cn.pushTimeId,
+                            // pushTimeId: cn.pushTimeId,
                             startDate: cn.dateRange[0],
                             endDate: cn.dateRange[1],
                             intervalType: cn.timingDateType,
