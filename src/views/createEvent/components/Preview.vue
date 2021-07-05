@@ -189,7 +189,8 @@
                          class="timing right-left">
                       <!-- 定时型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate }}</div>
-                      <div class="item-box"
+                      <div v-show="channelItem.timingDateValue.length"
+                           class="item-box"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.timingDateValue"
                              :key="timeIndex"
@@ -248,7 +249,7 @@
                                            show-overflow-tooltip
                                            label="话术内容" />
                           <el-table-column prop="category.label"
-                                           width="100"
+                                           width="150"
                                            label="话术分类" />
                         </el-table>
                         <el-table v-show="channelItem.advanceSMSInfoList.length"
@@ -277,7 +278,7 @@
                         </el-table>
                       </div>
                       <!-- 短信、微信 模版 -->
-                      <div v-else
+                      <div v-if="channelItem.value===2||channelItem.value===3"
                            class="preview-table-contaiber model">
                         <el-table :data="channelItem.meterialInfoList"
                                   class="preview-table"
@@ -290,6 +291,14 @@
                                            width="100"
                                            label="短信分类" />
                         </el-table>
+                      </div>
+                      <!-- stm -->
+                      <div v-if="channelItem.value===5">
+                        <div style="font-size:14px;color:#888;">智能柜面助手</div>
+                      </div>
+                      <!-- AI -->
+                      <div v-if="channelItem.value===6">
+                        <div style="font-size:14px;color:#888;">智能客服</div>
                       </div>
                     </div>
                   </div>
@@ -856,6 +865,9 @@ export default {
           // padding: 10px;
           // display: flex;
           margin-bottom: 15px;
+          &:last-of-type {
+            margin-bottom: 0;
+          }
 
           .box {
             display: flex;
