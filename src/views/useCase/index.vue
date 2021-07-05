@@ -202,6 +202,27 @@ export default {
           notShowOverflowTooltip: true,
           slot: true
         },
+
+        {
+          prop: 'userName',
+          label: '归属人',
+          width: 100
+        },
+        {
+          prop: 'distributeMode.label',
+          label: '分发规则',
+          minWidth: 250
+        },
+        {
+          prop: 'crmWeekClueLimit',
+          label: 'CRM每周线索分发数',
+          width: 100
+        },
+        {
+          prop: 'smsWeekClueLimit',
+          label: '短信每周线索分发数',
+          width: 100
+        },
         {
           prop: 'caseTarget',
           label: '目标',
@@ -213,21 +234,6 @@ export default {
           prop: 'modifyTime',
           label: '修改时间',
           width: 180
-        },
-        {
-          prop: 'userName',
-          label: '归属人',
-          width: 100
-        },
-        {
-          prop: 'crmWeekClueLimit',
-          label: 'CRM每周线索分发数',
-          width: 100
-        },
-        {
-          prop: 'smsWeekClueLimit',
-          label: '短信每周线索分发数',
-          width: 100
         },
         {
           prop: 'description',

@@ -9,6 +9,11 @@ export function formatMoney(val) {
 // 产品公共字段
 export const COMMON_COLUMN_LIST = [
   {
+    prop: 'id',
+    label: 'ID',
+    minWidth: 50
+  },
+  {
     prop: 'name',
     label: '产品名称',
     minWidth: 200
@@ -47,13 +52,16 @@ export const COMMON_COLUMN_LIST = [
   {
     prop: 'modifyTime',
     label: '最后修改时间',
-    minWidth: 180
+    width: 180
   },
   {
-    prop: 'description',
-    label: '产品描述',
-    minWidth: 100
+    prop: 'operate',
+    label: '操作',
+    width: 120,
+    fixed: 'right',
+    slot: true
   }
+
 ]
 
 // 按产品类型区分不同字段

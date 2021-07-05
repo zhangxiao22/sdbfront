@@ -116,6 +116,15 @@ export function delInterests(params) {
   })
 }
 
+// 修改权益
+export function updateInterests(data) {
+  return request({
+    url: '/interests/updateData',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 短信 ************************************************************/
 // 获取短信库
 export function getSmsList(data) {
@@ -419,6 +428,23 @@ export function setEventDistributeLimit(data) {
 export function syncProduct(data) {
   return request({
     url: 'event/sync_product',
+    method: 'post',
+    data
+  })
+}
+
+// 获取产品私有属性 useCase/getProductExtraFieldEnum
+export function getProductExtraParams() {
+  return request({
+    url: '/resource/getProductExtraFieldEnum',
+    method: 'get'
+  })
+}
+
+// 编辑产品
+export function updateProduct(data) {
+  return request({
+    url: '/resource/updateData',
     method: 'post',
     data
   })
@@ -1215,7 +1241,7 @@ export function updateRule(data) {
 // 查询事件驱动规则
 export function getEventRuleList(data) {
   return request({
-    url: 'rule/select',
+    url: '/rule/select',
     method: 'post',
     data
   })
@@ -1233,7 +1259,7 @@ export function delEventRule(params) {
 // 新增
 export function addEventRule(data) {
   return request({
-    url: 'rule/insert',
+    url: '/rule/insert',
     method: 'post',
     data
   })
@@ -1242,7 +1268,7 @@ export function addEventRule(data) {
 // 编辑
 export function editEventRule(data) {
   return request({
-    url: 'rule/update',
+    url: '/rule/update',
     method: 'post',
     data
   })
@@ -1252,7 +1278,7 @@ export function editEventRule(data) {
 // 获取标签
 export function ruleTag(params) {
   return request({
-    url: 'rule/getEventDrivenLabelEnum',
+    url: '/rule/getEventDrivenLabelEnum',
     method: 'get',
     params
   })
@@ -1261,7 +1287,7 @@ export function ruleTag(params) {
 // 更新规则
 export function updateRuleData(data) {
   return request({
-    url: 'rule/updateDataMethod',
+    url: '/rule/updateDataMethod',
     method: 'post',
     data
   })
@@ -1269,7 +1295,7 @@ export function updateRuleData(data) {
 // 获取规则详情
 export function ruleDetail(params) {
   return request({
-    url: 'rule/getRuleCascade',
+    url: '/rule/getRuleCascade',
     method: 'get',
     params
   })

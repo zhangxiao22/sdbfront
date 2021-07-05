@@ -127,20 +127,36 @@
           无
         </div>
       </template>
+      <template v-slot:operateSlot="scope">
+        <div class="btn"
+             style="color:#1890FF;"
+             @click="handleEdit(scope.row)">编辑</div>
+      </template>
     </shun-table>
+    <Dialog ref="dialog"
+            :visible.sync="showDialog"
+            :use-case-list-opt="useCaseListOpt"
+            :category-opt="categoryOpt"
+            @afterEnsure="getList(1)" />
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable/index'
 import { SELF_COLUMN_LIST, COMMON_COLUMN_LIST, downloadFile, DESCRIPTION } from '@/utils'
-import { getProductList, getProductCategoryList, uploadProductFile, getAttributionUseCaseEnumList, delProduct } from '@/api/api'
+import {
+  getProductList,
+  getProductCategoryList,
+  uploadProductFile,
+  getAttributionUseCaseEnumList,
+  delProduct
+} from '@/api/api'
 import UploadButton from '@/components/UploadButton'
-
-import qs from 'qs'
+import Dialog from './dialog.vue'
 export default {
   name: 'Product',
   components: {
+    Dialog,
     ShunTable,
     UploadButton
   },
@@ -165,13 +181,31 @@ export default {
   data() {
     return {
       DESCRIPTION,
+      showDialog: false,
       // 增量更新
       uploadProductFile,
+      // 是否编辑
+      isEdit: false,
       // 全量上传
       loading: false,
+      buttonLoading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
+      addInfo: {
+        id: '',
+        name: '',
+        category: [],
+        attributionUseCaseList: [],
+        description: ''
+      },
+      dataSetParams:
+        [
+          {
+            name: 'code',
+            type: 'int'
+          }
+        ],
       filterForm: {
         name: '',
         category: [],
@@ -224,12 +258,16 @@ export default {
         this.tableColumnList = COMMON_COLUMN_LIST
       }
     },
-    handleFileChange(file) {
-      this.file = file.raw
-    },
-    resetFile() {
-      this.file = ''
-      this.$refs.uploadRef.clearFiles()
+
+    // 新增单个产品
+    // handleAdd() {
+    //   this.addInfo.id = ''
+    //   this.showDialog = true
+    // },
+    // 编辑单个产品
+    handleEdit(row) {
+      this.showDialog = true
+      this.$refs['dialog'].edit(row)
     },
     // 下载模版
     downloadModel() {
@@ -306,7 +344,7 @@ export default {
           return Object.assign({}, {
             label: n.firstCategory.label,
             value: n.firstCategory.value,
-            children: n.secondCategoryList
+            children: n.secondCategoryList.length ? n.secondCategoryList : null
           })
         })
       })
@@ -350,5 +388,8 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  .btn {
+    cursor: pointer;
+  }
 }
 </style>

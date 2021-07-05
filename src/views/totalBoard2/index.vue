@@ -520,7 +520,7 @@ export default {
       },
       // total
       totalFilter: {
-        totalTimeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
+        totalTimeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
       },
       // rate 的tab
       rateTabs: [{
@@ -536,7 +536,7 @@ export default {
         activeName: '',
         rateTypeOpt: [],
         rateType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         // type: '执行率',
         rankType: 1
       },
@@ -567,7 +567,7 @@ export default {
         activeName: '',
         resultTypeOpt: [],
         resultType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         rankType: 1
       },
       resultRankData_origin: [],
@@ -650,7 +650,7 @@ export default {
         activeName: '',
         effectTypeOpt: [],
         effectType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         rankType: 1
       },
       effectTabs: [
@@ -677,7 +677,7 @@ export default {
         crmSmsType: '',
         amountTypeOpt: [],
         amountType: '',
-        timeVal: [moment().subtract(6, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        timeVal: [moment().subtract(12, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
         rankType: 1
         // rankT
       },
@@ -687,10 +687,10 @@ export default {
         value: 'amount',
         children: [{
           label: '成功购买金额',
-          value: '成功购买金额'
+          value: 'purchasedAmount'
         }, {
           label: 'AUM提升',
-          value: 'AUM提升'
+          value: 'aumUp'
         }]
 
       }],
@@ -945,7 +945,7 @@ export default {
         const data = res.data
         this.funnelData = [
           { label: '线索数量', value: data.total },
-          { label: '线索执行', value: data.executed },
+          { label: '线索执行', value: data.executed || 0 },
           { label: '联系成功', value: data.success },
           { label: '成功购买', value: data.purchase }
         ]
@@ -1004,11 +1004,11 @@ export default {
         _data.forEach(n => {
           data.push({
             label: n.label,
-            value: n.value,
+            value: +(n.value * 100),
             category: '执行组'
           }, {
             label: n.label,
-            value: n.compare,
+            value: +(n.compare * 100),
             category: '对照组'
           })
         })
@@ -1017,10 +1017,18 @@ export default {
           type: 'double'
         }
       } else {
+        const data = []
+        const _data = this.lineChartData_crm_origin.find(n => {
+          return this.rateFilter.rateType === n.key
+        }).data
+        _data.forEach(n => {
+          data.push({
+            label: n.label,
+            value: +(n.value * 100)
+          })
+        })
         this.lineChartData_crm = {
-          data: this.lineChartData_crm_origin.find(n => {
-            return this.rateFilter.rateType === n.key
-          }).data,
+          data,
           type: 'single'
         }
       }
@@ -1057,7 +1065,7 @@ export default {
     // 点击一级选项
     handleRateTabClick() {
       this.rateFilter.rateTypeOpt = this.rateTypeOpt_origin[this.rateFilter.activeName]
-      this.rateFilter.rateType = this.rateFilter.rateTypeOpt[0].value
+      this.rateFilter.rateType = this.rateFilter.rateTypeOpt?.[0].value
       this.renderRate()
     },
     // 点击二级选项
@@ -1108,7 +1116,7 @@ export default {
       this.resultFilter.resultTypeOpt = this.resultTabs.find(n => {
         return this.resultFilter.activeName === n.value
       }).children
-      this.resultFilter.resultType = this.resultFilter.resultTypeOpt[0].value
+      this.resultFilter.resultType = this.resultFilter.resultTypeOpt?.[0].value
       // 改变原始数据
       this.renderResult()
     },
@@ -1273,8 +1281,8 @@ export default {
     // ------------------- amount ---------------------------------------------------------------------------------------------------------
 
     changeAmountUseCase() {
-      const data = this.getResultParams()
-      this.getResultRank(data)
+      const data = this.getAmountParams()
+      this.getAmountRank(data)
     },
 
     // 点击一级选项
@@ -1282,7 +1290,7 @@ export default {
       this.amountFilter.amountTypeOpt = this.amountTabs.find(n => {
         return this.amountFilter.activeName === n.value
       }).children
-      this.amountFilter.amountType = this.amountFilter.amountTypeOpt[0].value
+      this.amountFilter.amountType = this.amountFilter.amountTypeOpt?.[0].value
       // 改变原始数据
       this.renderAmount()
     },
@@ -1348,7 +1356,7 @@ export default {
       })
       this.stackedBarData_amount = rd
     },
-    // 获取result排名数据
+    // 获取amount排名数据
     changeAmountRankData() {
       // 排名
       this.amountRankData = this.amountRankData_origin[this.amountFilter.amountType]

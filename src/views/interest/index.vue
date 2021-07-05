@@ -38,7 +38,6 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-
           <el-form-item label="归属产品："
                         prop="productFirstCategoryList">
             <el-select v-model="filterForm.productFirstCategoryList"
@@ -86,10 +85,10 @@
                    type="primary"
                    icon="el-icon-plus"
                    plain
-                   @click="handleAddList">
+                   @click="handleAdd">
           新增权益
-        </el-button>
-        <el-tooltip class="item"
+        </el-button> -->
+        <!-- <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有权益"
                     placement="top">
@@ -157,11 +156,17 @@
           无
         </div>
       </template>
+      <template v-slot:operateSlot="scope">
+        <div class="btn"
+             style="color:#1890FF;"
+             @click="handleEdit(scope.row)">编辑</div>
+      </template>
     </shun-table>
-    <el-dialog title="新增权益"
-               :before-close="cancelAddList"
-               :visible.sync="showDialog">
-      <el-form ref="regFormRef"
+    <!-- dialog -->
+    <el-dialog :title="isEdit?'编辑权益':'新增权益'"
+               :visible.sync="showDialog"
+               @close="handleCloseDialog">
+      <el-form ref="formRef"
                label-width="110px"
                :model="addInfo">
         <el-form-item label="权益名称："
@@ -174,37 +179,76 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
-        <el-form-item label="权益内容："
+
+        <el-form-item label="权益用例："
                       :rules="[{
-                        required: true, message: '请输入权益内容', trigger: 'blur'
+                        required: true, message: '请选择权益用例', trigger: 'change'
                       }]"
+                      prop="attributionUseCaseList">
+          <el-select v-model="addInfo.attributionUseCaseList"
+                     multiple
+                     style="width:300px;"
+                     clearable
+                     placeholder="请选择">
+            <el-option v-for="item in useCaseListOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="归属产品："
+                      :rules="[{
+                        required: true, message: '请选择归属产品', trigger: 'change'
+                      }]"
+                      prop="productFirstCategoryList">
+          <el-select v-model="addInfo.productFirstCategoryList"
+                     multiple
+                     style="width:300px;"
+                     clearable
+                     placeholder="请选择">
+            <el-option v-for="item in productListOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="生效日期："
+                      prop="dateRange">
+          <el-date-picker v-model="addInfo.validateDate"
+                          value-format="yyyy-MM-dd"
+                          style="width:300px;"
+                          type="daterange"
+                          range-separator="至"
+                          start-placeholder="开始日期"
+                          end-placeholder="结束日期" />
+        </el-form-item>
+        <el-form-item label="权益内容："
                       prop="content">
           <el-input v-model.trim="addInfo.content"
-                    show-word-limit
                     style="width:90%;"
-                    maxlength="50" />
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入权益内容" />
         </el-form-item>
         <el-form-item label="权益说明："
                       prop="desc">
-          <el-input v-model.trim="addInfo.desc"
-                    show-word-limit
+          <el-input v-model.trim="addInfo.description"
                     style="width:90%;"
-                    maxlength="50" />
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入权益说明" />
         </el-form-item>
-        <el-form-item label="开始时间："
-                      prop="startDate">
-          <el-input v-model.trim="addInfo.startDate"
-                    show-word-limit
+        <!-- <el-form-item label="参数说明："
+                      prop="parameterDescription">
+          <el-input v-model.trim="addInfo.parameterDescription"
                     style="width:90%;"
-                    maxlength="50" />
-        </el-form-item>
-        <el-form-item label="结束时间："
-                      prop="endDate">
-          <el-input v-model.trim="addInfo.endDate"
-                    show-word-limit
-                    style="width:90%;"
-                    maxlength="50" />
-        </el-form-item>
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入参数说明" />
+        </el-form-item> -->
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -219,7 +263,14 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getInterestList, uploadInterestFile, getAttributionUseCaseEnumList, getProductCategoryList, delInterests } from '@/api/api'
+import {
+  getInterestList,
+  uploadInterestFile,
+  getAttributionUseCaseEnumList,
+  getProductCategoryList,
+  delInterests,
+  updateInterests
+} from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 import { DESCRIPTION } from '@/utils'
 
@@ -239,6 +290,7 @@ export default {
     return {
       DESCRIPTION,
       uploadInterestFile,
+      isEdit: false,
       showDialog: false,
       buttonLoading: false,
       loading: false,
@@ -255,29 +307,27 @@ export default {
       productListOpt: [],
       addInfo: {
         name: '',
+        attributionUseCaseList: '',
+        productFirstCategoryList: '',
+        validateDate: [],
         content: '',
-        desc: '',
-        startDate: '',
-        endDate: ''
+        description: '',
+        parameterDescription: ''
       },
       searchForm: {},
       // typeOpt: [],
       tableColumnList: [
         {
+          prop: 'id',
+          label: 'ID',
+          minWidth: 50
+        },
+        {
           prop: 'name',
           label: '权益名称',
           minWidth: 200
         },
-        {
-          prop: 'content',
-          label: '权益内容',
-          minWidth: 300
-        },
-        {
-          prop: 'description',
-          label: '权益说明',
-          minWidth: 200
-        },
+
         {
           prop: 'attributionUseCaseList',
           label: '权益用例',
@@ -299,6 +349,28 @@ export default {
           prop: 'validateEndDate',
           label: '失效时间',
           minWidth: 100
+        },
+        {
+          prop: 'content',
+          label: '权益内容',
+          minWidth: 300
+        },
+        {
+          prop: 'description',
+          label: '权益说明',
+          minWidth: 200
+        },
+        // {
+        //   prop: 'parameterDescription',
+        //   label: '参数说明',
+        //   minWidth: 200
+        // },
+        {
+          prop: 'operate',
+          label: '操作',
+          width: 120,
+          fixed: 'right',
+          slot: true
         }
       ],
       tableData: []
@@ -307,15 +379,6 @@ export default {
   computed: {
     parentRef() {
       return this.$refs.table
-    },
-    getData() {
-      const data = {}
-      data.name = this.addInfo.name
-      data.content = this.addInfo.content
-      data.desc = this.addInfo.desc
-      data.startDate = this.addInfo.startDate
-      data.endDate = this.addInfo.endDate
-      return data
     }
   },
   watch: {},
@@ -337,32 +400,67 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-    handleAddList() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+    resetDialog() {
+      this.$refs['formRef'].resetFields()
+      this.addInfo.id = ''
+    },
+    handleAdd() {
+      this.isEdit = false
       this.showDialog = true
     },
+    handleEdit(row) {
+      this.showDialog = true
+      this.isEdit = true
+      this.$nextTick(() => {
+        this.addInfo = {
+          id: row.id,
+          name: row.name,
+          content: row.content,
+          description: row.description,
+          attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
+          productFirstCategoryList: row.productFirstCategoryList?.map(n => n.value),
+          validateDate: [row.validateStartDate || '', row.validateEndDate || '']
+        }
+      })
+    },
+    handleCloseDialog() {
+      this.resetDialog()
+    },
     cancelAddList() {
-      // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
     ensureAddList() {
-      this.$refs['regFormRef'].validate((valid) => {
+      this.$refs['formRef'].validate((valid) => {
         if (valid) {
           this.buttonLoading = true
-          // addCustomerToBlackList([this.getData]).then(res => {
-          //   this.buttonLoading = false
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.showDialog = false
-          //     this.resetAll()
-          //   }
-          // }).catch(() => {
-          //   this.buttonLoading = false
-          // })
+          let ajxj
+          const data = {}
+          if (this.isEdit) {
+            data.id = this.addInfo.id
+            ajxj = updateInterests
+          } else {
+            // ajxj = updateInterests
+          }
+          data.name = this.addInfo.name
+          data.content = this.addInfo.content
+          data.description = this.addInfo.description
+          data.attributionUseCaseList = this.addInfo.attributionUseCaseList
+          data.productFirstCategoryList = this.addInfo.productFirstCategoryList
+          data.validateStartDate = this.addInfo.validateDate?.[0]
+          data.validateEndDate = this.addInfo.validateDate?.[1]
+          ajxj(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList(1)
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
@@ -455,5 +553,8 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  .btn {
+    cursor: pointer;
+  }
 }
 </style>
