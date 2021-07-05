@@ -1106,7 +1106,7 @@ export default {
                       }), {
                         infoId: m.infoId,
                         chooseType: m.pushType.value,
-                        validPeriod: m.clueEffectDays,
+                        // validPeriod: m.clueEffectDays,
                         model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
                           return Object.assign({}, n, {
                             _content: n.content,
@@ -1114,6 +1114,7 @@ export default {
                             isHover: false
                           })
                         }) : m.meterialInfoList
+
                       }, (() => {
                         const obj = {}
                         if (m.pushType.value === 1) {
