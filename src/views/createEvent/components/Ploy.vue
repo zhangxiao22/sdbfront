@@ -557,7 +557,7 @@
                           选择模版
                         </el-button>
                       </el-form-item>
-                      <el-table v-show="channelCardItem.beforeSms.length"
+                      <el-table v-show="channelCardItem.beforeSms&&channelCardItem.beforeSms.length"
                                 :data="channelCardItem.beforeSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
@@ -590,7 +590,7 @@
                           选择模版
                         </el-button>
                       </el-form-item>
-                      <el-table v-show="channelCardItem.afterSms.length"
+                      <el-table v-show="channelCardItem.afterSms&&channelCardItem.afterSms.length"
                                 :data="channelCardItem.afterSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
