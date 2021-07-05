@@ -34,6 +34,8 @@ export const CHANNEL_OPT = [
       name: '触发型'
     }
     ],
+    beforeSms: [],
+    afterSms: [],
     validPeriod: 0,
     model: []
   },
