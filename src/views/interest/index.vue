@@ -157,13 +157,15 @@
         </div>
       </template>
       <template v-slot:operateSlot="scope">
-        <div class="btn"
-             style="color:#1890FF;"
-             @click="handleEdit(scope.row)">编辑</div>
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleEdit(scope.row)">编辑</div>
+        </div>
       </template>
     </shun-table>
     <!-- dialog -->
-    <el-dialog :title="isEdit?'编辑权益':'新增权益'"
+    <el-dialog :title="isEdit?'编辑':'新增'"
                :visible.sync="showDialog"
                @close="handleCloseDialog">
       <el-form ref="formRef"
@@ -551,10 +553,4 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
-.container {
-  .btn {
-    cursor: pointer;
-  }
-}
 </style>

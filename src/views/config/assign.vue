@@ -243,7 +243,4 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
-.container {
-}
 </style>
