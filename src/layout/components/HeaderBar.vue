@@ -27,7 +27,17 @@
                  :key="i"
                  style="margin:2px 0;">{{ item }}</div>
           </div>
-          <div class="user-name">{{ user.userName }}</div>
+          <!-- <div class="user-name">{{ user.userName }}</div> -->
+          <el-dropdown trigger="click">
+            <div class="user-name">{{ user.userName }}<i class="el-icon-arrow-down el-icon--right" /></div>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item class="clearfix">
+                <el-link type="danger"
+                         :underline="false"
+                         @click="handleLogout">退出登录</el-link>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
         </el-tooltip>
         <!-- <div class="user-authority">{{ user.orgInfoList.join(',') }}</div> -->
         <div class="user-authority">{{ user.jobName }}</div>
@@ -57,6 +67,12 @@ export default {
     // },
     handleCommand(command) {
       this.$message('click on item ' + command)
+    },
+    handleLogout() {
+      this.$confirm(`是否确认登出？`)
+        .then(() => {
+          this.logout()
+        }).catch(() => { })
     },
     async logout() {
       await this.$store.dispatch('user/logout')
@@ -132,8 +148,9 @@ export default {
       align-items: center;
 
       .user-name {
-        // margin-left: 8px;
-        // cursor: pointer;
+        margin-left: 8px;
+        cursor: pointer;
+        color: $blue;
       }
 
       .user-authority {

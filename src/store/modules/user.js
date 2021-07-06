@@ -1,5 +1,6 @@
-import { getUserInfo } from '@/api/api'
+import { getUserInfo, logout } from '@/api/api'
 import router, { resetRouter } from '@/router'
+import { removeToken } from '@/utils/auth'
 
 const getDefaultState = () => {
   return {
@@ -49,24 +50,23 @@ const actions = {
         reject(error)
       })
     })
-  }
+  },
 
   // user logout
-  // logout({ commit, state }) {
-  //   return new Promise((resolve, reject) => {
-  //     // logout(state.token).then(() => {
-  //     // removeToken() // must remove  token  first
-  //     resetRouter()
-  //     commit('RESET_STATE')
-  //     commit('SET_ROLES', [])
-  //     this.commit('permission/SET_ROUTES', [])
-
-  //     resolve()
-  //     // }).catch(error => {
-  //     //   reject(error)
-  //     // })
-  //   })
-  // }
+  logout({ commit, state }) {
+    return new Promise((resolve, reject) => {
+      logout(state.token).then(() => {
+        removeToken() // must remove  token  first
+        resetRouter()
+        commit('RESET_STATE')
+        commit('SET_ROLES', [])
+        this.commit('permission/SET_ROUTES', [])
+        resolve()
+      }).catch(error => {
+        reject(error)
+      })
+    })
+  }
 
   // remove token
   // resetToken({ commit }) {

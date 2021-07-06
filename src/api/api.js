@@ -9,6 +9,14 @@ export function getUserInfo(params) {
     params
   })
 }
+
+// 退出登录
+export function logout() {
+  return request({
+    url: '/user/logout',
+    method: 'get'
+  })
+}
 /** ************************************************ 产品 ************************************************************/
 // 获取产品列表
 export function getProductList(data) {
