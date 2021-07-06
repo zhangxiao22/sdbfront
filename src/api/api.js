@@ -9,6 +9,14 @@ export function getUserInfo(params) {
     params
   })
 }
+
+// 退出登录
+export function logout() {
+  return request({
+    url: '/user/logout',
+    method: 'get'
+  })
+}
 /** ************************************************ 产品 ************************************************************/
 // 获取产品列表
 export function getProductList(data) {
@@ -50,6 +58,23 @@ export function delProduct(params) {
     url: '/resource/delProduct',
     method: 'get',
     params
+  })
+}
+
+// 获取产品私有属性 useCase/getProductExtraFieldEnum
+export function getProductExtraParams() {
+  return request({
+    url: '/resource/getProductExtraFieldEnum',
+    method: 'get'
+  })
+}
+
+// 编辑产品
+export function updateProduct(data) {
+  return request({
+    url: '/resource/updateData',
+    method: 'post',
+    data
   })
 }
 
@@ -428,23 +453,6 @@ export function setEventDistributeLimit(data) {
 export function syncProduct(data) {
   return request({
     url: 'event/sync_product',
-    method: 'post',
-    data
-  })
-}
-
-// 获取产品私有属性 useCase/getProductExtraFieldEnum
-export function getProductExtraParams() {
-  return request({
-    url: '/resource/getProductExtraFieldEnum',
-    method: 'get'
-  })
-}
-
-// 编辑产品
-export function updateProduct(data) {
-  return request({
-    url: '/resource/updateData',
     method: 'post',
     data
   })
