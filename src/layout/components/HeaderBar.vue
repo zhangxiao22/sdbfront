@@ -77,6 +77,8 @@ export default {
     async logout() {
       await this.$store.dispatch('user/logout')
       // this.$router.push(`/start?redirect=${this.$route.fullPath}`)
+      console.log('process.env =', process.env.NODE_ENV)
+      window.location.href = 'http://portal.eip.sdebank.com/eip'
     }
   }
 }
