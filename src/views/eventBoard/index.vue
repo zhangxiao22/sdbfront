@@ -354,7 +354,7 @@ export default {
           },
           name: '下线'
         }, {
-          condition: (this.user.userName === scope.row.creater || scope.row.reviewer) && this.judgeStatus(scope.row.status.value) === 4,
+          condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
           style: {
             color: '#1890FF'
           },
