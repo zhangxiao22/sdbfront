@@ -69,6 +69,7 @@ export default {
       this.$message('click on item ' + command)
     },
     handleLogout() {
+      console.log('process.env =', process.env.VUE_APP_NAME)
       this.$confirm(`是否确认登出？`)
         .then(() => {
           this.logout()
@@ -78,7 +79,7 @@ export default {
       await this.$store.dispatch('user/logout')
       // this.$router.push(`/start?redirect=${this.$route.fullPath}`)
       console.log('process.env =', process.env.NODE_ENV)
-      window.location.href = process.env.NODE_ENV === 'development' ? 'http://portal.eip.sdebank.com/eip' : 'http://www.eip.com'
+      window.location.href = process.env.VUE_APP_NAME === 'staging' ? 'http://portal.eip.sdebank.com/eip' : 'http://www.eip.com'
     }
   }
 }
