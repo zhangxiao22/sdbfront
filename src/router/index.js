@@ -31,14 +31,14 @@ let asyncRoutes = [
       {
         path: 'home',
         name: 'Home',
-        component: () => import('@/views/home/index'),
+        component: () => import(/* webpackChunkName: "home" */ '@/views/home/index'),
         meta: { title: '首页', icon: 'home' }
       },
       {
         // 营销用例
         path: 'useCase',
         name: 'UseCase',
-        component: () => import('@/views/useCase/index'),
+        component: () => import(/* webpackChunkName: "useCase" */ '@/views/useCase/index'),
         meta: {
           title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批']
         }
@@ -47,7 +47,7 @@ let asyncRoutes = [
         // 新建营销用例
         path: 'createUseCase',
         name: 'CreateUseCase',
-        component: () => import('@/views/createUseCase/index'),
+        component: () => import(/* webpackChunkName: "createUseCase" */ '@/views/createUseCase/index'),
         meta: {
           title: '创建用例', hide: true, roles: ['用例管理']
         }
@@ -56,49 +56,49 @@ let asyncRoutes = [
         // 新建营销事件
         path: 'createEvent',
         name: 'CreateEvent',
-        component: () => import('@/views/createEvent/index'),
+        component: () => import(/* webpackChunkName: "createEvent" */ '@/views/createEvent/index'),
         meta: { title: '新建营销事件', icon: 'create', roles: ['事件注册', '用例管理'] }
       },
       {
         // 事件看板
         path: 'eventBoard',
         name: 'EventBoard',
-        component: () => import('@/views/eventBoard/index'),
+        component: () => import(/* webpackChunkName: "eventBoard" */ '@/views/eventBoard/index'),
         meta: { title: '事件列表', icon: 'eventList' }
       },
       {
         // 事件详情
         path: 'eventDetail',
         name: 'EventDetail',
-        component: () => import('@/views/eventDetail/index'),
+        component: () => import(/* webpackChunkName: "eventDetail" */ '@/views/eventDetail/index'),
         meta: { title: '事件详情', hide: true }
       },
       {
         // 产品库
         path: 'product',
         name: 'Product',
-        component: () => import('@/views/product/index'),
+        component: () => import(/* webpackChunkName: "product" */ '@/views/product/index'),
         meta: { title: '产品库', icon: 'product', roles: ['事件注册', '用例管理'] }
       },
       {
         // 话术库
         path: 'word',
         name: 'Word',
-        component: () => import('@/views/word/index'),
+        component: () => import(/* webpackChunkName: "word" */ '@/views/word/index'),
         meta: { title: '话术库', icon: 'chat', roles: ['事件注册', '用例管理'] }
       },
       {
         // 权益库
         path: 'interest',
         name: 'Interest',
-        component: () => import('@/views/interest/index'),
+        component: () => import(/* webpackChunkName: "interest" */ '@/views/interest/index'),
         meta: { title: '权益库', icon: 'interest', roles: ['事件注册', '用例管理'] }
       },
       {
         // 短信库
         path: 'sms',
         name: 'Sms',
-        component: () => import('@/views/sms/index'),
+        component: () => import(/* webpackChunkName: "sms" */ '@/views/sms/index'),
         meta: { title: '短信库', icon: 'shortmessage', roles: ['事件注册', '用例管理'] }
       },
       {
@@ -112,34 +112,34 @@ let asyncRoutes = [
         // 模型库
         path: 'model',
         name: 'Model',
-        component: () => import('@/views/model/index'),
+        component: () => import(/* webpackChunkName: "model" */ '@/views/model/index'),
         meta: { title: '模型库', icon: 'cpu', roles: ['事件注册', '用例管理'] }
       },
       {
         // 总看板
         path: 'totalBoard',
         name: 'TotalBoard',
-        component: () => import('@/views/totalBoard2/index'),
+        component: () => import(/* webpackChunkName: "totalBoard2" */ '@/views/totalBoard2/index'),
         meta: { title: '成效看板', icon: 'board' }
       },
       {
         // 总看板Copy
         path: 'totalBoard2',
         name: 'TotalBoard2',
-        component: () => import('@/views/totalBoard/index'),
+        component: () => import(/* webpackChunkName: "totalBoard" */ '@/views/totalBoard/index'),
         meta: { title: '成效看板', icon: 'board', hide: true }
       },
       {
         path: 'crmAndOds',
         name: 'CrmAndOds',
-        component: () => import('@/views/crmAndOds/index'),
+        component: () => import(/* webpackChunkName: "crmAndOds" */ '@/views/crmAndOds/index'),
         meta: { title: 'crm与ods反馈数据的查询列表', icon: 'crmAndOds' }
       },
       {
         // 设置
         path: 'config',
         name: 'Config',
-        component: () => import('@/views/config/index'),
+        component: () => import(/* webpackChunkName: "config" */ '@/views/config/index'),
         meta: { title: '系统配置', icon: 'config', roles: ['线索统筹', '业务管理', '支行业务管理'] }
       }
     ]
@@ -154,7 +154,7 @@ const testRoutes = [{
   children: [{
     path: 'test',
     name: 'Test',
-    component: () => import('@/views/test/index'),
+    component: () => import(/* webpackChunkName: "test" */ '@/views/test/index'),
     meta: { title: 'test', icon: 'bug' }
   }]
 }]
