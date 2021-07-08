@@ -551,6 +551,3 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
-</style>
