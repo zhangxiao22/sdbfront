@@ -60,7 +60,7 @@ export default {
     return {
       tabIndex: '0',
       tabList: [{
-        label: '理财顾问指派',
+        label: '指派网点',
         component: 'Appoint',
         loading: false,
         roles: ['线索统筹']
