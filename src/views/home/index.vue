@@ -103,7 +103,7 @@ export default {
               title: '系统设置',
               desc: '',
               path: '/config',
-              roles: ['用例管理', '线索统筹', '业务管理']
+              roles: ['线索统筹', '业务管理']
             }
           ]
         }
