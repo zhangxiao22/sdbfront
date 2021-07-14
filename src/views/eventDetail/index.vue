@@ -12,7 +12,7 @@
           <div class="button-group">
             <el-popover v-if="roleJudge.showApproveList"
                         width="400"
-                        trigger="click">
+                        trigger="hover">
               <div class="timeline-container">
                 <div v-for="(item,i) of visibleList"
                      :key="i"
