@@ -126,12 +126,12 @@ export default {
         loading: false,
         roles: ['线索统筹']
       },
-      // {
-      //   label: '分配规则',
-      //   component: 'Rule',
-      //   loading: false,
-      //   roles: ['线索统筹']
-      // },
+      {
+        label: '分配规则',
+        component: 'AssignRule',
+        loading: false,
+        roles: ['线索统筹']
+      },
       {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
