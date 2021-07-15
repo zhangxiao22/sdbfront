@@ -37,7 +37,8 @@
         <el-form ref="filterRef"
                  :inline="true"
                  :model="filterForm"
-                 class="filter-container">
+                 class="filter-container"
+                 @submit.native.prevent>
           <el-form-item label="短信内容："
                         prop="content">
             <el-input v-model.trim="filterForm.content"
