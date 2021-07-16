@@ -249,7 +249,8 @@
       <el-form ref="dialogTableFormRef"
                style="width:500px;margin:0 auto;"
                label-width="100px"
-               :model="dialogTableForm">
+               :model="dialogTableForm"
+               @submit.native.prevent>
         <el-form-item label="名称："
                       prop="name"
                       :rules="[{required: true, message: '请填写名称', trigger: 'blur'}]">
@@ -400,7 +401,7 @@ export default {
           slot: true
         }
       ],
-      tableData: []
+      tableData: [{ status: { label: '123' }, detail: '123' }]
     }
   },
   computed: {

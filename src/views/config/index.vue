@@ -26,7 +26,7 @@ import Agent from './agent'
 import Appoint from './appoint'
 import Assign from './assign'
 import NotDisturb from './notDisturb'
-import Rule from './rule'
+import AssignRule from './assignRule'
 import GlobalOutletDistribute from './globalOutletDistribute'
 import UseCaseOutletDistribute from './usecaseOutletDistribute'
 import JobOccupy from './jobOccupy'
@@ -45,7 +45,7 @@ export default {
     Appoint,
     Assign,
     NotDisturb,
-    Rule,
+    AssignRule,
     GlobalOutletDistribute,
     UseCaseOutletDistribute,
     JobOccupy,
@@ -126,12 +126,12 @@ export default {
         loading: false,
         roles: ['线索统筹']
       },
-      // {
-      //   label: '分配规则',
-      //   component: 'Rule',
-      //   loading: false,
-      //   roles: ['线索统筹']
-      // },
+      {
+        label: '分配规则',
+        component: 'AssignRule',
+        loading: false,
+        roles: ['线索统筹']
+      },
       {
         label: '防打扰名单（CRM）',
         component: 'HateMarketingCRM',
