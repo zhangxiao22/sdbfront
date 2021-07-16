@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="理财顾问指派"
+                title="指派网点"
                 :loading="loading"
                 :page-size.sync="pageSize"
                 :current-page.sync="currentPage"
@@ -66,9 +66,11 @@
                       @afterUploadSuccess="resetAll" />
       </template>
       <template v-slot:operateSlot="scope">
-        <div class="btn"
-             style="color:#1890FF;"
-             @click="handleAppointButton(scope.row)">指派</div>
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleAppointButton(scope.row)">指派</div>
+        </div>
       </template>
       <template v-slot:paramsSlot="props">
         <pre>{{ props.row.params }}</pre>
@@ -297,10 +299,4 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
-
-.container {
-  .btn {
-    cursor: pointer;
-  }
-}
 </style>

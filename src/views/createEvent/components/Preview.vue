@@ -768,7 +768,7 @@ export default {
           ::v-deep th.is-leaf,
           ::v-deep td {
             border: none;
-            text-align: center;
+            // text-align: center;
             color: #444;
             background: #fbfcfd;
             &.el-table__expanded-cell {

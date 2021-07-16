@@ -97,9 +97,11 @@
                  @click="download">模版下载</el-link>
       </template>
       <template v-slot:operateSlot="scope">
-        <div class="btn"
-             style="color:#f56c6c;"
-             @click="handleDelete(scope.row)">删除</div>
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#f56c6c;"
+               @click="handleDelete(scope.row)">删除</div>
+        </div>
       </template>
       <template v-slot:paramsSlot="props">
         <pre>{{ props.row.params }}</pre>
@@ -366,9 +368,6 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
-  .btn {
-    cursor: pointer;
-  }
   .unit {
     margin-left: 10px;
   }

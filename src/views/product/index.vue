@@ -128,9 +128,11 @@
         </div>
       </template>
       <template v-slot:operateSlot="scope">
-        <div class="btn"
-             style="color:#1890FF;"
-             @click="handleEdit(scope.row)">编辑</div>
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleEdit(scope.row)">编辑</div>
+        </div>
       </template>
     </shun-table>
     <Dialog ref="dialog"
@@ -384,12 +386,3 @@ export default {
 }
 </script>
 
-<style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
-
-.container {
-  .btn {
-    cursor: pointer;
-  }
-}
-</style>
