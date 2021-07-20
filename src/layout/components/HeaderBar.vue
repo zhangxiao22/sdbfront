@@ -33,7 +33,7 @@
           <el-dropdown trigger="click">
             <div class="user-name">{{ user.userName }}<i class="el-icon-arrow-down el-icon--right" /></div>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item class="clearfix">
+              <el-dropdown-item>
                 <el-link type="danger"
                          :underline="false"
                          @click="handleLogout">退出登录</el-link>

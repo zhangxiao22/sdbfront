@@ -41,7 +41,7 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      console.log('process.env =', process.env)
+      // console.log('process.env =', process.env)
       getUserInfo().then(response => {
         const { data } = response
 
