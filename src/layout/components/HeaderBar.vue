@@ -19,6 +19,8 @@
         <span class="message-text">未读信息</span>
       </div> -->
       <div class="name-group">
+        <div class="user-authority">{{ user.jobName }}</div>
+
         <el-tooltip class="item"
                     effect="dark"
                     placement="bottom">
@@ -39,8 +41,6 @@
             </el-dropdown-menu>
           </el-dropdown>
         </el-tooltip>
-        <!-- <div class="user-authority">{{ user.orgInfoList.join(',') }}</div> -->
-        <div class="user-authority">{{ user.jobName }}</div>
       </div>
     </div>
   </div>
@@ -48,6 +48,8 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { logout } from '@/api/api'
+
 // import Breadcrumb from '@/components/Breadcrumb'
 // import Hamburger from '@/components/Hamburger'
 
@@ -69,18 +71,19 @@ export default {
       this.$message('click on item ' + command)
     },
     handleLogout() {
-      console.log('process.env =', process.env.VUE_APP_NAME)
-      this.$confirm(`是否确认登出？`)
-        .then(() => {
-          this.logout()
-        }).catch(() => { })
-    },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      // this.$router.push(`/start?redirect=${this.$route.fullPath}`)
-      console.log('process.env =', process.env.NODE_ENV)
-      window.location.href = process.env.VUE_APP_NAME === 'staging' ? 'http://portal.eip.sdebank.com/eip' : 'http://www.eip.com'
+      this.$confirm(`是否确认登出？`).then(() => {
+        // this.logout()
+        logout().then(() => {
+          window.location.href = process.env.VUE_APP_NAME === 'staging' ? 'http://portal.eip.sdebank.com/eip' : 'http://www.eip.com'
+        })
+      }).catch(() => { })
     }
+    // async logout() {
+    //   await this.$store.dispatch('user/logout')
+    //   // this.$router.push(`/start?redirect=${this.$route.fullPath}`)
+    //   console.log('process.env =', process.env.NODE_ENV)
+    //   window.location.href = process.env.VUE_APP_NAME === 'staging' ? 'http://portal.eip.sdebank.com/eip' : 'http://www.eip.com'
+    // }
   }
 }
 </script>

@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '0',
+      tabIndex: '6',
       tabList: [{
         label: '指派网点',
         component: 'Appoint',
@@ -106,7 +106,6 @@ export default {
         component: 'Assign',
         loading: false,
         roles: ['业务管理']
-
       },
       {
         label: '岗位分配',

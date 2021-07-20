@@ -1,12 +1,6 @@
 <template>
   <div class="container">
-    <div>222</div>
-    <div class="box">
-      <span>12341324</span>
-      <span>21341234123412341324</span>
-      <span>31243124123</span>
-      <span>213413413241324</span>
-    </div>
+    <div @tap="tap">222</div>
   </div>
 </template>
 
@@ -32,7 +26,9 @@ export default {
   mounted() {
   },
   methods: {
-
+    tap() {
+      console.log(222)
+    }
   }
 }
 </script>

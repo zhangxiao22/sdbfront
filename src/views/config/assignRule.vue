@@ -63,7 +63,8 @@
                               effect="dark"
                               content="强制退出"
                               placement="top">
-                    <svg-icon icon-class="stop"
+                    <svg-icon v-show="item.forceClose"
+                              icon-class="stop"
                               class="remove icon" />
                     <!-- <i v-show="item.forceClose"
                        class="el-icon-remove" /> -->
@@ -401,7 +402,7 @@ export default {
           slot: true
         }
       ],
-      tableData: [{ status: { label: '123' }, detail: '123' }]
+      tableData: []
     }
   },
   computed: {
@@ -548,29 +549,31 @@ export default {
       this.showDialog = true
     },
     handleOutsideEdit(pi) {
-      // console.log(pi)
-      this.dialogStatus = {
-        position: 'outside',
-        status: 'edit'
-      }
-      this.outsideIndex = pi
-      this.dialogForm = JSON.parse(JSON.stringify(this.rules[pi]))
       this.showDialog = true
+      this.$nextTick(() => {
+        this.dialogStatus = {
+          position: 'outside',
+          status: 'edit'
+        }
+        this.outsideIndex = pi
+        this.dialogForm = JSON.parse(JSON.stringify(this.rules[pi]))
+      })
     },
     handleOutsideDel(pi) {
       // console.log(pi)
       this.rules.splice(pi, 1)
     },
     handleInsideEdit(pi, i) {
-      console.log(pi, i)
-      this.dialogStatus = {
-        position: 'inside',
-        status: 'edit'
-      }
-      this.outsideIndex = pi
-      this.insideIndex = i
-      this.dialogForm = JSON.parse(JSON.stringify(this.rules[pi].children[i]))
       this.showDialog = true
+      this.$nextTick(() => {
+        this.dialogStatus = {
+          position: 'inside',
+          status: 'edit'
+        }
+        this.outsideIndex = pi
+        this.insideIndex = i
+        this.dialogForm = JSON.parse(JSON.stringify(this.rules[pi].children[i]))
+      })
     },
     handleInsideDel(pi, i) {
       // console.log(pi, i)
@@ -579,7 +582,7 @@ export default {
     ensureDialog() {
       this.$refs['dialogFormRef'].validate((valid) => {
         if (valid) {
-          console.log(this.dialogForm)
+          // console.log(this.dialogForm)
           if (this.dialogStatus.position === 'outside') {
             if (this.dialogStatus.status === 'new') {
               // outside new
@@ -708,11 +711,12 @@ export default {
     },
     // 编辑
     handleEditButton(row) {
-      this.dialogTableForm.id = row.id
-      this.dialogTableForm.name = row.name
-      this.dialogTableForm.desc = row.detail
-      // this
       this.showTableDialog = true
+      this.$nextTick(() => {
+        this.dialogTableForm.id = row.id
+        this.dialogTableForm.name = row.name
+        this.dialogTableForm.desc = row.detail
+      })
     },
     // 删除
     handleDeleteButton(row) {
@@ -746,7 +750,7 @@ export default {
             })
           })
         })
-        console.log(JSON.stringify(details))
+        // console.log(JSON.stringify(details))
         const data = {
           id: this.ruleId,
           details
