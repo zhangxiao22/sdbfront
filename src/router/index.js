@@ -112,15 +112,8 @@ let asyncRoutes = [
         // 总看板
         path: 'totalBoard',
         name: 'TotalBoard',
-        component: () => import(/* webpackChunkName: "totalBoard2" */ '@/views/totalBoard2/index'),
-        meta: { title: '成效看板', icon: 'board' }
-      },
-      {
-        // 总看板Copy
-        path: 'totalBoard2',
-        name: 'TotalBoard2',
         component: () => import(/* webpackChunkName: "totalBoard" */ '@/views/totalBoard/index'),
-        meta: { title: '成效看板', icon: 'board', hide: true }
+        meta: { title: '成效看板', icon: 'board' }
       },
       {
         path: 'crmAndOds',
