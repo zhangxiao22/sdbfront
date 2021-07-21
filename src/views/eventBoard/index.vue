@@ -629,6 +629,9 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
+              if (lastAndSingle(this.total, this.pageSize, this.currentPage)) {
+                this.currentPage -= 1
+              }
               this.getList()
             }
           })

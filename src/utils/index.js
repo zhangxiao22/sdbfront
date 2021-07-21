@@ -527,6 +527,6 @@ export const DESCRIPTION = {
  * @returns {Boolean}
  */
 export function lastAndSingle(total, pageSize, currentPage) {
-  console.log(total, pageSize, currentPage)
+  // console.log(total, pageSize, currentPage)
   return (total % pageSize) === 1 && (currentPage === Math.ceil(total / pageSize))
 }
