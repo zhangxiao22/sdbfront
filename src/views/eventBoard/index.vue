@@ -195,6 +195,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
+import { lastAndSingle } from '@/utils'
 import {
   getEventList,
   getEventOwner,
@@ -396,47 +397,6 @@ export default {
     })
   },
   methods: {
-    // btnList(scope) {
-    //   const _this = this
-    //   const btns = [{
-    //     condition: _this.roleJudge.downloadCustomer && scope.row.loadType?.value === 1,
-    //     style: {
-    //       color: '#1890FF'
-    //     },
-    //     clickFn(scope) {
-    //       return _this.handleDownload(scope.row)
-    //     },
-    //     name: '下载名单'
-    //   }, {
-    //     condition: _this.judgeStatus(scope.row.status.value) === 2,
-    //     style: {
-    //       color: '#1890FF'
-    //     },
-    //     clickFn(scope) {
-    //       return _this.handleEdit(scope.row)
-    //     },
-    //     name: '编辑'
-    //   }, {
-    //     condition: _this.roleJudge.createEvent && (_this.judgeStatus(scope.row.status.value) === 4 || _this.judgeStatus(scope.row.status.value) === 5),
-    //     style: {
-    //       color: '#1890FF'
-    //     },
-    //     clickFn(scope) {
-    //       return _this.handleCopy(scope.row)
-    //     },
-    //     name: '复制'
-    //   }, {
-    //     condition: scope.row.reviewer === _this.user.userName && _this.judgeStatus(scope.row.status.value) === 4,
-    //     style: {
-    //       color: '#f56c6c'
-    //     },
-    //     clickFn(scope) {
-    //       return _this.handleOfflineEvent(scope.row)
-    //     },
-    //     name: '下线'
-    //   }]
-    //   return btns.filter(n => n.condition)
-    // },
     // 判断事件大状态
     judgeStatus(subId) {
       return this.tabList.find(n => {
@@ -621,7 +581,7 @@ export default {
     },
     // 下载客群名单
     handleDownload(row) {
-      console.log(row, '????')
+      // console.log(row, '????')
       if (row.group.length) {
         window.open(process.env.VUE_APP_BASE_API + '/customer/customerDownload?baseId=' + row.id, '_self')
       } else {
@@ -669,7 +629,7 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.resetAll()
+              this.getList()
             }
           })
         })
@@ -702,7 +662,6 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.resetAll()
             }
           })
         })
@@ -721,7 +680,10 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.resetAll()
+              if (lastAndSingle(this.total, this.pageSize, this.currentPage)) {
+                this.currentPage -= 1
+              }
+              this.getList()
             }
           })
         })

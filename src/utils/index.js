@@ -518,3 +518,15 @@ export const DESCRIPTION = {
   downloadSearch: '全部下载当前搜索结果',
   delSome: '删除已选项'
 }
+
+/**
+ * 判断当前页是否为最后一页并且当前页是否只有一条数据
+ * @param {Number} total 总条数
+ * @param {Number} pageSize 每页多少条
+ * @param {Number} currentPage 当前页码
+ * @returns {Boolean}
+ */
+export function lastAndSingle(total, pageSize, currentPage) {
+  console.log(total, pageSize, currentPage)
+  return (total % pageSize) === 1 && (currentPage === Math.ceil(total / pageSize))
+}
