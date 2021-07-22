@@ -16,7 +16,7 @@
       <div class="time">
         <i class="el-icon-time"
            style="margin-right:5px;" />
-        {{ detail.startDate }} 至 {{ detail.endDate }}
+        {{ detail.startDate || '未知时间' }} 至 {{ detail.endDate || '未知时间' }}
         <div class="param">
           <div v-for="(item,i) of paramValue"
                :key="i"
@@ -188,7 +188,7 @@
                     <div v-if="channelItem.pushType.value===1"
                          class="timing right-left">
                       <!-- 定时型 -->
-                      <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate }}</div>
+                      <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate || '未知时间' }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate || '未知时间' }}</div>
                       <div class="item-box"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.timingDateValue"
@@ -504,6 +504,7 @@ export default {
       display: flex;
       align-items: center;
       height: 24px;
+      // margin-bottom: 15px;
       .main-info-box {
         height: 100%;
         display: flex;
