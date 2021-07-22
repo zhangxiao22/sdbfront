@@ -678,7 +678,7 @@ export default {
         })
     },
     handleSyncProduct(row) {
-      const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件（${row.name} ）同步产品？`]
+      const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件【${row.name}】同步产品？`]
       const newDatas = []
       const h = this.$createElement
       for (const i in confirmText) {
