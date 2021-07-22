@@ -1,121 +1,7 @@
 <template>
   <div class="container">
-    <div class="shun-filter-container-box shun-card"
-         style="margin-bottom:16px;">
-      <el-form ref="filterRef"
-               :inline="true"
-               :model="filterForm"
-               class="shun-filter-container">
-        <!-- <el-form-item label="营销用例："
-                      prop="useCase">
-          <el-select v-model="filterForm.useCase"
-                     class="long-text"
-                     clearable
-                     multiple
-                     placeholder="请选择"
-                     @change="getEvent(filterForm.useCase)">
-            <el-option v-for="(item,i) in useCaseOpt"
-                       :key="i"
-                       :title="item.label"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <!-- <el-form-item label="营销事件："
-                      prop="event">
-          <el-select v-model="filterForm.event"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="(item,i) in eventOpt"
-                       :key="i"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <!-- branch -->
-        <!-- <el-form-item label="支行："
-                      prop="branch">
-          <el-select v-model="filterForm.branch"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="(item,i) in branchOpt"
-                       :key="i"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <!-- <el-form-item label="网点："
-                      prop="org">
-          <el-select v-model="filterForm.org"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="(item,i) in orgOpt"
-                       :key="i"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <el-form-item label="机构："
-                      prop="branch">
-          <el-cascader v-model="filterForm.branch"
-                       style="width:300px"
-                       :options="allBranchOpt"
-                       :props="{ value: 'org_code',
-                                 label: 'org_name',
-                                 children: 'Children',checkStrictly: true }"
-                       clearable />
-        </el-form-item>
-        <!-- <el-form-item label="渠道："
-                      prop="channel">
-          <el-select v-model="filterForm.channel"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="(item,i) in channelOpt"
-                       :key="i"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <!-- <el-form-item label="批次："
-                      prop="batch">
-          <el-select v-model="filterForm.batch"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="(item,i) in batchOpt"
-                       :key="i"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <!-- <el-form-item label="岗位："
-                      prop="post">
-          <el-select v-model="filterForm.post"
-                     clearable
-                     placeholder="请选择">
-            <el-option v-for="(item,i) in postOpt"
-                       :key="i"
-                       :label="item.label"
-                       :value="item.value" />
-          </el-select>
-        </el-form-item> -->
-        <el-form-item class="filter-item-end">
-          <el-button type="primary"
-                     icon="el-icon-search"
-                     @click="search">
-            搜索
-          </el-button>
-          <el-button icon="el-icon-refresh"
-                     @click="reset">
-            重置
-          </el-button>
-          <el-button type="primary"
-                     icon="el-icon-download">
-            导出
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div class="base-info">
+    <div v-loading="loading.baseInfoLoading"
+         class="base-info">
       <div v-for="(item,i) of baseInfo"
            :key="i"
            class="item-box">
@@ -132,476 +18,769 @@
         </div>
       </div>
     </div>
-
-    <div class="chart-container">
-      <el-row :gutter="20">
-        <el-col :span="24">
-          <!-- 执行情况 -->
-          <div class="chart-block shun-card">
-            <div class="block-title">执行情况</div>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <div v-loading="loading.funnelChartLoading"
-                     class="chart-item funnel-chart">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-funnel" />销售漏斗
-                  </div>
-                  <FunnelChart id="funnel"
-                               :data="funnelData" />
-                  <div class="chart-bottom">
-                    <div style="margin-right:20px;">有效执行数：<b>{{ funnelResult.effective_count | formatMoney }}条</b></div>
-                    <div style="margin-right:20px;">有效执行率：<b>{{ (funnelResult.effective_rate * 100).toFixed(2) }}%</b></div>
-                    <div>实际达成率：<b>{{ funnelResult.actual_achievement * 100 }}%</b></div>
-                  </div>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div v-loading="loading.chartPieLoading"
-                     class="chart-item">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-pie" />渠道线索数
-                    <el-select v-model="channelCluePieChart"
-                               style="margin-left:20px;width:140px;"
-                               placeholder="请选择"
-                               @change="getPie">
-                      <el-option v-for="item in channelClueOpt"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                  </div>
-                  <PieChart id="channel-pie"
-                            unit="条"
-                            :data="channelPieData" />
-                </div>
-
-              </el-col>
-            </el-row>
-            <el-row>
-              <el-col :span="24"
-                      style="margin-top:20px;">
-                <div v-loading="loading.usecaseBarLoading"
-                     class="chart-item"
-                     style="height:600px;">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-bar" />用例线索数
-                    <el-select v-model="channelOptVal"
-                               style="margin-left:20px;"
-                               placeholder="请选择"
-                               @change="handleChangeChannel(channelOptVal)">
-                      <el-option v-for="item in channelOpt"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                    <el-select v-model="funnelSel"
-                               style="margin-left:20px;"
-                               placeholder="请选择"
-                               @change="getCluesUseCase">
-                      <el-option v-for="item in funnelOpt"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                  </div>
-                  <!-- <PieChart id="usecase-pie"
-                          unit="条"
-                          :data="usecaseBarData" /> -->
-                  <BarChart id="usecase-bar"
-                            unit="条"
-                            :data="usecaseBarData" />
-                  <!-- <ColumnChart id="usecase-bar"
-                             meta-value="线索数量"
-                             tooltip-title="线索数"
-                             :data="usecaseBarData" /> -->
-                </div>
-              </el-col>
-            </el-row>
-            <div class="crm-line-container">
-              <div class="sub-title">
-                CRM
-                <el-button style="margin-left:20px;"
-                           size="mini"
-                           @click="expandOpen">{{ expand?'折叠':'展开' }}
-                  <i :class="expand?'el-icon-arrow-up':'el-icon-arrow-down'"
-                     class="el-icon--right" />
-                </el-button>
+    <!-- 总数据 -->
+    <div class="block shun-card">
+      <div class="head">
+        <el-date-picker v-model="totalFilter.totalTimeVal"
+                        value-format="yyyy-MM-dd"
+                        style="margin-left:auto;"
+                        type="daterange"
+                        :clearable="false"
+                        :picker-options="pickerOptions"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        @change="hangleChangeTotalDatePicker" />
+      </div>
+      <div class="content">
+        <div v-loading="loading.increaseLoading"
+             class="left">
+          <div class="item">
+            <div class="inner-box">
+              <div class="title">AUM提升额</div>
+              <div class="count">{{ increaseInfo.aumUp | formatMoney }}</div>
+              <div class="mini-chart">
+                <MiniLineChart id="chart-mini-1"
+                               :data="increaseInfo.aumMiniData" />
               </div>
-              <div v-loading="lineChartLoading5"
-                   style="padding-top:0;"
-                   class="chart-item line-chart">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-line" />CRM实际达成率
-                </div>
-                <LineChart2 id="crm-line-5"
-                            :data="lineChartData5" />
-              </div>
-
-              <el-collapse-transition>
-                <div v-show="expand">
-                  <div v-loading="lineChartLoading1"
-                       class="chart-item line-chart">
-                    <div class="chart-title">
-                      <svg-icon icon-class="chart-line" />CRM执行率
-                    </div>
-                    <LineChart id="crm-line-1"
-                               ref="crmLineRef1"
-                               :data="lineChartData1" />
-                  </div>
-                  <div v-loading="lineChartLoading2"
-                       class="chart-item line-chart">
-                    <div class="chart-title">
-                      <svg-icon icon-class="chart-line" />CRM联系成功率
-                    </div>
-                    <LineChart id="crm-line-2"
-                               ref="crmLineRef2"
-                               :data="lineChartData2" />
-                  </div>
-                  <div v-loading="lineChartLoading3"
-                       class="chart-item line-chart">
-                    <div class="chart-title">
-                      <svg-icon icon-class="chart-line" />CRM有效执行率
-                    </div>
-                    <LineChart id="crm-line-3"
-                               ref="crmLineRef3"
-                               :data="lineChartData3" />
-                  </div>
-                  <div v-loading="lineChartLoading4"
-                       class="chart-item line-chart">
-                    <div class="chart-title">
-                      <svg-icon icon-class="chart-line" />CRM成功购买率
-                    </div>
-                    <LineChart id="crm-line-4"
-                               ref="crmLineRef4"
-                               :data="lineChartData4" />
-                  </div>
-                </div>
-
-              </el-collapse-transition>
-
             </div>
-            <el-row v-loading="lineChartLoading6"
-                    class="crm-line-container"
-                    style="border-left-color:rgb(103, 194, 58);">
-              <div class="sub-title">短信</div>
-              <el-col :span="24"
-                      style="padding-top:0;"
-                      class="chart-item line-chart">
-                <div class="chart-title">
-                  <svg-icon icon-class="chart-line" />短信实际达成率
-                </div>
-                <LineChart2 id="crm-line-6"
-                            :data="lineChartData6" />
-              </el-col>
-            </el-row>
           </div>
-          <!-- 成效统计 -->
-          <div class="chart-block shun-card">
-            <div class="block-title">成效统计</div>
-            <el-row :gutter="20">
-              <el-col :span="12">
-                <div v-loading="loading.chartLineLoading"
-                     class="chart-item mini rank">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-line" />走势
-                  </div>
-                  <AreaChart id="rank11"
-                             unit="万元"
-                             :data="statistics" />
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div v-loading="loading.chartBarLoading"
-                     class="chart-item mini rank">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-bar" />排名
-                  </div>
-                  <ColumnChart id="rank12"
-                               hide-x-axis
-                               unit="万元"
-                               :data="statistics2" />
-                </div>
-              </el-col>
-              <!-- <el-col :span="24"
-                        class="chart-item statistics">
-                  <div class="chart-title">
-                    <svg-icon :icon-class="Math.round(Math.random())===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
-                    <el-radio-group v-if="item.chart_tabs.length > 1"
-                                    v-model="item.checkVal"
-                                    class="radio-box">
-                      <el-radio-button v-for="(radio,ri) of item.chart_tabs"
-                                       :key="ri"
-                                       :label="radio.value">
-                        {{ radio.label }}
-                      </el-radio-button>
-                    </el-radio-group>
-                  </div>
-                  <template v-if="Math.round(Math.random())===1">
-                    <BarChart :id="'statistics'+i"
-                              :unit="item.chart_unit"
-                              :data="item.chart_data.find(n => n.key===item.checkVal).data" />
-                  </template>
-                  <template v-else>
-                    <AreaChart :id="'statistics'+i"
-                               :unit="item.chart_unit"
-                               :data="item.chart_data.find(n => n.key===item.checkVal).data" />
-                  </template>
-                </el-col> -->
-              <!-- <el-col :span="12"
-                        class="chart-item statistics">
-                  <div class="chart-title">
-                    <svg-icon :icon-class="item.chart_type===1?'chart-bar':'chart-line'" />{{ item.chart_title }}
-                    <el-radio-group v-if="item.chart_tabs.length > 1"
-                                    v-model="item.checkVal"
-                                    class="radio-box">
-                      <el-radio-button v-for="(radio,ri) of item.chart_tabs"
-                                       :key="ri"
-                                       :label="radio.value">
-                        {{ radio.label }}
-                      </el-radio-button>
-                    </el-radio-group>
-                  </div>
-                  <template>
-                    <BarChart :id="'statisticsRight'+i"
-                              :unit="条"
-                              :data="statistics" />
-                  </template>
-                </el-col> -->
-            </el-row>
+          <div class="item">
+            <div class="inner-box">
+              <div class="title">LUM提升</div>
+              <div class="count">{{ increaseInfo.lumUp | formatMoney }}</div>
+              <div class="mini-chart">
+                <MiniLineChart id="chart-mini-2"
+                               :data="increaseInfo.lumMiniData" />
+              </div>
+            </div>
           </div>
-        </el-col>
-        <el-col :span="24">
-          <!-- 排名情况 -->
-          <div class="chart-block shun-card"
-               style="margin-bottom:0;">
-            <div class="block-title">排名情况</div>
-            <el-row>
-              <el-col :span="24">
-                <div v-loading="loading.orgRankLoading"
-                     class="chart-item rank">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-column" />支行排名
-                    <el-select v-model="rankSelVal1"
-                               style="margin-left:20px;"
-                               placeholder="请选择"
-                               @change="getRankOrg">
-                      <el-option v-for="item in rankOpt"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                  </div>
-                  <ColumnChart id="rank1"
-                               unit="万元"
-                               :data="rankChartData1" />
-                </div>
-              </el-col>
-              <el-col :span="24"
-                      style="margin-top:20px;">
-                <div v-loading="loading.branchRankLoading"
-                     class="chart-item rank">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-column" />
-                    网点排名（前10名）
-                    <el-select v-model="rankSelVal2"
-                               style="margin-left:20px;"
-                               placeholder="请选择"
-                               @change="getRankBranch">
-                      <el-option v-for="item in rankOpt"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                  </div>
-                  <ColumnChart id="rank2"
-                               unit="万元"
-                               :data="rankChartData2" />
-                </div>
-              </el-col>
-              <el-col :span="24"
-                      style="margin-top:20px;">
-                <div v-loading="loading.empRankLoading"
-                     class="chart-item rank">
-                  <div class="chart-title">
-                    <svg-icon icon-class="chart-column" />
-                    员工排名（前10名）
-                    <el-select v-model="rankSelVal3"
-                               style="margin-left:20px;"
-                               placeholder="请选择"
-                               @change="getRankEmp">
-                      <el-option v-for="item in rankOpt"
-                                 :key="item.value"
-                                 :label="item.label"
-                                 :value="item.value" />
-                    </el-select>
-                  </div>
-                  <ColumnChart id="rank3"
-                               unit="万元"
-                               :data="rankChartData3" />
-                </div>
-              </el-col>
-            </el-row>
+          <div class="item">
+            <div class="inner-box">
+              <div class="title">新开信用卡</div>
+              <div class="count">{{ increaseInfo.newCardSum | formatMoney }}</div>
+              <div class="mini-chart">
+                <MiniColumnChart id="chart-mini-3"
+                                 :data="increaseInfo.cardMiniData" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="right">
+          <div v-loading="loading.funnelChartLoading"
+               class="right-chart-item chart-item">
+            <div class="chart-title">
+              <svg-icon icon-class="chart-funnel" />销售漏斗
+            </div>
+            <div class="chart-box">
+              <FunnelChart id="funnel"
+                           :data="funnelData" />
+            </div>
+
+            <div class="chart-bottom">
+              <div class="text-item">有效执行数：<b>{{ funnelResult.effective_count | formatMoney }}条</b></div>
+              <div class="text-item">有效执行率：<b>{{ (funnelResult.effective_rate * 100).toFixed(2) }}%</b></div>
+              <div class="text-item">实际达成率：<b>{{ (funnelResult.actual_achievement * 100).toFixed(2) }}%</b></div>
+            </div>
+          </div>
+
+          <div v-loading="loading.chartPieLoading"
+               class="right-chart-item chart-item">
+            <div class="chart-title">
+              <svg-icon icon-class="chart-pie" />渠道线索数
+            </div>
+            <div class="chart-box">
+              <PieChart id="channel-pie"
+                        unit="条"
+                        :data="channelPieData" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!---------------------------------- CRM 短信 执行率 rate ---------------------------------------------------------------------------->
+    <!-- crm/短信 各种率 -->
+    <div class="block shun-card">
+      <div class="head">
+        <el-tabs v-model="rateFilter.activeName"
+                 class="head-tabs"
+                 @tab-click="handleRateTabClick">
+          <el-tab-pane v-for="item of rateTabs"
+                       :key="item.value"
+                       :label="item.label"
+                       :name="item.value" />
+        </el-tabs>
+        <el-radio-group v-model="rateFilter.rateType"
+                        style="margin-left:40px;"
+                        @change="handleChangeRateType">
+          <el-radio-button v-for="(item,i) of rateFilter.rateTypeOpt"
+                           :key="i"
+                           :label="item.value">
+            {{ item.label }}
+          </el-radio-button>
+        </el-radio-group>
+        <el-date-picker v-model="rateFilter.timeVal"
+                        style="margin-left:auto;"
+                        value-format="yyyy-MM-dd"
+                        type="daterange"
+                        :clearable="false"
+                        :picker-options="pickerOptions"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        @change="hangleChangeRateDatePicker" />
+      </div>
+      <div class="content2">
+        <div class="left chart-item">
+          <div class="chart-title">
+            <svg-icon icon-class="chart-line" />渠道触达
+          </div>
+          <div v-loading="loading.rateLoading"
+               class="chart-box">
+            <DoubleLineChart v-if="lineChartData_crm.type==='double'"
+                             id="crm-line"
+                             :data="lineChartData_crm.data" />
+            <SingleLineChart v-if="lineChartData_crm.type==='single'"
+                             id="crm-line2"
+                             :data="lineChartData_crm.data" />
+          </div>
+        </div>
+        <div class="right chart-item">
+          <div class="chart-title">
+            <div style="width:100%;">
+              <svg-icon icon-class="chart-bar" />排名
+            </div>
+            <el-radio-group v-model="rateFilter.rankType"
+                            size="mini"
+                            text-color="#224191"
+                            fill="#DCDFE6"
+                            style="margin-top:20px;"
+                            @change="hangleChangeRateTypeRank">
+              <el-radio-button v-for="(item,i) of rankTypeOpt"
+                               :key="i"
+                               :label="item.value">
+                {{ item.label }}
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div v-loading="loading.rateRankLoading"
+               class="chart-box"
+               style="height:340px;">
+            <BarChart id="rank"
+                      unit="%"
+                      :data="rateRankData" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ------------------------------- CRM 短信 result------------------------------------------------------------------------------------------------- -->
+    <!-- 用例成效 -->
+    <div class="block shun-card">
+      <div class="head">
+        <el-tabs v-model="resultFilter.activeName"
+                 class="head-tabs"
+                 @tab-click="handleResultTabClick">
+          <el-tab-pane v-for="item of resultTabs"
+                       :key="item.value"
+                       :label="item.label"
+                       :name="item.value" />
+        </el-tabs>
+        <el-date-picker v-model="resultFilter.timeVal"
+                        value-format="yyyy-MM-dd"
+                        style="margin-left:auto;"
+                        type="daterange"
+                        :clearable="false"
+                        :picker-options="pickerOptions"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        @change="hangleChangeResultDatePicker()" />
+      </div>
+      <div class="content2">
+        <div class="left chart-item">
+          <div class="chart-title">
+            <svg-icon icon-class="chart-bar" />用例成效
+          </div>
+          <div v-loading="loading.resultLoading"
+               class="chart-box"
+               style="height:450px;">
+            <StackedBarChart id="stacked-bar"
+                             :data="stackedBarData" />
+          </div>
+        </div>
+        <div class="right chart-item">
+          <div class="chart-title">
+            <div style="width:100%;">
+              <svg-icon icon-class="chart-bar" />排名
+              <el-select v-model="resultUsecaseFilter"
+                         style="margin-left:50px;width:250px;"
+                         placeholder="请选择用例"
+                         @change="changeResultUseCase">
+                <el-option v-for="item in useCaseOpt"
+                           :key="item.id"
+                           :label="item.name"
+                           :value="item.id" />
+              </el-select>
+            </div>
+            <el-radio-group v-model="resultFilter.resultType"
+                            text-color="#224191"
+                            fill="#DCDFE6"
+                            size="mini"
+                            style="margin-top:20px;"
+                            @change="handleChangeResultType">
+              <el-radio-button v-for="(item,i) of resultFilter.resultTypeOpt"
+                               :key="i"
+                               :label="item.value">
+                {{ item.label }}
+              </el-radio-button>
+            </el-radio-group>
+
+            <el-radio-group v-model="resultFilter.rankType"
+                            size="mini"
+                            text-color="#224191"
+                            fill="#DCDFE6"
+                            style="margin-top:20px;"
+                            @change="hangleChangeResultTypeRank">
+              <el-radio-button v-for="(item,i) of rankTypeOpt"
+                               :key="i"
+                               :label="item.value">
+                {{ item.label }}
+              </el-radio-button>
+            </el-radio-group>
 
           </div>
-        </el-col>
-      </el-row>
 
+          <div v-loading="loading.resultRankLoading"
+               class="chart-box"
+               style="height:340px;">
+            <BarChart id="rank2"
+                      :data="resultRankData" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ------------------------------- CRM 短信 effect------------------------------------------------------------------------------------------------- -->
+
+    <!-- 成效统计 -->
+    <div class="block shun-card">
+      <div class="head">
+        <el-tabs v-model="effectFilter.activeName"
+                 style="flex:1;"
+                 class="head-tabs"
+                 @tab-click="handleChangeEffectType">
+          <el-tab-pane v-for="item of effectFilter.effectTypeOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :name="item.value" />
+        </el-tabs>
+        <el-date-picker v-model="effectFilter.timeVal"
+                        style="margin-left:auto;"
+                        value-format="yyyy-MM-dd"
+                        type="daterange"
+                        :clearable="false"
+                        :picker-options="pickerOptions"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        @change="hangleChangeEffectDatePicker()" />
+      </div>
+      <div class="content2">
+        <div class="left chart-item">
+          <div class="chart-title">
+            <svg-icon icon-class="chart-line" />用例成效
+          </div>
+          <div v-loading="loading.effectLoading"
+               class="chart-box">
+            <AreaChart id="effect-area"
+                       :data="effectLineChartData" />
+          </div>
+        </div>
+        <div class="right chart-item">
+          <div class="chart-title">
+            <div style="width:100%;">
+              <svg-icon icon-class="chart-bar" />排名
+            </div>
+            <el-radio-group v-model="effectFilter.rankType"
+                            size="mini"
+                            text-color="#224191"
+                            fill="#DCDFE6"
+                            style="margin-top:20px;"
+                            @change="hangleChangeEffectTypeRank">
+              <el-radio-button v-for="(item,i) of rankTypeOpt"
+                               :key="i"
+                               :label="item.value">
+                {{ item.label }}
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div v-loading="loading.effectRankLoading"
+               class="chart-box"
+               style="height:340px;">
+            <BarChart id="rank3"
+                      :data="effectRankData" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ------------------------------- CRM 短信 amount------------------------------------------------------------------------------------------------- -->
+
+    <div class="block shun-card">
+      <div class="head">
+        <el-tabs v-model="amountFilter.activeName"
+                 class="head-tabs">
+          <el-tab-pane v-for="item of amountTabs"
+                       :key="item.value"
+                       :label="item.label"
+                       :name="item.value" />
+        </el-tabs>
+        <el-radio-group v-model="amountFilter.crmSmsType"
+                        style="margin-left:40px;"
+                        @change="handleAmountTabClick">
+          <el-radio-button v-for="(item,i) of amountFilter.crmSmsTypeOpt"
+                           :key="i"
+                           :label="item.value">
+            {{ item.label }}
+          </el-radio-button>
+        </el-radio-group>
+        <el-date-picker v-model="amountFilter.timeVal"
+                        value-format="yyyy-MM-dd"
+                        style="margin-left:auto;"
+                        type="daterange"
+                        :clearable="false"
+                        :picker-options="pickerOptions"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        @change="hangleChangeAmountDatePicker()" />
+      </div>
+      <div class="content2">
+        <div class="left chart-item">
+          <div class="chart-title">
+            <svg-icon icon-class="chart-bar" />用例成效
+          </div>
+          <div v-loading="loading.amountLoading"
+               class="chart-box"
+               style="height:450px;">
+            <StackedBarChart id="stacked-bar2"
+                             :data="stackedBarData_amount" />
+          </div>
+        </div>
+        <div class="right chart-item">
+          <div class="chart-title">
+            <div style="width:100%;">
+              <svg-icon icon-class="chart-bar" />排名
+              <el-select v-model="amountUsecaseFilter"
+                         style="margin-left:50px;width:250px;"
+                         placeholder="请选择用例"
+                         @change="changeAmountUseCase">
+                <el-option v-for="item in useCaseOpt"
+                           :key="item.id"
+                           :label="item.name"
+                           :value="item.id" />
+              </el-select>
+            </div>
+            <el-radio-group v-model="amountFilter.amountType"
+                            text-color="#224191"
+                            fill="#DCDFE6"
+                            size="mini"
+                            style="margin-top:20px;"
+                            @change="handleChangeAmountType">
+              <el-radio-button v-for="(item,i) of amountFilter.amountTypeOpt"
+                               :key="i"
+                               :label="item.value">
+                {{ item.label }}
+              </el-radio-button>
+            </el-radio-group>
+
+            <el-radio-group v-model="amountFilter.rankType"
+                            size="mini"
+                            text-color="#224191"
+                            fill="#DCDFE6"
+                            style="margin-top:20px;"
+                            @change="hangleChangeAmountTypeRank">
+              <el-radio-button v-for="(item,i) of rankTypeOpt"
+                               :key="i"
+                               :label="item.value">
+                {{ item.label }}
+              </el-radio-button>
+            </el-radio-group>
+          </div>
+
+          <div v-loading="loading.amountRankLoading"
+               class="chart-box"
+               style="height:340px;">
+            <BarChart id="rank4"
+                      :data="amountRankData" />
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
 </template>
 
 <script>
-import { FunnelChart, PieChart, ColumnChart, LineChart, LineChart2, BarChart, AreaChart } from './components'
+import moment from 'moment'
 import {
-  totalOverview,
-  totalFunnel,
-  totalPie,
-  totalCluesUseCase,
-  totalAchieveRate,
-  totalStatisticsOne,
-  totalStatisticsMul,
-  getActualRate,
-  // totalPurchaseAmount,
-  // totalRankOrg,
-  // totalRankBrancg,
-  totalRank,
-  getAllBranches,
-  getAllJob,
+  MiniLineChart,
+  MiniColumnChart,
+  FunnelChart,
+  PieChart,
+  ColumnChart,
+  SingleLineChart,
+  DoubleLineChart,
+  BarChart,
+  StackedBarChart,
+  AreaChart
+} from './components'
+import {
+  totalOverviewCopy,
+  totalIncreaseCopy,
+  totalFunnelCopy,
+  totalPieCopy,
+  rateOptCopy,
+  totalRateCopy,
+  totalRateRankCopy,
   getAllUseCase,
-  getEventList
+  resultOptCopy,
+  totalResultCopy,
+  totalResultRankCopy,
+  effectOptCopy,
+  totalEffectCopy,
+  totalEffectRankCopy
 } from '@/api/api'
+import { COMPONENT_MAX_VIEW_PERCENTAGE } from '@antv/g2/lib/constant'
 // import { DATA } from './json'
 // console.log(DATA)
 export default {
   components: {
+    MiniLineChart,
+    MiniColumnChart,
     FunnelChart,
     PieChart,
-    ColumnChart,
-    LineChart,
-    LineChart2,
+    // ColumnChart,
+    SingleLineChart,
+    DoubleLineChart,
+    // LineChart2,
     BarChart,
+    StackedBarChart,
     AreaChart
   },
   data() {
     return {
       loading: {
+        // total
         baseInfoLoading: false,
+        // 1
+        increaseLoading: false,
         funnelChartLoading: false,
         chartPieLoading: false,
-        usecaseBarLoading: false,
-        // 成效统计loading
-        chartLineLoading: false,
-        chartBarLoading: false,
-        // 支行网点员工排名loading
-        orgRankLoading: false,
-        branchRankLoading: false,
-        empRankLoading: false
+        // 2
+        rateLoading: false,
+        rateRankLoading: false,
+        // 3
+        resultLoading: false,
+        resultRankLoading: false,
+        // 4
+        effectLoading: false,
+        effectRankLoading: false,
+        // 5
+        amountLoading: false,
+        amountRankLoading: false
+
       },
-      lineChartLoading1: false,
-      lineChartLoading2: false,
-      lineChartLoading3: false,
-      lineChartLoading4: false,
-      lineChartLoading5: false,
-      lineChartLoading6: false,
-      filterForm: {
-        // 2241884
-        // useCase: [],
-        // event: '',
-        branch: ''
-        // channel: '',
-        // batch: '',
-        // post: ''
-      },
-      searchForm: {
-      },
-      getParams: {},
-      useCaseOpt: [],
-      eventOpt: [],
-      branchOpt: [{
-        value: 1,
-        label: '机构1'
-      }, {
-        value: 2,
-        label: '机构2'
-      }, {
-        value: 3,
-        label: '机构3'
-      }, {
-        value: 4,
-        label: '机构4'
-      }, {
-        value: 5,
-        label: '机构5'
-      }],
-      allBranchOpt: [],
-      orgOpt: [],
-      channelOptVal: 1,
-      channelOpt: [{
-        value: 1,
-        label: 'CRM'
-      }, {
-        value: 2,
-        label: '短信'
-      }],
-      batchOpt: [
-        {
-          value: 1,
-          label: '第一批次'
+      // *********** 筛选条件 *************
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 1)
+            picker.$emit('pick', [start, end])
+          }
         }, {
-          value: 2,
-          label: '第二批次'
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setMonth(start.getMonth() - 3)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '今年至今',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date(new Date().getFullYear(), 0)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      // total
+      totalFilter: {
+        totalTimeVal: [moment().subtract(1, 'weeks').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
+      },
+      // rate 的tab
+      rateTabs: [{
+        label: 'CRM',
+        value: 'crm'
+      }, {
+        label: '短信',
+        value: 'sms'
+      }],
+      rateTypeOpt_origin: {},
+      // crm/短信 率的统计
+      rateFilter: {
+        activeName: '',
+        rateTypeOpt: [],
+        rateType: '',
+        timeVal: [moment().subtract(1, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        // type: '执行率',
+        rankType: 1
+      },
+      // 排名的分类
+      rankTypeOpt: [
+        {
+          label: '支行',
+          value: 1
+        }, {
+          label: '网点',
+          value: 2
+        }, {
+          label: '理财顾问',
+          value: 3
+        }, {
+          label: '网经',
+          value: 4
+        }, {
+          label: '个经',
+          value: 5
+        }, {
+          label: '柜员',
+          value: 6
         }
       ],
-      postOpt: [],
-      options: [{
-        value: '选项1',
-        label: '选项1'
+      // 成效的筛选条件
+      resultFilter: {
+        activeName: '',
+        resultTypeOpt: [],
+        resultType: '',
+        timeVal: [moment().subtract(1, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        rankType: 1
+      },
+      resultRankData_origin: [],
+      resultUsecaseFilter: '',
+      resultRankData: [],
+      amountRankData_origin: [],
+      amountUsecaseFilter: '',
+      amountRankData: [],
+      useCaseOpt: [],
+      // 选项
+      resultTabs: [{
+        label: 'CRM',
+        value: 'crm',
+        children: [
+          {
+            label: '线索数量',
+            value: 'total'
+          },
+          {
+            label: '联络成功数',
+            value: 'contactedNum'
+          },
+          {
+            label: '有效执行数',
+            value: 'activeEffectNum'
+          },
+          {
+            label: '成功购买数',
+            value: 'purchasedNum'
+          }
+        ]
       }, {
-        value: '选项2',
-        label: '选项2'
-      }, {
-        value: '选项3',
-        label: '选项3'
-      }, {
-        value: '选项4',
-        label: '选项4'
-      }, {
-        value: '选项5',
-        label: '选项5'
+        label: '短信',
+        value: 'sms',
+        children: [
+          {
+            label: '线索数量',
+            value: 'total'
+          },
+          {
+            label: '成功购买数',
+            value: 'purchasedNum'
+          }
+        ]
+      }
+      ],
+      // 柱状图Opt
+      resultFilterOpt: [
+        {
+          label: '线索数量',
+          value: 'total'
+        },
+        {
+          label: '联络成功数',
+          value: 'contactedNum'
+        },
+        {
+          label: '有效执行数',
+          value: 'activeEffectNum'
+        },
+        {
+          label: '成功购买数',
+          value: 'purchasedNum'
+        }
+
+      ],
+      amountFilterOpt: [
+        {
+          label: '成功购买金额',
+          value: 'purchasedAmount'
+        },
+        {
+          label: 'AUM提升',
+          value: 'aumUp'
+        }
+      ],
+      stackedBarData_origin: [],
+      resultTypeOpt_origin: {},
+      effectFilter: {
+        activeName: '',
+        effectTypeOpt: [],
+        effectType: '',
+        timeVal: [moment().subtract(1, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        rankType: 1
+      },
+      effectTabs: [
+        { label: 'AUM余额提升', value: 'AUM余额提升' },
+        { label: '成功购买', value: '成功购买' },
+        { label: '新开信用卡', value: '新开信用卡' },
+        { label: '有效信用卡增量', value: '有效信用卡增量' },
+        { label: 'LUM余额提升', value: 'LUM余额提升' },
+        { label: '存款新增', value: '存款新增' }
+      ],
+      // 金额的筛选条件
+      amountFilter: {
+        activeName: 'amount',
+        crmSmsTypeOpt: [
+          {
+            label: 'CRM',
+            value: 'crm'
+          },
+          {
+            label: '短信',
+            value: 'sms'
+          }
+        ],
+        crmSmsType: '',
+        amountTypeOpt: [],
+        amountType: '',
+        timeVal: [moment().subtract(1, 'months').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')],
+        rankType: 1
+        // rankT
+      },
+      // 选项
+      amountTabs: [{
+        label: '金额',
+        value: 'amount',
+        children: [{
+          label: '成功购买金额',
+          value: 'purchasedAmount'
+        }, {
+          label: 'AUM提升',
+          value: 'aumUp'
+        }]
+
       }],
-      value: '',
+      // crm 各种率
+      lineChartData_crm: {
+        data: [],
+        type: ''
+      },
+      effectLineChartData: [
+        { label: '9月第1批', value: 30 }
+      ],
+      effectRankData: [],
+
+      effectLineChartData_origin: [],
+      // lineChartData_crm: [
+      //   // { label: '9月第1批', value: 30 },
+      // ],
+      // lineChartData_crm2: [
+      //   // { label: '9月第1批', value: 30, category: '执行组' },
+      //   // { label: '9月第1批', value: 22, category: '对照组' },
+      // ],
+      rateRankData: [],
+      rateRankData_origin: [],
+      rankChartData: [
+        // {
+        //   label: 'xx1',
+        //   value: 100
+        // }
+      ],
+      // 用例成效
+      stackedBarData: [
+        // {
+        //   label: '用例1991',
+        //   value: 3,
+        //   type: '线索数量'
+        // },
+        // {
+        //   label: '用例1992',
+        //   value: 4,
+        //   type: '线索数量'
+        // },
+        // {
+        //   label: '用例1991',
+        //   value: 3,
+        //   type: '联络成功数'
+        // },
+        // {
+        //   label: '用例1992',
+        //   value: 4,
+        //   type: '联络成功数'
+        // },
+        // {
+        //   label: '用例1991',
+        //   value: 3,
+        //   type: '有效执行数'
+        // },
+        // {
+        //   label: '用例1992',
+        //   value: 4,
+        //   type: '有效执行数'
+        // }
+      ],
+      stackedBarData_amount: [],
+      stackedBarData_amount_origin: [],
+      // 顶栏数据
       baseInfo: [{
-        name: '累计营销用例',
+        name: '营销用例',
         icon: 'total_usecase',
-        value: '',
-        unit: '个'
+        value: ''
+        // unit: '个'
       }, {
-        name: '累计营销事件',
+        name: '营销事件',
         icon: 'total_event',
-        value: '',
-        unit: '条'
+        value: ''
+        // unit: '条'
       }, {
         name: '生效中事件',
         value: '',
-        icon: 'total_event_ok',
-        unit: '个'
-      }, {
-        name: 'AUM提升',
-        value: '',
-        icon: 'total_hoist',
-        unit: '万元'
-      }, {
-        name: 'LUM提升',
-        value: '',
-        icon: 'total_hoist',
-        unit: '万元'
-      }, {
-        name: '新开信用卡',
-        value: '',
-        icon: 'total_card',
-        unit: '张'
+        icon: 'total_event_ok'
+        // unit: '个'
       }],
+      // mini图数据
+      increaseInfo: {
+        aumUp: 0,
+        lumUp: 0,
+        newCardSum: 0,
+        aumMiniData: [],
+        lumMiniData: [],
+        cardMiniData: []
+      },
       // 漏斗图数据
       funnelData: [
         // { label: '线索数量', value: 10000 },
@@ -614,66 +793,13 @@ export default {
         effective_rate: '',
         actual_achievement: ''
       },
-      // 渠道线索数据
-      funnelSel: '0',
-      funnelOpt: [
-        { label: '线索数量', value: '0' },
-        { label: '线索执行数量', value: '1' },
-        { label: '联络成功数', value: '2' },
-        { label: '有效执行数', value: '3' },
-        { label: '成功购买数', value: '4' },
-        { label: '成功购买金额', value: '5' },
-        { label: 'AUM提升', value: '6' }
-      ],
+      // 渠道线索数据（饼图）
       channelPieData: [
         // { label: '分类一', value: 10 },
-        // { label: '分类二', value: 20 },
-        // { label: '分类三', value: 30 },
-        // { label: '分类四', value: 40 },
-        // { label: '分类五', value: 50 }
       ],
-      // 用例线索数据
-      usecaseBarData: [],
       // crm
       expand: false,
-      crmSel: '1',
-      crmOpt: [
-        { label: 'CRM执行率', value: '1' },
-        { label: 'CRM联系成功率', value: '2' },
-        { label: 'CRM有效执行率', value: '3' },
-        { label: 'CRM成功购买率', value: '4' },
-        { label: 'CRM实际达成率', value: '5' }
-      ],
-      lineChartData1: [],
-      lineChartData2: [],
-      lineChartData3: [],
-      lineChartData4: [],
-      // crm5
-      lineChartData5: [],
-      // 短信
-      lineChartData6: [],
-      statistics: [],
-      statistics2: [],
-      // 渠道线索饼图传的值
-      channelCluePieChart: 0,
-      channelClueOpt: [
-        {
-          label: '线索数量',
-          value: 0
-        },
-        {
-          label: '成功购买数',
-          value: 1
-        },
-        {
-          label: '成功购买金额',
-          value: 2
-        },
-        {
-          label: 'AUM提升',
-          value: 3
-        }
-      ],
+      // 排名的Opt
       rankOpt: [
         {
           label: 'AUM提升',
@@ -707,45 +833,7 @@ export default {
           label: '有效执行率',
           value: 7
         }
-      ],
-      rankChartData1: [],
-      rankChartData2: [],
-      rankChartData3: [],
-      rankChartData: [{
-        label: 'xx1',
-        value: 100
-      }, {
-        label: 'xx2',
-        value: 90
-      }, {
-        label: 'xx3',
-        value: 80
-      }, {
-        label: 'xx4',
-        value: 70
-      }, {
-        label: 'xx5',
-        value: 60
-      }, {
-        label: 'xx6',
-        value: 50
-      }, {
-        label: 'xx7',
-        value: 40
-      }, {
-        label: 'xx8',
-        value: 30
-      }, {
-        label: 'xx9',
-        value: 20
-      }, {
-        label: 'xx10',
-        value: 10
-      }],
-      rankSelVal1: 0,
-      rankSelVal2: 0,
-      rankSelVal3: 0,
-      rankSelPostVal3: 1
+      ]
 
     }
   },
@@ -754,10 +842,7 @@ export default {
   },
   watch: {},
   created() {
-    this.getBranches()
-    this.render(this.getParams)
-
-    // this.getStatistics()
+    this.render()
   },
   mounted() {
 
@@ -765,313 +850,533 @@ export default {
   methods: {
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
-      // console.log(this.searchForm)
-      if (this.searchForm.branch?.length) {
-        this.getParams = {
-          branch: this.searchForm.branch[0],
-          org: this.searchForm.branch[1]
-        }
-      } else {
-        this.getParams = {
-          branch: '',
-          org: ''
-        }
-      }
-      this.render(this.getParams)
     },
     reset() {
       this.$refs.filterRef.resetFields()
-      // this.getUseCase()
       this.search()
     },
-    render(val) {
-      // 获取岗位
-      // this.getPostOpt()
-      //
-      this.getOverview(val)
-      this.getFunnel(val)
-      this.getPie(val)
-      // 实际达成率
-      this.getLineChartData(0, 1, val)
-      this.getLineChartData(1, 2, val)
-      this.getLineChartData(2, 3, val)
-      this.getLineChartData(3, 4, val)
-      this.getLineChartData(4, 5, val)
-      this.getLineChartData(5, 6, val)
-
-      // this.getUseCase()
-      this.getCluesUseCase(val)
-      // 旧接口
-      // this.getAchieveRate()
-      // this.getAchieveRate(1, 1)
-      // this.getAchieveRate(2, 2)
-      // this.getAchieveRate(3, 3)
-      // this.getAchieveRate(4, 4)
-      // this.getAchieveRate(5, 5)
-      // this.getAchieveRate(6, 6)
-      // this.getPurchaseAmount()
-
-      // 成效统计
-
-      this.getStatistics(val)
-
-      // 支行网点员工排名
-      this.getRankOrg(val)
-      this.getRankBranch(val)
-      this.getRankEmp(val)
+    changeUseCase() {
+      console.log(123)
     },
-    getOverview(val) {
+    render() {
+      // total
+      this.getOverview()
+      // 获取aum lum card 3张小图+漏斗图+饼图
+      this.hangleChangeTotalDatePicker()
+      // rate
+      this.getRateOpt().then(() => {
+        this.rateFilter.activeName = 'crm'
+        this.handleRateTabClick()
+      })
+
+      // effect
+      this.getEffectOpt().then(() => {
+        this.effectFilter.activeName = 'aum'
+        this.renderEffect()
+      })
+
+      // result
+      this.resultFilter.activeName = 'crm'
+      // amount
+      this.amountFilter.crmSmsType = 'crm'
+
+      this.getUseCaseOpt().then(() => {
+        this.resultUsecaseFilter = this.useCaseOpt?.[0]?.id
+        this.amountUsecaseFilter = this.useCaseOpt?.[0]?.id
+        this.handleResultTabClick()
+        this.handleAmountTabClick()
+      })
+    },
+    /** ******************************** 0 *************************************** */
+    hangleChangeTotalDatePicker() {
+      const timeParam = {
+        start: this.totalFilter.totalTimeVal[0],
+        end: this.totalFilter.totalTimeVal[1]
+      }
+      this.getIncrease(timeParam)
+      this.getFunnel(timeParam)
+      this.getPie(timeParam)
+    },
+
+    getOverview() {
       this.loading.baseInfoLoading = true
-      totalOverview(val).then(res => {
+      totalOverviewCopy().then(res => {
         const data = res.data
-        this.baseInfo[0].value = data.total_use_case
-        this.baseInfo[1].value = data.total_event
-        this.baseInfo[2].value = data.active_event
-        this.baseInfo[3].value = data.total_aum / 1000
-        this.baseInfo[4].value = data.total_lum / 1000
-        this.baseInfo[5].value = data.total_credit_card
+        this.baseInfo[0].value = data.useCase
+        this.baseInfo[1].value = data.totalEvent
+        this.baseInfo[2].value = data.activeEvent
       }).finally(() => {
         this.loading.baseInfoLoading = false
       })
     },
+
+    getIncrease(val) {
+      this.loading.increaseLoading = true
+      totalIncreaseCopy(val).then(res => {
+        const data = res.data
+        this.increaseInfo.aumUp = data.aum_up
+        this.increaseInfo.lumUp = data.lum_up
+        this.increaseInfo.newCardSum = data.new_card_sum
+        this.increaseInfo.aumMiniData = data.detail.map(n => {
+          return {
+            label: n.label,
+            value: n.aumUp
+          }
+        })
+        this.increaseInfo.lumMiniData = data.detail.map(n => {
+          return {
+            label: n.label,
+            value: n.lumUp
+          }
+        })
+        this.increaseInfo.cardMiniData = data.detail.map(n => {
+          return {
+            label: n.label,
+            value: n.cardSum
+          }
+        })
+      }).finally(() => {
+        this.loading.increaseLoading = false
+      })
+    },
     getFunnel(val) {
       this.loading.funnelChartLoading = true
-      totalFunnel(val).then(res => {
+      totalFunnelCopy(val).then(res => {
         const data = res.data
         this.funnelData = [
-          { label: '线索数量', value: data.total_clues },
-          { label: '线索执行', value: data.executed_clues },
-          { label: '联系成功', value: data.success_clues },
-          { label: '成功购买', value: data.purchased_clues }
+          { label: '线索数量', value: data.total },
+          { label: '线索执行', value: data.executed || 0 },
+          { label: '联系成功', value: data.success },
+          { label: '成功购买', value: data.purchase }
         ]
-        this.funnelResult.effective_count = res.data.effective_count
-        this.funnelResult.effective_rate = res.data.effective_rate
-        this.funnelResult.actual_achievement = res.data.actual_achievement
+        this.funnelResult.effective_count = data.count
+        this.funnelResult.effective_rate = data.rate
+        this.funnelResult.actual_achievement = data.achievement
       }).finally(() => {
         this.loading.funnelChartLoading = false
       })
     },
     getPie(val) {
       this.loading.chartPieLoading = true
-      totalPie(Object.assign({ type: this.channelCluePieChart }, val)).then(res => {
+      totalPieCopy(val).then(res => {
         const data = res.data
-        this.channelPieData = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +n.value
-          })
+        this.channelPieData = data.map(n => {
+          return {
+            value: n.depositUpAmount,
+            label: n.label
+          }
         })
       }).finally(() => {
         this.loading.chartPieLoading = false
       })
     },
-    handleChangeChannel(index) {
-      if (index === 2) {
-        this.funnelOpt =
-          [
-            { label: '线索数量', value: '0' },
-            { label: '成功购买数', value: '4' },
-            { label: '成功购买金额', value: '5' },
-            { label: 'AUM提升', value: '6' }
-          ]
+
+    /** ******************************** rate *************************************** */
+    // 获取rate的折线图
+    getRate(val) {
+      this.loading.rateLoading = true
+      totalRateCopy(val).then(res => {
+        this.lineChartData_crm_origin = res.data
+        this.changeRateData()
+      }).finally(() => {
+        this.loading.rateLoading = false
+      })
+    },
+    // 获取rate的排名
+    getRateRank(val) {
+      this.loading.rateRankLoading = true
+      totalRateRankCopy(val).then(res => {
+        this.rankChartData_origin = res.data
+        this.changeRateRankData()
+      }).finally(() => {
+        this.loading.rateRankLoading = false
+      })
+    },
+    // 获取rate折线图数据
+    changeRateData() {
+      // 折线图
+      this.lineChartData_crm = {}
+      if ((this.rateFilter.activeName === 'crm' && this.rateFilter.rateType === 'finishedRate') || this.rateFilter.activeName === 'sms') {
+        const data = []
+        const _data = this.lineChartData_crm_origin.find(n => {
+          return this.rateFilter.rateType === n.key
+        }).data
+        _data.forEach(n => {
+          data.push({
+            label: n.label,
+            value: +(n.value * 100),
+            category: '执行组'
+          }, {
+            label: n.label,
+            value: +(n.compare * 100),
+            category: '对照组'
+          })
+        })
+        this.lineChartData_crm = {
+          data,
+          type: 'double'
+        }
       } else {
-        this.funnelOpt = [
-          { label: '线索数量', value: '0' },
-          { label: '线索执行数量', value: '1' },
-          { label: '联络成功数', value: '2' },
-          { label: '有效执行数', value: '3' },
-          { label: '成功购买数', value: '4' },
-          { label: '成功购买金额', value: '5' },
-          { label: 'AUM提升', value: '6' }
-        ]
+        const data = []
+        const _data = this.lineChartData_crm_origin.find(n => {
+          return this.rateFilter.rateType === n.key
+        }).data
+        _data.forEach(n => {
+          data.push({
+            label: n.label,
+            value: +(n.value * 100)
+          })
+        })
+        this.lineChartData_crm = {
+          data,
+          type: 'single'
+        }
       }
     },
-    // 获取岗位列表
-    // getPostOpt() {
-    //   getAllJob().then(res => {
-    //     res.data.forEach(n => {
-    //       this.postOpt.push({
-    //         value: n.id,
-    //         label: n.name
-    //       })
-    //     })
-    //   })
-    // },
-    getCluesUseCase(val) {
-      this.loading.usecaseBarLoading = true
-      totalCluesUseCase(Object.assign({ type: this.funnelSel, channel: this.channelOptVal }, val)).then(res => {
-        this.usecaseBarData = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +n.value
-          })
-        })
-      }).finally(() => {
-        this.loading.usecaseBarLoading = false
-      })
+    // 获取rate排名数据
+    changeRateRankData() {
+      // 排名
+      this.rateRankData = this.rankChartData_origin[this.rateFilter.rateType]
     },
-    getAchieveRate(channel_id, unm) {
-      totalAchieveRate({ channel_id }).then(res => {
-        this['lineChartData' + unm] = [
-          ...(res.data.control || [])
-            ?.map(n => {
-              return {
-                label: n.label,
-                value: +n.value,
-                category: '执行组'
-              }
-            }),
-          ...(res.data.exec || [])
-            ?.map(n => {
-              return {
-                label: n.label,
-                value: +n.value,
-                category: '对照组'
-              }
-            })
-        ]
-      })
-    },
-    getLineChartData(typeKey, i, val) {
-      this['lineChartLoading' + i] = true
-      getActualRate(Object.assign({ type: typeKey }, val)).then(res => {
-        this['lineChartData' + i] = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +n.value * 100
-          })
-        })
-      }).finally(() => {
-        this['lineChartLoading' + i] = false
-      })
-    },
-    // getPurchaseAmount() {
-    //   totalPurchaseAmount().then(res => {
-
-    //   })
-    // },
-    // 获取用例列表
-    // getUseCase() {
-    //   return new Promise((resolve) => {
-    //     getAllUseCase().then(res => {
-    //       this.useCaseOpt = res.data.map(n => {
-    //         return {
-    //           label: n.name,
-    //           value: n.id
-    //         }
-    //       })
-    //       resolve()
-    //     })
-    //   })
-    // },
-    // 获取支行网点列表
-    getBranches() {
-      return new Promise((resolve) => {
-        getAllBranches().then(res => {
-          this.allBranchOpt = res.data
+    // 获取二级选项
+    getRateOpt() {
+      return new Promise((resolve, reject) => {
+        rateOptCopy().then(res => {
+          this.rateTypeOpt_origin = res.data
           resolve()
         })
       })
     },
-    // 根据用例获取事件
-    getEvent(useCase) {
-      if (this.filterForm.useCase?.length === 1) {
-        getEventList({ pageNo: 1, pageSize: 1000, useCaseId: useCase[0], status: [4, 6, 11, 13] }).then(res => {
-          this.eventOpt = res.data.resultList?.map(n => {
-            return {
-              label: n.eventBaseInfo.name,
-              value: n.eventBaseInfo.id
-            }
-          })
-        })
-      } else {
-        this.eventOpt = []
-        // this.filterForm.event = ''
+    // 调rate接口需要的参数
+    getRateParams() {
+      return {
+        start: this.rateFilter.timeVal[0],
+        end: this.rateFilter.timeVal[1],
+        channel: this.rateFilter.activeName.toUpperCase(),
+        type: this.rateFilter.rankType
       }
     },
-    expandOpen() {
-      this.expand = !this.expand
-      if (this.expand && !this.renderOnce) {
-        this.renderOnce = true
-        this.$nextTick(() => {
-          this.$refs.crmLineRef1.updete()
-          this.$refs.crmLineRef2.updete()
-          this.$refs.crmLineRef3.updete()
-          this.$refs.crmLineRef4.updete()
+    // 调接口获取rate的数据
+    renderRate() {
+      const data = this.getRateParams()
+      this.getRate(data)
+      this.getRateRank(data)
+    },
+    // 点击一级选项
+    handleRateTabClick() {
+      this.rateFilter.rateTypeOpt = this.rateTypeOpt_origin[this.rateFilter.activeName]
+      this.rateFilter.rateType = this.rateFilter.rateTypeOpt?.[0].value
+      this.renderRate()
+    },
+    // 点击二级选项
+    handleChangeRateType() {
+      // 改变折线图数据
+      this.changeRateData()
+      // 改变排名数据
+      this.changeRateRankData()
+    },
+    // 选择rate时间
+    hangleChangeRateDatePicker() {
+      this.renderRate()
+    },
+    // 切换rate排名
+    hangleChangeRateTypeRank() {
+      const data = this.getRateParams()
+      this.getRateRank(data)
+    },
+    /** ******************************** result *************************************** */
+    // 用例成效
+
+    // 获取用例
+    getUseCaseOpt() {
+      return new Promise((resolve, reject) => {
+        getAllUseCase().then(res => {
+          this.useCaseOpt = res.data
+          resolve()
         })
-      }
+      })
     },
 
-    getStatistics(val) {
-      this.loading.chartBarLoading = true
-      this.loading.chartLineLoading = true
-      if (this.filterForm.useCase?.length === 1) {
-        totalStatisticsOne(Object.assign({ case: this.filterForm.useCase?.join(',') }, val)).then(res => {
-          this.statistics = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value / 1000
-            })
-          })
-          this.statistics2 = this.statistics?.slice(0).sort((a, b) => {
-            return b.value - a.value
-          })
-        }).finally(() => {
-          this.loading.chartBarLoading = false
-          this.loading.chartLineLoading = false
-        })
-      } else {
-        totalStatisticsOne(Object.assign({ case: 2241884 }, val)).then(res => {
-          this.statistics = res.data?.map(n => {
-            return Object.assign({}, n, {
-              value: +n.value / 1000
-            })
-          })
-          this.statistics2 = this.statistics?.slice(0).sort((a, b) => {
-            return b.value - a.value
-          })
-        }).finally(() => {
-          this.loading.chartBarLoading = false
-          this.loading.chartLineLoading = false
-        })
+    changeResultUseCase() {
+      const data = this.getResultParams()
+      this.getResultRank(data)
+    },
+
+    // 获取二级选项
+    // getResultOpt() {
+    //   return new Promise((resolve, reject) => {
+    //     resultOptCopy().then(res => {
+    //       this.resultTypeOpt_origin = res.data
+    //       resolve()
+    //     })
+    //   })
+    // },
+    // 点击一级选项
+    handleResultTabClick() {
+      this.resultFilter.resultTypeOpt = this.resultTabs.find(n => {
+        return this.resultFilter.activeName === n.value
+      }).children
+      this.resultFilter.resultType = this.resultFilter.resultTypeOpt?.[0].value
+      // 改变原始数据
+      this.renderResult()
+    },
+    // 调result接口需要的参数
+    getResultParams() {
+      return {
+        start: this.resultFilter.timeVal[0],
+        end: this.resultFilter.timeVal[1],
+        channel: this.resultFilter.activeName.toUpperCase(),
+        type: this.resultFilter.rankType,
+        useCaseId: this.resultUsecaseFilter
       }
     },
-    getRankOrg(val) {
-      this.loading.orgRankLoading = true
-      totalRank(Object.assign({ content: 0, type: this.rankSelVal1 }, val)).then(res => {
-        this.rankChartData1 = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +(n.value / 10000).toFixed(2)
-          })
-        })?.slice(0, 10)
-        // console.log(this.rankChartData1)
-      })
-        .finally(() => {
-          this.loading.orgRankLoading = false
-        })
+    // 调接口获取result的数据
+    renderResult() {
+      const data = this.getResultParams()
+      this.getResult(data)
+      this.getResultRank(data)
     },
-    getRankBranch(val) {
-      this.loading.branchRankLoading = true
-      totalRank(Object.assign({ content: 1, type: this.rankSelVal2 }, val)).then(res => {
-        this.rankChartData2 = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +(n.value / 10000).toFixed(2)
-          })
-        })?.slice(0, 10)
+    // 获取result的柱状图
+    getResult(val) {
+      this.loading.resultLoading = true
+      totalResultCopy(val).then(res => {
+        this.stackedBarData_origin = res.data
+        this.changeResultData()
+      }).finally(() => {
+        this.loading.resultLoading = false
       })
-        .finally(() => {
-          this.loading.branchRankLoading = false
-        })
     },
-    getRankEmp(val) {
-      this.loading.empRankLoading = true
-      totalRank(Object.assign({ content: 2, type: this.rankSelVal3 }, val)).then(res => {
-        this.rankChartData3 = res.data?.map(n => {
-          return Object.assign({}, n, {
-            value: +n.value
-          })
-        })?.slice(0, 10)
+    // 获取result的排名
+    getResultRank(val) {
+      this.loading.resultRankLoading = true
+      totalResultRankCopy(val).then(res => {
+        this.resultRankData_origin = res.data
+        this.changeResultRankData()
+      }).finally(() => {
+        this.loading.resultRankLoading = false
       })
-        .finally(() => {
-          this.loading.empRankLoading = false
+    },
+
+    // 获取result柱状图数据
+    changeResultData() {
+      // 柱状图
+      const t = []
+      const _t = this.stackedBarData_origin.filter(o => this.resultFilterOpt.find((n) => {
+        if (n.value === o.key) {
+          return true
+        }
+      }))
+      _t.forEach(n => {
+        t.push(n.data.map(k => {
+          return Object.assign(k, {
+            type: this.resultFilterOpt.find(t => {
+              return n.key === t.value
+            }).label
+          })
+        }))
+      })
+      let rd = []
+      t.map(n => {
+        rd = rd.concat(n)
+      })
+      this.stackedBarData = rd
+    },
+    // 获取result排名数据
+    changeResultRankData() {
+      // 排名
+      this.resultRankData = this.resultRankData_origin[this.resultFilter.resultType]
+    },
+
+    // 修改时间
+    hangleChangeResultDatePicker() {
+      this.renderResult()
+    },
+
+    // 点击二级选项
+    handleChangeResultType() {
+      this.changeResultRankData()
+    },
+    // 切换result排名
+    hangleChangeResultTypeRank() {
+      const data = this.getResultParams()
+      this.getResultRank(data)
+    },
+
+    /** ******************************** effect *************************************** */
+    // 获取选项
+    getEffectOpt() {
+      return new Promise((resolve, reject) => {
+        effectOptCopy().then(res => {
+          this.effectFilter.effectTypeOpt = res.data
+          resolve()
         })
+      })
+    },
+
+    // 调effect接口需要的参数
+    getEffectParams() {
+      return {
+        start: this.effectFilter.timeVal[0],
+        end: this.effectFilter.timeVal[1],
+        channel: this.effectFilter.activeName.toUpperCase(),
+        type: this.effectFilter.rankType
+      }
+    },
+    // 调接口获取effect的数据
+    renderEffect() {
+      const data = this.getEffectParams()
+      this.getEffect(data)
+      this.getEffectRank(data)
+    },
+
+    // 获取effect的折线图
+    getEffect(val) {
+      this.loading.effectLoading = true
+      totalEffectCopy(val).then(res => {
+        this.effectLineChartData_origin = res.data
+        this.changeEffectData()
+      }).finally(() => {
+        this.loading.effectLoading = false
+      })
+    },
+    // 获取effect的排名
+    getEffectRank(val) {
+      this.loading.effectRankLoading = true
+      totalEffectRankCopy(val).then(res => {
+        this.effectRankData_origin = res.data
+        this.changeEffectRankData()
+      }).finally(() => {
+        this.loading.effectRankLoading = false
+      })
+    },
+
+    // 获取effect折线图数据
+    changeEffectData() {
+      // 折线图
+      this.effectLineChartData = this.effectLineChartData_origin.find(n => {
+        return this.effectFilter.activeName === n.key
+      })?.data
+    },
+    // 获取effect排名数据
+    changeEffectRankData() {
+      // 排名
+      this.effectRankData = this.effectRankData_origin?.[this.effectFilter.activeName]
+    },
+
+    hangleChangeEffectDatePicker() {
+      this.renderEffect()
+    },
+    // 点击选项
+    handleChangeEffectType() {
+      this.changeEffectData()
+      this.changeEffectRankData()
+    },
+
+    // 切换effect排名
+    hangleChangeEffectTypeRank() {
+      const data = this.getEffectParams()
+      this.getEffectRank(data)
+    },
+
+    // ------------------- amount ---------------------------------------------------------------------------------------------------------
+
+    changeAmountUseCase() {
+      const data = this.getAmountParams()
+      this.getAmountRank(data)
+    },
+
+    // 点击一级选项
+    handleAmountTabClick() {
+      this.amountFilter.amountTypeOpt = this.amountTabs.find(n => {
+        return this.amountFilter.activeName === n.value
+      }).children
+      this.amountFilter.amountType = this.amountFilter.amountTypeOpt?.[0].value
+      // 改变原始数据
+      this.renderAmount()
+    },
+
+    // 调amount接口需要的参数
+    getAmountParams() {
+      return {
+        start: this.amountFilter.timeVal[0],
+        end: this.amountFilter.timeVal[1],
+        channel: this.amountFilter.crmSmsType.toUpperCase(),
+        type: this.amountFilter.rankType,
+        useCaseId: this.amountUsecaseFilter
+      }
+    },
+    // 调接口获取amount的数据
+    renderAmount() {
+      const data = this.getAmountParams()
+      this.getAmount(data)
+      this.getAmountRank(data)
+    },
+    // 获取amount的柱状图 stackedBarData_amount_origin 已经在result获取到
+    getAmount(val) {
+      this.loading.amountLoading = true
+      totalResultCopy(val).then(res => {
+        this.stackedBarData_amount_origin = res.data
+        this.changeAmountData()
+      }).finally(() => {
+        this.loading.amountLoading = false
+      })
+    },
+    // 获取amount的排名 amountRankData_origin 已经在result获取到
+    getAmountRank(val) {
+      this.loading.amountRankLoading = true
+      totalResultRankCopy(val).then(res => {
+        this.amountRankData_origin = res.data
+        this.changeAmountRankData()
+      }).finally(() => {
+        this.loading.amountRankLoading = false
+      })
+    },
+
+    // 获取amount柱状图数据
+    changeAmountData() {
+      // 柱状图
+      const t = []
+      const _t = this.stackedBarData_amount_origin.filter(o => this.amountFilterOpt.find((n) => {
+        if (n.value === o.key) {
+          return true
+        }
+      }))
+      _t.forEach(n => {
+        t.push(n.data.map(k => {
+          return Object.assign(k, {
+            type: this.amountFilterOpt.find(t => {
+              return n.key === t.value
+            }).label
+          })
+        }))
+      })
+      let rd = []
+      t.map(n => {
+        rd = rd.concat(n)
+      })
+      this.stackedBarData_amount = rd
+    },
+    // 获取amount排名数据
+    changeAmountRankData() {
+      // 排名
+      this.amountRankData = this.amountRankData_origin[this.amountFilter.amountType]
+    },
+
+    // 修改时间
+    hangleChangeAmountDatePicker() {
+      this.renderAmount()
+    },
+
+    // 点击二级选项
+    handleChangeAmountType() {
+      this.changeAmountRankData()
+    },
+    // 切换amount排名
+    hangleChangeAmountTypeRank() {
+      const data = this.getAmountParams()
+      this.getAmountRank(data)
     }
+
   }
 }
 </script>
@@ -1108,16 +1413,14 @@ export default {
         flex-direction: column;
         padding: 20px;
         .label {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 300;
           display: flex;
           align-items: center;
-          color: $blue;
           .main-icon {
-            color: $blue;
-            margin-right: 15px;
-            font-size: 30px;
-            opacity: 0.6;
+            margin-right: 5px;
+            font-size: 18px;
+            color: #aaa;
             // left: -10px;
           }
         }
@@ -1125,8 +1428,7 @@ export default {
           margin-top: 15px;
           display: flex;
           align-items: center;
-          font-size: 24px;
-          font-weight: bold;
+          font-size: 30px;
           .unit {
             font-size: 16px;
             margin-left: 15px;
@@ -1135,108 +1437,117 @@ export default {
       }
     }
   }
-  .chart-container {
-    // 执行情况
-    .chart-block {
-      text-align: center;
-      margin-bottom: 16px;
-
-      .block-title {
-        font-size: 20px;
-        font-weight: bold;
-        color: #409eff;
-        padding-left: 10px;
-        margin: 20px 0;
-        display: inline-block;
-        position: relative;
-        z-index: 0;
-        letter-spacing: 10px;
-        &::before {
-          position: absolute;
-          content: "";
-          width: 100%;
-          height: 70%;
-          bottom: 0;
-          background: #409eff;
-          opacity: 0.1;
-          left: 0;
-          bottom: -2px;
-          z-index: -1;
+  .block {
+    margin-bottom: 16px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+    .head {
+      border-bottom: 1px solid #f4f4f4;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      ::v-deep .head-tabs {
+        height: 100%;
+        .el-tabs__header {
+          margin-bottom: 0;
+        }
+        .el-tabs__item {
+          height: 60px;
+          line-height: 60px;
+        }
+        .el-tabs__nav-wrap::after {
+          content: none;
         }
       }
-      .crm-line-container {
-        margin-top: 20px;
-        // border-radius: 4px;
-        // border: 1px solid #f0f0f0;
-        border-left: 4px solid rgb(64, 158, 255);
-        //
-        .sub-title {
-          font-size: 18px;
-          padding: 20px;
-          font-weight: bold;
-          text-align: left;
-          display: flex;
-          align-items: center;
+    }
+    .content {
+      display: flex;
+      .left {
+        width: 20%;
+        min-width: 300px;
+        padding: 10px 0;
+        .item {
+          height: 33.3333%;
+          padding: 40px 20px;
+
+          .inner-box {
+            height: 100%;
+            // border: 1px solid;
+            display: flex;
+            flex-direction: column;
+            .title {
+              padding-left: 8px;
+              font-size: 14px;
+              color: #888;
+              border-left: 2px solid #5b8ff9;
+            }
+            .count {
+              padding-left: 8px;
+              font-size: 26px;
+              margin-top: 10px;
+            }
+            .mini-chart {
+              flex: 1;
+            }
+          }
         }
       }
-
-      .chart-item {
-        // border: 1px solid #f0f0f0;
-        // border-radius: 4px;
-        padding: 20px;
-        height: 400px;
+      .right {
+        flex: 1;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        &.mini {
-          height: 300px;
-        }
-        &.line-chart {
-          height: 300px;
-          border: none;
-          // padding-top: 0;
-        }
-        &.statistics {
-          margin-bottom: 20px;
-          &:last-of-type {
-            margin-bottom: 0;
-          }
-        }
-        // &.rank {
-        //   height: 400px;
-        // }
-        .chart-title {
-          margin-bottom: 20px;
-          width: 100%;
-          font-size: 16px;
-          color: $blue;
-          opacity: 0.8;
-          display: flex;
-          align-items: center;
-          position: relative;
-          flex-wrap: wrap;
-          .svg-icon {
-            margin-right: 5px;
-          }
-          .radio-box {
-            // position: absolute;
-            // left: 50%;
-            // transform: translateX(-50%);
-            // top: 0;
-            margin-left: 20px;
-          }
-        }
-        #funnel {
+        min-width: 0;
+        justify-content: space-around;
+        .right-chart-item {
+          height: 100%;
+          width: 50%;
           max-width: 600px;
-          width: 100%;
-          flex: 1;
         }
-        .chart-bottom {
-          margin-top: 20px;
-          display: flex;
-          justify-content: center;
-          font-size: 14px;
-        }
+      }
+    }
+    .content2 {
+      display: flex;
+      // height: 500px;
+      .left {
+        width: 65%;
+        padding: 20px;
+      }
+      .right {
+        width: 35%;
+      }
+    }
+  }
+  .chart-item {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    .chart-title {
+      margin-bottom: 30px;
+      width: 100%;
+      font-size: 16px;
+      color: #888;
+      // opacategory: 0.8;
+      display: flex;
+      align-items: center;
+      position: relative;
+      flex-wrap: wrap;
+      .svg-icon {
+        color: #aaa;
+        margin-right: 8px;
+      }
+    }
+    .chart-box {
+      // flex: 1;
+      height: 400px;
+    }
+    .chart-bottom {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 20px;
+      .text-item {
+        margin: 5px 10px;
       }
     }
   }

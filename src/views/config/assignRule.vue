@@ -401,7 +401,7 @@ export default {
           slot: true
         }
       ],
-      tableData: [{ status: { label: '123' }, detail: '123' }]
+      tableData: []
     }
   },
   computed: {

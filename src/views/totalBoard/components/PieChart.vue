@@ -35,8 +35,6 @@ export default {
   },
   watch: {
     data() {
-      console.log(this.data)
-
       this.chart.changeData(this.data)
     }
   },
@@ -63,7 +61,7 @@ export default {
           formatter: (datum) => {
             return {
               name: datum.label,
-              value: formatMoney(datum.value)
+              value: formatMoney(datum.value) + this.unit
             }
           }
         },

@@ -53,7 +53,7 @@ export default {
     render() {
       this.chart = new Area(this.id, {
         data: this.data,
-        smooth: true,
+        // smooth: true,
         yAxis: {
           grid: {
             line: {
@@ -63,7 +63,6 @@ export default {
             }
           }
         },
-        xAxis: false,
         xField: 'label',
         yField: 'value',
         tooltip: {
