@@ -5,7 +5,6 @@
 
 <script>
 import { Chart } from '@antv/g2'
-
 export default {
   props: {
     data: {
@@ -29,13 +28,13 @@ export default {
     }
   },
   computed: {
-    average() {
-      let count = 0
-      this.data.forEach(n => {
-        count += n.value
-      })
-      return (count / this.data.length).toFixed(2)
-    }
+    // average() {
+    //   let count = 0
+    //   this.data.forEach(n => {
+    //     count += n.value
+    //   })
+    //   return (count / this.data.length).toFixed(2)
+    // }
   },
 
   watch: {
@@ -46,7 +45,7 @@ export default {
     }
   },
   mounted() {
-    // this.render()
+    this.render()
   },
   methods: {
     updete() {
@@ -55,18 +54,19 @@ export default {
     clear() {
       this.chart.clear()
     },
+
     render() {
       this.chart = new Chart({
         container: this.id,
         autoFit: true
+        // padding: [0, 0, 70, 'auto']
       })
 
       this.chart.data(this.data)
       this.chart.scale({
         value: {
           min: 0,
-          max: 100,
-          alias: '执行组'
+          max: 100
         }
       })
       this.chart.tooltip({
@@ -75,13 +75,11 @@ export default {
         shared: true,
         // showTitle: false,
         showMarkers: false,
-        itemTpl: '<li class="g2-tooltip-list-item"><span style="background-color:{color};" class="g2-tooltip-marker"></span>{name}：{value}%</li>'
+        itemTpl: `<li class="g2-tooltip-list-item">
+                    <span style="background-color:{color};" class="g2-tooltip-marker"></span>
+                    {name}：{value}%
+                  </li>`
       })
-      // this.chart.tooltip({
-      //   showCrosshairs: true,
-      //   shared: true
-      // })
-
       this.chart.axis('value', {
         grid: {
           line: {
@@ -96,34 +94,11 @@ export default {
           }
         }
       })
-      this.chart.annotation().line({
-        start: ['min', this.average],
-        end: ['max', this.average],
-        style: {
-          stroke: '#6495f9',
-          lineWidth: 1,
-          lineDash: [3, 3]
-        },
-        text: {
-          position: 'start',
-          style: {
-            fill: '#6495f9',
-            // fontSize: 15,
-            fontWeight: 'normal'
-          },
-          content: `平均值 ${this.average}%`,
-          offsetY: -5
-        }
-      })
 
       this.chart
         .line()
         .position('label*value')
-      this.chart
-        .point()
-        .position('label*value')
-        .shape('circle')
-
+        .color('category', ['#0050B3', '#1890FF', '#40A9FF', '#69C0FF', '#BAE7FF', '#FF3366'])
       this.chart.render()
     }
   }

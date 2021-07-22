@@ -34,7 +34,6 @@ export default {
   },
   data() {
     return {
-
     }
   },
   computed: {
@@ -51,12 +50,16 @@ export default {
     render() {
       this.chart = new Funnel(this.id, {
         data: this.data,
-        appendPadding: [0, 80],
+        appendPadding: [0, 80, 0, 0],
         autoFit: true,
         xField: 'label',
         yField: 'value',
         dynamicHeight: true,
-        legend: false
+        legend: false,
+        theme: {
+          // colors10: ['#6600CC', '#6633FF', '#6666FF', '#6699FF']
+          colors10: ['#0050B3', '#1890FF', '#40A9FF', '#69C0FF', '#BAE7FF']
+        }
       })
       this.chart.render()
     }
