@@ -1194,7 +1194,8 @@ export default {
           const newTabName = ++this.group[gi].ployTabIndex
           const obj = this.ployTranslate(n, newTabName)
           obj.channel.forEach(n => {
-            n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+            // n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+            n.dateRange = []
           })
           obj.abstractId = undefined
           this.group[gi].ployTabs.push(obj)
