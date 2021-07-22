@@ -932,7 +932,7 @@ export default {
               // 定时型的值-时间
               obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
               // 定时型的值-起止时间
-              obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+              obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO.startDate ? [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate] : []
             } else if (m.pushType.value === 2) {
               // 规则型
               // 规则型的值
