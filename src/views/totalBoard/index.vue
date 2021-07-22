@@ -962,7 +962,7 @@ export default {
         const data = res.data
         this.channelPieData = data.map(n => {
           return {
-            value: n.depositUpAmount,
+            value: n.total,
             label: n.label
           }
         })
