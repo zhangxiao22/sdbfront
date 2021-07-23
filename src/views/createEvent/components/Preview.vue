@@ -191,7 +191,8 @@
                          class="timing right-left">
                       <!-- 定时型 -->
                       <div class="range">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.startDate || '未知时间' }} 至 {{ channelItem.pushTimeInfo.scheduelPushInfoVO.endDate || '未知时间' }}</div>
-                      <div class="item-box"
+                      <div v-show="channelItem.timingDateValue&&channelItem.timingDateValue.length"
+                           class="item-box"
                            style="margin-top:5px">
                         <div v-for="(timeItem,timeIndex) of channelItem.timingDateValue"
                              :key="timeIndex"
@@ -216,7 +217,7 @@
                     <div v-if="channelItem.pushType.value === 3"
                          class="rule right-left">
                       <!-- 触发型 -->
-                      <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate }}</div>
+                      <div class="range">{{ channelItem.pushTimeInfo.triggerInfoList.startDate || '未知时间' }} 至 {{ channelItem.pushTimeInfo.triggerInfoList.endDate || '未知时间' }}</div>
                       <div class="item-box trigger">
                         <div v-for="(ruleItem,ruleIndex) of channelItem.pushTimeInfo.triggerInfoList.triggerRuleList"
                              :key="ruleIndex"
@@ -993,7 +994,7 @@ export default {
                       .rule-name {
                         text-align: center;
                         border-bottom: 1px solid #ebeef5;
-                        padding: 5px;
+                        padding: 5px 10px;
                       }
                       .time-block {
                         // padding-top: 5px;
