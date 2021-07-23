@@ -144,7 +144,7 @@
                       </el-form>
                     </template>
                   </el-table-column>
-                  <template v-for="(item,i) of COMMON_COLUMN_LIST">
+                  <template v-for="(item,i) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
                     <el-table-column v-if="item.prop === 'attributionUseCaseList'"
                                      :key="i"
                                      :prop="item.prop"

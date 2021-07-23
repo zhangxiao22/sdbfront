@@ -97,7 +97,7 @@
                     </el-form>
                   </template>
                 </el-table-column>
-                <template v-for="(commonItem,commonItemIndex) of COMMON_COLUMN_LIST">
+                <template v-for="(commonItem,commonItemIndex) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
                   <el-table-column v-if="commonItem.prop === 'attributionUseCaseList'"
                                    :key="commonItemIndex"
                                    :prop="commonItem.prop"

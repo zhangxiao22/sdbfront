@@ -52,14 +52,15 @@ export const COMMON_COLUMN_LIST = [
   {
     prop: 'modifyTime',
     label: '最后修改时间',
-    width: 180
+    minWidth: 180
   },
   {
     prop: 'operate',
     label: '操作',
     width: 120,
     fixed: 'right',
-    slot: true
+    slot: true,
+    hide: true
   }
 
 ]
