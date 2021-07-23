@@ -435,8 +435,7 @@
                                            size="mini"
                                            @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
                               </div>
-                              <div v-show="scope.row.isHover"
-                                   slot="reference"
+                              <div slot="reference"
                                    class="table-edit touch-tap-x"
                                    @click="scope.row._content = scope.row.content">
                                 <i class="el-icon-edit" />
