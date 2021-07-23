@@ -970,23 +970,19 @@ export default {
                     border-radius: 4px;
                     font-size: 12px;
                     width: 160px;
-                  }
-                  &.interval {
-                    .item {
-                      padding: 5px 0;
-                      display: inline-flex;
-                      align-items: center;
-                      .date {
-                        width: 60%;
-                        text-align: center;
-                        border-right: 1px solid #ebeef5;
-                        // padding-right: 10px;
-                      }
-                      .time {
-                        width: 40%;
-                        // padding-right: 10px;
-                        text-align: center;
-                      }
+                    padding: 5px 0;
+                    display: inline-flex;
+                    align-items: center;
+                    .date {
+                      width: 60%;
+                      text-align: center;
+                      border-right: 1px solid #ebeef5;
+                      // padding-right: 10px;
+                    }
+                    .time {
+                      width: 40%;
+                      // padding-right: 10px;
+                      text-align: center;
                     }
                   }
                   &.trigger {
