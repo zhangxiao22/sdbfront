@@ -1052,7 +1052,7 @@ export default {
               // 定时型的值-时间
               obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
               // 定时型的值-起止时间
-              obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
+              obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO.startDate ? [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate] : []
             } else if (m.pushType.value === 2) {
               // 规则型
               // 规则型的值
@@ -1422,7 +1422,8 @@ export default {
           const newTabName = ++this.group[gi].ployTabIndex
           const obj = this.ployTranslate(n, newTabName)
           obj.channel.forEach(n => {
-            n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+            // n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+            n.dateRange = []
           })
           obj.abstractId = undefined
           this.group[gi].ployTabs.push(obj)

@@ -255,7 +255,7 @@ export default {
           this.baseInfo.name = data.name
           this.baseInfo.useCaseId = data.useCaseId
           this.baseInfo.statusValue = data.status.value
-          this.baseInfo.date = [data.startDate, data.endDate]
+          this.baseInfo.date = data.startDate ? [data.startDate, data.endDate] : []
           this.baseInfo.trial = data.trial
           this.baseInfo.sample = data.sample.value
           this.baseInfo.control = data.control

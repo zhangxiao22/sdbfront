@@ -119,7 +119,7 @@
             </el-tooltip>
           </div>
           <div class="bottom">
-            {{ scope.row.startDate }} 至 {{ scope.row.endDate }}
+            {{ scope.row.startDate || '未知时间' }} 至 {{ scope.row.endDate || '未知时间' }}
           </div>
         </div>
       </template>
