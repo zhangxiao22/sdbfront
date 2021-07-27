@@ -197,7 +197,7 @@
 import ShunTable from '@/components/ShunTable'
 import { lastAndSingle } from '@/utils'
 import {
-  allocateAgain,
+  allocate,
   getEventList,
   getEventOwner,
   getEventReviewer,
@@ -370,9 +370,9 @@ export default {
             color: '#1890FF'
           },
           clickFn() {
-            return _this.handleAllocateAgain(scope.row)
+            return _this.handleAllocate(scope.row)
           },
-          name: '二次分发'
+          name: '分发'
         }, {
           condition: this.judgeStatus(scope.row.status.value) === 2,
           style: {
@@ -682,11 +682,11 @@ export default {
           this.loading = false
         })
     },
-    handleAllocateAgain(row) {
-      this.$confirm(`是否确认事件（${row.name}）二次分发？`)
+    handleAllocate(row) {
+      this.$confirm(`是否确认事件（${row.name}）分发？`)
         .then(() => {
           this.loading = true
-          allocateAgain({ eventId: row.id }).then(res => {
+          allocate({ eventId: row.id }).then(res => {
             if (res.code === 200) {
               this.$message({
                 message: '操作成功',

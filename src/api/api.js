@@ -458,8 +458,8 @@ export function syncProduct(data) {
   })
 }
 
-// 二次分发按钮
-export function allocateAgain(data) {
+// 分发按钮
+export function allocate(data) {
   return request({
     url: 'event/allocate',
     method: 'post',
