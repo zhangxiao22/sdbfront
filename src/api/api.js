@@ -458,6 +458,15 @@ export function syncProduct(data) {
   })
 }
 
+// 二次分发按钮
+export function allocateAgain(data) {
+  return request({
+    url: 'event/allocate',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 事件审批 ************************************************************/
 // 事件审批
 export function isPass(data) {
