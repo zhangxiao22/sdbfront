@@ -15,6 +15,18 @@
                  :inline="true"
                  :model="filterForm"
                  class="filter-container">
+          <el-form-item label=" 渠道："
+                        prop="channel">
+            <el-select v-model="filterForm.channel"
+                       style="width:200px;"
+                       clearable
+                       placeholder="请选择">
+              <el-option v-for="item in channelOpt"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
@@ -71,7 +83,12 @@ export default {
   },
   data() {
     return {
+      channelOpt: [
+        { label: 'CRM', value: '1' },
+        { label: '短信', value: '2' }
+      ],
       filterForm: {
+        channel: '',
         dateRange: [moment().subtract(7, 'days').format('YYYY-MM-DD'), moment().format('YYYY-MM-DD')]
       },
       pickerOptions: {
@@ -113,6 +130,7 @@ export default {
         { prop: 'odsPhoneNum', label: '电话号码', width: 120, fixed: 'left' },
         { prop: 'odsEffectDate', label: '生效日期', width: 100, fixed: 'left' },
         { prop: 'odsInvalidDate', label: '失效日期', width: 100, fixed: 'left' },
+        { prop: 'distributionChannelName', label: '下发渠道', width: 100, fixed: 'left' },
         { prop: 'odsUseCaseCustomerLabel', label: '客群标签' },
         { prop: 'odsIsExecuteCustomer', label: '是否执行' },
         { prop: 'odsExecutorId', label: '执行人工号', width: 120 },
@@ -145,9 +163,7 @@ export default {
   },
   methods: {
     search() {
-      this.searchForm = {
-        dateRange: this.filterForm.dateRange
-      }
+      this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
     reset() {
@@ -171,6 +187,7 @@ export default {
     },
     downloadAll() {
       const data = {
+        channel: this.searchForm.channel,
         startDate: this.searchForm.dateRange ? this.searchForm.dateRange[0] : null,
         endDate: this.searchForm.dateRange ? this.searchForm.dateRange[1] : null
       }
