@@ -379,7 +379,7 @@ export default {
           clickFn() {
             return _this.handleSyncProduct(scope.row)
           },
-          name: '同步产品'
+          name: '同步'
         }, {
           condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
           style: {
