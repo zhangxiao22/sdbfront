@@ -167,6 +167,7 @@
     <!-- dialog -->
     <el-dialog :title="isEdit?'编辑':'新增'"
                :visible.sync="showDialog"
+               append-to-body
                @close="handleCloseDialog">
       <el-form ref="formRef"
                label-width="110px"

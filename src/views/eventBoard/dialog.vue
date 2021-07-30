@@ -1,7 +1,7 @@
 <template>
   <div class="edit-container">
     <el-dialog title="编辑事件"
-               width="80%"
+               fullscreen
                :visible="visible"
                :append-to-body="true"
                @close="handleClose">
@@ -67,7 +67,7 @@
                           </el-form>
                         </template>
                       </el-table-column>
-                      <template v-for="(item,i) of COMMON_COLUMN_LIST">
+                      <template v-for="(item,i) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
                         <el-table-column v-if="item.prop === 'attributionUseCaseList'"
                                          :key="i"
                                          :prop="item.prop"
@@ -629,6 +629,7 @@ export default {
     // 选择产品-确定
     submitProduct() {
       const val = this.$refs.productRef.parentRef.getVal()
+      console.log(val)
       if (val.length) {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
@@ -740,7 +741,7 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .ploy-container {
-  padding: 5px 20px;
+  // padding: 5px 20px;
   .top {
     display: flex;
     justify-content: space-between;
