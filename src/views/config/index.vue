@@ -58,7 +58,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '6',
+      tabIndex: process.env.NODE_ENV === 'development' ? '6' : '0',
       tabList: [{
         label: '指派网点',
         component: 'Appoint',
