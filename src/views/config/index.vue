@@ -36,10 +36,12 @@ import HateMarketingCRM from './hateMarketingCRM'
 import NeverMarketingCRM from './neverMarketingCRM'
 import BlackListSMS from './blackListSMS'
 import EventPriority from './eventPriority'
+import Hang from './hang'
 import { mapGetters } from 'vuex'
 
 export default {
   components: {
+    Hang,
     Employees,
     Agent,
     Appoint,
@@ -58,7 +60,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '6',
+      tabIndex: '5',
       tabList: [{
         label: '指派网点',
         component: 'Appoint',
@@ -86,6 +88,12 @@ export default {
       {
         label: '用例管理',
         component: 'UseCasePriority',
+        loading: false,
+        roles: ['线索统筹']
+      },
+      {
+        label: '事件分发',
+        component: 'Hang',
         loading: false,
         roles: ['线索统筹']
       },
