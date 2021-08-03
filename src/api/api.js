@@ -205,7 +205,7 @@ export function updateStrategy(data) {
 // 获取运行中事件线索信息
 export function queryStatistics() {
   return request({
-    url: '//event/query_statistics',
+    url: '/event/query_statistics',
     method: 'get'
   })
 }
@@ -424,7 +424,7 @@ export function getEventStatus() {
 // 事件复制
 export function copyEvent(params) {
   return request({
-    url: 'event/copyEvent',
+    url: '/event/copyEvent',
     method: 'get',
     params
   })
@@ -442,7 +442,7 @@ export function offlineEvent(params) {
 // 事件删除
 export function deleteEvent(params) {
   return request({
-    url: 'event/delEvent',
+    url: '/event/delEvent',
     method: 'get',
     params
   })
@@ -451,7 +451,7 @@ export function deleteEvent(params) {
 // 事件排序
 export function setEventPriority(data) {
   return request({
-    url: 'event/setEventPriority',
+    url: '/event/setEventPriority',
     method: 'post',
     data
   })
@@ -460,7 +460,7 @@ export function setEventPriority(data) {
 // 设置事件线索分发上限
 export function setEventDistributeLimit(data) {
   return request({
-    url: 'event/setDistributeLimit',
+    url: '/event/setDistributeLimit',
     method: 'post',
     data
   })
@@ -469,7 +469,7 @@ export function setEventDistributeLimit(data) {
 // 同步产品按钮
 export function syncProduct(data) {
   return request({
-    url: 'event/sync_product',
+    url: '/event/sync_product',
     method: 'post',
     data
   })
@@ -478,7 +478,7 @@ export function syncProduct(data) {
 // 分发按钮
 export function allocate(data) {
   return request({
-    url: 'event/allocate',
+    url: '/event/allocate',
     method: 'post',
     data
   })
