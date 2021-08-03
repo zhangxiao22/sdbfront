@@ -202,6 +202,14 @@ export function updateStrategy(data) {
   })
 }
 
+// 获取运行中事件线索信息
+export function queryStatistics() {
+  return request({
+    url: '//event/query_statistics',
+    method: 'get'
+  })
+}
+
 /** ************************************************ 模型 ************************************************************/
 // 获取模型库
 export function queryModelList() {
