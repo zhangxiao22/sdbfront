@@ -13,6 +13,15 @@
                 :table-data="tableData"
                 :table-column-list="tableColumnList"
                 @render="getList">
+      <template v-slot:main-buttons>
+        <el-button class="button"
+                   icon="el-icon-download"
+                   type="success"
+                   plain
+                   @click="allocateAll">
+          批量分发
+        </el-button>
+      </template>
       <template v-slot:nameSlot="scope">
         <div class="name-group">
           <div class="top">
@@ -160,7 +169,10 @@ export default {
       this.search()
     },
     search() {
-      this.getList(1)
+      this.getList()
+    },
+    allocateAll() {
+      console.log(123)
     },
     handleAllocate(row) {
       this.$confirm(`是否确认事件（${row.name}）分发？`)
