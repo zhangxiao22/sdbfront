@@ -154,15 +154,20 @@ export default {
         eventId: selection.map(n => n.id).join(',')
       }
       if (selection.length) {
-        allocate(data).then(res => {
-          if (res.code === 200) {
-            this.$message({
-              message: '操作成功',
-              type: 'success',
-              duration: '3000'
-            })
-          }
-        })
+        this.loading = true
+        allocate(data)
+          .then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '操作成功',
+                type: 'success',
+                duration: '3000'
+              })
+            }
+          })
+          .finally(() => {
+            this.loading = false
+          })
       } else {
         return this.$message({
           message: '请选择产品',
@@ -172,7 +177,7 @@ export default {
       }
     },
     handleAllocate(row) {
-      this.$confirm(`是否确认事件（${row.name}）分发？`)
+      this.$confirm(`是否确认事件（${row.eventName}）分发？`)
         .then(() => {
           this.loading = true
           allocate({ eventId: row.id }).then(res => {
