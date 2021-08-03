@@ -15,10 +15,10 @@
                 @render="getList">
       <template v-slot:main-buttons>
         <el-button class="button"
-                   icon="el-icon-download"
+                   icon="el-icon-receiving"
                    type="success"
                    plain
-                   @click="allocateAll">
+                   @click="allocateSome">
           批量分发
         </el-button>
       </template>
@@ -72,13 +72,6 @@ export default {
     multiple: {
       type: Boolean,
       default: true
-    },
-    // 表格已选中项
-    selectedItems: {
-      type: Array,
-      default() {
-        return []
-      }
     }
   },
   data() {
@@ -91,8 +84,6 @@ export default {
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      searchForm: {
-      },
       tableColumnList: [
         {
           prop: 'eventName',
@@ -141,10 +132,6 @@ export default {
         }
       ],
       tableData: [
-        {
-          name: 'shijian1',
-          useCaseName: '1000'
-        }
       ],
       selection: []
     }
@@ -159,20 +146,30 @@ export default {
   },
   methods: {
     init() {
-      this.search()
-    },
-    resetAll() {
-      this.reset()
-      this.$refs.table.resetSelection()
-    },
-    reset() {
-      this.search()
-    },
-    search() {
       this.getList()
     },
-    allocateAll() {
-      console.log(123)
+    allocateSome() {
+      const selection = this.$refs.table.getVal()
+      const data = {
+        eventId: selection.map(n => n.id).join(',')
+      }
+      if (selection.length) {
+        allocate(data).then(res => {
+          if (res.code === 200) {
+            this.$message({
+              message: '操作成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
+        })
+      } else {
+        return this.$message({
+          message: '请选择产品',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
     },
     handleAllocate(row) {
       this.$confirm(`是否确认事件（${row.name}）分发？`)
