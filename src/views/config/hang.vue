@@ -47,6 +47,9 @@
           <div class="btn"
                style="color:#1890FF;"
                @click="handleAllocate(scope.row)">分发</div>
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleDownload(scope.row)">下载未补数人员名单</div>
         </div>
       </template>
     </shun-table>
@@ -202,6 +205,19 @@ export default {
       ).finally(() => {
         this.loading = false
       })
+    },
+    // 下载未补数人员名单
+    handleDownload(row) {
+      // console.log(row, '????')
+      if (row.id) {
+        window.open(process.env.VUE_APP_BASE_API + '/event/download_assign_result?eventId=' + row.id, '_self')
+      } else {
+        return this.$message({
+          message: '客群名单不存在',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
     }
 
   }
