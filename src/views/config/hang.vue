@@ -49,7 +49,7 @@
                @click="handleAllocate(scope.row)">分发</div>
           <div class="btn"
                style="color:#1890FF;"
-               @click="handleDownload(scope.row)">下载未补数人员名单</div>
+               @click="handleDownload(scope.row)">下载预分发名单</div>
         </div>
       </template>
     </shun-table>
@@ -91,6 +91,7 @@ export default {
         {
           prop: 'eventName',
           label: '事件名称',
+          fixed: 'left',
           minWidth: 200
         },
         {
@@ -104,8 +105,13 @@ export default {
           minWidth: 100
         },
         {
+          prop: 'preAllocate',
+          label: '预分发',
+          minWidth: 100
+        },
+        {
           prop: 'unAllocate',
-          label: '未下发',
+          label: '未分发',
           minWidth: 100
         },
         {
@@ -121,6 +127,7 @@ export default {
         {
           prop: 'total',
           label: '总线索',
+          fixed: 'left',
           minWidth: 100
         },
         {
@@ -131,6 +138,7 @@ export default {
         {
           prop: 'operate',
           label: '操作',
+          minWidth: 190,
           slot: true
         }
       ],
