@@ -381,15 +381,15 @@ export default {
           },
           name: '同步'
         }, {
-          condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
-          style: {
-            color: '#1890FF'
-          },
-          clickFn() {
-            return _this.handleAllocate(scope.row)
-          },
-          name: '分发'
-        }, {
+          //   condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
+          //   style: {
+          //     color: '#1890FF'
+          //   },
+          //   clickFn() {
+          //     return _this.handleAllocate(scope.row)
+          //   },
+          //   name: '分发'
+          // }, {
           condition: this.judgeStatus(scope.row.status.value) === 2,
           style: {
             color: '#f56c6c'
