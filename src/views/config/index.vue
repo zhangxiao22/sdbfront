@@ -60,7 +60,7 @@ export default {
   },
   data() {
     return {
-      tabIndex: '5',
+      tabIndex: '0',
       tabList: [{
         label: '指派网点',
         component: 'Appoint',
