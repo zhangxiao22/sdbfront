@@ -95,18 +95,13 @@ export default {
           minWidth: 200
         },
         {
-          prop: 'allocated',
-          label: '已下发',
+          prop: 'failedSupply',
+          label: '补数失败',
           minWidth: 100
         },
         {
-          prop: 'toAllocate',
-          label: '待下发',
-          minWidth: 100
-        },
-        {
-          prop: 'preAllocate',
-          label: '预分发',
+          prop: 'unSupply',
+          label: '未补数',
           minWidth: 100
         },
         {
@@ -115,13 +110,18 @@ export default {
           minWidth: 100
         },
         {
-          prop: 'failedSupply',
-          label: '补数失败',
+          prop: 'preAllocate',
+          label: '预分发',
           minWidth: 100
         },
         {
-          prop: 'unSupply',
-          label: '未补数',
+          prop: 'toAllocate',
+          label: '待下发',
+          minWidth: 100
+        },
+        {
+          prop: 'allocated',
+          label: '已下发',
           minWidth: 100
         },
         {
