@@ -388,7 +388,7 @@ export default {
           clickFn() {
             return _this.handleDownloadAssign(scope.row)
           },
-          name: '下载未补数人员名单'
+          name: '下载预分发名单'
         }, {
           //   condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
           //   style: {
