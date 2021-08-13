@@ -103,12 +103,12 @@ export default {
       //   loading: false,
       //   roles: ['用例管理']
       // },
-      // {
-      //   label: '事件管理',
-      //   component: 'EventPriority',
-      //   loading: false,
-      //   roles: ['用例管理']
-      // },
+      {
+        label: '事件管理',
+        component: 'EventPriority',
+        loading: false,
+        roles: ['用例管理']
+      },
       {
         label: '岗位管理',
         component: 'Assign',
