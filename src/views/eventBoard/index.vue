@@ -381,6 +381,15 @@ export default {
           },
           name: '同步'
         }, {
+          condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
+          style: {
+            color: '#1890FF'
+          },
+          clickFn() {
+            return _this.handleDownloadAssign(scope.row)
+          },
+          name: '下载预分发名单'
+        }, {
           //   condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
           //   style: {
           //     color: '#1890FF'
@@ -610,6 +619,19 @@ export default {
       // console.log(row, '????')
       if (row.group.length) {
         window.open(process.env.VUE_APP_BASE_API + '/customer/customerDownload?baseId=' + row.id, '_self')
+      } else {
+        return this.$message({
+          message: '客群名单不存在',
+          type: 'warning',
+          duration: '3000'
+        })
+      }
+    },
+    // 下载未补数人员名单
+    handleDownloadAssign(row) {
+      // console.log(row, '????')
+      if (row.id) {
+        window.open(process.env.VUE_APP_BASE_API + '/event/download_assign_result?eventId=' + row.id, '_self')
       } else {
         return this.$message({
           message: '客群名单不存在',

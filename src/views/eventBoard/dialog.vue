@@ -253,8 +253,11 @@
            class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary"
+                   :loading="syncLoading"
+                   @click="handleSyncProduct">同 步</el-button>
+        <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="ensureSave">确 定</el-button>
+                   @click="ensureSave">应 用</el-button>
       </div>
     </el-dialog>
     <!-- 产品 -->
@@ -288,7 +291,7 @@
 </template>
 
 <script>
-import { updateStrategy, getPloyDetail } from '@/api/api'
+import { updateStrategy, getPloyDetail, syncProduct } from '@/api/api'
 import gsap from 'gsap'
 
 import ShunDrawer from '@/components/ShunDrawer'
@@ -317,6 +320,11 @@ export default {
   data() {
     const _this = this
     return {
+      eventInfo: {
+        eventId: '',
+        eventName: ''
+      },
+      syncLoading: false,
       buttonLoading: false,
       SELF_COLUMN_LIST,
       COMMON_COLUMN_LIST,
@@ -410,12 +418,113 @@ export default {
     // this.reset()
   },
   methods: {
+    handleSyncProduct() {
+      this.$refs.refCustomerForm.validate((valid, field) => {
+        // console.log(valid, field)
+        if (valid) {
+          // 客群
+          // console.log(this.group)
+          const data = this.group.map((gn, gi) => {
+            return {
+              // 客群id
+              // customerInfoId: gn.gid,
+              // 策略
+              strategyDetailList: gn.ployTabs.map((pn, pi) => {
+                return {
+                  // 策略id
+                  abstractId: pn.abstractId,
+                  // 产品id
+                  productIdList: pn.product.map(n => n.id),
+                  // 权益id
+                  couponIdList: pn.interest.map(n => n.id),
+                  // 话术
+                  scriptList: pn.channel.find(item => {
+                    return item.value === 1
+                  })?.model.map(n => {
+                    return {
+                      scriptId: n.id,
+                      scriptContent: n.content,
+                      scriptInstId: n.scriptInstId
+                    }
+                  })
+                }
+              })
+            }
+          })
+          // console.log(data)
+          // reject()
+          const param = {
+            // baseId: this.id,
+            strategySaveCriteriaList: data
+          }
+          console.log('param', param)
+          this.buttonLoading = true
+          const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件【${this.eventInfo.eventName}】同步？`]
+          const newDatas = []
+          const h = this.$createElement
+          for (const i in confirmText) {
+            newDatas.push(h('p', null, confirmText[i]))
+          }
+          this.$confirm(
+            '提示',
+            {
+              title: '提示',
+              message: h('div', null, newDatas),
+              type: 'warning'
+            }
+          ).then(() => {
+            this.syncLoading = true
+            updateStrategy(param).then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '应用成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+              }
+            })
+          })
+            .then(() => {
+              syncProduct({ eventId: this.eventInfo.eventId }).then(res => {
+                if (res.code === 200) {
+                  this.$message({
+                    message: '同步成功',
+                    type: 'success',
+                    duration: '3000'
+                  })
+                }
+              })
+            })
+            .finally(() => {
+              this.$emit('update:visible', false)
+              this.syncLoading = false
+            })
+        } else {
+          // console.log(field)
+          let errList = Object.keys(field).map(key => this.getIndex(key))
+          errList = this.sortIndex(errList)
+          // console.log(errList, '???')
+          const [gi, pi] = errList[0]
+          // console.log(gi, pi)
+          this.groupName = gi + ''
+          this.$nextTick(() => {
+            // console.log(this.group[gi])
+            if (!isNaN(pi)) {
+              // console.log(this.group[gi].ployTabs[pi].name)
+              this.group[gi].ployTabsValue = this.group[gi].ployTabs[pi].name
+            }
+          })
+        }
+      })
+    },
     handleClose() {
       this.$emit('update:visible', false)
       // this.$refs['formRef'].resetFields()
     },
     update(row) {
       console.log('row', row)
+      this.eventInfo.eventId = row.id
+      this.eventInfo.eventName = row.name
       this.reset(row.id)
     },
     reset(id) {
@@ -466,7 +575,7 @@ export default {
             return true
           }
         }).map(m => {
-          console.log(m)
+          // console.log(m)
           return Object.assign({}, CHANNEL_OPT.find(x => {
             return x.value === m.channel.value
           }), {

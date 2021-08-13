@@ -22,20 +22,20 @@
           批量分发
         </el-button>
       </template>
-      <template v-slot:nameSlot="scope">
+      <template v-slot:eventNameSlot="scope">
         <div class="name-group">
           <div class="top">
             <div class="status"
                  style="color:rgb(103, 194, 58);border:1px solid rgb(103, 194, 58)">
               运行中
             </div>
-            <el-tooltip :content="scope.row.name"
-                        placement="top-start">
-              <div class="name elip bold"
-                   @click="eventDetail(scope.row.id)">
-                {{ scope.row.name }}
-              </div>
-            </el-tooltip>
+            <!-- <el-tooltip :content="scope.row.eventName"
+                        placement="top-start"> -->
+            <div class="name elip bold"
+                 @click="eventDetail(scope.row.id)">
+              {{ scope.row.eventName }}
+            </div>
+            <!-- </el-tooltip> -->
           </div>
           <div class="bottom">
             {{ scope.row.startDate || '未知时间' }} 至 {{ scope.row.endDate || '未知时间' }}
@@ -92,27 +92,8 @@ export default {
           prop: 'eventName',
           label: '事件名称',
           fixed: 'left',
-          minWidth: 200
-        },
-        {
-          prop: 'allocated',
-          label: '已下发',
-          minWidth: 100
-        },
-        {
-          prop: 'toAllocate',
-          label: '待下发',
-          minWidth: 100
-        },
-        {
-          prop: 'preAllocate',
-          label: '预分发',
-          minWidth: 100
-        },
-        {
-          prop: 'unAllocate',
-          label: '未分发',
-          minWidth: 100
+          minWidth: 300,
+          slot: true
         },
         {
           prop: 'failedSupply',
@@ -122,6 +103,26 @@ export default {
         {
           prop: 'unSupply',
           label: '未补数',
+          minWidth: 100
+        },
+        {
+          prop: 'unAllocate',
+          label: '未分发',
+          minWidth: 100
+        },
+        {
+          prop: 'preAllocate',
+          label: '预分发',
+          minWidth: 100
+        },
+        {
+          prop: 'toAllocate',
+          label: '待下发',
+          minWidth: 100
+        },
+        {
+          prop: 'allocated',
+          label: '已下发',
           minWidth: 100
         },
         {
@@ -236,6 +237,34 @@ export default {
 @import "~@/styles/mixin.scss";
 
 .container {
+  .name-group {
+    // padding-top: 5px;
+    .top {
+      display: flex;
+      .status {
+        background: #fff;
+        border: 1px solid #b7eb8f;
+        border-radius: 2px;
+        border-radius: 2px;
+        // width: 52px;
+        height: 22px;
+        @include center-center;
+        padding: 0 4px;
+        // color: #52c41a;
+        margin-right: 5px;
+        font-size: 12px;
+      }
+      .name {
+        flex: 1;
+        color: $blue;
+        cursor: pointer;
+        // &.link {
+        //   color: $blue;
+        //   cursor: pointer;
+        // }
+      }
+    }
+  }
   .unit {
     margin-left: 10px;
   }
