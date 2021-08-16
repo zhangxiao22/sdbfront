@@ -24,10 +24,10 @@
           <div class="btn"
                style="color:#1890FF;"
                @click="handleEditRule(scope.row)">分配规则</div>
-          <div v-if="scope.row.status.value!==1"
+          <!-- <div v-if="scope.row.status.value!==1"
                class="btn"
                style="color:#1890FF;"
-               @click="handleRunButton(scope.row)">运行</div>
+               @click="handleRunButton(scope.row)">运行</div> -->
           <div class="btn"
                style="color:#1890FF;"
                @click="handleEditButton(scope.row)">编辑</div>
@@ -380,11 +380,11 @@ export default {
           label: '名称',
           width: 200
         },
-        {
-          prop: 'status.label',
-          label: '状态',
-          width: 100
-        },
+        // {
+        //   prop: 'status.label',
+        //   label: '状态',
+        //   width: 100
+        // },
         {
           prop: 'mtime',
           label: '更新时间',
