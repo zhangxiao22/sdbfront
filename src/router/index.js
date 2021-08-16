@@ -133,7 +133,7 @@ let asyncRoutes = [
         path: 'config',
         name: 'Config',
         component: () => import(/* webpackChunkName: "config" */ '@/views/config/index'),
-        meta: { title: '系统配置', icon: 'config', roles: ['线索统筹', '业务管理', '支行业务管理'] }
+        meta: { title: '系统配置', icon: 'config', roles: ['线索统筹', '业务管理', '支行业务管理', '用例管理'] }
       }
     ]
   },
