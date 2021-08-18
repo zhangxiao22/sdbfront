@@ -201,7 +201,6 @@
                           <div class="time">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.moment }}</div>
                         </div>
                       </div>
-                      <div class="mode">{{ channelItem.sendMode.label }}</div>
                     </div>
                     <div v-if="channelItem.pushType.value === 2"
                          class="rule right-left">
@@ -1011,14 +1010,6 @@ export default {
                       }
                     }
                   }
-                }
-                .mode {
-                  font-size: 14px;
-                  // font-weight: bold;
-                  margin-top: 5px;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
                 }
               }
               .right-right {

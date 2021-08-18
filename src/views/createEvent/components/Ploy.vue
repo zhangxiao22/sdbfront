@@ -618,7 +618,6 @@
                       <!-- 跟尾短信end -->
                     </template>
                     <!-- 短信 -->
-                    <!-- {{ channelCardItem }} -->
                     <template v-if="channelCardItem.value===2">
                       <el-form-item label="发送模式："
                                     required

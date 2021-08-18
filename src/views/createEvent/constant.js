@@ -69,7 +69,7 @@ export const CHANNEL_OPT = [
     ],
     // 精准内测
     test: '',
-    smsSendMode: 1,
+    smsSendMode: 0,
     type: [{
       id: 1,
       name: '定时型',
