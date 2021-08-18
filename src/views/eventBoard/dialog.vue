@@ -238,6 +238,130 @@
                               </template>
                             </el-table-column>
                           </el-table>
+                          <!-- 预热短信 -->
+                          <el-form-item label="预热短信：">
+                            <el-button icon="el-icon-plus"
+                                       @click="addCrmBeforeSms(channelCardItem,ci)">
+                              添加预热短信
+                            </el-button>
+                          </el-form-item>
+                          <el-table v-show="channelCardItem.beforeSms.length"
+                                    :data="channelCardItem.beforeSms"
+                                    border
+                                    style="width: 100%;margin-bottom:18px;"
+                                    @cell-mouse-enter="handleMouseEnter"
+                                    @cell-mouse-leave="handleMouseLeave">
+                            <el-table-column label="短信内容"
+                                             :min-width="400">
+                              <div slot-scope="scope"
+                                   class="table-desc">
+                                <span>{{ scope.row.content }}</span>
+                                <el-popover v-model="scope.row.isEdit"
+                                            placement="top"
+                                            width="300">
+                                  <el-input v-model.trim="scope.row._content"
+                                            type="textarea"
+                                            :rows="5"
+                                            style="margin-bottom:10px;"
+                                            placeholder="请输入内容" />
+                                  <div style="text-align: right; margin: 0">
+                                    <el-button size="mini"
+                                               type="text"
+                                               @click="scope.row.isEdit = false">取消</el-button>
+                                    <el-button type="primary"
+                                               size="mini"
+                                               @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                  </div>
+                                  <div v-show="true"
+                                       slot="reference"
+                                       class="table-edit touch-tap-x"
+                                       @click="scope.row._content = scope.row.content">
+                                    <i class="el-icon-edit" />
+                                  </div>
+                                </el-popover>
+                              </div>
+                            </el-table-column>
+                            <el-table-column prop="description"
+                                             show-overflow-tooltip
+                                             label="短信描述" />
+                            <el-table-column prop="category.label"
+                                             show-overflow-tooltip
+                                             label="短信分类" />
+                            <el-table-column label="操作"
+                                             width="100">
+                              <template slot-scope="scope">
+                                <el-popconfirm title="确定删除吗？"
+                                               @onConfirm="deleteCrmBeforeSms(channelCardItem,ci,scope.$index)">
+                                  <el-button slot="reference"
+                                             type="text"
+                                             style="color:#f56c6c;"
+                                             size="small">删除</el-button>
+                                </el-popconfirm>
+                              </template>
+                            </el-table-column>
+                          </el-table>
+                          <!-- 跟尾短信 -->
+                          <el-form-item label="跟尾短信：">
+                            <el-button icon="el-icon-plus"
+                                       @click="addCrmAfterSms(channelCardItem,ci)">
+                              添加跟尾短信
+                            </el-button>
+                          </el-form-item>
+                          <el-table v-show="channelCardItem.afterSms.length"
+                                    :data="channelCardItem.afterSms"
+                                    border
+                                    style="width: 100%;margin-bottom:18px;"
+                                    @cell-mouse-enter="handleMouseEnter"
+                                    @cell-mouse-leave="handleMouseLeave">
+                            <el-table-column label="短信内容"
+                                             :min-width="400">
+                              <div slot-scope="scope"
+                                   class="table-desc">
+                                <span>{{ scope.row.content }}</span>
+                                <el-popover v-model="scope.row.isEdit"
+                                            placement="top"
+                                            width="300">
+                                  <el-input v-model.trim="scope.row._content"
+                                            type="textarea"
+                                            :rows="5"
+                                            style="margin-bottom:10px;"
+                                            placeholder="请输入内容" />
+                                  <div style="text-align: right; margin: 0">
+                                    <el-button size="mini"
+                                               type="text"
+                                               @click="scope.row.isEdit = false">取消</el-button>
+                                    <el-button type="primary"
+                                               size="mini"
+                                               @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                  </div>
+                                  <div v-show="true"
+                                       slot="reference"
+                                       class="table-edit touch-tap-x"
+                                       @click="scope.row._content = scope.row.content">
+                                    <i class="el-icon-edit" />
+                                  </div>
+                                </el-popover>
+                              </div>
+                            </el-table-column>
+                            <el-table-column prop="description"
+                                             show-overflow-tooltip
+                                             label="短信描述" />
+                            <el-table-column prop="category.label"
+                                             show-overflow-tooltip
+                                             label="短信分类" />
+                            <el-table-column label="操作"
+                                             width="100">
+                              <template slot-scope="scope">
+                                <el-popconfirm title="确定删除吗？"
+                                               @onConfirm="deleteCrmAfterSms(channelCardItem,ci,scope.$index)">
+                                  <el-button slot="reference"
+                                             type="text"
+                                             style="color:#f56c6c;"
+                                             size="small">删除</el-button>
+                                </el-popconfirm>
+                              </template>
+                            </el-table-column>
+                          </el-table>
                         </template>
                       </div>
                     </el-card>
@@ -287,6 +411,28 @@
               :show-selection="true" />
       </template>
     </ShunDrawer>
+    <!-- 预热短信 -->
+    <ShunDrawer title="选择短信"
+                :show.sync="showBeforeSms"
+                @submit="submitBeforeSms()">
+      <template v-slot:container>
+        <sms ref="beforeSmsRef"
+             :multiple="false"
+             :common-template="true"
+             :show-selection="true" />
+      </template>
+    </ShunDrawer>
+    <!-- 跟尾短信 -->
+    <ShunDrawer title="选择短信"
+                :show.sync="showAfterSms"
+                @submit="submitAfterSms()">
+      <template v-slot:container>
+        <sms ref="afterSmsRef"
+             multiple
+             :common-template="true"
+             :show-selection="true" />
+      </template>
+    </ShunDrawer>
   </div>
 </template>
 
@@ -299,6 +445,7 @@ import ShunDrawer from '@/components/ShunDrawer'
 import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
+import Sms from '@/views/sms/index'
 
 import { MessageBox, Message } from 'element-ui'
 import { parseTime, SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
@@ -306,7 +453,7 @@ import { CHANNEL_OPT } from '@/views/createEvent/constant'
 
 export default {
   components: {
-    Product, Interest, Word, ShunDrawer
+    Product, Interest, Word, ShunDrawer, Sms
   },
   props: {
     visible: {
@@ -430,6 +577,7 @@ export default {
               // customerInfoId: gn.gid,
               // 策略
               strategyDetailList: gn.ployTabs.map((pn, pi) => {
+                // console.log('pn', pn)
                 return {
                   // 策略id
                   abstractId: pn.abstractId,
@@ -446,18 +594,37 @@ export default {
                       scriptContent: n.content,
                       scriptInstId: n.scriptInstId
                     }
+                  }),
+                  // 预热短信
+                  advanceList: pn.channel.find(item => {
+                    return item.value === 1
+                  })?.beforeSms.map(n => {
+                    return {
+                      advanceId: n.id,
+                      advanceContent: n.content,
+                      advanceInstId: n.beforeSmsInstId
+                    }
+                  }),
+                  // 跟尾短信
+                  followList: pn.channel.find(item => {
+                    return item.value === 1
+                  })?.afterSms.map(n => {
+                    return {
+                      followId: n.id,
+                      followContent: n.content,
+                      followInstId: n.afterSmsInstId
+                    }
                   })
                 }
               })
             }
           })
-          // console.log(data)
+          console.log('data', data)
           // reject()
           const param = {
             // baseId: this.id,
             strategySaveCriteriaList: data
           }
-          console.log('param', param)
           this.buttonLoading = true
           const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件【${this.eventInfo.eventName}】同步？`]
           const newDatas = []
@@ -586,7 +753,21 @@ export default {
                 isEdit: false,
                 isHover: false
               })
-            }) : m.meterialInfoList
+            }) : m.meterialInfoList,
+            beforeSms: m.advanceSMSInfoList.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                isHover: false
+              })
+            }),
+            afterSms: m.followSMSInfoList.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                isHover: false
+              })
+            })
           }, (() => {
             const obj = {}
             return obj
@@ -614,6 +795,7 @@ export default {
                 ployTabIndex: n.strategyDetailVOList.length
               }
             })
+            console.log('group', this.group)
             resolve()
           } else {
             reject()
@@ -663,6 +845,26 @@ export default {
                       scriptContent: n.content,
                       scriptInstId: n.scriptInstId
                     }
+                  }),
+                  // 预热短信
+                  advanceList: pn.channel.find(item => {
+                    return item.value === 1
+                  })?.beforeSms.map(n => {
+                    return {
+                      advanceId: n.id,
+                      advanceContent: n.content,
+                      advanceInstId: n.beforeSmsInstId
+                    }
+                  }),
+                  // 跟尾短信
+                  followList: pn.channel.find(item => {
+                    return item.value === 1
+                  })?.afterSms.map(n => {
+                    return {
+                      followId: n.id,
+                      followContent: n.content,
+                      followInstId: n.afterSmsInstId
+                    }
                   })
                 }
               })
@@ -674,7 +876,7 @@ export default {
             // baseId: this.id,
             strategySaveCriteriaList: data
           }
-          console.log('param', param)
+          // console.log('param', param)
           this.buttonLoading = true
           updateStrategy(param).then(res => {
             if (res.code === 200) {
@@ -832,6 +1034,89 @@ export default {
         )
         // 校验
         this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
+    // crm选择预热短信
+    addCrmBeforeSms(item, ci) {
+      this.showBeforeSms = true
+      this.$nextTick(() => {
+        this.$refs.beforeSmsRef.reset()
+        this.$refs.beforeSmsRef.parentRef.setSelection([])
+      })
+      this.channelIndex = ci
+    },
+    // crm删除预热短信
+    deleteCrmBeforeSms(item, ci, i) {
+      // console.log(item, ci, i)
+      item.beforeSms.splice(i, 1)
+      this.channelIndex = ci
+
+      // 校验
+      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+    },
+    // 选择预热短信-确认
+    submitBeforeSms() {
+      const val = this.$refs.beforeSmsRef.parentRef.getVal()
+      if (val.length) {
+        this.showBeforeSms = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].beforeSms.push(
+          ...val.map(n => {
+            return Object.assign({}, n, {
+              _content: n.content,
+              isEdit: false,
+              isHover: false
+            })
+          })
+        )
+        // 校验
+        // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+      } else {
+        Message({
+          message: '请选择至少一项',
+          type: 'error',
+          duration: 5 * 1000
+        })
+      }
+    },
+    // crm选择跟尾短信
+    addCrmAfterSms(item, ci) {
+      this.showAfterSms = true
+      this.$nextTick(() => {
+        this.$refs.afterSmsRef.reset()
+        this.$refs.afterSmsRef.parentRef.setSelection([])
+      })
+      this.channelIndex = ci
+    },
+    // crm删除跟尾短信
+    deleteCrmAfterSms(item, ci, i) {
+      item.afterSms.splice(i, 1)
+      this.channelIndex = ci
+
+      // 校验
+      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+    },
+    // 选择跟尾短信-确认
+    submitAfterSms() {
+      const val = this.$refs.afterSmsRef.parentRef.getVal()
+      if (val.length) {
+        this.showAfterSms = false
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms.push(
+          ...val.map(n => {
+            return Object.assign({}, n, {
+              _content: n.content,
+              isEdit: false,
+              isHover: false
+            })
+          })
+        )
+        // 校验
+        // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
         Message({
           message: '请选择至少一项',
