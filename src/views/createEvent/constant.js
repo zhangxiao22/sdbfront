@@ -27,12 +27,12 @@ export const CHANNEL_OPT = [
       id: 1,
       icon: 'el-icon-alarm-clock',
       name: '定时型'
-    },
-    {
-      id: 3,
-      icon: 'el-icon-position',
-      name: '触发型'
     }
+      // {
+      //   id: 3,
+      //   icon: 'el-icon-position',
+      //   name: '触发型'
+      // }
     ],
     beforeSms: [],
     afterSms: [],
@@ -74,20 +74,20 @@ export const CHANNEL_OPT = [
       id: 1,
       name: '定时型',
       icon: 'el-icon-alarm-clock'
-    },
-    // {
-    //   id: 2,
-    //   name: '规则型',
-    //   icon: 'el-icon-tickets'
-    // },
-    {
-      id: 3,
-      name: '触发型',
-      icon: 'el-icon-position'
     }
+      // {
+      //   id: 2,
+      //   name: '规则型',
+      //   icon: 'el-icon-tickets'
+      // },
+      // {
+      //   id: 3,
+      //   name: '触发型',
+      //   icon: 'el-icon-position'
+      // }
     ],
     model: []
-  },
+  }
   // {
   //   value: 3,
   //   label: '微信',
@@ -114,37 +114,37 @@ export const CHANNEL_OPT = [
   //   }],
   //   model: []
   // }
-  {
-    value: 5,
-    label: 'STM',
-    disabled: false,
-    icon: 'stm',
-    iconColor: '#990099',
-    chooseType: 1,
-    isBigDeposit: 0,
-    type: [{
-      id: 1,
-      name: '定时型',
-      icon: 'el-icon-alarm-clock'
-    }],
-    // 定时型的值-起止时间
-    dateRange: []
-  },
-  {
-    value: 6,
-    label: '智能客服',
-    disabled: false,
-    icon: 'kf3',
-    iconColor: '#f56c6c',
-    chooseType: 1,
-    type: [{
-      id: 1,
-      name: '定时型',
-      icon: 'el-icon-alarm-clock'
-    }],
-    // 定时型的值-起止时间
-    dateRange: []
-  }
+  // {
+  //   value: 5,
+  //   label: 'STM',
+  //   disabled: false,
+  //   icon: 'stm',
+  //   iconColor: '#990099',
+  //   chooseType: 1,
+  //   isBigDeposit: 0,
+  //   type: [{
+  //     id: 1,
+  //     name: '定时型',
+  //     icon: 'el-icon-alarm-clock'
+  //   }],
+  //   // 定时型的值-起止时间
+  //   dateRange: []
+  // },
+  // {
+  //   value: 6,
+  //   label: '智能客服',
+  //   disabled: false,
+  //   icon: 'kf3',
+  //   iconColor: '#f56c6c',
+  //   chooseType: 1,
+  //   type: [{
+  //     id: 1,
+  //     name: '定时型',
+  //     icon: 'el-icon-alarm-clock'
+  //   }],
+  //   // 定时型的值-起止时间
+  //   dateRange: []
+  // }
 ]
 export const TIMING_OPT = [
   {
