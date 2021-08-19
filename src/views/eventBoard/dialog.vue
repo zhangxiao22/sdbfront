@@ -242,56 +242,26 @@
                           <el-form-item label="预热短信：">
                             <el-button icon="el-icon-plus"
                                        @click="addCrmBeforeSms(channelCardItem,ci)">
-                              添加预热短信
+                              选择模版
                             </el-button>
                           </el-form-item>
-                          <el-table v-show="channelCardItem.beforeSms.length"
+                          <el-table v-show="channelCardItem.beforeSms&&channelCardItem.beforeSms.length"
                                     :data="channelCardItem.beforeSms"
                                     border
-                                    style="width: 100%;margin-bottom:18px;"
-                                    @cell-mouse-enter="handleMouseEnter"
-                                    @cell-mouse-leave="handleMouseLeave">
-                            <el-table-column label="短信内容"
-                                             :min-width="400">
-                              <div slot-scope="scope"
-                                   class="table-desc">
-                                <span>{{ scope.row.content }}</span>
-                                <el-popover v-model="scope.row.isEdit"
-                                            placement="top"
-                                            width="300">
-                                  <el-input v-model.trim="scope.row._content"
-                                            type="textarea"
-                                            :rows="5"
-                                            style="margin-bottom:10px;"
-                                            placeholder="请输入内容" />
-                                  <div style="text-align: right; margin: 0">
-                                    <el-button size="mini"
-                                               type="text"
-                                               @click="scope.row.isEdit = false">取消</el-button>
-                                    <el-button type="primary"
-                                               size="mini"
-                                               @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
-                                  </div>
-                                  <div v-show="true"
-                                       slot="reference"
-                                       class="table-edit touch-tap-x"
-                                       @click="scope.row._content = scope.row.content">
-                                    <i class="el-icon-edit" />
-                                  </div>
-                                </el-popover>
-                              </div>
-                            </el-table-column>
+                                    style="width: 100%;margin-bottom:18px;">
+                            <el-table-column prop="content"
+                                             :min-width="300"
+                                             label="预热短信内容" />
                             <el-table-column prop="description"
                                              show-overflow-tooltip
-                                             label="短信描述" />
-                            <el-table-column prop="category.label"
-                                             show-overflow-tooltip
-                                             label="短信分类" />
-                            <el-table-column label="操作"
+                                             :min-width="300"
+                                             label="预热短信描述" />
+                            <el-table-column fixed="right"
+                                             label="操作"
                                              width="100">
                               <template slot-scope="scope">
                                 <el-popconfirm title="确定删除吗？"
-                                               @onConfirm="deleteCrmBeforeSms(channelCardItem,ci,scope.$index)">
+                                               @onConfirm="deleteCrmBeforeSms(channelCardItem,scope.$index)">
                                   <el-button slot="reference"
                                              type="text"
                                              style="color:#f56c6c;"
@@ -300,60 +270,31 @@
                               </template>
                             </el-table-column>
                           </el-table>
+                          <!-- 预热短信end -->
                           <!-- 跟尾短信 -->
                           <el-form-item label="跟尾短信：">
                             <el-button icon="el-icon-plus"
                                        @click="addCrmAfterSms(channelCardItem,ci)">
-                              添加跟尾短信
+                              选择模版
                             </el-button>
                           </el-form-item>
-                          <el-table v-show="channelCardItem.afterSms.length"
+                          <el-table v-show="channelCardItem.afterSms&&channelCardItem.afterSms.length"
                                     :data="channelCardItem.afterSms"
                                     border
-                                    style="width: 100%;margin-bottom:18px;"
-                                    @cell-mouse-enter="handleMouseEnter"
-                                    @cell-mouse-leave="handleMouseLeave">
-                            <el-table-column label="短信内容"
-                                             :min-width="400">
-                              <div slot-scope="scope"
-                                   class="table-desc">
-                                <span>{{ scope.row.content }}</span>
-                                <el-popover v-model="scope.row.isEdit"
-                                            placement="top"
-                                            width="300">
-                                  <el-input v-model.trim="scope.row._content"
-                                            type="textarea"
-                                            :rows="5"
-                                            style="margin-bottom:10px;"
-                                            placeholder="请输入内容" />
-                                  <div style="text-align: right; margin: 0">
-                                    <el-button size="mini"
-                                               type="text"
-                                               @click="scope.row.isEdit = false">取消</el-button>
-                                    <el-button type="primary"
-                                               size="mini"
-                                               @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
-                                  </div>
-                                  <div v-show="true"
-                                       slot="reference"
-                                       class="table-edit touch-tap-x"
-                                       @click="scope.row._content = scope.row.content">
-                                    <i class="el-icon-edit" />
-                                  </div>
-                                </el-popover>
-                              </div>
-                            </el-table-column>
+                                    style="width: 100%;margin-bottom:18px;">
+                            <el-table-column prop="content"
+                                             :min-width="300"
+                                             label="跟尾短信内容" />
                             <el-table-column prop="description"
                                              show-overflow-tooltip
-                                             label="短信描述" />
-                            <el-table-column prop="category.label"
-                                             show-overflow-tooltip
-                                             label="短信分类" />
-                            <el-table-column label="操作"
+                                             :min-width="300"
+                                             label="跟尾短信描述" />
+                            <el-table-column fixed="right"
+                                             label="操作"
                                              width="100">
                               <template slot-scope="scope">
                                 <el-popconfirm title="确定删除吗？"
-                                               @onConfirm="deleteCrmAfterSms(channelCardItem,ci,scope.$index)">
+                                               @onConfirm="deleteCrmAfterSms(channelCardItem,scope.$index)">
                                   <el-button slot="reference"
                                              type="text"
                                              style="color:#f56c6c;"
@@ -362,6 +303,8 @@
                               </template>
                             </el-table-column>
                           </el-table>
+                          <!-- {{ channelCardItem.afterSms.map(n=>n.id) }} -->
+                          <!-- 跟尾短信end -->
                         </template>
                       </div>
                     </el-card>
@@ -577,7 +520,7 @@ export default {
               // customerInfoId: gn.gid,
               // 策略
               strategyDetailList: gn.ployTabs.map((pn, pi) => {
-                // console.log('pn', pn)
+                console.log('pn', pn)
                 return {
                   // 策略id
                   abstractId: pn.abstractId,
@@ -754,20 +697,8 @@ export default {
                 isHover: false
               })
             }) : m.meterialInfoList,
-            beforeSms: m.advanceSMSInfoList.map(n => {
-              return Object.assign({}, n, {
-                _content: n.content,
-                isEdit: false,
-                isHover: false
-              })
-            }),
-            afterSms: m.followSMSInfoList.map(n => {
-              return Object.assign({}, n, {
-                _content: n.content,
-                isEdit: false,
-                isHover: false
-              })
-            })
+            beforeSms: m.advanceSMSInfoList || [],
+            afterSms: m.followSMSInfoList || []
           }, (() => {
             const obj = {}
             return obj
