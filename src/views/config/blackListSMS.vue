@@ -133,6 +133,17 @@
                     style="width:90%;"
                     maxlength="50" />
         </el-form-item>
+        <el-form-item label="手机号码："
+                      :rules="[
+                        {min:11 , max: 11, message: '请输入11位数字', trigger: 'blur'},
+                        {pattern: /^[1-9][0-9]{10}$/, message: '请输入正确的手机号码', trigger: 'blur'}
+                      ]"
+                      prop="phone">
+          <el-input v-model.trim="addInfo.phone"
+                    show-word-limit
+                    style="width:90%;"
+                    maxlength="11" />
+        </el-form-item>
         <el-form-item label="备注："
                       prop="remarks">
           <el-input v-model.trim="addInfo.remarks"
@@ -205,6 +216,7 @@ export default {
       addInfo: {
         customerAccount: '',
         name: '',
+        phone: '',
         remarks: ''
       },
       searchForm: {
@@ -220,6 +232,11 @@ export default {
           label: '客户姓名',
           minWidth: 100
           // sortable: true
+        },
+        {
+          prop: 'phoneNumber',
+          label: '手机号码',
+          minWidth: 100
         },
         {
           prop: 'startDate',
@@ -280,6 +297,7 @@ export default {
           const data = {
             name: this.addInfo.name,
             customerAccount: this.addInfo.customerAccount,
+            phoneNumber: this.addInfo.phone,
             remarks: this.addInfo.remarks,
             category: this.category
           }
