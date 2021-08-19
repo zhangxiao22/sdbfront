@@ -782,9 +782,9 @@ export default {
                     return item.value === 1
                   })?.beforeSms.map(n => {
                     return {
-                      advanceId: n.id,
-                      advanceContent: n.content,
-                      advanceInstId: n.beforeSmsInstId
+                      advanceId: n.id
+                      // advanceContent: n.content,
+                      // advanceInstId: n.beforeSmsInstId
                     }
                   }),
                   // 跟尾短信
@@ -792,9 +792,9 @@ export default {
                     return item.value === 1
                   })?.afterSms.map(n => {
                     return {
-                      followId: n.id,
-                      followContent: n.content,
-                      followInstId: n.afterSmsInstId
+                      followId: n.id
+                      // followContent: n.content,
+                      // followInstId: n.afterSmsInstId
                     }
                   })
                 }
