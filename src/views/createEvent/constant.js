@@ -27,12 +27,12 @@ export const CHANNEL_OPT = [
       id: 1,
       icon: 'el-icon-alarm-clock',
       name: '定时型'
-    },
-    {
-      id: 3,
-      icon: 'el-icon-position',
-      name: '触发型'
     }
+      // {
+      //   id: 3,
+      //   icon: 'el-icon-position',
+      //   name: '触发型'
+      // }
     ],
     beforeSms: [],
     afterSms: [],
@@ -69,22 +69,22 @@ export const CHANNEL_OPT = [
     ],
     // 精准内测
     test: '',
-    smsSendMode: 0,
+    smsSendMode: 1,
     type: [{
       id: 1,
       name: '定时型',
       icon: 'el-icon-alarm-clock'
-    },
-    // {
-    //   id: 2,
-    //   name: '规则型',
-    //   icon: 'el-icon-tickets'
-    // },
-    {
-      id: 3,
-      name: '触发型',
-      icon: 'el-icon-position'
     }
+      // {
+      //   id: 2,
+      //   name: '规则型',
+      //   icon: 'el-icon-tickets'
+      // },
+      // {
+      //   id: 3,
+      //   name: '触发型',
+      //   icon: 'el-icon-position'
+      // }
     ],
     model: []
   }
