@@ -180,6 +180,7 @@
                         {{ typeItem.name }}
                       </div>
                     </template>
+                    <el-tag v-if="channelItem.smsSendMode" type="success" style="margin-top: 12px;">{{ channelItem.smsSendMode === 0 ? '重复下发' : '均分下发' }}</el-tag>
 
                   </div>
                   <div class="right">
@@ -201,7 +202,6 @@
                           <div class="time">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.moment }}</div>
                         </div>
                       </div>
-                      <div class="mode">{{ channelItem.sendMode.label }}</div>
                     </div>
                     <div v-if="channelItem.pushType.value === 2"
                          class="rule right-left">
@@ -430,6 +430,8 @@ export default {
               interest: m.couponInfoList,
               channels: m.strategyInfoList.map(x => {
                 const item = CHANNEL_OPT.find(item => item.value === x.channel.value)
+                console.log('item', item)
+                console.log('x', x)
                 return Object.assign({}, item, x, {
                   timingDateValue: x.pushType.value === 1
                     ? x.pushTimeInfo.scheduelPushInfoVO.interval.map(a => {
@@ -455,6 +457,7 @@ export default {
           })
         }
       })
+      console.log('groups', this.groups)
     },
     handleExpandChange() {
       this.$nextTick(() => {
