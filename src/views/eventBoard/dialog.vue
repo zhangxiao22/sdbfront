@@ -242,26 +242,56 @@
                           <el-form-item label="预热短信：">
                             <el-button icon="el-icon-plus"
                                        @click="addCrmBeforeSms(channelCardItem,ci)">
-                              选择模版
+                              添加预热短信
                             </el-button>
                           </el-form-item>
-                          <el-table v-show="channelCardItem.beforeSms&&channelCardItem.beforeSms.length"
+                          <el-table v-show="channelCardItem.beforeSms.length"
                                     :data="channelCardItem.beforeSms"
                                     border
-                                    style="width: 100%;margin-bottom:18px;">
-                            <el-table-column prop="content"
-                                             :min-width="300"
-                                             label="预热短信内容" />
+                                    style="width: 100%;margin-bottom:18px;"
+                                    @cell-mouse-enter="handleMouseEnter"
+                                    @cell-mouse-leave="handleMouseLeave">
+                            <el-table-column label="短信内容"
+                                             :min-width="400">
+                              <div slot-scope="scope"
+                                   class="table-desc">
+                                <span>{{ scope.row.content }}</span>
+                                <el-popover v-model="scope.row.isEdit"
+                                            placement="top"
+                                            width="300">
+                                  <el-input v-model.trim="scope.row._content"
+                                            type="textarea"
+                                            :rows="5"
+                                            style="margin-bottom:10px;"
+                                            placeholder="请输入内容" />
+                                  <div style="text-align: right; margin: 0">
+                                    <el-button size="mini"
+                                               type="text"
+                                               @click="scope.row.isEdit = false">取消</el-button>
+                                    <el-button type="primary"
+                                               size="mini"
+                                               @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                  </div>
+                                  <div v-show="true"
+                                       slot="reference"
+                                       class="table-edit touch-tap-x"
+                                       @click="scope.row._content = scope.row.content">
+                                    <i class="el-icon-edit" />
+                                  </div>
+                                </el-popover>
+                              </div>
+                            </el-table-column>
                             <el-table-column prop="description"
                                              show-overflow-tooltip
-                                             :min-width="300"
-                                             label="预热短信描述" />
-                            <el-table-column fixed="right"
-                                             label="操作"
+                                             label="短信描述" />
+                            <el-table-column prop="category.label"
+                                             show-overflow-tooltip
+                                             label="短信分类" />
+                            <el-table-column label="操作"
                                              width="100">
                               <template slot-scope="scope">
                                 <el-popconfirm title="确定删除吗？"
-                                               @onConfirm="deleteCrmBeforeSms(channelCardItem,scope.$index)">
+                                               @onConfirm="deleteCrmBeforeSms(channelCardItem,ci,scope.$index)">
                                   <el-button slot="reference"
                                              type="text"
                                              style="color:#f56c6c;"
@@ -270,31 +300,60 @@
                               </template>
                             </el-table-column>
                           </el-table>
-                          <!-- 预热短信end -->
                           <!-- 跟尾短信 -->
                           <el-form-item label="跟尾短信：">
                             <el-button icon="el-icon-plus"
                                        @click="addCrmAfterSms(channelCardItem,ci)">
-                              选择模版
+                              添加跟尾短信
                             </el-button>
                           </el-form-item>
-                          <el-table v-show="channelCardItem.afterSms&&channelCardItem.afterSms.length"
+                          <el-table v-show="channelCardItem.afterSms.length"
                                     :data="channelCardItem.afterSms"
                                     border
-                                    style="width: 100%;margin-bottom:18px;">
-                            <el-table-column prop="content"
-                                             :min-width="300"
-                                             label="跟尾短信内容" />
+                                    style="width: 100%;margin-bottom:18px;"
+                                    @cell-mouse-enter="handleMouseEnter"
+                                    @cell-mouse-leave="handleMouseLeave">
+                            <el-table-column label="短信内容"
+                                             :min-width="400">
+                              <div slot-scope="scope"
+                                   class="table-desc">
+                                <span>{{ scope.row.content }}</span>
+                                <el-popover v-model="scope.row.isEdit"
+                                            placement="top"
+                                            width="300">
+                                  <el-input v-model.trim="scope.row._content"
+                                            type="textarea"
+                                            :rows="5"
+                                            style="margin-bottom:10px;"
+                                            placeholder="请输入内容" />
+                                  <div style="text-align: right; margin: 0">
+                                    <el-button size="mini"
+                                               type="text"
+                                               @click="scope.row.isEdit = false">取消</el-button>
+                                    <el-button type="primary"
+                                               size="mini"
+                                               @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                  </div>
+                                  <div v-show="true"
+                                       slot="reference"
+                                       class="table-edit touch-tap-x"
+                                       @click="scope.row._content = scope.row.content">
+                                    <i class="el-icon-edit" />
+                                  </div>
+                                </el-popover>
+                              </div>
+                            </el-table-column>
                             <el-table-column prop="description"
                                              show-overflow-tooltip
-                                             :min-width="300"
-                                             label="跟尾短信描述" />
-                            <el-table-column fixed="right"
-                                             label="操作"
+                                             label="短信描述" />
+                            <el-table-column prop="category.label"
+                                             show-overflow-tooltip
+                                             label="短信分类" />
+                            <el-table-column label="操作"
                                              width="100">
                               <template slot-scope="scope">
                                 <el-popconfirm title="确定删除吗？"
-                                               @onConfirm="deleteCrmAfterSms(channelCardItem,scope.$index)">
+                                               @onConfirm="deleteCrmAfterSms(channelCardItem,ci,scope.$index)">
                                   <el-button slot="reference"
                                              type="text"
                                              style="color:#f56c6c;"
@@ -303,8 +362,6 @@
                               </template>
                             </el-table-column>
                           </el-table>
-                          <!-- {{ channelCardItem.afterSms.map(n=>n.id) }} -->
-                          <!-- 跟尾短信end -->
                         </template>
                       </div>
                     </el-card>
@@ -396,7 +453,11 @@ import { CHANNEL_OPT } from '@/views/createEvent/constant'
 
 export default {
   components: {
-    Product, Interest, Word, ShunDrawer, Sms
+    Product,
+    Interest,
+    Word,
+    ShunDrawer,
+    Sms
   },
   props: {
     visible: {
@@ -487,7 +548,6 @@ export default {
     }
   },
   computed: {
-
     groupIndex() {
       return +this.groupName
     },
@@ -520,7 +580,7 @@ export default {
               // customerInfoId: gn.gid,
               // 策略
               strategyDetailList: gn.ployTabs.map((pn, pi) => {
-                console.log('pn', pn)
+                // console.log('pn', pn)
                 return {
                   // 策略id
                   abstractId: pn.abstractId,
@@ -529,35 +589,41 @@ export default {
                   // 权益id
                   couponIdList: pn.interest.map(n => n.id),
                   // 话术
-                  scriptList: pn.channel.find(item => {
-                    return item.value === 1
-                  })?.model.map(n => {
-                    return {
-                      scriptId: n.id,
-                      scriptContent: n.content,
-                      scriptInstId: n.scriptInstId
-                    }
-                  }),
+                  scriptList: pn.channel
+                    .find(item => {
+                      return item.value === 1
+                    })
+                    ?.model.map(n => {
+                      return {
+                        scriptId: n.id,
+                        scriptContent: n.content,
+                        scriptInstId: n.scriptInstId
+                      }
+                    }),
                   // 预热短信
-                  advanceList: pn.channel.find(item => {
-                    return item.value === 1
-                  })?.beforeSms.map(n => {
-                    return {
-                      advanceId: n.id,
-                      advanceContent: n.content,
-                      advanceInstId: n.beforeSmsInstId
-                    }
-                  }),
+                  advanceList: pn.channel
+                    .find(item => {
+                      return item.value === 1
+                    })
+                    ?.beforeSms.map(n => {
+                      return {
+                        advanceId: n.id,
+                        advanceContent: n.content,
+                        advanceInstId: n.beforeSmsInstId
+                      }
+                    }),
                   // 跟尾短信
-                  followList: pn.channel.find(item => {
-                    return item.value === 1
-                  })?.afterSms.map(n => {
-                    return {
-                      followId: n.id,
-                      followContent: n.content,
-                      followInstId: n.afterSmsInstId
-                    }
-                  })
+                  followList: pn.channel
+                    .find(item => {
+                      return item.value === 1
+                    })
+                    ?.afterSms.map(n => {
+                      return {
+                        followId: n.id,
+                        followContent: n.content,
+                        followInstId: n.afterSmsInstId
+                      }
+                    })
                 }
               })
             }
@@ -569,31 +635,32 @@ export default {
             strategySaveCriteriaList: data
           }
           this.buttonLoading = true
-          const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件【${this.eventInfo.eventName}】同步？`]
+          const confirmText = [
+            '同步时间较长，请勿重复点击，',
+            `是否确认事件【${this.eventInfo.eventName}】同步？`
+          ]
           const newDatas = []
           const h = this.$createElement
           for (const i in confirmText) {
             newDatas.push(h('p', null, confirmText[i]))
           }
-          this.$confirm(
-            '提示',
-            {
-              title: '提示',
-              message: h('div', null, newDatas),
-              type: 'warning'
-            }
-          ).then(() => {
-            this.syncLoading = true
-            updateStrategy(param).then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '应用成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-              }
-            })
+          this.$confirm('提示', {
+            title: '提示',
+            message: h('div', null, newDatas),
+            type: 'warning'
           })
+            .then(() => {
+              this.syncLoading = true
+              updateStrategy(param).then(res => {
+                if (res.code === 200) {
+                  this.$message({
+                    message: '应用成功',
+                    type: 'success',
+                    duration: '3000'
+                  })
+                }
+              })
+            })
             .then(() => {
               syncProduct({ eventId: this.eventInfo.eventId }).then(res => {
                 if (res.code === 200) {
@@ -659,9 +726,9 @@ export default {
       var newArray = arr.sort((a, b) => {
         const aHas = isNaN(a[1])
         const bHas = isNaN(b[1])
-        return (aHas - bHas) || (aHas === true && a[1] - b[1]) || 0
+        return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function (a, b) {
+      return newArray.sort(function(a, b) {
         return a[0] - b[0]
       })
     },
@@ -675,70 +742,96 @@ export default {
         // 策略tab id
         name: ployName + '',
         // 产品
-        product: ployObj.productInfoList.map((product) => {
+        product: ployObj.productInfoList.map(product => {
           return Object.assign({}, product, product.extraField)
         }),
         // 权益
         interest: ployObj.couponInfoList,
-        channel: ployObj.strategyInfoList.filter(item => {
-          if (item.channel.value === 1) {
-            return true
-          }
-        }).map(m => {
-          // console.log(m)
-          return Object.assign({}, CHANNEL_OPT.find(x => {
-            return x.value === m.channel.value
-          }), {
-            // validPeriod: m.clueEffectDays,
-            model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
-              return Object.assign({}, n, {
-                _content: n.content,
-                isEdit: false,
-                isHover: false
-              })
-            }) : m.meterialInfoList,
-            beforeSms: m.advanceSMSInfoList || [],
-            afterSms: m.followSMSInfoList || []
-          }, (() => {
-            const obj = {}
-            return obj
-          })())
-        })
+        channel: ployObj.strategyInfoList
+          .filter(item => {
+            if (item.channel.value === 1) {
+              return true
+            }
+          })
+          .map(m => {
+            // console.log(m)
+            return Object.assign(
+              {},
+              CHANNEL_OPT.find(x => {
+                return x.value === m.channel.value
+              }),
+              {
+                // validPeriod: m.clueEffectDays,
+                model:
+                  m.channel.value === 1
+                    ? m.scriptInfoList.map(n => {
+                      return Object.assign({}, n, {
+                        _content: n.content,
+                        isEdit: false,
+                        isHover: false
+                      })
+                    })
+                    : m.meterialInfoList,
+                beforeSms: m.advanceSMSInfoList.map(n => {
+                  return Object.assign({}, n, {
+                    _content: n.content,
+                    isEdit: false,
+                    isHover: false
+                  })
+                }),
+                afterSms: m.followSMSInfoList.map(n => {
+                  return Object.assign({}, n, {
+                    _content: n.content,
+                    isEdit: false,
+                    isHover: false
+                  })
+                })
+              },
+              (() => {
+                const obj = {}
+                return obj
+              })()
+            )
+          })
       }
     },
     ployDetail(id) {
       return new Promise((resolve, reject) => {
-        getPloyDetail({ baseId: id }).then(res => {
-          if (res.code === 200) {
-            this.group = res.data.strategyQueryVOList.map((n, i) => {
-              return {
-                gid: n.customeInfoId,
-                name: n.name,
-                // people: n?.count,
-                desc: n.desc,
-                totalPercent: 100,
-                ployTabs: n.strategyDetailVOList.map((n, i) => {
-                  return this.ployTranslate(n, i + 1)
-                }),
-                // v-model值：控制策略tab显示
-                ployTabsValue: '1',
-                // 累加数量：策略数量的累加,用于显示‘新策略几’
-                ployTabIndex: n.strategyDetailVOList.length
-              }
-            })
-            console.log('group', this.group)
-            resolve()
-          } else {
+        getPloyDetail({ baseId: id })
+          .then(res => {
+            if (res.code === 200) {
+              this.group = res.data.strategyQueryVOList.map((n, i) => {
+                return {
+                  gid: n.customeInfoId,
+                  name: n.name,
+                  // people: n?.count,
+                  desc: n.desc,
+                  totalPercent: 100,
+                  ployTabs: n.strategyDetailVOList.map((n, i) => {
+                    return this.ployTranslate(n, i + 1)
+                  }),
+                  // v-model值：控制策略tab显示
+                  ployTabsValue: '1',
+                  // 累加数量：策略数量的累加,用于显示‘新策略几’
+                  ployTabIndex: n.strategyDetailVOList.length
+                }
+              })
+              console.log('group', this.group)
+              resolve()
+            } else {
+              reject()
+            }
+          })
+          .catch(() => {
             reject()
-          }
-        }).catch(() => {
-          reject()
-        })
+          })
       })
     },
     // 切换策略
     handleChangeTab() {
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+      )
     },
     validateForm(rule, validate, message) {
       // console.log(a, b, c)
@@ -768,35 +861,41 @@ export default {
                   // 权益id
                   couponIdList: pn.interest.map(n => n.id),
                   // 话术
-                  scriptList: pn.channel.find(item => {
-                    return item.value === 1
-                  })?.model.map(n => {
-                    return {
-                      scriptId: n.id,
-                      scriptContent: n.content,
-                      scriptInstId: n.scriptInstId
-                    }
-                  }),
+                  scriptList: pn.channel
+                    .find(item => {
+                      return item.value === 1
+                    })
+                    ?.model.map(n => {
+                      return {
+                        scriptId: n.id,
+                        scriptContent: n.content,
+                        scriptInstId: n.scriptInstId
+                      }
+                    }),
                   // 预热短信
-                  advanceList: pn.channel.find(item => {
-                    return item.value === 1
-                  })?.beforeSms.map(n => {
-                    return {
-                      advanceId: n.id,
-                      advanceContent: n.content,
-                      advanceInstId: n.beforeSmsInstId
-                    }
-                  }),
+                  advanceList: pn.channel
+                    .find(item => {
+                      return item.value === 1
+                    })
+                    ?.beforeSms.map(n => {
+                      return {
+                        advanceId: n.id,
+                        advanceContent: n.content,
+                        advanceInstId: n.beforeSmsInstId
+                      }
+                    }),
                   // 跟尾短信
-                  followList: pn.channel.find(item => {
-                    return item.value === 1
-                  })?.afterSms.map(n => {
-                    return {
-                      followId: n.id,
-                      followContent: n.content,
-                      followInstId: n.afterSmsInstId
-                    }
-                  })
+                  followList: pn.channel
+                    .find(item => {
+                      return item.value === 1
+                    })
+                    ?.afterSms.map(n => {
+                      return {
+                        followId: n.id,
+                        followContent: n.content,
+                        followInstId: n.afterSmsInstId
+                      }
+                    })
                 }
               })
             }
@@ -809,18 +908,20 @@ export default {
           }
           // console.log('param', param)
           this.buttonLoading = true
-          updateStrategy(param).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-            }
-          }).finally(() => {
-            this.$emit('update:visible', false)
-            this.buttonLoading = false
-          })
+          updateStrategy(param)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+              }
+            })
+            .finally(() => {
+              this.$emit('update:visible', false)
+              this.buttonLoading = false
+            })
         } else {
           // console.log(field)
           let errList = Object.keys(field).map(key => this.getIndex(key))
@@ -866,7 +967,9 @@ export default {
       // console.log(item.product, row)
       item.product.splice(i, 1)
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+      )
     },
     // 选择产品-确定
     submitProduct() {
@@ -876,7 +979,9 @@ export default {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -947,14 +1052,18 @@ export default {
       this.channelIndex = ci
 
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+      )
     },
     // 选择话术-确认
     submitWord() {
       const val = this.$refs.wordRef.parentRef.getVal()
       if (val.length) {
         this.showCRMWord = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model.push(
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].model.push(
           ...val.map(n => {
             return Object.assign({}, n, {
               _content: n.content,
@@ -964,7 +1073,9 @@ export default {
           })
         )
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -996,7 +1107,9 @@ export default {
       const val = this.$refs.beforeSmsRef.parentRef.getVal()
       if (val.length) {
         this.showBeforeSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].beforeSms.push(
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].beforeSms.push(
           ...val.map(n => {
             return Object.assign({}, n, {
               _content: n.content,
@@ -1037,7 +1150,9 @@ export default {
       const val = this.$refs.afterSmsRef.parentRef.getVal()
       if (val.length) {
         this.showAfterSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms.push(
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].afterSms.push(
           ...val.map(n => {
             return Object.assign({}, n, {
               _content: n.content,
@@ -1057,9 +1172,7 @@ export default {
       }
     }
   }
-
 }
-
 </script>
 
 <style lang="scss" scoped>
