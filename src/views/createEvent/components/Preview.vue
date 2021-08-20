@@ -180,7 +180,11 @@
                         {{ typeItem.name }}
                       </div>
                     </template>
-                    <el-tag v-if="channelItem.smsSendMode" type="success" style="margin-top: 12px;">{{ channelItem.smsSendMode === 0 ? '重复下发' : '均分下发' }}</el-tag>
+                    <div v-if="channelItem.smsSendMode"
+                         class="send-mode">{{ channelItem.smsSendMode === 0 ? '重复下发' : '均分下发' }}</div>
+                    <!-- <el-tag v-if="channelItem.smsSendMode"
+                            type="success"
+                            style="margin-top: 12px;">{{ channelItem.smsSendMode === 0 ? '重复下发' : '均分下发' }}</el-tag> -->
 
                   </div>
                   <div class="right">
@@ -200,6 +204,7 @@
                              class="item">
                           <div class="date">{{ timeItem.timerTime }} </div>
                           <div class="time">{{ channelItem.pushTimeInfo.scheduelPushInfoVO.moment }}</div>
+
                         </div>
                       </div>
                     </div>
@@ -424,33 +429,43 @@ export default {
             return {
               ployName: m.name,
               range: m.range,
-              product: m.productInfoList.map((product) => {
+              product: m.productInfoList.map(product => {
                 return Object.assign({}, product, product.extraField)
               }),
               interest: m.couponInfoList,
               channels: m.strategyInfoList.map(x => {
-                const item = CHANNEL_OPT.find(item => item.value === x.channel.value)
+                const item = CHANNEL_OPT.find(
+                  item => item.value === x.channel.value
+                )
                 console.log('item', item)
                 console.log('x', x)
                 return Object.assign({}, item, x, {
-                  timingDateValue: x.pushType.value === 1
-                    ? x.pushTimeInfo.scheduelPushInfoVO.interval.map(a => {
-                      let timerTime
-                      TIMING_OPT.forEach(b => {
-                        if (b.value === x.pushTimeInfo.scheduelPushInfoVO.intervalType.value) {
-                          b.children.forEach(c => {
-                            if (c.value === a) {
-                              timerTime = `${b.label}${c.label}`
-                            }
-                          })
-                        }
+                  timingDateValue:
+                    x.pushType.value === 1
+                      ? x.pushTimeInfo.scheduelPushInfoVO.interval.map(a => {
+                        let timerTime
+                        TIMING_OPT.forEach(b => {
+                          if (
+                            b.value ===
+                              x.pushTimeInfo.scheduelPushInfoVO.intervalType
+                                .value
+                          ) {
+                            b.children.forEach(c => {
+                              if (c.value === a) {
+                                timerTime = `${b.label}${c.label}`
+                              }
+                            })
+                          }
+                        })
+                        return Object.assign(a, {
+                          timerTime
+                        })
                       })
-                      return Object.assign(a, {
-                        timerTime
-                      })
-                    }) : undefined,
-                  ruleValue: x.pushType.value === 2
-                    ? x.pushTimeInfo.rulePushInfoList : undefined
+                      : undefined,
+                  ruleValue:
+                    x.pushType.value === 2
+                      ? x.pushTimeInfo.rulePushInfoList
+                      : undefined
                 })
               })
             }
@@ -497,7 +512,7 @@ export default {
     handleClickSwiperSlider(index) {
       this.groupActiveIndex = index
       this.groups.forEach((n, i) => {
-        n.active = (i === index)
+        n.active = i === index
       })
       this.ploy = this.groups[index].ploy
       this.$nextTick(() => {
@@ -884,7 +899,8 @@ export default {
               z-index: 2;
               text-align: center;
               width: 80px;
-              height: 60px;
+              // height: 60px;
+              align-items: center;
               background: #fff;
               border-radius: 4px;
               text-align: center;
@@ -925,6 +941,16 @@ export default {
                 font-size: 12px;
                 font-weight: normal;
                 margin-top: 6px;
+              }
+              .send-mode {
+                font-size: 12px;
+                font-weight: normal;
+                margin-top: 5px;
+                border: 1px solid rgba(255, 153, 51, 0.3);
+                /* display: inline; */
+                padding: 2px 4px;
+                border-radius: 2px;
+                background: rgba(255, 255, 255, 0.6);
               }
             }
             .right {
