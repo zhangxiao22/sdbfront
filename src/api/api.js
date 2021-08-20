@@ -196,7 +196,7 @@ export function fuzzySearch(params) {
 // 修改运行事件的产品权益话术
 export function updateStrategy(data) {
   return request({
-    url: '/strategy/update',
+    url: '/strategy/updateNote',
     method: 'post',
     data
   })
