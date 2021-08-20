@@ -344,7 +344,7 @@ export default {
           },
           name: '编辑'
         }, {
-          condition: scope.row.reviewer === this.user.userName && this.judgeStatus(scope.row.status.value) === 4,
+          condition: scope.row.creater === this.user.userName && this.judgeStatus(scope.row.status.value) === 4,
           style: {
             color: '#1890FF'
           },

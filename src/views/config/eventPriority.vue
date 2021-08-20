@@ -120,7 +120,7 @@
 
 <script>
 import Info from '@/components/Info'
-import { getEventPriorityList, getUseCaseForEvent, setEventPriority, setEventDistributeLimit } from '@/api/api'
+import { getEventPriorityList, getUseCaseICanChoose, setEventPriority, setEventDistributeLimit } from '@/api/api'
 import Sortable from 'sortablejs'
 import { MAX_NUMBER } from '@/utils'
 
@@ -251,7 +251,7 @@ export default {
     // 获取用例
     useCase() {
       return new Promise((resolve) => {
-        getUseCaseForEvent().then(res => {
+        getUseCaseICanChoose().then(res => {
           this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,
