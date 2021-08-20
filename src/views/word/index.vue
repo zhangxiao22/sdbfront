@@ -161,43 +161,95 @@
           无
         </div>
       </template>
+      <template v-slot:operateSlot="scope">
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleEdit(scope.row)">编辑</div>
+        </div>
+      </template>
     </shun-table>
-    <el-dialog title="新增话术"
+    <el-dialog :title="isEdit ? '编辑话术' : '新增话术'"
                :before-close="cancelAddList"
+               :append-to-body="true"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                label-width="110px"
                :model="addInfo">
-        <el-form-item label="话术内容："
+        <el-form-item label="归属产品"
                       :rules="[{
-                        required: true, message: '请输入话术内容', trigger: 'blur'
+                        required: true, message: '请选择话术分类', trigger: 'blur'
                       }]"
-                      prop="content">
-          <el-input v-model.trim="addInfo.content"
-                    show-word-limit
-                    style="width:90%;"
-                    maxlength="50" />
+                      prop="productList"
+                      style="width:300px;">
+          <el-select v-model="addInfo.productList"
+                     multiple
+                     clearable
+                     filterable>
+            <el-option v-for="item of productListOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="话术用例"
+                      :rules="[{
+                        required: true, message: '请选择话术分类', trigger: 'blur'
+                      }]"
+                      prop="useCaseList"
+                      style="width:300px;">
+          <el-select v-model="addInfo.useCaseList"
+                     multiple
+                     clearable
+                     filterable>
+            <el-option v-for="item of useCaseListOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
         <el-form-item label="话术分类："
                       :rules="[{
-                        required: true, message: '请输入话术分类', trigger: 'blur'
+                        required: true, message: '请选择话术分类', trigger: 'blur'
                       }]"
                       prop="category">
-          <el-input v-model.trim="addInfo.category"
-                    show-word-limit
-                    style="width:90%;"
-                    maxlength="50" />
+          <el-select v-model="addInfo.category"
+                     style="width:90%;"
+                     clearable>
+            <el-option v-for="item of typeOpt"
+                       :key="item.value"
+                       :label="item.label"
+                       :value="item.value" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="话术描述："
-                      :rules="[{
-                        required: true, message: '请输入话术描述', trigger: 'blur'
-                      }]"
+        <el-form-item label="话术内容："
+                      prop="content">
+          <el-input v-model.trim="addInfo.content"
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    style="width:90%;"
+                    placeholder="请输入话术内容" />
+        </el-form-item>
+        <el-form-item label="话术说明："
                       prop="desc">
-          <el-input v-model.trim="addInfo.desc"
-                    show-word-limit
+          <el-input v-model.trim="addInfo.description"
                     style="width:90%;"
-                    maxlength="50" />
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入话术说明" />
         </el-form-item>
+        <el-form-item label="对应产品："
+                      prop="product">
+          <el-input v-model.trim="addInfo.product"
+                    style="width:90%;"
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入对应产品" />
+        </el-form-item>
+
       </el-form>
       <div slot="footer"
            class="dialog-footer">
@@ -212,7 +264,15 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getWordList, getWordCategory, uploadScriptFile, getAttributionUseCaseEnumList, getProductCategoryList, delScript } from '@/api/api'
+import {
+  getWordList,
+  getWordCategory,
+  uploadScriptFile,
+  getAttributionUseCaseEnumList,
+  getProductCategoryList,
+  delScript,
+  updateScript
+} from '@/api/api'
 import { downloadFile, DESCRIPTION } from '@/utils'
 import UploadButton from '@/components/UploadButton'
 
@@ -230,6 +290,7 @@ export default {
   },
   data() {
     return {
+      isEdit: false,
       DESCRIPTION,
       uploadScriptFile,
       showDialog: false,
@@ -245,12 +306,15 @@ export default {
         productFirstCategoryList: []
       },
       addInfo: {
-        content: '',
-        category: '',
-        desc: ''
+        id: '',
+        productList: [], // 归属产品
+        useCaseList: [], // 话术用例
+        category: '', // 话术分类
+        content: '', // 内容
+        description: '', // 描述
+        product: '' // 对应产品
       },
-      searchForm: {
-      },
+      searchForm: {},
       typeOpt: [],
       useCaseListOpt: [],
       productListOpt: [],
@@ -286,6 +350,13 @@ export default {
           label: '话术说明',
           minWidth: 200,
           notShowOverflowTooltip: true
+        },
+        {
+          prop: 'operate',
+          label: '操作',
+          width: 120,
+          fixed: 'right',
+          slot: true
         }
       ],
       tableData: []
@@ -296,11 +367,20 @@ export default {
       return this.$refs.table
     },
     getData() {
-      const data = {}
-      data.content = this.addInfo.content
-      data.category = this.addInfo.category
-      data.desc = this.addInfo.desc
-      return data
+      // const data = {}
+      // data.content = this.addInfo.content
+      // data.category = this.addInfo.category
+      // data.desc = this.addInfo.desc
+      // return data
+      return {
+        id: this.addInfo.id,
+        productFirstCategoryList: this.addInfo.productList,
+        attributionUseCaseList: this.addInfo.useCaseList,
+        category: this.addInfo.category,
+        content: this.addInfo.content,
+        description: this.addInfo.description,
+        products: this.addInfo.product
+      }
     }
   },
   watch: {},
@@ -323,7 +403,22 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-
+    handleEdit(row) {
+      console.log('row', row)
+      this.showDialog = true
+      this.isEdit = true
+      this.$nextTick(() => {
+        this.addInfo = {
+          id: row.id,
+          productList: row.productFirstCategoryList.map(n => n.value),
+          useCaseList: row.attributionUseCaseList.map(n => n.value),
+          category: row.category.value,
+          content: row.content,
+          description: row.description,
+          product: row.products
+        }
+      })
+    },
     handleAddList() {
       this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
       this.showDialog = true
@@ -333,23 +428,25 @@ export default {
       this.showDialog = false
     },
     ensureAddList() {
-      this.$refs['regFormRef'].validate((valid) => {
+      this.$refs['regFormRef'].validate(valid => {
         if (valid) {
           this.buttonLoading = true
-          // addCustomerToBlackList([this.getData]).then(res => {
-          //   this.buttonLoading = false
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.showDialog = false
-          //     this.resetAll()
-          //   }
-          // }).catch(() => {
-          //   this.buttonLoading = false
-          // })
+          updateScript(this.getData)
+            .then(res => {
+              this.buttonLoading = false
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.showDialog = false
+                this.resetAll()
+              }
+            })
+            .catch(() => {
+              this.buttonLoading = false
+            })
         }
       })
     },
@@ -412,30 +509,38 @@ export default {
     // 获取产品类型
     productCategoryList() {
       getProductCategoryList().then(res => {
-        this.productListOpt = res.data.map((n) => {
-          return Object.assign({}, {
-            label: n.firstCategory.label,
-            value: n.firstCategory.value
-          })
+        this.productListOpt = res.data.map(n => {
+          return Object.assign(
+            {},
+            {
+              label: n.firstCategory.label,
+              value: n.firstCategory.value
+            }
+          )
         })
       })
     },
 
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
-      const data = Object.assign({
-        pageNo: this.currentPage,
-        pageSize: this.pageSize
-      }, this.searchForm)
+      const data = Object.assign(
+        {
+          pageNo: this.currentPage,
+          pageSize: this.pageSize
+        },
+        this.searchForm
+      )
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
-      getWordList(data).then(res => {
-        this.tableData = res.data.resultList
-        this.total = res.pagination.totalItemCount
-        this.loading = false
-      }).catch(() => {
-        this.loading = false
-      })
+      getWordList(data)
+        .then(res => {
+          this.tableData = res.data.resultList
+          this.total = res.pagination.totalItemCount
+          this.loading = false
+        })
+        .catch(() => {
+          this.loading = false
+        })
     }
 
     // getVal() {

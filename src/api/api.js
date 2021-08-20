@@ -113,6 +113,15 @@ export function delScript(params) {
   })
 }
 
+// 话术编辑
+export function updateScript(data) {
+  return request({
+    url: '/script/update',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 权益 ************************************************************/
 // 获取权益库
 export function getInterestList(data) {
