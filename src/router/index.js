@@ -40,7 +40,7 @@ let asyncRoutes = [
         name: 'UseCase',
         component: () => import(/* webpackChunkName: "useCase" */ '@/views/useCase/index'),
         meta: {
-          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批']
+          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批', '事件注册']
         }
       },
       {
