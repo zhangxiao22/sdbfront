@@ -300,11 +300,11 @@
                               </template>
                             </el-table-column>
                           </el-table>
-                          <!-- 跟尾短信 -->
-                          <el-form-item label="跟尾短信：">
+                          <!-- 跟进短信 -->
+                          <el-form-item label="跟进短信：">
                             <el-button icon="el-icon-plus"
                                        @click="addCrmAfterSms(channelCardItem,ci)">
-                              添加跟尾短信
+                              添加跟进短信
                             </el-button>
                           </el-form-item>
                           <el-table v-show="channelCardItem.afterSms.length"
@@ -422,7 +422,7 @@
              :show-selection="true" />
       </template>
     </ShunDrawer>
-    <!-- 跟尾短信 -->
+    <!-- 跟进短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showAfterSms"
                 @submit="submitAfterSms()">
@@ -495,7 +495,7 @@ export default {
       showCRMWord: false,
       // crm预热短信侧边栏
       showBeforeSms: false,
-      // crm跟尾短信侧边栏
+      // crm跟进短信侧边栏
       showAfterSms: false,
       // 短信侧边栏
       showSms: false,
@@ -612,7 +612,7 @@ export default {
                         advanceInstId: n.beforeSmsInstId
                       }
                     }),
-                  // 跟尾短信
+                  // 跟进短信
                   followList: pn.channel
                     .find(item => {
                       return item.value === 1
@@ -884,7 +884,7 @@ export default {
                         advanceInstId: n.beforeSmsInstId
                       }
                     }),
-                  // 跟尾短信
+                  // 跟进短信
                   followList: pn.channel
                     .find(item => {
                       return item.value === 1
@@ -1128,7 +1128,7 @@ export default {
         })
       }
     },
-    // crm选择跟尾短信
+    // crm选择跟进短信
     addCrmAfterSms(item, ci) {
       this.showAfterSms = true
       this.$nextTick(() => {
@@ -1137,7 +1137,7 @@ export default {
       })
       this.channelIndex = ci
     },
-    // crm删除跟尾短信
+    // crm删除跟进短信
     deleteCrmAfterSms(item, ci, i) {
       item.afterSms.splice(i, 1)
       this.channelIndex = ci
@@ -1145,7 +1145,7 @@ export default {
       // 校验
       // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
     },
-    // 选择跟尾短信-确认
+    // 选择跟进短信-确认
     submitAfterSms() {
       const val = this.$refs.afterSmsRef.parentRef.getVal()
       if (val.length) {

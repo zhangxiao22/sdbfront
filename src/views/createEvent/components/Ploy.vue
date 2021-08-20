@@ -582,8 +582,8 @@
                         </el-table-column>
                       </el-table>
                       <!-- 预热短信end -->
-                      <!-- 跟尾短信 -->
-                      <el-form-item label="跟尾短信：">
+                      <!-- 跟进短信 -->
+                      <el-form-item label="跟进短信：">
                         <el-button icon="el-icon-plus"
                                    @click="addAfterSmsWords(channelCardItem,ci)">
                           选择模版
@@ -595,11 +595,11 @@
                                 style="width: 100%;margin-bottom:18px;">
                         <el-table-column prop="content"
                                          :min-width="300"
-                                         label="跟尾短信内容" />
+                                         label="跟进短信内容" />
                         <el-table-column prop="description"
                                          show-overflow-tooltip
                                          :min-width="300"
-                                         label="跟尾短信描述" />
+                                         label="跟进短信描述" />
                         <el-table-column fixed="right"
                                          label="操作"
                                          width="100">
@@ -615,7 +615,7 @@
                         </el-table-column>
                       </el-table>
                       <!-- {{ channelCardItem.afterSms.map(n=>n.id) }} -->
-                      <!-- 跟尾短信end -->
+                      <!-- 跟进短信end -->
                     </template>
                     <!-- 短信 -->
                     <!-- {{ channelCardItem }} -->
@@ -805,7 +805,7 @@
              :show-selection="true" />
       </template>
     </ShunDrawer>
-    <!-- 跟尾短信 -->
+    <!-- 跟进短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showAfterSms"
                 @submit="submitAfterSms()">
@@ -872,7 +872,7 @@ export default {
       showCRMWord: false,
       // crm预热短信侧边栏
       showBeforeSms: false,
-      // crm跟尾短信侧边栏
+      // crm跟进短信侧边栏
       showAfterSms: false,
       // 短信侧边栏
       showSms: false,
@@ -961,23 +961,23 @@ export default {
       return count
     }
   },
-  watch: {
-
-  },
+  watch: {},
   created() {
     this.reset()
   },
 
   methods: {
     reset() {
-      this.ployDetail().then(() => {
-        this.$nextTick(() => {
-          this.beforeHandleGroupTabClick(0)
-          this.$refs['customerFormRef'].clearValidate()
+      this.ployDetail()
+        .then(() => {
+          this.$nextTick(() => {
+            this.beforeHandleGroupTabClick(0)
+            this.$refs['customerFormRef'].clearValidate()
+          })
         })
-      }).catch(err => {
-        console.error(err)
-      })
+        .catch(err => {
+          console.error(err)
+        })
     },
     // 从字符串中获取gi pi, 如 group.0.ployTabs.0.title => [0,0]
     getIndex(str) {
@@ -991,9 +991,9 @@ export default {
       var newArray = arr.sort((a, b) => {
         const aHas = isNaN(a[1])
         const bHas = isNaN(b[1])
-        return (aHas - bHas) || (aHas === true && a[1] - b[1]) || 0
+        return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function (a, b) {
+      return newArray.sort(function(a, b) {
         return a[0] - b[0]
       })
     },
@@ -1016,173 +1016,223 @@ export default {
         // 策略tab id
         name: ployName + '',
         // 产品
-        product: ployObj.productInfoList.map((product) => {
+        product: ployObj.productInfoList.map(product => {
           return Object.assign({}, product, product.extraField)
         }),
         // 权益
         interest: ployObj.couponInfoList,
         channel: ployObj.strategyInfoList.map(m => {
           // console.log(m)
-          return Object.assign({}, CHANNEL_OPT.find(x => {
-            return x.value === m.channel.value
-          }), {
-            // infoId: m.infoId,
-            chooseType: m.pushType.value,
-            // validPeriod: m.clueEffectDays,
-            smsSendMode: m.sendMode?.value,
-            isBigDeposit: m.isBigDeposit?.value,
-            model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
-              return Object.assign({}, n, {
-                _content: n.content,
-                isEdit: false,
-                isHover: false
-              })
-            }) : m.meterialInfoList,
-            beforeSms: m.advanceSMSInfoList || [],
-            afterSms: m.followSMSInfoList || []
-          }, (() => {
-            const obj = {}
-            if (m.pushType.value === 1) {
-              // 定时型
-              // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
-              // 定时型的值-规则 (每周几或每月)
-              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
-              // 定时型的值-规则 (周几或者几号) (多选)
-              obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
-              // 定时型的值-时间
-              obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
-              // 定时型的值-起止时间
-              obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO.startDate ? [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate] : []
-            } else if (m.pushType.value === 2) {
-              // 规则型
-              // 规则型的值
-              obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
-                return {
-                  // pushTimeId: r.pushTimeId,
-                  date: r.delay,
-                  time: r.moment
-                }
-              })
-            }
-            return obj
-          })())
+          return Object.assign(
+            {},
+            CHANNEL_OPT.find(x => {
+              return x.value === m.channel.value
+            }),
+            {
+              // infoId: m.infoId,
+              chooseType: m.pushType.value,
+              // validPeriod: m.clueEffectDays,
+              smsSendMode: m.sendMode?.value,
+              isBigDeposit: m.isBigDeposit?.value,
+              model:
+                m.channel.value === 1
+                  ? m.scriptInfoList.map(n => {
+                    return Object.assign({}, n, {
+                      _content: n.content,
+                      isEdit: false,
+                      isHover: false
+                    })
+                  })
+                  : m.meterialInfoList,
+              beforeSms: m.advanceSMSInfoList || [],
+              afterSms: m.followSMSInfoList || []
+            },
+            (() => {
+              const obj = {}
+              if (m.pushType.value === 1) {
+                // 定时型
+                // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+                // 定时型的值-规则 (每周几或每月)
+                obj.timingDateType =
+                  m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
+                // 定时型的值-规则 (周几或者几号) (多选)
+                obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+                // 定时型的值-时间
+                obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
+                // 定时型的值-起止时间
+                obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO.startDate
+                  ? [
+                    m.pushTimeInfo.scheduelPushInfoVO.startDate,
+                    m.pushTimeInfo.scheduelPushInfoVO.endDate
+                  ]
+                  : []
+              } else if (m.pushType.value === 2) {
+                // 规则型
+                // 规则型的值
+                obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
+                  return {
+                    // pushTimeId: r.pushTimeId,
+                    date: r.delay,
+                    time: r.moment
+                  }
+                })
+              }
+              return obj
+            })()
+          )
         }),
         channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
           return Object.assign({}, c, {
             // 已选择的渠道禁止选择
-            disabled: ployObj.strategyInfoList.some(x => x.channel.value === c.value)
+            disabled: ployObj.strategyInfoList.some(
+              x => x.channel.value === c.value
+            )
           })
         })
       }
     },
     ployDetail() {
       return new Promise((resolve, reject) => {
-        getPloyDetail({ baseId: this.id }).then(res => {
-          if (res.code === 200) {
-            this.group = res.data.strategyQueryVOList.map((n, i) => {
-              return {
-                gid: n.customeInfoId,
-                name: n.name,
-                people: n.count,
-                desc: n.desc,
-                totalPercent: 100,
-                ployTabs: n.strategyDetailVOList.map((n, i) => {
-                  return {
-                    abstractId: n.abstractId,
-                    // 策略名称
-                    title: n.name,
-                    // 策略分发范围
-                    percent: n.range,
-                    // 策略tab id
-                    name: i + 1 + '',
-                    // 产品
-                    product: n.productInfoList.map((product) => {
-                      return Object.assign({}, product, product.extraField)
-                    }),
-                    // 权益
-                    interest: n.couponInfoList,
-                    channel: n.strategyInfoList.map(m => {
-                      // console.log(m)
-                      return Object.assign({}, CHANNEL_OPT.find(x => {
-                        return x.value === m.channel.value
-                      }), {
-                        infoId: m.infoId,
-                        chooseType: m.pushType.value,
-                        smsSendMode: m.sendMode?.value,
-                        isBigDeposit: m.isBigDeposit?.value,
-                        // validPeriod: m.clueEffectDays,
-                        model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
-                          return Object.assign({}, n, {
-                            _content: n.content,
-                            isEdit: false,
-                            isHover: false
-                          })
-                        }) : m.meterialInfoList,
-                        beforeSms: m.advanceSMSInfoList || [],
-                        afterSms: m.followSMSInfoList || []
-
-                      }, (() => {
-                        const obj = {}
-                        if (m.pushType.value === 1) {
-                          // 定时型
-                          // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
-                          // 定时型的值-规则 (每周几或每月)
-                          obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
-                          // 定时型的值-规则 (周几或者几号) (多选)
-                          obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
-                          // 定时型的值-时间
-                          obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
-                          // 定时型的值-起止时间
-                          obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO.startDate ? [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate] : []
-                        } else if (m.pushType.value === 2) {
-                          // 规则型
-                          // 规则型的值
-                          obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
-                            return {
-                              pushTimeId: r.pushTimeId,
-                              date: r.delay,
-                              time: r.moment
+        getPloyDetail({ baseId: this.id })
+          .then(res => {
+            if (res.code === 200) {
+              this.group = res.data.strategyQueryVOList.map((n, i) => {
+                return {
+                  gid: n.customeInfoId,
+                  name: n.name,
+                  people: n.count,
+                  desc: n.desc,
+                  totalPercent: 100,
+                  ployTabs: n.strategyDetailVOList.map((n, i) => {
+                    return {
+                      abstractId: n.abstractId,
+                      // 策略名称
+                      title: n.name,
+                      // 策略分发范围
+                      percent: n.range,
+                      // 策略tab id
+                      name: i + 1 + '',
+                      // 产品
+                      product: n.productInfoList.map(product => {
+                        return Object.assign({}, product, product.extraField)
+                      }),
+                      // 权益
+                      interest: n.couponInfoList,
+                      channel: n.strategyInfoList.map(m => {
+                        // console.log(m)
+                        return Object.assign(
+                          {},
+                          CHANNEL_OPT.find(x => {
+                            return x.value === m.channel.value
+                          }),
+                          {
+                            infoId: m.infoId,
+                            chooseType: m.pushType.value,
+                            smsSendMode: m.sendMode?.value,
+                            isBigDeposit: m.isBigDeposit?.value,
+                            // validPeriod: m.clueEffectDays,
+                            model:
+                              m.channel.value === 1
+                                ? m.scriptInfoList.map(n => {
+                                  return Object.assign({}, n, {
+                                    _content: n.content,
+                                    isEdit: false,
+                                    isHover: false
+                                  })
+                                })
+                                : m.meterialInfoList,
+                            beforeSms: m.advanceSMSInfoList || [],
+                            afterSms: m.followSMSInfoList || []
+                          },
+                          (() => {
+                            const obj = {}
+                            if (m.pushType.value === 1) {
+                              // 定时型
+                              // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+                              // 定时型的值-规则 (每周几或每月)
+                              obj.timingDateType =
+                                m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
+                              // 定时型的值-规则 (周几或者几号) (多选)
+                              obj.timingDateValue =
+                                m.pushTimeInfo.scheduelPushInfoVO.interval
+                              // 定时型的值-时间
+                              obj.timingTimeValue =
+                                m.pushTimeInfo.scheduelPushInfoVO.moment
+                              // 定时型的值-起止时间
+                              obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO
+                                .startDate
+                                ? [
+                                  m.pushTimeInfo.scheduelPushInfoVO.startDate,
+                                  m.pushTimeInfo.scheduelPushInfoVO.endDate
+                                ]
+                                : []
+                            } else if (m.pushType.value === 2) {
+                              // 规则型
+                              // 规则型的值
+                              obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(
+                                r => {
+                                  return {
+                                    pushTimeId: r.pushTimeId,
+                                    date: r.delay,
+                                    time: r.moment
+                                  }
+                                }
+                              )
+                            } else if (m.pushType.value === 3) {
+                              obj.dateRange = m.pushTimeInfo.triggerInfoList
+                                .startDate
+                                ? [
+                                  m.pushTimeInfo.triggerInfoList.startDate,
+                                  m.pushTimeInfo.triggerInfoList.endDate
+                                ]
+                                : []
+                              obj.trigger = m.pushTimeInfo.triggerInfoList.triggerRuleList.map(
+                                t => {
+                                  return {
+                                    rule: [t.triggerId],
+                                    date: t.triggerDate,
+                                    time: t.triggerTime
+                                  }
+                                }
+                              )
                             }
-                          })
-                        } else if (m.pushType.value === 3) {
-                          obj.dateRange = m.pushTimeInfo.triggerInfoList.startDate ? [m.pushTimeInfo.triggerInfoList.startDate, m.pushTimeInfo.triggerInfoList.endDate] : []
-                          obj.trigger = m.pushTimeInfo.triggerInfoList.triggerRuleList.map(t => {
-                            return {
-                              rule: [t.triggerId],
-                              date: t.triggerDate,
-                              time: t.triggerTime
-                            }
+                            return obj
+                          })()
+                        )
+                      }),
+                      channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(
+                        c => {
+                          return Object.assign({}, c, {
+                            // 已选择的渠道禁止选择
+                            disabled: n.strategyInfoList.some(
+                              x => x.channel.value === c.value
+                            )
                           })
                         }
-                        return obj
-                      })())
-                    }),
-                    channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
-                      return Object.assign({}, c, {
-                        // 已选择的渠道禁止选择
-                        disabled: n.strategyInfoList.some(x => x.channel.value === c.value)
-                      })
-                    })
-                  }
-                }),
-                // v-model值
-                ployTabsValue: '1',
-                // 累加数量
-                ployTabIndex: n.strategyDetailVOList.length
-              }
-            })
-            resolve()
-          } else {
-            reject()
-          }
-        }).catch(err => {
-          reject(err)
-        })
+                      )
+                    }
+                  }),
+                  // v-model值
+                  ployTabsValue: '1',
+                  // 累加数量
+                  ployTabIndex: n.strategyDetailVOList.length
+                }
+              })
+              resolve()
+            } else {
+              reject()
+            }
+          })
+          .catch(err => {
+            reject(err)
+          })
       })
     },
     // 切换策略
     handleChangeTab() {
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+      )
     },
     validateForm(rule, validate, message) {
       // console.log(a, b, c)
@@ -1293,58 +1343,81 @@ export default {
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
                         // 大额存单
-                        isBigDeposit: cn.value === 5 ? cn.isBigDeposit : undefined,
+                        isBigDeposit:
+                          cn.value === 5 ? cn.isBigDeposit : undefined,
                         // 话术id
-                        scriptList: cn.value === 1 ? cn.model.map(n => {
-                          return {
-                            scriptId: n.id,
-                            scriptContent: n.content,
-                            scriptInstId: n.scriptInstId
-                          }
-                        }) : undefined,
+                        scriptList:
+                          cn.value === 1
+                            ? cn.model.map(n => {
+                              return {
+                                scriptId: n.id,
+                                scriptContent: n.content,
+                                scriptInstId: n.scriptInstId
+                              }
+                            })
+                            : undefined,
                         // 预热短信ids
-                        advanceSMSIds: cn.value === 1 ? cn.beforeSms.map(n => n.id) : undefined,
-                        // 跟尾短信ids
-                        followSMSIds: cn.value === 1 ? cn.afterSms.map(n => n.id) : undefined,
+                        advanceSMSIds:
+                          cn.value === 1
+                            ? cn.beforeSms.map(n => n.id)
+                            : undefined,
+                        // 跟进短信ids
+                        followSMSIds:
+                          cn.value === 1
+                            ? cn.afterSms.map(n => n.id)
+                            : undefined,
                         // 模版id
-                        materialIdList: (cn.value === 2 || cn.value === 3) ? cn.model.map(n => n.id) : undefined,
+                        materialIdList:
+                          cn.value === 2 || cn.value === 3
+                            ? cn.model.map(n => n.id)
+                            : undefined,
                         smsAttr: cn.model?.[0]?.smsAttr || {},
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
                           // 定时型的值
-                          schedulePushInfo: cn.chooseType === 1 ? {
-                            // pushTimeId: cn.pushTimeId,
-                            startDate: cn.dateRange[0],
-                            endDate: cn.dateRange[1],
-                            intervalType: cn.timingDateType,
-                            interval: cn.timingDateValue,
-                            moment: cn.timingTimeValue
-                          } : undefined,
-                          // 规则型的值
-                          rulePushInfoList: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
-                            return {
-                              pushTimeId: ruleItem.pushTimeId,
-                              delay: ruleItem.date,
-                              moment: ruleItem.time
-                            }
-                          }) : undefined,
-                          // 触发型的值
-                          triggerInfoList: cn.chooseType === 3 ? {
-                            // pushTimeId: cn.pushTimeId,
-                            startDate: cn.dateRange[0],
-                            endDate: cn.dateRange[1],
-                            triggerRuleList: cn.trigger.map(triggerItem => {
-                              return {
-                                triggerId: triggerItem.rule.map(n => {
-                                  return n.id
-                                }),
-                                triggerDate: triggerItem.date,
-                                triggerTime: triggerItem.time
+                          schedulePushInfo:
+                            cn.chooseType === 1
+                              ? {
+                                // pushTimeId: cn.pushTimeId,
+                                startDate: cn.dateRange[0],
+                                endDate: cn.dateRange[1],
+                                intervalType: cn.timingDateType,
+                                interval: cn.timingDateValue,
+                                moment: cn.timingTimeValue
                               }
-                            })
-                          }
-                            : undefined
+                              : undefined,
+                          // 规则型的值
+                          rulePushInfoList:
+                            cn.chooseType === 2
+                              ? cn.ruleValue.map((ruleItem, rule_i) => {
+                                return {
+                                  pushTimeId: ruleItem.pushTimeId,
+                                  delay: ruleItem.date,
+                                  moment: ruleItem.time
+                                }
+                              })
+                              : undefined,
+                          // 触发型的值
+                          triggerInfoList:
+                            cn.chooseType === 3
+                              ? {
+                                // pushTimeId: cn.pushTimeId,
+                                startDate: cn.dateRange[0],
+                                endDate: cn.dateRange[1],
+                                triggerRuleList: cn.trigger.map(
+                                  triggerItem => {
+                                    return {
+                                      triggerId: triggerItem.rule.map(n => {
+                                        return n.id
+                                      }),
+                                      triggerDate: triggerItem.date,
+                                      triggerTime: triggerItem.time
+                                    }
+                                  }
+                                )
+                              }
+                              : undefined
                         }
                       }
                     })
@@ -1358,11 +1431,13 @@ export default {
               baseId: this.id,
               strategySaveCriteriaList: data
             }
-            savePloy(param).then(res => {
-              resolve()
-            }).catch(() => {
-              reject()
-            })
+            savePloy(param)
+              .then(res => {
+                resolve()
+              })
+              .catch(() => {
+                reject()
+              })
           } else {
             // console.log(field)
             let errList = Object.keys(field).map(key => this.getIndex(key))
@@ -1427,7 +1502,8 @@ export default {
           })
           obj.abstractId = undefined
           this.group[gi].ployTabs.push(obj)
-          i === val.length - 1 && (this.group[gi].ployTabsValue = newTabName + '')
+          i === val.length - 1 &&
+            (this.group[gi].ployTabsValue = newTabName + '')
         })
         this.group[gi].totalPercent = this.getTotalPercent(gi)
         // 修改简介
@@ -1435,9 +1511,13 @@ export default {
         // 校验
         this.$nextTick(() => {
           // 校验策略是否为空
-          this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
+          this.$refs.customerFormRef.validateField(
+            `group.${this.groupIndex}.ployTabs`
+          )
           // 校验策略名是否重复
-          this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+          this.$refs.customerFormRef.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+          )
         })
       } else {
         Message({
@@ -1452,7 +1532,9 @@ export default {
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
       this.group[gi].ployTabs.forEach((n, i) => {
-        percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
+        percent = parseFloat(
+          percent - n.percent < 0 ? 0 : (percent - n.percent).toFixed(2)
+        )
       })
       this.group[gi].ployTabs.push({
         title: '新策略' + newTabName,
@@ -1471,9 +1553,13 @@ export default {
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
       this.$nextTick(() => {
         // 校验策略是否为空
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs`
+        )
         // 校验策略名是否重复
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+        )
       })
 
       // 修改简介
@@ -1485,7 +1571,9 @@ export default {
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
       this.group[gi].ployTabs.forEach((n, i) => {
-        percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
+        percent = parseFloat(
+          percent - n.percent < 0 ? 0 : (percent - n.percent).toFixed(2)
+        )
       })
       const ploy = {
         title: '新策略' + newTabName,
@@ -1539,15 +1627,18 @@ export default {
 
           this.$nextTick(() => {
             // 校验策略是否为空
-            this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
+            this.$refs.customerFormRef.validateField(
+              `group.${this.groupIndex}.ployTabs`
+            )
             // 校验策略名是否重复
-            this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+            this.$refs.customerFormRef.validateField(
+              `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+            )
           })
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => {
-        })
+        .catch(() => {})
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
@@ -1586,7 +1677,9 @@ export default {
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.totalPercent`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.totalPercent`
+      )
     },
     handlePercentBlur(item) {
       if (!item.percent) {
@@ -1608,7 +1701,9 @@ export default {
       // console.log(item.product, row)
       item.product.splice(i, 1)
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+      )
     },
     // 选择产品-确定
     submitProduct() {
@@ -1617,7 +1712,9 @@ export default {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
         // 校验
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1664,11 +1761,14 @@ export default {
     },
     parseTable(data) {
       return data.list.map((n, i) => {
-        return Object.assign({
-          groupName: data.groupName,
-          income: data.income,
-          total: data.list.length
-        }, n)
+        return Object.assign(
+          {
+            groupName: data.groupName,
+            income: data.income,
+            total: data.list.length
+          },
+          n
+        )
       })
     },
 
@@ -1697,7 +1797,8 @@ export default {
       })
       // 添加之后滚动到对应位置
       this.$nextTick(() => {
-        const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item.channel.length - 1}`
+        const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item
+          .channel.length - 1}`
         const top = document.querySelector(id).getBoundingClientRect().top
         document.querySelector('.content').scrollTop = top
       })
@@ -1706,7 +1807,9 @@ export default {
         n.disabled = item.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`
+      )
     },
     // 删除渠道
     deleteChannel(ployItem, ci) {
@@ -1717,7 +1820,9 @@ export default {
         n.disabled = ployItem.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`
+      )
     },
     addRuleItem(item, ci) {
       item.ruleValue.push({
@@ -1726,13 +1831,17 @@ export default {
       })
       this.channelIndex = ci
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
+      )
     },
     delRuleItem(item, i, ci) {
       item.ruleValue.splice(i, 1)
       this.channelIndex = ci
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
+      )
     },
     addTriggerItem(item, ci) {
       item.trigger.push({
@@ -1756,7 +1865,9 @@ export default {
       this.channelIndex = ci
       this.ruleIndex = i
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`
+      )
     },
 
     handleMouseEnter(row, column, cell, event) {
@@ -1824,7 +1935,7 @@ export default {
     deleteBeforeSms(item, i) {
       item.beforeSms.splice(i, 1)
     },
-    // crm-跟尾短信
+    // crm-跟进短信
     addAfterSmsWords(item, ci) {
       this.showAfterSms = true
       this.$nextTick(() => {
@@ -1833,7 +1944,7 @@ export default {
       })
       this.channelIndex = ci
     },
-    // 删除crm-跟尾短信
+    // 删除crm-跟进短信
     deleteAfterSms(item, i) {
       item.afterSms.splice(i, 1)
     },
@@ -1852,14 +1963,18 @@ export default {
       this.channelIndex = ci
 
       // 校验
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+      )
     },
     // 选择话术-确认
     submitWord() {
       const val = this.$refs.wordRef.parentRef.getVal()
       if (val.length) {
         this.showCRMWord = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model.push(
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].model.push(
           ...val.map(n => {
             return Object.assign({}, n, {
               _content: n.content,
@@ -1869,7 +1984,9 @@ export default {
           })
         )
         // 校验
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1884,7 +2001,9 @@ export default {
 
       if (val.length) {
         this.showBeforeSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].beforeSms = val.map(n => {
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].beforeSms = val.map(n => {
           return Object.assign({}, n, {
             smsAttr: {}
           })
@@ -1897,7 +2016,7 @@ export default {
         })
       }
     },
-    // crm-跟尾短信-确认
+    // crm-跟进短信-确认
     submitAfterSms() {
       const val = this.$refs.afterSmsRef.parentRef.getVal()
 
@@ -1910,7 +2029,9 @@ export default {
           })
         } else {
           this.showAfterSms = false
-          this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
+          this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+            this.channelIndex
+          ].afterSms = val.map(n => {
             return Object.assign({}, n, {
               smsAttr: {}
             })
@@ -1930,13 +2051,17 @@ export default {
       // console.log(val)
       if (val.length) {
         this.showSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val.map(n => {
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].model = val.map(n => {
           return Object.assign({}, n, {
             smsAttr: {}
           })
         })
         // 校验
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1950,11 +2075,15 @@ export default {
       console.log(val)
       if (val.length) {
         this.showRule = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].trigger[this.ruleIndex].rule = val.map(n => {
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].trigger[this.ruleIndex].rule = val.map(n => {
           return n
         })
         // 校验
-        this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`)
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1967,9 +2096,13 @@ export default {
     handleTestSms(channelIndex) {
       this.validateList = []
       // 校验model
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`
+      )
       // 校验phone
-      this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`)
+      this.$refs.customerFormRef.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`
+      )
       const data = {}
       // console.log(this.validateList)
       const validate = this.validateList.every(n => {
@@ -1978,10 +2111,15 @@ export default {
       if (validate) {
         // console.log(this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex])
         const data = {}
-        data.templateId = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].id
-        data.mblpnNo = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].test
+        data.templateId = this.group[this.groupIndex].ployTabs[
+          this.ployIndex
+        ].channel[channelIndex].model[0].id
+        data.mblpnNo = this.group[this.groupIndex].ployTabs[
+          this.ployIndex
+        ].channel[channelIndex].test
         // const params = this.$refs['testSmsRef-' + this.groupIndex + '-' + this.ployIndex][0].getParams()
-        const params = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].smsAttr
+        const params = this.group[this.groupIndex].ployTabs[this.ployIndex]
+          .channel[channelIndex].model[0].smsAttr
         Object.assign(data, params)
         // console.log(data)
         testSms(data).then(res => {
