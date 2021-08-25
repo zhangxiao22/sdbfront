@@ -260,7 +260,7 @@ export default {
       })
     },
     goBack() {
-      this.$router.push('/eventBoard')
+      this.$router.replace('/eventBoard')
     },
     ensureResolve() {
       const data = {

@@ -193,6 +193,9 @@
     <Dialog ref="dialog"
             :visible.sync="showDialog"
             @afterEnsure="getList(1)" />
+    <DetailDialog :id="detailDialogId"
+                  ref="detailDialog"
+                  :visible.sync="showDetailDialog" />
   </div>
 </template>
 
@@ -215,11 +218,13 @@ import {
 } from '@/api/api'
 import { mapGetters } from 'vuex'
 import Dialog from './dialog.vue'
+import DetailDialog from './detailDialog.vue'
 
 export default {
   name: 'EventBoard',
   components: {
     Dialog,
+    DetailDialog,
     ShunTable
   },
   props: {
@@ -243,6 +248,8 @@ export default {
   data() {
     return {
       showDialog: false,
+      showDetailDialog: false,
+      detailDialogId: null,
       // 权限判断
       roleJudge: {},
       loading: false,
@@ -608,11 +615,13 @@ export default {
       })
     },
     eventDetail(id) {
-      this.$router.push({
-        path: '/eventDetail', query: {
-          id
-        }
-      })
+      this.detailDialogId = id
+      this.showDetailDialog = true
+      // this.$router.replace({
+      //   path: '/eventDetail', query: {
+      //     id
+      //   }
+      // })
     },
     // 下载客群名单
     handleDownload(row) {
