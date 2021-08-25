@@ -175,7 +175,17 @@ export function delSms(params) {
     method: 'get',
     params
   })
-}/** ************************************************ 策略 ************************************************************/
+}
+
+// 编辑短信
+export function editSms(data) {
+  return request({
+    url: 'material/update',
+    method: 'post',
+    data
+  })
+}
+/** ************************************************ 策略 ************************************************************/
 // 获取策略库
 export function getStragetyList(params) {
   return request({

@@ -63,13 +63,57 @@
       <template v-slot:parameterDescriptionSlot="props">
         <pre>{{ props.row.parameterDescription }}</pre>
       </template>
+      <template v-slot:operateSlot="scope">
+        <div class="operate-btns">
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleEdit(scope.row)">编辑</div>
+        </div>
+      </template>
     </shun-table>
+    <!-- dialog -->
+    <el-dialog title="编辑短信"
+               :visible.sync="showDialog"
+               append-to-body
+               @close="handleClose">
+      <el-form ref="formRef"
+               label-width="110px"
+               :model="addInfo">
+        <el-form-item label="短信内容："
+                      prop="content"
+                      :rules="[{
+                        required: true, message: '请输入短信内容', trigger: 'blur'
+                      }]">
+          <el-input v-model.trim="addInfo.content"
+                    style="width:90%;"
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入短信内容" />
+        </el-form-item>
+        <el-form-item label="短信描述：">
+          <el-input v-model.trim="addInfo.description"
+                    style="width:90%;"
+                    type="textarea"
+                    :rows="3"
+                    resize="none"
+                    placeholder="请输入短信描述" />
+        </el-form-item>
+      </el-form>
+      <div slot="footer"
+           class="dialog-footer">
+        <el-button @click="handleClose">取 消</el-button>
+        <el-button type="primary"
+                   :loading="buttonLoading"
+                   @click="ensureEdit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getSmsList, uploadSmsFile, delSms } from '@/api/api'
+import { getSmsList, uploadSmsFile, delSms, editSms } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 import { DESCRIPTION } from '@/utils'
 
@@ -96,6 +140,8 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
+      buttonLoading: false,
       DESCRIPTION,
       uploadSmsFile,
       loading: false,
@@ -106,6 +152,11 @@ export default {
         content: ''
       },
       searchForm: {},
+      addInfo: {
+        id: '',
+        content: '',
+        description: ''
+      },
       tableColumnList: [
         {
           prop: 'id',
@@ -134,6 +185,13 @@ export default {
           minWidth: 200,
           slot: true,
           notShowOverflowTooltip: true
+        },
+        {
+          prop: 'operate',
+          label: '操作',
+          width: 120,
+          fixed: 'right',
+          slot: true
         }
       ],
       tableData: [],
@@ -150,6 +208,45 @@ export default {
     this.search()
   },
   methods: {
+    handleClose() {
+      this.showDialog = false
+      this.resetDialog()
+    },
+    ensureEdit() {
+      this.$refs.formRef.validate(valid => {
+        if (valid) {
+          // console.log(this.addInfo)
+          this.buttonLoading = true
+          editSms(this.addInfo).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.handleClose()
+              this.search()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
+        }
+      })
+    },
+    resetDialog() {
+      this.$refs['formRef'].resetFields()
+      this.addInfo.id = ''
+    },
+    handleEdit(row) {
+      this.showDialog = true
+      this.$nextTick(() => {
+        this.addInfo = {
+          id: row.id,
+          content: row.content,
+          description: row.description
+        }
+      })
+    },
     resetAll() {
       this.reset()
       this.$refs.table.resetSelection()
