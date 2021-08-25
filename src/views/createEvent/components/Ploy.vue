@@ -820,7 +820,13 @@
 </template>
 
 <script>
-import { savePloy, getPloyDetail, testSms } from '@/api/api'
+import {
+  savePloy,
+  getPloyDetail,
+  testSms,
+  getRecommendedProducts,
+  getRecommendedInterests
+} from '@/api/api'
 
 import gsap from 'gsap'
 import Info from '@/components/Info'
@@ -1715,6 +1721,18 @@ export default {
         this.$refs.customerFormRef.validateField(
           `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
         )
+        // 通过 `添加推荐产品` 修改产品库的产品内容时刷新推荐产品列表
+        this.group.forEach(group => {
+          group.ployTabs.forEach(ployTabs => {
+            const ids = ployTabs.product.map(p => p.id).join(',')
+            getRecommendedProducts({ ids }).then(res => {
+              // console.log(res)
+              ployTabs.product = res.data.map(product =>
+                Object.assign({}, product, product.extraField)
+              )
+            })
+          })
+        })
       } else {
         Message({
           message: '请选择至少一项',
@@ -1751,6 +1769,17 @@ export default {
         this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
         // 校验
         // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+
+        // 通过 `添加推荐权益` 修改权益库的产品内容时刷新推荐权益列表
+        this.group.forEach(group => {
+          group.ployTabs.forEach(ployTabs => {
+            const ids = ployTabs.interest.map(i => i.id).join(',')
+            getRecommendedInterests({ ids }).then(res => {
+              // console.log(res)
+              ployTabs.interest = res.data
+            })
+          })
+        })
       } else {
         Message({
           message: '请选择至少一项',
