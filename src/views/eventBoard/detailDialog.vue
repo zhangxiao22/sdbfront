@@ -1,11 +1,11 @@
 <template>
-  <el-dialog fullscreen
+  <el-dialog v-loading="loading"
+             fullscreen
              class="edit-container"
              :visible="visible"
              :append-to-body="true"
              @close="handleClose">
-    <div v-loading="loading"
-         class="container">
+    <div class="container">
       <div class="main-container">
         <div class="header">
           <div class="header-left"
@@ -216,7 +216,7 @@ export default {
       }
     },
     id() {
-      console.log(this.id)
+      // console.log(this.id)
       this.init()
     }
   },
