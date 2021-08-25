@@ -176,7 +176,7 @@
       <el-form ref="regFormRef"
                label-width="110px"
                :model="addInfo">
-        <el-form-item label="归属产品"
+        <el-form-item label="归属产品："
                       :rules="[{
                         required: true, message: '请选择话术分类', trigger: 'blur'
                       }]"
@@ -192,7 +192,7 @@
                        :value="item.value" />
           </el-select>
         </el-form-item>
-        <el-form-item label="话术用例"
+        <el-form-item label="话术用例："
                       :rules="[{
                         required: true, message: '请选择话术分类', trigger: 'blur'
                       }]"
