@@ -75,7 +75,13 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getAllJob, insertJob, getPermissionPackEnum, deleteJob, updateJob } from '@/api/api'
+import {
+  getAllJob,
+  insertJob,
+  getPermissionPackEnum,
+  deleteJob,
+  updateJob
+} from '@/api/api'
 
 export default {
   name: 'Assign',
@@ -141,8 +147,7 @@ export default {
   },
 
   watch: {},
-  created() {
-  },
+  created() {},
   methods: {
     init() {
       this.getList()
@@ -153,12 +158,15 @@ export default {
       getAllJob().then(res => {
         this.loading = false
         this.tableData = res.data.map(n => {
-          return Object.assign({}, {
-            id: n.id,
-            post: n.name,
-            role: n.permissionPack,
-            people: n.userJobCount
-          })
+          return Object.assign(
+            {},
+            {
+              id: n.id,
+              post: n.name,
+              role: n.permissionPack,
+              people: n.userJobCount
+            }
+          )
         })
       })
     },
@@ -198,37 +206,40 @@ export default {
               this.getList()
             }
           })
-        }).finally(() => {
+        })
+        .finally(() => {
           this.loading = false
         })
     },
     ensureAddList() {
-      this.$refs['formRef'].validate((valid) => {
+      this.$refs['formRef'].validate(valid => {
         if (valid) {
           this.buttonLoading = true
-          let ajxj
+          let ajax
           const data = {}
           if (this.form.id) {
             data.id = this.form.id
-            ajxj = updateJob
+            ajax = updateJob
           } else {
-            ajxj = insertJob
+            ajax = insertJob
           }
           data.name = this.form.name
           data.permissionPack = this.form.role
-          ajxj(data).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.showDialog = false
-              this.getList()
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-          })
+          ajax(data)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.showDialog = false
+                this.getList()
+              }
+            })
+            .finally(() => {
+              this.buttonLoading = false
+            })
         }
       })
     },

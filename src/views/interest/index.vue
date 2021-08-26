@@ -438,13 +438,13 @@ export default {
       this.$refs['formRef'].validate(valid => {
         if (valid) {
           this.buttonLoading = true
-          let ajxj
+          let ajax
           const data = {}
           if (this.isEdit) {
             data.id = this.addInfo.id
-            ajxj = updateInterests
+            ajax = updateInterests
           } else {
-            // ajxj = updateInterests
+            // ajax = updateInterests
           }
           data.name = this.addInfo.name
           data.content = this.addInfo.content
@@ -453,7 +453,7 @@ export default {
           data.productFirstCategoryList = this.addInfo.productFirstCategoryList
           data.validateStartDate = this.addInfo.validateDate?.[0]
           data.validateEndDate = this.addInfo.validateDate?.[1]
-          ajxj(data)
+          ajax(data)
             .then(res => {
               if (res.code === 200) {
                 this.$message({
