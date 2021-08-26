@@ -95,3 +95,8 @@
 .el-input__inner[maxlength] {
    padding-right: 45px;
 }
+
+.el-tabs__item:focus.is-active.is-focus:not(:active) {
+  box-shadow: none;
+  border-radius: 0;
+}
