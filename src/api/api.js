@@ -363,6 +363,24 @@ export function getPloyDetail(params) {
   })
 }
 
+// 获取策略推荐产品
+export function getRecommendedProducts(params) {
+  return request({
+    url: '/resource/selectByIdList',
+    method: 'get',
+    params
+  })
+}
+
+// 获取策略推荐权益
+export function getRecommendedInterests(params) {
+  return request({
+    url: '/interests/selectInterestsByIds',
+    method: 'get',
+    params
+  })
+}
+
 // 保存策略
 export function savePloy(data) {
   return request({
