@@ -127,74 +127,85 @@
                     添加产品
                   </el-button>
                 </el-form-item>
-                <el-table v-show="ployItem.product.length"
-                          :data="ployItem.product"
-                          border
-                          style="width: 100%;margin-bottom:18px;">
-                  <el-table-column type="expand">
-                    <template slot-scope="scope">
-                      <el-form label-position="left"
-                               inline
-                               class="demo-table-expand">
-                        <div v-for="(item,i) in getTableColumnListByType(scope.row.firstCategory.value)"
-                             :key="i">
-                          <el-form-item :label="item.label+'：'">
-                            <span>{{ scope.row[item.prop] }}</span>
-                          </el-form-item>
-                        </div>
-                      </el-form>
-                    </template>
-                  </el-table-column>
-                  <template v-for="(item,i) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
-                    <el-table-column v-if="item.prop === 'attributionUseCaseList'"
-                                     :key="i"
-                                     :prop="item.prop"
-                                     :label="item.label"
-                                     :min-width="item.minWidth">
+                <div v-show="ployItem.product.length"
+                     class="product-card">
+                  <el-table :data="ployItem.product.slice(5 * (productCurrentPage - 1), 5 * productCurrentPage)"
+                            border
+                            style="width: 100%;margin-bottom:18px;">
+                    <el-table-column type="expand">
                       <template slot-scope="scope">
-                        <template>
-                          <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
-                            <el-tooltip placement="top-start"
-                                        class="hover-text">
-                              <div slot="content">
-                                <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
-                                     :key="useItemIndex"
-                                     style="margin:5px 0;">
-                                  {{ useItem.label }}
-                                </div>
-                              </div>
-                              <span>
-                                {{ scope.row.attributionUseCaseList.length }}个用例
-                              </span>
-                            </el-tooltip>
-                          </template>
-                          <div v-else>
-                            无
+                        <el-form label-position="left"
+                                 inline
+                                 class="demo-table-expand">
+                          <div v-for="(item,i) in getTableColumnListByType(scope.row.firstCategory.value)"
+                               :key="i">
+                            <el-form-item :label="item.label+'：'">
+                              <span>{{ scope.row[item.prop] }}</span>
+                            </el-form-item>
                           </div>
-                        </template>
+                        </el-form>
                       </template>
                     </el-table-column>
-                    <el-table-column v-else
-                                     :key="i"
-                                     :prop="item.prop"
-                                     :label="item.label"
-                                     :width="item.width"
-                                     :min-width="item.minWidth" />
-                  </template>
-                  <el-table-column fixed="right"
-                                   label="操作"
-                                   width="100">
-                    <template slot-scope="scope">
-                      <el-popconfirm title="确定删除吗？"
-                                     @onConfirm="deleteProduct(ployItem,scope.$index)">
-                        <el-button slot="reference"
-                                   type="text"
-                                   style="color:#f56c6c;"
-                                   size="small">删除</el-button>
-                      </el-popconfirm>
+                    <template v-for="(item,i) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
+                      <el-table-column v-if="item.prop === 'attributionUseCaseList'"
+                                       :key="i"
+                                       :prop="item.prop"
+                                       :label="item.label"
+                                       :min-width="item.minWidth">
+                        <template slot-scope="scope">
+                          <template>
+                            <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+                              <el-tooltip placement="top-start"
+                                          class="hover-text">
+                                <div slot="content">
+                                  <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
+                                       :key="useItemIndex"
+                                       style="margin:5px 0;">
+                                    {{ useItem.label }}
+                                  </div>
+                                </div>
+                                <span>
+                                  {{ scope.row.attributionUseCaseList.length }}个用例
+                                </span>
+                              </el-tooltip>
+                            </template>
+                            <div v-else>
+                              无
+                            </div>
+                          </template>
+                        </template>
+                      </el-table-column>
+                      <el-table-column v-else
+                                       :key="i"
+                                       :prop="item.prop"
+                                       :label="item.label"
+                                       :width="item.width"
+                                       :min-width="item.minWidth" />
                     </template>
-                  </el-table-column>
-                </el-table>
+                    <el-table-column fixed="right"
+                                     label="操作"
+                                     width="100">
+                      <template slot-scope="scope">
+                        <el-popconfirm title="确定删除吗？"
+                                       @onConfirm="deleteProduct(ployItem,scope.$index)">
+                          <el-button slot="reference"
+                                     type="text"
+                                     style="color:#f56c6c;"
+                                     size="small">删除</el-button>
+                        </el-popconfirm>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                  <!-- 推荐产品分页 -->
+                  <el-pagination background
+                                 small
+                                 :page-size="5"
+                                 :pager-count="5"
+                                 :current-page.sync="productCurrentPage"
+                                 :total="ployItem.product.length"
+                                 layout="total, prev, pager, next"
+                                 :hide-on-single-page="true" />
+                </div>
                 <!-- :rules="[{
                                 required: true, message: '请选择权益', type: 'array'
                               }]" -->
@@ -209,7 +220,7 @@
                 </el-form-item>
                 <div v-show="ployItem.interest.length"
                      class="ploy-card">
-                  <el-table :data="ployItem.interest"
+                  <el-table :data="ployItem.interest.slice(5 * (interestCurrentPage - 1), 5 * interestCurrentPage)"
                             border
                             style="width: 100%;margin-bottom:18px;">
                     <el-table-column prop="name"
@@ -233,6 +244,15 @@
                       </template>
                     </el-table-column>
                   </el-table>
+                  <!-- 推荐权益分页 -->
+                  <el-pagination background
+                                 small
+                                 :page-size="5"
+                                 :pager-count="5"
+                                 :current-page.sync="interestCurrentPage"
+                                 :total="ployItem.interest.length"
+                                 layout="total, prev, pager, next"
+                                 :hide-on-single-page="true" />
                 </div>
                 <!-- <el-divider /> -->
                 <el-form-item label="下发渠道："
@@ -924,6 +944,10 @@ export default {
         //   ployTabIndex: 1
         // },
       ],
+      // 推荐产品分页
+      productCurrentPage: 1,
+      // 推荐权益分页
+      interestCurrentPage: 1,
 
       tempPloyItem: null,
       pickerOptions: {
@@ -2265,6 +2289,11 @@ export default {
       transform: scale(0.8);
     }
   }
+  .product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
 
   .ploy-card {
     // @include shun-text;
@@ -2274,6 +2303,9 @@ export default {
     // margin-bottom: 0;
     // font-size: 13px;
     // display: flex;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
   }
   .channel-card {
     background: #fefdfc;
