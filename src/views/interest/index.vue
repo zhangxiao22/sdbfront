@@ -421,7 +421,9 @@ export default {
           content: row.content,
           description: row.description,
           attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
-          productFirstCategoryList: row.productFirstCategoryList?.map(n => n.value),
+          productFirstCategoryList: row.productFirstCategoryList?.map(
+            n => n.value
+          ),
           validateDate: [row.validateStartDate || '', row.validateEndDate || '']
         }
       })
@@ -433,7 +435,7 @@ export default {
       this.showDialog = false
     },
     ensureAddList() {
-      this.$refs['formRef'].validate((valid) => {
+      this.$refs['formRef'].validate(valid => {
         if (valid) {
           this.buttonLoading = true
           let ajxj
@@ -451,19 +453,21 @@ export default {
           data.productFirstCategoryList = this.addInfo.productFirstCategoryList
           data.validateStartDate = this.addInfo.validateDate?.[0]
           data.validateEndDate = this.addInfo.validateDate?.[1]
-          ajxj(data).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.showDialog = false
-              this.getList(1)
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-          })
+          ajxj(data)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.showDialog = false
+                this.getList(1)
+              }
+            })
+            .finally(() => {
+              this.buttonLoading = false
+            })
         }
       })
     },
@@ -519,31 +523,39 @@ export default {
     // 获取产品类型
     productCategoryList() {
       getProductCategoryList().then(res => {
-        this.productListOpt = res.data.map((n) => {
-          return Object.assign({}, {
-            label: n.firstCategory.label,
-            value: n.firstCategory.value
-          })
+        this.productListOpt = res.data.map(n => {
+          return Object.assign(
+            {},
+            {
+              label: n.firstCategory.label,
+              value: n.firstCategory.value
+            }
+          )
         })
       })
     },
 
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
-      const data = Object.assign({
-        pageNo: this.currentPage,
-        pageSize: this.pageSize
-      }, this.searchForm)
+      const data = Object.assign(
+        {
+          pageNo: this.currentPage,
+          pageSize: this.pageSize
+        },
+        this.searchForm
+      )
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
-      getInterestList(data).then(res => {
-        this.tableData = res.data.resultList
-        this.total = res.pagination.totalItemCount
-        this.loading = false
-      }).catch(err => {
-        console.log(err)
-        this.loading = false
-      })
+      getInterestList(data)
+        .then(res => {
+          this.tableData = res.data.resultList
+          this.total = res.pagination.totalItemCount
+          this.loading = false
+        })
+        .catch(err => {
+          console.log(err)
+          this.loading = false
+        })
     }
     // getVal() {
     //   return this.$refs.table.getVal()
