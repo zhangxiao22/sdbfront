@@ -1717,10 +1717,7 @@ export default {
       if (val.length) {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
-        // 校验
-        this.$refs.customerFormRef.validateField(
-          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
-        )
+
         // 通过 `添加推荐产品` 修改产品库的产品内容时刷新推荐产品列表
         this.group.forEach(group => {
           group.ployTabs.forEach(ployTabs => {
@@ -1733,6 +1730,11 @@ export default {
             })
           })
         })
+
+        // 校验
+        this.$refs.customerFormRef.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+        )
       } else {
         Message({
           message: '请选择至少一项',
