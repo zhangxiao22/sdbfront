@@ -315,6 +315,7 @@ export default {
       }).finally(() => {
         this.buttonLoadingResolve = false
         this.showResolve = false
+        this.init()
         // this.getDetail()
       })
     },
@@ -339,6 +340,7 @@ export default {
           }).finally(() => {
             this.buttonLoadingReject = false
             this.showReject = false
+            this.init()
             // this.getDetail()
           })
         }
