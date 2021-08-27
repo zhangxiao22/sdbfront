@@ -195,7 +195,8 @@
             @afterEnsure="getList(1)" />
     <DetailDialog :id="detailDialogId"
                   ref="detailDialog"
-                  :visible.sync="showDetailDialog" />
+                  :visible.sync="showDetailDialog"
+                  @afterClose="afterDetailDialogClose" />
   </div>
 </template>
 
@@ -622,6 +623,9 @@ export default {
       //     id
       //   }
       // })
+    },
+    afterDetailDialogClose() {
+      this.getList()
     },
     // 下载客群名单
     handleDownload(row) {

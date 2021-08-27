@@ -239,6 +239,7 @@ export default {
     },
     handleClose() {
       this.$emit('update:visible', false)
+      this.$emit('afterClose')
     },
     handleCopy() {
       this.$confirm(`确定复制事件（${this.eventName}）？`)
@@ -309,11 +310,11 @@ export default {
             type: 'success',
             duration: '3000'
           })
-          this.$router.push('/eventBoard')
+          // this.$router.push('/eventBoard')
         }
       }).finally(() => {
         this.buttonLoadingResolve = false
-        // this.showResolve = false
+        this.showResolve = false
         // this.getDetail()
       })
     },
@@ -333,11 +334,11 @@ export default {
                 type: 'success',
                 duration: '3000'
               })
-              this.$router.push('/eventBoard')
+              // this.$router.push('/eventBoard')
             }
           }).finally(() => {
             this.buttonLoadingReject = false
-            // this.showReject = false
+            this.showReject = false
             // this.getDetail()
           })
         }

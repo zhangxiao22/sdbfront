@@ -437,8 +437,6 @@ export default {
                 const item = CHANNEL_OPT.find(
                   item => item.value === x.channel.value
                 )
-                console.log('item', item)
-                console.log('x', x)
                 return Object.assign({}, item, x, {
                   timingDateValue:
                     x.pushType.value === 1
@@ -447,8 +445,8 @@ export default {
                         TIMING_OPT.forEach(b => {
                           if (
                             b.value ===
-                              x.pushTimeInfo.scheduelPushInfoVO.intervalType
-                                .value
+                            x.pushTimeInfo.scheduelPushInfoVO.intervalType
+                              .value
                           ) {
                             b.children.forEach(c => {
                               if (c.value === a) {
@@ -472,7 +470,7 @@ export default {
           })
         }
       })
-      console.log('groups', this.groups)
+      // console.log('groups', this.groups)
     },
     handleExpandChange() {
       this.$nextTick(() => {
