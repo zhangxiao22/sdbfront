@@ -1109,15 +1109,14 @@ export default {
         this.showBeforeSms = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
           this.channelIndex
-        ].beforeSms.push(
-          ...val.map(n => {
-            return Object.assign({}, n, {
-              _content: n.content,
-              isEdit: false,
-              isHover: false
-            })
+        ].beforeSms = val.map(n => {
+          return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
+            isHover: false
           })
-        )
+        })
+
         // 校验
         // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
