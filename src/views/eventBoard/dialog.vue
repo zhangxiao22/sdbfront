@@ -634,7 +634,7 @@ export default {
             // baseId: this.id,
             strategySaveCriteriaList: data
           }
-          this.buttonLoading = true
+          // this.buttonLoading = true
           const confirmText = [
             '同步时间较长，请勿重复点击，',
             `是否确认事件【${this.eventInfo.eventName}】同步？`
@@ -1109,15 +1109,14 @@ export default {
         this.showBeforeSms = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
           this.channelIndex
-        ].beforeSms.push(
-          ...val.map(n => {
-            return Object.assign({}, n, {
-              _content: n.content,
-              isEdit: false,
-              isHover: false
-            })
+        ].beforeSms = val.map(n => {
+          return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
+            isHover: false
           })
-        )
+        })
+
         // 校验
         // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
       } else {
