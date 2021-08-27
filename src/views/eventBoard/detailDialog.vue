@@ -4,12 +4,13 @@
              class="edit-container"
              :visible="visible"
              :append-to-body="true"
-             @close="handleClose">
+             @close="closeDialog"
+             @open="openDialog">
     <div class="container">
       <div class="main-container">
         <div class="header">
           <div class="header-left"
-               @click="handleClose">
+               @click="closeDialog">
             <i class="el-icon-back" />
             <span class="title">返回</span>
           </div>
@@ -214,10 +215,6 @@ export default {
       } else {
         this.copy_showHistory = this.showHistory
       }
-    },
-    id() {
-      // console.log(this.id)
-      this.init()
     }
   },
   created() {
@@ -237,7 +234,10 @@ export default {
         })
       }
     },
-    handleClose() {
+    openDialog() {
+      this.init()
+    },
+    closeDialog() {
       this.$emit('update:visible', false)
       this.$emit('afterClose')
     },
