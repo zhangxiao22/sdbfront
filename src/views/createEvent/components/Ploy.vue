@@ -801,6 +801,7 @@
                 @submit="submitSms">
       <template v-slot:container>
         <Sms ref="smsRef"
+             :multiple="false"
              :show-selection="true" />
       </template>
     </ShunDrawer>
@@ -1023,7 +1024,7 @@ export default {
         const bHas = isNaN(b[1])
         return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function(a, b) {
+      return newArray.sort(function (a, b) {
         return a[0] - b[0]
       })
     },
@@ -1668,7 +1669,7 @@ export default {
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
