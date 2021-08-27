@@ -378,7 +378,7 @@
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary"
                    :loading="syncLoading"
-                   @click="handleSyncProduct">同 步</el-button>
+                   @click="handleSyncProduct">应用并同步</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
                    @click="ensureSave">应 用</el-button>
