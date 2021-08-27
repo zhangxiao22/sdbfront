@@ -634,7 +634,7 @@ export default {
             // baseId: this.id,
             strategySaveCriteriaList: data
           }
-          this.buttonLoading = true
+          // this.buttonLoading = true
           const confirmText = [
             '同步时间较长，请勿重复点击，',
             `是否确认事件【${this.eventInfo.eventName}】同步？`
