@@ -352,15 +352,19 @@ export default {
 
 <style lang="scss" scoped>
 @import "~@/styles/mixin.scss";
+
 .edit-container {
+  ::v-deep .el-dialog__header {
+    display: none;
+  }
   ::v-deep .el-dialog__body {
-    padding: 30px 0;
+    padding: 0;
   }
 }
 .container {
   .main-container {
     min-height: 100%;
-    border-top: 1px solid #ebeef5;
+    // border-top: 1px solid #ebeef5;
   }
   .header {
     padding: 15px;
