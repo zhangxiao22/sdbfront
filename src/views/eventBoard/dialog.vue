@@ -653,21 +653,14 @@ export default {
               this.syncLoading = true
               updateStrategy(param).then(res => {
                 if (res.code === 200) {
-                  this.$message({
-                    message: '应用成功',
-                    type: 'success',
-                    duration: '3000'
-                  })
-                }
-              })
-            })
-            .then(() => {
-              syncProduct({ eventId: this.eventInfo.eventId }).then(res => {
-                if (res.code === 200) {
-                  this.$message({
-                    message: '同步成功',
-                    type: 'success',
-                    duration: '3000'
+                  syncProduct({ eventId: this.eventInfo.eventId }).then(res => {
+                    if (res.code === 200) {
+                      this.$message({
+                        message: '应用并同步成功',
+                        type: 'success',
+                        duration: '3000'
+                      })
+                    }
                   })
                 }
               })
