@@ -192,7 +192,9 @@
     </shun-table>
     <Dialog ref="dialog"
             :visible.sync="showDialog"
-            @afterEnsure="getList(1)" />
+            :update-row="updateRow"
+            @afterEnsure="getList(1)"
+            @afterClose="afterDetailDialogClose" />
     <DetailDialog :id="detailDialogId"
                   ref="detailDialog"
                   :visible.sync="showDetailDialog"
@@ -249,6 +251,7 @@ export default {
   data() {
     return {
       showDialog: false,
+      updateRow: {},
       showDetailDialog: false,
       detailDialogId: null,
       // 权限判断
@@ -669,8 +672,8 @@ export default {
       if (row.group.length) {
         window.open(
           process.env.VUE_APP_BASE_API +
-            '/customer/customerDownload?baseId=' +
-            row.id,
+          '/customer/customerDownload?baseId=' +
+          row.id,
           '_self'
         )
       } else {
@@ -687,8 +690,8 @@ export default {
       if (row.id) {
         window.open(
           process.env.VUE_APP_BASE_API +
-            '/event/download_assign_result?eventId=' +
-            row.id,
+          '/event/download_assign_result?eventId=' +
+          row.id,
           '_self'
         )
       } else {
@@ -709,7 +712,8 @@ export default {
     },
     handleUpdate(row) {
       this.showDialog = true
-      this.$refs['dialog'].update(row)
+      this.updateRow = row
+      // this.$refs['dialog'].update(row)
     },
     handleCopy(row) {
       this.$confirm(`确定复制事件（${row.name}）？`)

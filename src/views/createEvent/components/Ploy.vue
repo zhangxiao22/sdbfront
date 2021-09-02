@@ -1089,8 +1089,8 @@ export default {
   },
   props: {
     passedId: {
-      type: String,
-      default: ''
+      type: Number,
+      default: null
     },
     isUpdate: {
       type: Boolean,
@@ -1626,6 +1626,21 @@ export default {
       })
     },
     validateAndNext() {
+      return this.beforeValidateAndNext((data, resolve, reject) => {
+        const param = {
+          baseId: this.id,
+          strategySaveCriteriaList: data
+        }
+        savePloy(param)
+          .then(res => {
+            resolve()
+          })
+          .catch(() => {
+            reject()
+          })
+      })
+    },
+    beforeValidateAndNext(cb) {
       this.isSubmit = true
       return new Promise((resolve, reject) => {
         this.$refs.customerFormRef.validate((valid, field) => {
@@ -1633,19 +1648,19 @@ export default {
           if (valid) {
             // 客群
             const data = this.getData()
-            // console.log(data)
-            // reject()
-            const param = {
-              baseId: this.id,
-              strategySaveCriteriaList: data
-            }
-            savePloy(param)
-              .then(res => {
-                resolve()
-              })
-              .catch(() => {
-                reject()
-              })
+            // resolve()
+            // const param = {
+            //   baseId: this.id,
+            //   strategySaveCriteriaList: data
+            // }
+            cb(data, resolve, reject)
+            // savePloy(param)
+            //   .then(res => {
+            //     resolve()
+            //   })
+            //   .catch(() => {
+            //     reject()
+            //   })
           } else {
             // console.log(field)
             let errList = Object.keys(field).map(key => this.getIndex(key))
