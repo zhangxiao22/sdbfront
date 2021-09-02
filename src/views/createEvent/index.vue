@@ -130,11 +130,15 @@
 </template>
 
 <script>
-
 import { Register, Customer, Ploy, Preview } from './components'
 import bus from './bus'
 // import { mapGetters } from 'vuex'
-import { eventPublish, askForApproval, getEventInfo, getUseCaseDetailById } from '@/api/api'
+import {
+  eventPublish,
+  askForApproval,
+  getEventInfo,
+  getUseCaseDetailById
+} from '@/api/api'
 const DEFAULT_DATA = {
   baseInfoDetail: {
     // 事件名称
@@ -207,9 +211,7 @@ export default {
       return +this.$route.query.id
     }
   },
-  mounted() {
-
-  },
+  mounted() {},
   created() {
     bus.$on('setBaseInfoDetail', this.setBaseInfoDetail)
     bus.$on('setGroupDetail', this.setGroupDetail)
@@ -225,7 +227,9 @@ export default {
       if (this.id) {
         this.getStepDetail()
       } else {
-        this.baseInfoDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.baseInfoDetail))
+        this.baseInfoDetail = JSON.parse(
+          JSON.stringify(DEFAULT_DATA.baseInfoDetail)
+        )
         this.groupDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.groupDetail))
         this.ployDetail = JSON.parse(JSON.stringify(DEFAULT_DATA.ployDetail))
       }
@@ -260,7 +264,8 @@ export default {
         this.baseInfoDetail.control = baseInfo.control
         // 客群
         this.groupDetail.peopleNum = customer.recordCount
-        this.groupDetail.comparePeopleNum = customer.recordCount - customer.filterCount
+        this.groupDetail.comparePeopleNum =
+          customer.recordCount - customer.filterCount
         this.groupDetail.realPeopleNum = customer.filterCount
         this.groupDetail.groupNum = customer.groupCount
         // 策略
@@ -270,18 +275,21 @@ export default {
     next() {
       const ref = this.component[this.stepActive].ref
       this.mainLoading = true
-      this.$refs[ref].validateAndNext().then(() => {
-        this.$message({
-          message: '保存成功',
-          type: 'success',
-          duration: '3000'
+      this.$refs[ref]
+        .validateAndNext()
+        .then(() => {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+            duration: '3000'
+          })
+          this.stepActive++
+          this.mainLoading = false
         })
-        this.stepActive++
-        this.mainLoading = false
-      }).catch(err => {
-        this.mainLoading = false
-        console.log('err:', err)
-      })
+        .catch(err => {
+          this.mainLoading = false
+          console.log('err:', err)
+        })
     },
     prev() {
       if (this.stepActive > 0) {

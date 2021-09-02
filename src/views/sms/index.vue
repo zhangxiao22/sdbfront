@@ -158,11 +158,11 @@ export default {
         description: ''
       },
       tableColumnList: [
-        {
-          prop: 'id',
-          label: 'ID',
-          minWidth: 50
-        },
+        // {
+        //   prop: 'id',
+        //   label: 'ID',
+        //   minWidth: 50
+        // },
         {
           prop: 'content',
           label: '短信内容',
@@ -217,19 +217,21 @@ export default {
         if (valid) {
           // console.log(this.addInfo)
           this.buttonLoading = true
-          editSms(this.addInfo).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.handleClose()
-              this.search()
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-          })
+          editSms(this.addInfo)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.handleClose()
+                this.search()
+              }
+            })
+            .finally(() => {
+              this.buttonLoading = false
+            })
         }
       })
     },
@@ -262,18 +264,25 @@ export default {
 
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
-      const data = Object.assign({
-        pageNo: this.currentPage,
-        pageSize: this.pageSize
-      }, this.searchForm)
+      const data = Object.assign(
+        {
+          pageNo: this.currentPage,
+          pageSize: this.pageSize
+        },
+        this.searchForm
+      )
       this.loading = true
-      getSmsList(data).then(res => {
-        this.tableData = this.commonTemplate ? res.data.resultList.filter(n => n.commonTemplate === true) : res.data.resultList
-        this.total = res.pagination.totalItemCount
-        this.loading = false
-      }).catch(() => {
-        this.loading = false
-      })
+      getSmsList(data)
+        .then(res => {
+          this.tableData = this.commonTemplate
+            ? res.data.resultList.filter(n => n.commonTemplate === true)
+            : res.data.resultList
+          this.total = res.pagination.totalItemCount
+          this.loading = false
+        })
+        .catch(() => {
+          this.loading = false
+        })
     },
     // 下载模版
     downloadModel() {

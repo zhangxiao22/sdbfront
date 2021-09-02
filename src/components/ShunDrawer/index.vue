@@ -4,6 +4,7 @@
                :visible="show"
                v-bind="$attrs"
                :size="size"
+               append-to-body
                v-on="$listeners"
                @open="handleOpen"
                @close="handleClose">
@@ -43,17 +44,11 @@ export default {
     }
   },
   data() {
-    return {
-    }
+    return {}
   },
-  computed: {
-
-  },
-  watch: {
-
-  },
-  created() {
-  },
+  computed: {},
+  watch: {},
+  created() {},
   methods: {
     submit() {
       this.$emit('submit')
@@ -64,7 +59,6 @@ export default {
     handleClose() {
       this.$emit('update:show', false)
     }
-
   }
 }
 </script>
