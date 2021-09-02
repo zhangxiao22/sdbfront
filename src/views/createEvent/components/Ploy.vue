@@ -924,7 +924,7 @@
     <!-- 预热短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showBeforeSms"
-                @submit="submitBeforeSms()">
+                @submit="submitBeforeSms">
       <template v-slot:container>
         <sms ref="beforeSmsRef"
              :multiple="false"
@@ -935,7 +935,7 @@
     <!-- 跟进短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showAfterSms"
-                @submit="submitAfterSms()">
+                @submit="submitAfterSms">
       <template v-slot:container>
         <sms ref="afterSmsRef"
              multiple
@@ -947,92 +947,98 @@
     <!-- 话术、短信变更弹框 -->
     <el-dialog title="策略信息变更提醒"
                append-to-body
-               :width="'80%'"
+               width="80%"
                :visible.sync="changeDialog"
                class="dialog">
-      <div v-show="changeList.scriptList && changeList.scriptList.length"
-           class="dialog-table">
-        <div class="dialog-table-label">话术变更内容</div>
-        <el-table :data="changeScriptTableData"
-                  border
-                  stripe
-                  :row-style="scriptTableRowStyleObj">
-          <el-table-column prop="isNew">
-            <template slot-scope="scope">
-              {{ scope.row.isNew ? '新话术' : '原话术' }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="content"
-                           label="话术内容" />
-          <el-table-column prop="category.label"
-                           label="话术分类" />
-          <el-table-column prop="attributionuseCaseList"
-                           label="话术用例">
-            <template slot-scope="scope">
-              <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
-                <el-tooltip placement="top-start"
-                            class="hover-text">
-                  <div slot="content">
-                    <div v-for="(item,i) of scope.row.attributionUseCaseList"
-                         :key="i"
-                         style="margin:5px 0;">
-                      {{ item.label }}
-                    </div>
+      <!-- 话术 -->
+      <el-table v-show="changeList.scriptList && changeList.scriptList.length"
+                :data="changeTableData.scriptList"
+                border
+                class="dialog-table"
+                :cell-style="scriptTableCellStyleObj"
+                :row-style="scriptTableRowStyleObj">
+        <el-table-column prop="isNew"
+                         label="话术变更内容"
+                         width="100">
+          <template slot-scope="scope">
+            {{ scope.row.isNew?'新话术':'原话术' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="content"
+                         label="话术内容" />
+        <el-table-column prop="category.label"
+                         label="话术分类" />
+        <el-table-column prop="attributionuseCaseList"
+                         label="话术用例">
+          <template slot-scope="scope">
+            <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+              <el-tooltip placement="top-start"
+                          class="hover-text">
+                <div slot="content">
+                  <div v-for="(item,i) of scope.row.attributionUseCaseList"
+                       :key="i"
+                       style="margin:5px 0;">
+                    {{ item.label }}
                   </div>
-                  <span>
-                    {{ scope.row.attributionUseCaseList.length }}个用例
-                  </span>
-                </el-tooltip>
-              </template>
-              <div v-else>
-                无
-              </div>
+                </div>
+                <span>
+                  {{ scope.row.attributionUseCaseList.length }}个用例
+                </span>
+              </el-tooltip>
             </template>
-          </el-table-column>
-          <el-table-column prop="productFirstCategoryList"
-                           label="归属产品">
-            <template slot-scope="scope">
-              <template v-if="scope.row.productFirstCategoryList && scope.row.productFirstCategoryList.length">
-                <el-tooltip placement="top-start"
-                            class="hover-text">
-                  <div slot="content">
-                    <div v-for="(item,i) of scope.row.productFirstCategoryList"
-                         :key="i"
-                         style="margin:5px 0;">
-                      {{ item.label }}
-                    </div>
+            <div v-else>
+              无
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="productFirstCategoryList"
+                         label="归属产品">
+          <template slot-scope="scope">
+            <template v-if="scope.row.productFirstCategoryList && scope.row.productFirstCategoryList.length">
+              <el-tooltip placement="top-start"
+                          class="hover-text">
+                <div slot="content">
+                  <div v-for="(item,i) of scope.row.productFirstCategoryList"
+                       :key="i"
+                       style="margin:5px 0;">
+                    {{ item.label }}
                   </div>
-                  <span>
-                    {{ scope.row.productFirstCategoryList.length }}类产品
-                  </span>
-                </el-tooltip>
-              </template>
-              <div v-else>
-                无
-              </div>
+                </div>
+                <span>
+                  {{ scope.row.productFirstCategoryList.length }}类产品
+                </span>
+              </el-tooltip>
             </template>
-          </el-table-column>
-          <el-table-column prop="description"
-                           label="话术说明" />
-          <el-table-column prop="products"
-                           label="对应产品" />
-        </el-table>
-      </div>
-      <div v-show="changeList.smsList && changeList.smsList.length"
-           class="dialog-table">
-        <div class="dialog-table-label">短信变更内容</div>
-        <el-table :data="changeList.smsList"
-                  border>
-          <el-table-column prop="materialOld.content"
-                           label="原内容" />
-          <el-table-column prop="materialOld.description"
-                           label="原描述" />
-          <el-table-column prop="materialYoung.content"
-                           label="新内容" />
-          <el-table-column prop="materialYoung.description"
-                           label="新描述" />
-        </el-table>
-      </div>
+            <div v-else>
+              无
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column prop="description"
+                         label="话术说明" />
+        <el-table-column prop="products"
+                         label="对应产品" />
+      </el-table>
+      <!-- 短信 -->
+      <el-table v-show="changeList.smsList && changeList.smsList.length"
+                :data="changeTableData.smsList"
+                border
+                class="dialog-table"
+                style="margin-top:20px;"
+                :cell-style="scriptTableCellStyleObj"
+                :row-style="scriptTableRowStyleObj">
+        <el-table-column prop="isNew"
+                         label="短信变更内容"
+                         width="100">
+          <template slot-scope="scope">
+            {{ scope.row.isNew?'新短信':'原短信' }}
+          </template>
+        </el-table-column>
+        <el-table-column prop="content"
+                         label="内容" />
+        <el-table-column prop="description"
+                         label="描述" />
+      </el-table>
       <div slot="footer">
         <el-button @click="changeDialog=false">取消</el-button>
         <el-button type="primary"
@@ -1175,7 +1181,10 @@ export default {
       },
       channelIndex: null,
       // 变更话术、短信列表
-      changeList: [],
+      changeList: {
+        scriptList: [],
+        smsList: []
+      },
       // 变更话术、短信弹框
       changeDialog: false
     }
@@ -1209,16 +1218,26 @@ export default {
       return count
     },
     // 弹框里的话术表格数据
-    changeScriptTableData() {
-      const tableData = []
-      this.changeList?.scriptList?.forEach(n => {
-        tableData.push(
-          { ...n.scriptOld, isNew: false },
-          { ...n.scriptYoung, isNew: true }
+    changeTableData() {
+      const scriptList = []
+      this.changeList.scriptList.forEach(n => {
+        scriptList.push(
+          { ...n.old, isNew: false },
+          { ...n.young, isNew: true }
+        )
+      })
+      const smsList = []
+      this.changeList.smsList.forEach(n => {
+        smsList.push(
+          { ...n.old, isNew: false },
+          { ...n.young, isNew: true }
         )
       })
       // console.log('scriptTable', tableData)
-      return tableData
+      return {
+        scriptList,
+        smsList
+      }
     }
   },
   watch: {},
@@ -1231,13 +1250,11 @@ export default {
       this.ployDetail()
         .then(() => {
           this.getChangeListByEventId().then(() => {
-            this.changeDialog =
-              !!this.changeList.scriptList.length ||
-              !!this.changeList.smsList.length
-            console.log('changeList', this.changeList)
-            console.log('changeScriptTableData', this.changeScriptTableData)
+            this.changeDialog = !!this.changeList.scriptList.length || !!this.changeList.smsList.length
+            // console.log('changeList', this.changeList)
+            // console.log('changeScriptTableData', this.changeScriptTableData)
           })
-          console.log('group', this.group)
+          // console.log('group', this.group)
           this.$nextTick(() => {
             this.beforeHandleGroupTabClick(0)
             this.$refs['customerFormRef'].clearValidate()
@@ -1261,7 +1278,7 @@ export default {
         const bHas = isNaN(b[1])
         return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function(a, b) {
+      return newArray.sort(function (a, b) {
         return a[0] - b[0]
       })
     },
@@ -1829,7 +1846,7 @@ export default {
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => {})
+        .catch(() => { })
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
@@ -1994,10 +2011,10 @@ export default {
     },
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.property === 'groupName' || column.property === 'income') {
-        if (rowIndex === 0) {
+      if (columnIndex === 0) {
+        if (rowIndex % 2 === 0) {
           return {
-            rowspan: row.total,
+            rowspan: 2,
             colspan: 1
           }
         } else {
@@ -2008,7 +2025,11 @@ export default {
         }
       }
     },
-
+    scriptTableCellStyleObj({ row, column, rowIndex, columnIndex }) {
+      if (rowIndex % 2 === 0) {
+        return { borderBottom: 'none' }
+      }
+    },
     scriptTableRowStyleObj({ row, rowIndex }) {
       if (rowIndex % 4 < 2) {
         return { backgroundColor: '#FAFAFA' }
@@ -2144,7 +2165,8 @@ export default {
       this.showSms = true
       this.$nextTick(() => {
         this.$refs.smsRef.reset()
-        this.$refs.smsRef.parentRef.setSelection(item.model)
+        // this.$refs.smsRef.parentRef.setSelection(item.model)
+        this.$refs.smsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -2153,7 +2175,8 @@ export default {
       this.showBeforeSms = true
       this.$nextTick(() => {
         this.$refs.beforeSmsRef.reset()
-        this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+        // this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+        this.$refs.beforeSmsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -2166,7 +2189,8 @@ export default {
       this.showAfterSms = true
       this.$nextTick(() => {
         this.$refs.afterSmsRef.reset()
-        this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+        // this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+        this.$refs.afterSmsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -2186,66 +2210,44 @@ export default {
         })
       })
     },
+    /**
+     * @param
+     */
+    applyChange(originList = [], changeList) {
+      if (!originList.length) return
+      console.log('originList:', originList)
+      console.log('changeList:', changeList)
+      originList.forEach((item, i) => {
+        const obj = changeList.find(n => {
+          return n.old.id === item.id
+        })
+        if (obj) {
+          originList.splice(i, 1,
+            {
+              ...obj.young,
+              _content: obj.young.content,
+              isEdit: false,
+              type: 'save'
+            })
+        }
+      })
+    },
     // 变更话术、短信同步
     syncChange() {
       this.group.forEach(group => {
         group.ployTabs.forEach(ployTab => {
           ployTab.channel.forEach(channel => {
             if (channel.value === 1) {
-              // crm渠道
-              // 话术
+              console.log(channel)
+              // crm
+              this.applyChange(channel.model, this.changeList.scriptList)
               // 预热短信
-              if (channel.beforeSms && channel.beforeSms.length) {
-                channel.beforeSms.forEach((beforeSms, i) => {
-                  const changeSms = this.changeList.smsList.find(
-                    sms => sms.materialOld.id === beforeSms.id
-                  )
-                  if (changeSms) {
-                    const newSms = Object.assign({}, changeSms.materialYoung, {
-                      _content: changeSms.materialYoung.content,
-                      isEdit: false,
-                      type: 'save'
-                    })
-                    channel.beforeSms.splice(i, 1)
-                    channel.beforeSms.splice(i, 0, newSms)
-                  }
-                })
-              }
+              this.applyChange(channel.beforeSms, this.changeList.smsList)
               // 跟进短信
-              if (channel.afterSms && channel.afterSms.length) {
-                channel.afterSms.forEach((afterSms, i) => {
-                  const changeSms = this.changeList.smsList.find(
-                    sms => sms.materialOld.id === afterSms.id
-                  )
-                  if (changeSms) {
-                    const newSms = Object.assign({}, changeSms.materialYoung, {
-                      _content: changeSms.materialYoung.content,
-                      isEdit: false,
-                      type: 'save'
-                    })
-                    channel.afterSms.splice(i, 1)
-                    channel.afterSms.splice(i, 0, newSms)
-                  }
-                })
-              }
+              this.applyChange(channel.afterSms, this.changeList.smsList)
             } else if (channel.value === 2) {
-              // 短信渠道
-              if (channel.model && channel.model.length) {
-                channel.model.forEach((modelSms, i) => {
-                  const changeSms = this.changeList.smsList.find(
-                    sms => sms.materialOld.id === modelSms.id
-                  )
-                  if (changeSms) {
-                    const newSms = Object.assign({}, changeSms.materialYoung, {
-                      _content: changeSms.materialYoung.content,
-                      isEdit: false,
-                      type: 'save'
-                    })
-                    channel.model.splice(i, 1)
-                    channel.model.splice(i, 0, newSms)
-                  }
-                })
-              }
+              // 短信
+              this.applyChange(channel.model, this.changeList.smsList)
             }
           })
         })
@@ -2309,6 +2311,8 @@ export default {
           this.channelIndex
         ].beforeSms = val.map(n => {
           return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
             smsAttr: {}
           })
         })
@@ -2337,6 +2341,8 @@ export default {
             this.channelIndex
           ].afterSms = val.map(n => {
             return Object.assign({}, n, {
+              _content: n.content,
+              isEdit: false,
               smsAttr: {}
             })
           })
@@ -2359,6 +2365,8 @@ export default {
           this.channelIndex
         ].model = val.map(n => {
           return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
             smsAttr: {}
           })
         })
@@ -2648,6 +2656,18 @@ export default {
 
       .dialog-table-label {
         margin-bottom: 5px;
+      }
+    }
+  }
+}
+.dialog {
+  .dialog-table {
+    .table-first-col {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      div {
+        flex: 1;
       }
     }
   }
