@@ -269,7 +269,8 @@
                                size="medium"
                                @command="handleCommandChannel($event,ployItem)">
                     <el-button type="primary"
-                               plain>
+                               plain
+                               :disabled="isUpdate">
                       选择添加
                       <i class="el-icon-arrow-down el-icon--right" />
                     </el-button>
@@ -305,6 +306,7 @@
                                    @onConfirm="deleteChannel(ployItem,ci)">
                       <el-button slot="reference"
                                  class="channel-card-delete"
+                                 :disabled="isUpdate"
                                  type="text">
                         删除
                       </el-button>
@@ -1221,17 +1223,11 @@ export default {
     changeTableData() {
       const scriptList = []
       this.changeList.scriptList.forEach(n => {
-        scriptList.push(
-          { ...n.old, isNew: false },
-          { ...n.young, isNew: true }
-        )
+        scriptList.push({ ...n.old, isNew: false }, { ...n.young, isNew: true })
       })
       const smsList = []
       this.changeList.smsList.forEach(n => {
-        smsList.push(
-          { ...n.old, isNew: false },
-          { ...n.young, isNew: true }
-        )
+        smsList.push({ ...n.old, isNew: false }, { ...n.young, isNew: true })
       })
       // console.log('scriptTable', tableData)
       return {
@@ -1250,7 +1246,9 @@ export default {
       this.ployDetail()
         .then(() => {
           this.getChangeListByEventId().then(() => {
-            this.changeDialog = !!this.changeList.scriptList.length || !!this.changeList.smsList.length
+            this.changeDialog =
+              !!this.changeList.scriptList.length ||
+              !!this.changeList.smsList.length
             // console.log('changeList', this.changeList)
             // console.log('changeScriptTableData', this.changeScriptTableData)
           })
@@ -1278,7 +1276,7 @@ export default {
         const bHas = isNaN(b[1])
         return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function (a, b) {
+      return newArray.sort(function(a, b) {
         return a[0] - b[0]
       })
     },
@@ -1861,7 +1859,7 @@ export default {
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
@@ -2063,7 +2061,7 @@ export default {
         const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item
           .channel.length - 1}`
         const top = document.querySelector(id).getBoundingClientRect().top
-        document.querySelector('.content').scrollTop = top
+        document.querySelector('.ploy-scroll-content').scrollTop = top
       })
       // 已选择的渠道禁止选择
       item.channelOpt.forEach((n, i) => {
@@ -2237,13 +2235,12 @@ export default {
           return n.old.id === item.id
         })
         if (obj) {
-          originList.splice(i, 1,
-            {
-              ...obj.young,
-              _content: obj.young.content,
-              isEdit: false,
-              type: 'save'
-            })
+          originList.splice(i, 1, {
+            ...obj.young,
+            _content: obj.young.content,
+            isEdit: false,
+            type: 'save'
+          })
         }
       })
     },

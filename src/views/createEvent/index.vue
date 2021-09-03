@@ -89,7 +89,7 @@
     </div>
     <div v-loading="mainLoading"
          class="content-container shun-card">
-      <div class="content">
+      <div class="content ploy-scroll-content">
         <component :is="component[stepActive].type"
                    :ref="component[stepActive].ref" />
       </div>
@@ -211,7 +211,7 @@ export default {
       return +this.$route.query.id
     }
   },
-  mounted() { },
+  mounted() {},
   created() {
     bus.$on('setBaseInfoDetail', this.setBaseInfoDetail)
     bus.$on('setGroupDetail', this.setGroupDetail)
@@ -275,18 +275,21 @@ export default {
     next() {
       const ref = this.component[this.stepActive].ref
       this.mainLoading = true
-      this.$refs[ref].validateAndNext().then(() => {
-        this.$message({
-          message: '保存成功',
-          type: 'success',
-          duration: '3000'
+      this.$refs[ref]
+        .validateAndNext()
+        .then(() => {
+          this.$message({
+            message: '保存成功',
+            type: 'success',
+            duration: '3000'
+          })
+          this.stepActive++
+          this.mainLoading = false
         })
-        this.stepActive++
-        this.mainLoading = false
-      }).catch(err => {
-        this.mainLoading = false
-        console.log('err:', err)
-      })
+        .catch(err => {
+          this.mainLoading = false
+          console.log('err:', err)
+        })
     },
     prev() {
       if (this.stepActive > 0) {

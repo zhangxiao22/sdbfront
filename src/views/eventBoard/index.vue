@@ -672,8 +672,8 @@ export default {
       if (row.group.length) {
         window.open(
           process.env.VUE_APP_BASE_API +
-          '/customer/customerDownload?baseId=' +
-          row.id,
+            '/customer/customerDownload?baseId=' +
+            row.id,
           '_self'
         )
       } else {
@@ -690,8 +690,8 @@ export default {
       if (row.id) {
         window.open(
           process.env.VUE_APP_BASE_API +
-          '/event/download_assign_result?eventId=' +
-          row.id,
+            '/event/download_assign_result?eventId=' +
+            row.id,
           '_self'
         )
       } else {

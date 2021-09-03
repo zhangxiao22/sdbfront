@@ -1,5 +1,6 @@
 <template>
   <el-dialog class="edit-container"
+             custom-class="ploy-scroll-content"
              fullscreen
              :visible="visible"
              append-to-body
@@ -72,18 +73,20 @@ export default {
           this.syncLoading = true
           updateStrategy(param).then(res => {
             if (res.code === 200) {
-              syncProduct({ eventId: this.updateRow.id }).then(res => {
-                if (res.code === 200) {
-                  this.$message({
-                    message: '应用并同步成功',
-                    type: 'success',
-                    duration: '3000'
-                  })
-                  this.$emit('update:visible', false)
-                }
-              }).finally(() => {
-                this.syncLoading = false
-              })
+              syncProduct({ eventId: this.updateRow.id })
+                .then(res => {
+                  if (res.code === 200) {
+                    this.$message({
+                      message: '应用并同步成功',
+                      type: 'success',
+                      duration: '3000'
+                    })
+                    this.$emit('update:visible', false)
+                  }
+                })
+                .finally(() => {
+                  this.syncLoading = false
+                })
             }
           })
         })
@@ -97,13 +100,15 @@ export default {
           strategySaveCriteriaList: data
         }
         this.buttonLoading = true
-        updateStrategy(param).then(res => {
-          this.$emit('update:visible', false)
-          resolve(param)
-        }).finally(() => {
-          this.buttonLoading = false
-          // reject()
-        })
+        updateStrategy(param)
+          .then(res => {
+            this.$emit('update:visible', false)
+            resolve(param)
+          })
+          .finally(() => {
+            this.buttonLoading = false
+            // reject()
+          })
       })
     }
   }
