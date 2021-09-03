@@ -355,7 +355,6 @@
                           </div>
                           <div style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateValue"
-                                       multiple
                                        collapse-tags>
                               <el-option v-for="item of timingOpt.find(n => channelCardItem.timingDateType === n.value).children"
                                          :key="item.value"
@@ -1001,6 +1000,7 @@ export default {
     reset() {
       this.ployDetail()
         .then(() => {
+          console.log(this.group)
           this.$nextTick(() => {
             this.beforeHandleGroupTabClick(0)
             this.$refs['customerFormRef'].clearValidate()
@@ -1024,7 +1024,7 @@ export default {
         const bHas = isNaN(b[1])
         return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function (a, b) {
+      return newArray.sort(function(a, b) {
         return a[0] - b[0]
       })
     },
@@ -1087,7 +1087,8 @@ export default {
                 obj.timingDateType =
                   m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
                 // 定时型的值-规则 (周几或者几号) (多选)
-                obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+                obj.timingDateValue =
+                  m.pushTimeInfo.scheduelPushInfoVO.interval[0]
                 // 定时型的值-时间
                 obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
                 // 定时型的值-起止时间
@@ -1308,7 +1309,7 @@ export default {
                                 startDate: cn.dateRange[0],
                                 endDate: cn.dateRange[1],
                                 intervalType: cn.timingDateType,
-                                interval: cn.timingDateValue,
+                                interval: [cn.timingDateValue],
                                 moment: cn.timingTimeValue
                               }
                               : undefined,
@@ -1563,7 +1564,7 @@ export default {
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
