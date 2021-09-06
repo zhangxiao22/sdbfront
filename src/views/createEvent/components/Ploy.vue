@@ -559,12 +559,15 @@
                                 <el-button size="mini"
                                            type="text"
                                            @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
                                 <el-button size="mini"
                                            type="text"
-                                           @click="handleContentEdit(scope, 'saveAsTemplate')">确定并保存为模板</el-button>
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="handleContentEdit(scope, 'save')">确定</el-button>
+                                           @click="handleContentEdit(scope)">确定</el-button>
                               </div>
                               <div slot="reference"
                                    class="table-edit touch-tap-x"
@@ -618,12 +621,15 @@
                                 <el-button size="mini"
                                            type="text"
                                            @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
                                 <el-button size="mini"
                                            type="text"
-                                           @click="handleContentEdit(scope, 'saveAsTemplate')">确定并保存为模板</el-button>
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="handleContentEdit(scope, 'save')">确定</el-button>
+                                           @click="handleContentEdit(scope)">确定</el-button>
                               </div>
                               <div slot="reference"
                                    class="table-edit touch-tap-x"
@@ -679,12 +685,15 @@
                                 <el-button size="mini"
                                            type="text"
                                            @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
                                 <el-button size="mini"
                                            type="text"
-                                           @click="handleContentEdit(scope, 'saveAsTemplate')">确定并保存为模板</el-button>
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="handleContentEdit(scope, 'save')">确定</el-button>
+                                           @click="handleContentEdit(scope)">确定</el-button>
                               </div>
                               <div slot="reference"
                                    class="table-edit touch-tap-x"
@@ -764,12 +773,15 @@
                                 <el-button size="mini"
                                            type="text"
                                            @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
                                 <el-button size="mini"
                                            type="text"
-                                           @click="handleContentEdit(scope, 'saveAsTemplate')">确定并保存为模板</el-button>
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="handleContentEdit(scope, 'save')">确定</el-button>
+                                           @click="handleContentEdit(scope)">确定</el-button>
                               </div>
                               <div slot="reference"
                                    class="table-edit touch-tap-x"
@@ -945,108 +957,6 @@
              :show-selection="true" />
       </template>
     </ShunDrawer>
-
-    <!-- 话术、短信变更弹框 -->
-    <el-dialog title="策略信息变更提醒"
-               append-to-body
-               width="80%"
-               :visible.sync="changeDialog"
-               class="dialog">
-      <!-- 话术 -->
-      <el-table v-show="changeList.scriptList && changeList.scriptList.length"
-                :data="changeTableData.scriptList"
-                border
-                class="dialog-table"
-                :cell-style="scriptTableCellStyleObj"
-                :row-style="scriptTableRowStyleObj">
-        <el-table-column prop="isNew"
-                         label="话术变更内容"
-                         width="100">
-          <template slot-scope="scope">
-            {{ scope.row.isNew?'新话术':'原话术' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="content"
-                         label="话术内容" />
-        <el-table-column prop="category.label"
-                         label="话术分类" />
-        <el-table-column prop="attributionuseCaseList"
-                         label="话术用例">
-          <template slot-scope="scope">
-            <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
-              <el-tooltip placement="top-start"
-                          class="hover-text">
-                <div slot="content">
-                  <div v-for="(item,i) of scope.row.attributionUseCaseList"
-                       :key="i"
-                       style="margin:5px 0;">
-                    {{ item.label }}
-                  </div>
-                </div>
-                <span>
-                  {{ scope.row.attributionUseCaseList.length }}个用例
-                </span>
-              </el-tooltip>
-            </template>
-            <div v-else>
-              无
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="productFirstCategoryList"
-                         label="归属产品">
-          <template slot-scope="scope">
-            <template v-if="scope.row.productFirstCategoryList && scope.row.productFirstCategoryList.length">
-              <el-tooltip placement="top-start"
-                          class="hover-text">
-                <div slot="content">
-                  <div v-for="(item,i) of scope.row.productFirstCategoryList"
-                       :key="i"
-                       style="margin:5px 0;">
-                    {{ item.label }}
-                  </div>
-                </div>
-                <span>
-                  {{ scope.row.productFirstCategoryList.length }}类产品
-                </span>
-              </el-tooltip>
-            </template>
-            <div v-else>
-              无
-            </div>
-          </template>
-        </el-table-column>
-        <el-table-column prop="description"
-                         label="话术说明" />
-        <el-table-column prop="products"
-                         label="对应产品" />
-      </el-table>
-      <!-- 短信 -->
-      <el-table v-show="changeList.smsList && changeList.smsList.length"
-                :data="changeTableData.smsList"
-                border
-                class="dialog-table"
-                style="margin-top:20px;"
-                :cell-style="scriptTableCellStyleObj"
-                :row-style="scriptTableRowStyleObj">
-        <el-table-column prop="isNew"
-                         label="短信变更内容"
-                         width="100">
-          <template slot-scope="scope">
-            {{ scope.row.isNew?'新短信':'原短信' }}
-          </template>
-        </el-table-column>
-        <el-table-column prop="content"
-                         label="内容" />
-        <el-table-column prop="description"
-                         label="描述" />
-      </el-table>
-      <div slot="footer">
-        <el-button @click="changeDialog=false">取消</el-button>
-        <el-button type="primary"
-                   @click="syncChange">更新</el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
@@ -1181,14 +1091,7 @@ export default {
           return dateTime > testEndTime || dateTime < testStartTime
         }
       },
-      channelIndex: null,
-      // 变更话术、短信列表
-      changeList: {
-        scriptList: [],
-        smsList: []
-      },
-      // 变更话术、短信弹框
-      changeDialog: false
+      channelIndex: null
     }
   },
   computed: {
@@ -1218,22 +1121,6 @@ export default {
         count += n.ployTabs.length
       })
       return count
-    },
-    // 弹框里的话术表格数据
-    changeTableData() {
-      const scriptList = []
-      this.changeList.scriptList.forEach(n => {
-        scriptList.push({ ...n.old, isNew: false }, { ...n.young, isNew: true })
-      })
-      const smsList = []
-      this.changeList.smsList.forEach(n => {
-        smsList.push({ ...n.old, isNew: false }, { ...n.young, isNew: true })
-      })
-      // console.log('scriptTable', tableData)
-      return {
-        scriptList,
-        smsList
-      }
     }
   },
   watch: {},
@@ -1245,14 +1132,7 @@ export default {
     reset() {
       this.ployDetail()
         .then(() => {
-          this.getChangeListByEventId().then(() => {
-            this.changeDialog =
-              !!this.changeList.scriptList.length ||
-              !!this.changeList.smsList.length
-            // console.log('changeList', this.changeList)
-            // console.log('changeScriptTableData', this.changeScriptTableData)
-          })
-          // console.log('group', this.group)
+          console.log('group', this.group)
           this.$nextTick(() => {
             this.beforeHandleGroupTabClick(0)
             this.$refs['customerFormRef'].clearValidate()
@@ -1323,29 +1203,25 @@ export default {
                     return Object.assign({}, n, {
                       _content: n.content,
                       isEdit: false,
-                      isHover: false,
-                      type: 'save'
+                      isHover: false
                     })
                   })
                   : m.meterialInfoList?.map(n => {
                     return Object.assign({}, n, {
                       _content: n.content,
-                      isEdit: false,
-                      type: 'save'
+                      isEdit: false
                     })
                   }),
               beforeSms: m.advanceSMSInfoList?.map(n => {
                 return Object.assign({}, n, {
                   _content: n.content,
-                  isEdit: false,
-                  type: 'save'
+                  isEdit: false
                 })
               }),
               afterSms: m.followSMSInfoList?.map(n => {
                 return Object.assign({}, n, {
                   _content: n.content,
-                  isEdit: false,
-                  type: 'save'
+                  isEdit: false
                 })
               })
             },
@@ -1540,7 +1416,7 @@ export default {
                       ? cn.model.map(n => ({
                         scriptId: n.id,
                         scriptContent: n.content,
-                        type: n.type
+                        scriptInstId: n.scriptInstId
                       }))
                       : undefined,
                   // 预热短信
@@ -1549,7 +1425,7 @@ export default {
                       ? cn.beforeSms.map(n => ({
                         advanceId: n.id,
                         advanceContent: n.content,
-                        type: n.type
+                        advanceInstId: n.advanceInstId
                       }))
                       : undefined,
                   // 跟进短信
@@ -1558,7 +1434,7 @@ export default {
                       ? cn.afterSms.map(n => ({
                         followId: n.id,
                         followContent: n.content,
-                        type: n.type
+                        followInstId: n.followInstId
                       }))
                       : undefined,
                   // 模版
@@ -1567,7 +1443,7 @@ export default {
                       ? cn.model.map(n => ({
                         materialId: n.id,
                         materialContent: n.content,
-                        type: n.type // save || saveAsTemplate
+                        materialInstId: n.materialInstId
                       }))
                       : undefined,
                   smsAttr: cn.model?.[0]?.smsAttr || {},
@@ -2038,17 +1914,6 @@ export default {
         }
       }
     },
-    scriptTableCellStyleObj({ row, column, rowIndex, columnIndex }) {
-      if (rowIndex % 2 === 0) {
-        return { borderBottom: 'none' }
-      }
-    },
-    scriptTableRowStyleObj({ row, rowIndex }) {
-      if (rowIndex % 4 < 2) {
-        return { backgroundColor: '#FAFAFA' }
-      }
-    },
-
     // 添加渠道
     handleCommandChannel(index, item) {
       CHANNEL_OPT.forEach((n, i) => {
@@ -2211,61 +2076,6 @@ export default {
     deleteAfterSms(item, i) {
       item.afterSms.splice(i, 1)
     },
-    // 通过事件id获取变更短信
-    getChangeListByEventId() {
-      return new Promise((resolve, reject) => {
-        getStrategyChangeListByEventId({ baseId: this.id }).then(res => {
-          this.changeList = {
-            scriptList: res.data.scriptList,
-            smsList: res.data.materialList
-          }
-          resolve()
-        })
-      })
-    },
-    /**
-     * @param
-     */
-    applyChange(originList = [], changeList) {
-      if (!originList.length) return
-      console.log('originList:', originList)
-      console.log('changeList:', changeList)
-      originList.forEach((item, i) => {
-        const obj = changeList.find(n => {
-          return n.old.id === item.id
-        })
-        if (obj) {
-          originList.splice(i, 1, {
-            ...obj.young,
-            _content: obj.young.content,
-            isEdit: false,
-            type: 'save'
-          })
-        }
-      })
-    },
-    // 变更话术、短信同步
-    syncChange() {
-      this.group.forEach(group => {
-        group.ployTabs.forEach(ployTab => {
-          ployTab.channel.forEach(channel => {
-            if (channel.value === 1) {
-              console.log(channel)
-              // crm
-              this.applyChange(channel.model, this.changeList.scriptList)
-              // 预热短信
-              this.applyChange(channel.beforeSms, this.changeList.smsList)
-              // 跟进短信
-              this.applyChange(channel.afterSms, this.changeList.smsList)
-            } else if (channel.value === 2) {
-              // 短信
-              this.applyChange(channel.model, this.changeList.smsList)
-            }
-          })
-        })
-      })
-      this.changeDialog = false
-    },
     // 微信
     addWeChatWords(item, ci) {
       this.showSms = true
@@ -2351,13 +2161,15 @@ export default {
           this.showAfterSms = false
           this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
             this.channelIndex
-          ].afterSms = val.map(n => {
-            return Object.assign({}, n, {
-              _content: n.content,
-              isEdit: false,
-              smsAttr: {}
+          ].afterSms.push(
+            ...val.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                smsAttr: {}
+              })
             })
-          })
+          )
         }
       } else {
         Message({
@@ -2462,9 +2274,8 @@ export default {
         item.time = parseTime(new Date(), '{h}:{i}')
       }
     },
-    handleContentEdit(scope, type) {
+    handleContentEdit(scope) {
       scope.row.content = scope.row._content
-      scope.row.type = type
       scope.row.isEdit = false
     },
     ValidatorModel(rule, value, callback) {

@@ -70,9 +70,10 @@ export default {
           message: `同步时间较长，请勿重复点击，<br />是否确认事件【${this.updateRow.name}】同步？`,
           type: 'warning'
         }).then(() => {
-          this.syncLoading = true
+          this.buttonLoading = true
           updateStrategy(param).then(res => {
             if (res.code === 200) {
+              this.syncLoading = true
               syncProduct({ eventId: this.updateRow.id })
                 .then(res => {
                   if (res.code === 200) {
@@ -81,11 +82,21 @@ export default {
                       type: 'success',
                       duration: '3000'
                     })
+                    this.buttonLoading = false
+                    this.syncLoading = false
                     this.$emit('update:visible', false)
                   }
                 })
+                .catch(() => {
+                  this.$message({
+                    message: '业务处理失败',
+                    type: 'error',
+                    duration: '3000'
+                  })
+                })
                 .finally(() => {
                   this.syncLoading = false
+                  this.buttonLoading = false
                 })
             }
           })
