@@ -8,7 +8,7 @@ export const CHANNEL_OPT = [
     // 1:定时型 2:规则
     chooseType: 1,
     timingDateType: 1,
-    timingDateValue: [],
+    timingDateValue: '',
     timingTimeValue: '07:00',
     dateRange: [],
     ruleValue: [{
@@ -49,7 +49,7 @@ export const CHANNEL_OPT = [
     // 定时型的值-规则 (每周几或每月)
     timingDateType: 1,
     // 定时型的值-规则 (周几或者几号) (多选)
-    timingDateValue: [],
+    timingDateValue: '',
     // 定时型的值-时间
     timingTimeValue: '07:00',
     // 定时型的值-起止时间

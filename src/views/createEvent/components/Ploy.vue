@@ -325,7 +325,7 @@
                           <el-form-item style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateType"
                                        style="width:80px;"
-                                       @change="channelCardItem.timingDateValue = []">
+                                       @change="channelCardItem.timingDateValue = ''">
                               <el-option v-for="item of timingOpt"
                                          :key="item.value"
                                          :label="item.label"
@@ -337,9 +337,7 @@
                                           required: true, message: '请选择推送时间', trigger: 'change'
                                         }]"
                                         style="margin-bottom:0;margin-right:10px;">
-                            <el-select v-model="channelCardItem.timingDateValue"
-                                       multiple
-                                       collapse-tags>
+                            <el-select v-model="channelCardItem.timingDateValue">
                               <el-option v-for="item of timingOpt.find(n => channelCardItem.timingDateType === n.value).children"
                                          :key="item.value"
                                          :label="item.label"
@@ -737,7 +735,14 @@ import { CHANNEL_OPT, TIMING_OPT } from '../constant'
 
 export default {
   components: {
-    Strategy, Product, Info, Interest, Word, ShunDrawer, Sms, TextToHtml
+    Strategy,
+    Product,
+    Info,
+    Interest,
+    Word,
+    ShunDrawer,
+    Sms,
+    TextToHtml
   },
   data() {
     const _this = this
@@ -841,9 +846,7 @@ export default {
       return count
     }
   },
-  watch: {
-
-  },
+  watch: {},
   created() {
     this.reset()
   },
@@ -871,9 +874,9 @@ export default {
       var newArray = arr.sort((a, b) => {
         const aHas = isNaN(a[1])
         const bHas = isNaN(b[1])
-        return (aHas - bHas) || (aHas === true && a[1] - b[1]) || 0
+        return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function (a, b) {
+      return newArray.sort(function(a, b) {
         return a[0] - b[0]
       })
     },
@@ -896,97 +899,115 @@ export default {
         // 策略tab id
         name: ployName + '',
         // 产品
-        product: ployObj.productInfoList.map((product) => {
+        product: ployObj.productInfoList.map(product => {
           return Object.assign({}, product, product.extraField)
         }),
         // 权益
         interest: ployObj.couponInfoList,
         channel: ployObj.strategyInfoList.map(m => {
           // console.log(m)
-          return Object.assign({}, CHANNEL_OPT.find(x => {
-            return x.value === m.channel.value
-          }), {
-            // infoId: m.infoId,
-            chooseType: m.pushType.value,
-            // validPeriod: m.clueEffectDays,
-            smsSendMode: m.sendMode?.value,
-            isBigDeposit: m.isBigDeposit?.value,
-            model: m.channel.value === 1 ? m.scriptInfoList.map(n => {
-              return Object.assign({}, n, {
-                _content: n.content,
-                isEdit: false,
-                isHover: false
-              })
-            }) : m.meterialInfoList,
-            beforeSms: m.advanceSMSInfoList || [],
-            afterSms: m.followSMSInfoList || []
-          }, (() => {
-            const obj = {}
-            if (m.pushType.value === 1) {
-              // 定时型
-              // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
-              // 定时型的值-规则 (每周几或每月)
-              obj.timingDateType = m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
-              // 定时型的值-规则 (周几或者几号) (多选)
-              obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
-              // 定时型的值-时间
-              obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
-              // 定时型的值-起止时间
-              obj.dateRange = [m.pushTimeInfo.scheduelPushInfoVO.startDate, m.pushTimeInfo.scheduelPushInfoVO.endDate]
-            } else if (m.pushType.value === 2) {
-              // 规则型
-              // 规则型的值
-              obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
-                return {
-                  // pushTimeId: r.pushTimeId,
-                  date: r.delay,
-                  time: r.moment
-                }
-              })
-            }
-            return obj
-          })())
+          return Object.assign(
+            {},
+            CHANNEL_OPT.find(x => {
+              return x.value === m.channel.value
+            }),
+            {
+              // infoId: m.infoId,
+              chooseType: m.pushType.value,
+              // validPeriod: m.clueEffectDays,
+              smsSendMode: m.sendMode?.value,
+              isBigDeposit: m.isBigDeposit?.value,
+              model:
+                m.channel.value === 1
+                  ? m.scriptInfoList.map(n => {
+                    return Object.assign({}, n, {
+                      _content: n.content,
+                      isEdit: false,
+                      isHover: false
+                    })
+                  })
+                  : m.meterialInfoList,
+              beforeSms: m.advanceSMSInfoList || [],
+              afterSms: m.followSMSInfoList || []
+            },
+            (() => {
+              const obj = {}
+              if (m.pushType.value === 1) {
+                // 定时型
+                // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
+                // 定时型的值-规则 (每周几或每月)
+                obj.timingDateType =
+                  m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
+                // 定时型的值-规则 (周几或者几号) (多选)
+                obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
+                // 定时型的值-时间
+                obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
+                // 定时型的值-起止时间
+                obj.dateRange = [
+                  m.pushTimeInfo.scheduelPushInfoVO.startDate,
+                  m.pushTimeInfo.scheduelPushInfoVO.endDate
+                ]
+              } else if (m.pushType.value === 2) {
+                // 规则型
+                // 规则型的值
+                obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(r => {
+                  return {
+                    // pushTimeId: r.pushTimeId,
+                    date: r.delay,
+                    time: r.moment
+                  }
+                })
+              }
+              return obj
+            })()
+          )
         }),
         channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(c => {
           return Object.assign({}, c, {
             // 已选择的渠道禁止选择
-            disabled: ployObj.strategyInfoList.some(x => x.channel.value === c.value)
+            disabled: ployObj.strategyInfoList.some(
+              x => x.channel.value === c.value
+            )
           })
         })
       }
     },
     ployDetail() {
       return new Promise((resolve, reject) => {
-        getPloyDetail({ baseId: this.id }).then(res => {
-          if (res.code === 200) {
-            this.group = res.data.strategyQueryVOList.map((n, i) => {
-              return {
-                gid: n.customeInfoId,
-                name: n.name,
-                people: n.count,
-                desc: n.desc,
-                totalPercent: 100,
-                ployTabs: n.strategyDetailVOList.map((n, i) => {
-                  return this.ployTranslate(n, i + 1)
-                }),
-                // v-model值：控制策略tab显示
-                ployTabsValue: '1',
-                // 累加数量：策略数量的累加,用于显示‘新策略几’
-                ployTabIndex: n.strategyDetailVOList.length
-              }
-            })
-            resolve()
-          } else {
+        getPloyDetail({ baseId: this.id })
+          .then(res => {
+            if (res.code === 200) {
+              this.group = res.data.strategyQueryVOList.map((n, i) => {
+                return {
+                  gid: n.customeInfoId,
+                  name: n.name,
+                  people: n.count,
+                  desc: n.desc,
+                  totalPercent: 100,
+                  ployTabs: n.strategyDetailVOList.map((n, i) => {
+                    return this.ployTranslate(n, i + 1)
+                  }),
+                  // v-model值：控制策略tab显示
+                  ployTabsValue: '1',
+                  // 累加数量：策略数量的累加,用于显示‘新策略几’
+                  ployTabIndex: n.strategyDetailVOList.length
+                }
+              })
+              resolve()
+            } else {
+              reject()
+            }
+          })
+          .catch(() => {
             reject()
-          }
-        }).catch(() => {
-          reject()
-        })
+          })
       })
     },
     // 切换策略
     handleChangeTab() {
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+      )
     },
     validateForm(rule, validate, message) {
       // console.log(a, b, c)
@@ -1081,42 +1102,61 @@ export default {
                         // SMS发送模式（重复均分）
                         sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
                         // 大额存单
-                        isBigDeposit: cn.value === 5 ? cn.isBigDeposit : undefined,
+                        isBigDeposit:
+                          cn.value === 5 ? cn.isBigDeposit : undefined,
                         // 话术id
-                        scriptList: cn.value === 1 ? cn.model.map(n => {
-                          return {
-                            scriptId: n.id,
-                            scriptContent: n.content,
-                            scriptInstId: n.scriptInstId
-                          }
-                        }) : undefined,
+                        scriptList:
+                          cn.value === 1
+                            ? cn.model.map(n => {
+                              return {
+                                scriptId: n.id,
+                                scriptContent: n.content,
+                                scriptInstId: n.scriptInstId
+                              }
+                            })
+                            : undefined,
                         // 预热短信ids
-                        advanceSMSIds: cn.value === 1 ? cn.beforeSms.map(n => n.id) : undefined,
+                        advanceSMSIds:
+                          cn.value === 1
+                            ? cn.beforeSms.map(n => n.id)
+                            : undefined,
                         // 跟尾短信ids
-                        followSMSIds: cn.value === 1 ? cn.afterSms.map(n => n.id) : undefined,
+                        followSMSIds:
+                          cn.value === 1
+                            ? cn.afterSms.map(n => n.id)
+                            : undefined,
                         // 模版id
-                        materialIdList: (cn.value === 2 || cn.value === 3) ? cn.model.map(n => n.id) : undefined,
+                        materialIdList:
+                          cn.value === 2 || cn.value === 3
+                            ? cn.model.map(n => n.id)
+                            : undefined,
                         smsAttr: cn.model?.[0]?.smsAttr || {},
                         // 推送类型 1:定时 2:规则
                         pushType: cn.chooseType,
                         pushTimeInfo: {
                           // 定时型的值
-                          schedulePushInfo: cn.chooseType === 1 ? {
-                            // pushTimeId: cn.pushTimeId,
-                            startDate: cn.dateRange[0],
-                            endDate: cn.dateRange[1],
-                            intervalType: cn.timingDateType,
-                            interval: cn.timingDateValue,
-                            moment: cn.timingTimeValue
-                          } : undefined,
+                          schedulePushInfo:
+                            cn.chooseType === 1
+                              ? {
+                                // pushTimeId: cn.pushTimeId,
+                                startDate: cn.dateRange[0],
+                                endDate: cn.dateRange[1],
+                                intervalType: cn.timingDateType,
+                                interval: cn.timingDateValue,
+                                moment: cn.timingTimeValue
+                              }
+                              : undefined,
                           // 规则型的值
-                          rulePushInfoList: cn.chooseType === 2 ? cn.ruleValue.map((ruleItem, rule_i) => {
-                            return {
-                              // pushTimeId: ruleItem.pushTimeId,
-                              delay: ruleItem.date,
-                              moment: ruleItem.time
-                            }
-                          }) : undefined
+                          rulePushInfoList:
+                            cn.chooseType === 2
+                              ? cn.ruleValue.map((ruleItem, rule_i) => {
+                                return {
+                                  // pushTimeId: ruleItem.pushTimeId,
+                                  delay: ruleItem.date,
+                                  moment: ruleItem.time
+                                }
+                              })
+                              : undefined
                         }
                       }
                     })
@@ -1130,11 +1170,13 @@ export default {
               baseId: this.id,
               strategySaveCriteriaList: data
             }
-            savePloy(param).then(res => {
-              resolve()
-            }).catch(() => {
-              reject()
-            })
+            savePloy(param)
+              .then(res => {
+                resolve()
+              })
+              .catch(() => {
+                reject()
+              })
           } else {
             // console.log(field)
             let errList = Object.keys(field).map(key => this.getIndex(key))
@@ -1194,11 +1236,15 @@ export default {
           const newTabName = ++this.group[gi].ployTabIndex
           const obj = this.ployTranslate(n, newTabName)
           obj.channel.forEach(n => {
-            n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
+            n.dateRange = [
+              this.$parent.baseInfoDetail.startDate,
+              this.$parent.baseInfoDetail.endDate
+            ]
           })
           obj.abstractId = undefined
           this.group[gi].ployTabs.push(obj)
-          i === val.length - 1 && (this.group[gi].ployTabsValue = newTabName + '')
+          i === val.length - 1 &&
+            (this.group[gi].ployTabsValue = newTabName + '')
         })
         this.group[gi].totalPercent = this.getTotalPercent(gi)
         // 修改简介
@@ -1206,9 +1252,13 @@ export default {
         // 校验
         this.$nextTick(() => {
           // 校验策略是否为空
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs`
+          )
           // 校验策略名是否重复
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+          )
         })
       } else {
         Message({
@@ -1223,7 +1273,9 @@ export default {
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
       this.group[gi].ployTabs.forEach((n, i) => {
-        percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
+        percent = parseFloat(
+          percent - n.percent < 0 ? 0 : (percent - n.percent).toFixed(2)
+        )
       })
       this.group[gi].ployTabs.push({
         title: '新策略' + newTabName,
@@ -1242,9 +1294,13 @@ export default {
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
       this.$nextTick(() => {
         // 校验策略是否为空
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs`
+        )
         // 校验策略名是否重复
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+        )
       })
 
       // 修改简介
@@ -1256,7 +1312,9 @@ export default {
       const newTabName = ++this.group[gi].ployTabIndex + ''
       let percent = 100
       this.group[gi].ployTabs.forEach((n, i) => {
-        percent = parseFloat((percent - n.percent) < 0 ? 0 : (percent - n.percent).toFixed(2))
+        percent = parseFloat(
+          percent - n.percent < 0 ? 0 : (percent - n.percent).toFixed(2)
+        )
       })
       const ploy = {
         title: '新策略' + newTabName,
@@ -1310,15 +1368,18 @@ export default {
 
           this.$nextTick(() => {
             // 校验策略是否为空
-            this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
+            this.$refs.refCustomerForm.validateField(
+              `group.${this.groupIndex}.ployTabs`
+            )
             // 校验策略名是否重复
-            this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+            this.$refs.refCustomerForm.validateField(
+              `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
+            )
           })
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => {
-        })
+        .catch(() => {})
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
@@ -1327,10 +1388,16 @@ export default {
       this.$nextTick(() => {
         // 1 定时型 2 规则型
         if (val === 1) {
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`
+          )
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`
+          )
         } else if (val === 2) {
-          this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
+          )
         }
       })
     },
@@ -1342,7 +1409,9 @@ export default {
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.totalPercent`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.totalPercent`
+      )
     },
     handlePercentBlur(item) {
       if (!item.percent) {
@@ -1364,7 +1433,9 @@ export default {
       // console.log(item.product, row)
       item.product.splice(i, 1)
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+      )
     },
     // 选择产品-确定
     submitProduct() {
@@ -1373,7 +1444,9 @@ export default {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1420,11 +1493,14 @@ export default {
     },
     parseTable(data) {
       return data.list.map((n, i) => {
-        return Object.assign({
-          groupName: data.groupName,
-          income: data.income,
-          total: data.list.length
-        }, n)
+        return Object.assign(
+          {
+            groupName: data.groupName,
+            income: data.income,
+            total: data.list.length
+          },
+          n
+        )
       })
     },
 
@@ -1453,7 +1529,8 @@ export default {
       })
       // 添加之后滚动到对应位置
       this.$nextTick(() => {
-        const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item.channel.length - 1}`
+        const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item
+          .channel.length - 1}`
         const top = document.querySelector(id).getBoundingClientRect().top
         document.querySelector('.content').scrollTop = top
       })
@@ -1462,7 +1539,9 @@ export default {
         n.disabled = item.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`
+      )
     },
     // 删除渠道
     deleteChannel(ployItem, ci) {
@@ -1473,7 +1552,9 @@ export default {
         n.disabled = ployItem.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`
+      )
     },
     addRuleItem(item) {
       item.ruleValue.push({
@@ -1553,14 +1634,18 @@ export default {
       this.channelIndex = ci
 
       // 校验
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+      )
     },
     // 选择话术-确认
     submitWord() {
       const val = this.$refs.wordRef.parentRef.getVal()
       if (val.length) {
         this.showCRMWord = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model.push(
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].model.push(
           ...val.map(n => {
             return Object.assign({}, n, {
               _content: n.content,
@@ -1570,7 +1655,9 @@ export default {
           })
         )
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1584,7 +1671,9 @@ export default {
       const val = this.$refs.beforeSmsRef.parentRef.getVal()
       if (val.length) {
         this.showBeforeSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].beforeSms = val.map(n => {
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].beforeSms = val.map(n => {
           return Object.assign({}, n, {
             smsAttr: {}
           })
@@ -1609,7 +1698,9 @@ export default {
           })
         } else {
           this.showAfterSms = false
-          this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].afterSms = val.map(n => {
+          this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+            this.channelIndex
+          ].afterSms = val.map(n => {
             return Object.assign({}, n, {
               smsAttr: {}
             })
@@ -1629,13 +1720,17 @@ export default {
       // console.log(val)
       if (val.length) {
         this.showSms = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[this.channelIndex].model = val.map(n => {
+        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
+          this.channelIndex
+        ].model = val.map(n => {
           return Object.assign({}, n, {
             smsAttr: {}
           })
         })
         // 校验
-        this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`)
+        this.$refs.refCustomerForm.validateField(
+          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
+        )
       } else {
         Message({
           message: '请选择至少一项',
@@ -1649,9 +1744,13 @@ export default {
     handleTestSms(channelIndex) {
       this.validateList = []
       // 校验model
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`
+      )
       // 校验phone
-      this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`)
+      this.$refs.refCustomerForm.validateField(
+        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`
+      )
       const data = {}
       // console.log(this.validateList)
       const validate = this.validateList.every(n => {
@@ -1660,10 +1759,15 @@ export default {
       if (validate) {
         // console.log(this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex])
         const data = {}
-        data.templateId = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].id
-        data.mblpnNo = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].test
+        data.templateId = this.group[this.groupIndex].ployTabs[
+          this.ployIndex
+        ].channel[channelIndex].model[0].id
+        data.mblpnNo = this.group[this.groupIndex].ployTabs[
+          this.ployIndex
+        ].channel[channelIndex].test
         // const params = this.$refs['testSmsRef-' + this.groupIndex + '-' + this.ployIndex][0].getParams()
-        const params = this.group[this.groupIndex].ployTabs[this.ployIndex].channel[channelIndex].model[0].smsAttr
+        const params = this.group[this.groupIndex].ployTabs[this.ployIndex]
+          .channel[channelIndex].model[0].smsAttr
         Object.assign(data, params)
         // console.log(data)
         testSms(data).then(res => {
