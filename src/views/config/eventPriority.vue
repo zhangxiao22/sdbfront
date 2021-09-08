@@ -120,7 +120,12 @@
 
 <script>
 import Info from '@/components/Info'
-import { getEventPriorityList, getUseCaseICanChoose, setEventPriority, setEventDistributeLimit } from '@/api/api'
+import {
+  getEventPriorityList,
+  getUseCaseForEvent,
+  setEventPriority,
+  setEventDistributeLimit
+} from '@/api/api'
 import Sortable from 'sortablejs'
 import { MAX_NUMBER } from '@/utils'
 
@@ -168,12 +173,8 @@ export default {
   },
 
   watch: {},
-  created() {
-
-  },
-  mounted() {
-
-  },
+  created() { },
+  mounted() { },
   methods: {
     // 打开事件线索分发编辑框
     handleEditClue(row) {
@@ -185,22 +186,24 @@ export default {
     },
     // 编辑事件线索分发
     ensureEditClue() {
-      this.$refs['formRef'].validate((valid) => {
+      this.$refs['formRef'].validate(valid => {
         if (valid) {
           this.buttonLoading = true
-          setEventDistributeLimit(this.getClueData).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.getList()
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-            this.clueDialog = false
-          })
+          setEventDistributeLimit(this.getClueData)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.getList()
+              }
+            })
+            .finally(() => {
+              this.buttonLoading = false
+              this.clueDialog = false
+            })
         }
       })
     },
@@ -236,7 +239,8 @@ export default {
       this.sortable = Sortable.create(el, {
         disabled: true,
         animation: 150,
-        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
+        onEnd({ newIndex, oldIndex }) {
+          // oldIIndex拖放前的位置， newIndex拖放后的位置
           const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
           _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
           // if (newIndex !== oldIndex) {
@@ -250,8 +254,8 @@ export default {
     },
     // 获取用例
     useCase() {
-      return new Promise((resolve) => {
-        getUseCaseICanChoose().then(res => {
+      return new Promise(resolve => {
+        getUseCaseForEvent().then(res => {
           this.useCaseOpt = res.data.map(n => {
             return {
               label: n.name,
@@ -265,36 +269,44 @@ export default {
     },
     getList(usecase) {
       this.tableLoading = true
-      getEventPriorityList({ pageNo: 1, pageSize: 1000, useCaseId: this.filterForm.useCaseId }).then(res => {
-        this.tableData = res.data.map((n, i) => {
-          return Object.assign({}, n, {
-            // group: n.customerInfoRespList,
-            // useCase: n.useCase,
-            oldIndex: i + 1
+      getEventPriorityList({
+        pageNo: 1,
+        pageSize: 1000,
+        useCaseId: this.filterForm.useCaseId
+      })
+        .then(res => {
+          this.tableData = res.data.map((n, i) => {
+            return Object.assign({}, n, {
+              // group: n.customerInfoRespList,
+              // useCase: n.useCase,
+              oldIndex: i + 1
+            })
           })
         })
-      }).finally(() => {
-        this.tableLoading = false
-      })
+        .finally(() => {
+          this.tableLoading = false
+        })
     },
     saveData() {
       const data = {}
       data.priorityData = this.tableData.map(n => n.id)
       this.$emit('update:loading', true)
-      setEventPriority(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '修改成功',
-            type: 'success',
-            duration: '3000'
-          })
-        }
-      }).finally(() => {
-        this.getList()
-        this.$emit('update:loading', false)
-        this.sortable.options.disabled = true
-        this.canMove = false
-      })
+      setEventPriority(data)
+        .then(res => {
+          if (res.code === 200) {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
+        })
+        .finally(() => {
+          this.getList()
+          this.$emit('update:loading', false)
+          this.sortable.options.disabled = true
+          this.canMove = false
+        })
     }
   }
 }
