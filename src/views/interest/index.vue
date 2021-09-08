@@ -190,7 +190,7 @@
                       prop="attributionUseCaseList">
           <el-select v-model="addInfo.attributionUseCaseList"
                      multiple
-                     style="width:300px;"
+                     style="width:90%;"
                      clearable
                      placeholder="请选择">
             <el-option v-for="item in useCaseListOpt"
@@ -206,7 +206,7 @@
                       prop="productFirstCategoryList">
           <el-select v-model="addInfo.productFirstCategoryList"
                      multiple
-                     style="width:300px;"
+                     style="width:90%;"
                      clearable
                      placeholder="请选择">
             <el-option v-for="item in productListOpt"

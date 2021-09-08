@@ -194,6 +194,16 @@ export function editSms(data) {
     data
   })
 }
+
+// 通过事件id获取变更话术、短信
+export function getStrategyChangeListByEventId(params) {
+  return request({
+    url: 'strategy/selectUpdate',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 策略 ************************************************************/
 // 获取策略库
 export function getStragetyList(params) {

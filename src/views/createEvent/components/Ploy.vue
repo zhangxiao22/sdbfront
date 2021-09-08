@@ -29,11 +29,13 @@
                             }]">
                 <el-button icon="el-icon-plus"
                            type="primary"
+                           :disabled="isUpdate"
                            @click="addStrategy">
                   选择历史策略
                 </el-button>
                 <el-button icon="el-icon-plus"
                            type="primary"
+                           :disabled="isUpdate"
                            @click="addTab">
                   添加空白策略
                 </el-button>
@@ -46,7 +48,7 @@
           <div v-show="groupItem.ployTabs.length">
             <el-tabs v-model="groupItem.ployTabsValue"
                      type="card"
-                     closable
+                     :closable="!isUpdate"
                      @tab-click="handleChangeTab"
                      @tab-remove="handleRemoveTab">
               <!-- {{ groupItem.ployTabs.map(n => n.name) }} -->
@@ -65,6 +67,7 @@
                                circle
                                icon="el-icon-document-copy"
                                type="primary"
+                               :disabled="isUpdate"
                                @click="copyTab(ployItem)" />
                   </el-tooltip>
 
@@ -80,7 +83,8 @@
                               }]">
                   <el-input v-model.trim="ployItem.title"
                             style="width:300px"
-                            placeholder="请输入策略名称" />
+                            placeholder="请输入策略名称"
+                            :disabled="isUpdate" />
                 </el-form-item>
                 <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.percent'"
                               :rules="[{
@@ -99,6 +103,7 @@
                                      :min="0"
                                      :max="100"
                                      :step="10"
+                                     :disabled="isUpdate"
                                      @blur="handlePercentBlur(ployItem)"
                                      @change="handlePercentChange" />%
                     <el-form-item style="margin-left:10px;margin-bottom:0;"
@@ -243,7 +248,8 @@
                                size="medium"
                                @command="handleCommandChannel($event,ployItem)">
                     <el-button type="primary"
-                               plain>
+                               plain
+                               :disabled="isUpdate">
                       选择添加
                       <i class="el-icon-arrow-down el-icon--right" />
                     </el-button>
@@ -279,6 +285,7 @@
                                    @onConfirm="deleteChannel(ployItem,ci)">
                       <el-button slot="reference"
                                  class="channel-card-delete"
+                                 :disabled="isUpdate"
                                  type="text">
                         删除
                       </el-button>
@@ -289,7 +296,8 @@
                                 :rules="[{
                                   required: true, message: '请选择下发类型', trigger: 'change'
                                 }]">
-                    <el-radio-group v-model="channelCardItem.chooseType">
+                    <el-radio-group v-model="channelCardItem.chooseType"
+                                    :disabled="isUpdate">
                       <el-radio v-for="item of channelCardItem.type"
                                 :key="item.id"
                                 style="margin-right:0;"
@@ -316,7 +324,8 @@
                                         value-format="yyyy-MM-dd"
                                         :picker-options="pickerOptions"
                                         start-placeholder="开始日期"
-                                        end-placeholder="结束日期" />
+                                        end-placeholder="结束日期"
+                                        :disabled="isUpdate" />
                       </el-form-item>
                       <el-form-item v-if="channelCardItem.value!==5 && channelCardItem.value!==6"
                                     label="推送时间："
@@ -325,6 +334,7 @@
                           <el-form-item style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateType"
                                        style="width:80px;"
+                                       :disabled="isUpdate"
                                        @change="channelCardItem.timingDateValue = ''">
                               <el-option v-for="item of timingOpt"
                                          :key="item.value"
@@ -337,7 +347,8 @@
                                           required: true, message: '请选择推送时间', trigger: 'change'
                                         }]"
                                         style="margin-bottom:0;margin-right:10px;">
-                            <el-select v-model="channelCardItem.timingDateValue">
+                            <el-select v-model="channelCardItem.timingDateValue"
+                                       :disabled="isUpdate">
                               <el-option v-for="item of timingOpt.find(n => channelCardItem.timingDateType === n.value).children"
                                          :key="item.value"
                                          :label="item.label"
@@ -355,7 +366,8 @@
                                             :clearable="false"
                                             :editable="false"
                                             format="HH:mm"
-                                            value-format="HH:mm" />
+                                            value-format="HH:mm"
+                                            :disabled="isUpdate" />
                           </el-form-item>
                         </div>
                       </el-form-item>
@@ -378,12 +390,14 @@
                                            style="margin-right:10px;"
                                            controls-position="right"
                                            :min="0"
+                                           :disabled="isUpdate"
                                            @blur="item.date=item.date||0" />天
                           <el-time-picker v-model="item.time"
                                           style="width:150px;margin-left:10px;"
                                           :clearable="false"
                                           format="HH:mm"
                                           value-format="HH:mm"
+                                          :disabled="isUpdate"
                                           @blur="handleTimeBlur($event,item)" />
                           <i v-if="channelCardItem.ruleValue.length > 1"
                              class="el-icon-delete delete"
@@ -391,6 +405,7 @@
                         </div>
                         <el-button class="add"
                                    icon="el-icon-plus"
+                                   :disabled="isUpdate"
                                    @click="addRuleItem(channelCardItem)" />
                       </el-form-item>
                     </template>
@@ -409,9 +424,7 @@
                       <el-table v-show="channelCardItem.model.length"
                                 :data="channelCardItem.model"
                                 border
-                                style="width: 100%;margin-bottom:18px;"
-                                @cell-mouse-enter="handleMouseEnter"
-                                @cell-mouse-leave="handleMouseLeave">
+                                style="width: 100%;margin-bottom:18px;">
                         <el-table-column label="话术内容"
                                          :min-width="400">
                           <div slot-scope="scope"
@@ -429,12 +442,17 @@
                                 <el-button size="mini"
                                            type="text"
                                            @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                           @click="handleContentEdit(scope)">确定</el-button>
                               </div>
-                              <div v-show="scope.row.isHover"
-                                   slot="reference"
+                              <div slot="reference"
                                    class="table-edit touch-tap-x"
                                    @click="scope.row._content = scope.row.content">
                                 <i class="el-icon-edit" />
@@ -469,15 +487,46 @@
                                 :data="channelCardItem.beforeSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content"
-                                         :min-width="300"
-                                         label="预热短信内容" />
+                        <el-table-column :min-width="300"
+                                         label="预热短信内容">
+                          <div slot-scope="scope"
+                               class="table-desc">
+                            <span>{{ scope.row.content }}</span>
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model.trim="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleContentEdit(scope)">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="table-edit touch-tap-x"
+                                   @click="scope.row._content = scope.row.content;">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
+                        </el-table-column>
                         <el-table-column prop="description"
                                          show-overflow-tooltip
                                          :min-width="300"
                                          label="预热短信描述" />
-                        <el-table-column fixed="right"
-                                         label="操作"
+                        <el-table-column label="操作"
                                          width="100">
                           <template slot-scope="scope">
                             <el-popconfirm title="确定删除吗？"
@@ -502,15 +551,46 @@
                                 :data="channelCardItem.afterSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content"
-                                         :min-width="300"
-                                         label="跟尾短信内容" />
+                        <el-table-column :min-width="300"
+                                         label="跟进短信内容">
+                          <div slot-scope="scope"
+                               class="table-desc">
+                            <span>{{ scope.row.content }}</span>
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model.trim="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleContentEdit(scope)">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="table-edit touch-tap-x"
+                                   @click="scope.row._content = scope.row.content;">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
+                        </el-table-column>
                         <el-table-column prop="description"
                                          show-overflow-tooltip
                                          :min-width="300"
-                                         label="跟尾短信描述" />
-                        <el-table-column fixed="right"
-                                         label="操作"
+                                         label="跟进短信描述" />
+                        <el-table-column label="操作"
                                          width="100">
                           <template slot-scope="scope">
                             <el-popconfirm title="确定删除吗？"
@@ -531,7 +611,8 @@
                       <el-form-item label="发送模式："
                                     required
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.smsSendMode'">
-                        <el-radio-group v-model="channelCardItem.smsSendMode">
+                        <el-radio-group v-model="channelCardItem.smsSendMode"
+                                        :disabled="isUpdate">
                           <el-radio v-for="(item,i) of smsSendModeOpt"
                                     :key="i"
                                     :label="item.value"
@@ -555,12 +636,42 @@
                                 style="width: 100%;margin-bottom:18px;">
                         <el-table-column label="短信内容"
                                          width="650">
-                          <template slot-scope="scope">
+                          <div slot-scope="scope"
+                               class="table-desc">
                             <!-- <span style="color:red;">{{ scope.row.smsAttr }}</span> -->
                             <TextToHtml :ref="'testSmsRef-'+gi+'-'+pi"
                                         :params.sync="scope.row.smsAttr"
-                                        :text="scope.row.content" />
-                          </template>
+                                        :text="scope.row.content"
+                                        style="display:inline" />
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model.trim="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleContentEdit(scope)">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="table-edit touch-tap-x"
+                                   @click="scope.row._content = scope.row.content;">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
                         </el-table-column>
                         <el-table-column label="参数描述"
                                          show-overflow-tooltip>
@@ -582,9 +693,11 @@
                                    filterable
                                    allow-create
                                    default-first-option
+                                   :disabled="isUpdate"
                                    placeholder="请选择电话号码/输入电话号码并选择或按回车键创建" />
                         <el-button icon="el-icon-thumb"
                                    style="float:left;"
+                                   :disabled="isUpdate"
                                    @click="handleTestSms(ci)">
                           测试一下
                         </el-button>
@@ -619,7 +732,8 @@
                       <el-form-item label="大额存单："
                                     required
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.isBigDeposit'">
-                        <el-radio-group v-model="channelCardItem.isBigDeposit">
+                        <el-radio-group v-model="channelCardItem.isBigDeposit"
+                                        :disabled="isUpdate">
                           <el-radio v-for="(item,i) of isBigDepositOpt"
                                     :key="i"
                                     :label="item.value"
@@ -693,7 +807,7 @@
     <!-- 预热短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showBeforeSms"
-                @submit="submitBeforeSms()">
+                @submit="submitBeforeSms">
       <template v-slot:container>
         <sms ref="beforeSmsRef"
              :multiple="false"
@@ -704,7 +818,7 @@
     <!-- 跟尾短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showAfterSms"
-                @submit="submitAfterSms()">
+                @submit="submitAfterSms">
       <template v-slot:container>
         <sms ref="afterSmsRef"
              multiple
@@ -743,6 +857,16 @@ export default {
     ShunDrawer,
     Sms,
     TextToHtml
+  },
+  props: {
+    passedId: {
+      type: Number,
+      default: null
+    },
+    isUpdate: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     const _this = this
@@ -825,7 +949,7 @@ export default {
   },
   computed: {
     id() {
-      return +this.$route.query.id
+      return +this.$route.query.id || +this.passedId
     },
     animatedNumber() {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()
@@ -919,16 +1043,31 @@ export default {
               isBigDeposit: m.isBigDeposit?.value,
               model:
                 m.channel.value === 1
-                  ? m.scriptInfoList.map(n => {
+                  ? m.scriptInfoList?.map(n => {
                     return Object.assign({}, n, {
                       _content: n.content,
                       isEdit: false,
                       isHover: false
                     })
                   })
-                  : m.meterialInfoList,
-              beforeSms: m.advanceSMSInfoList || [],
-              afterSms: m.followSMSInfoList || []
+                  : m.meterialInfoList?.map(n => {
+                    return Object.assign({}, n, {
+                      _content: n.content,
+                      isEdit: false
+                    })
+                  }),
+              beforeSms: m.advanceSMSInfoList?.map(n => {
+                return Object.assign({}, n, {
+                  _content: n.content,
+                  isEdit: false
+                })
+              }),
+              afterSms: m.followSMSInfoList?.map(n => {
+                return Object.assign({}, n, {
+                  _content: n.content,
+                  isEdit: false
+                })
+              })
             },
             (() => {
               const obj = {}
@@ -977,6 +1116,7 @@ export default {
         getPloyDetail({ baseId: this.id })
           .then(res => {
             if (res.code === 200) {
+              console.log(res.data)
               this.group = res.data.strategyQueryVOList.map((n, i) => {
                 return {
                   gid: n.customeInfoId,
@@ -1065,118 +1205,161 @@ export default {
         callback()
       }
     },
-
+    getData() {
+      return this.group.map((gn, gi) => {
+        return {
+          // 客群id
+          customerInfoId: gn.gid,
+          // 策略
+          strategyDetailList: gn.ployTabs.map((pn, pi) => {
+            return {
+              // 策略id
+              abstractId: pn.abstractId,
+              // 策略名称
+              name: pn.title,
+              // 分发范围
+              range: pn.percent,
+              // 产品id
+              productIdList: pn.product.map(n => n.id),
+              // 权益id
+              couponIdList: pn.interest.map(n => n.id),
+              // 渠道
+              strategyInfoList: pn.channel.map((cn, ci) => {
+                // console.log(cn.model)
+                return {
+                  // 渠道id
+                  // infoId: cn.infoId,
+                  // 渠道类型 1:crm 2:短信 3:微信 5:stm 6:AI
+                  channel: cn.value,
+                  // SMS发送模式（重复均分）
+                  sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
+                  // 大额存单
+                  isBigDeposit: cn.value === 5 ? cn.isBigDeposit : undefined,
+                  // 话术
+                  scriptList:
+                    cn.value === 1
+                      ? cn.model.map(n => ({
+                        scriptId: n.id,
+                        scriptContent: n.content,
+                        scriptInstId: n.scriptInstId
+                      }))
+                      : undefined,
+                  // 预热短信
+                  advanceSMSList:
+                    cn.value === 1
+                      ? cn.beforeSms.map(n => ({
+                        advanceId: n.id,
+                        advanceContent: n.content,
+                        advanceInstId: n.advanceInstId
+                      }))
+                      : undefined,
+                  // 跟进短信
+                  followSMSList:
+                    cn.value === 1
+                      ? cn.afterSms.map(n => ({
+                        followId: n.id,
+                        followContent: n.content,
+                        followInstId: n.followInstId
+                      }))
+                      : undefined,
+                  // 模版
+                  materialList:
+                    cn.value === 2 || cn.value === 3
+                      ? cn.model.map(n => ({
+                        materialId: n.id,
+                        materialContent: n.content,
+                        materialInstId: n.materialInstId
+                      }))
+                      : undefined,
+                  smsAttr: cn.model?.[0]?.smsAttr || {},
+                  // 推送类型 1:定时 2:规则
+                  pushType: cn.chooseType,
+                  pushTimeInfo: {
+                    // 定时型的值
+                    schedulePushInfo:
+                      cn.chooseType === 1
+                        ? {
+                          // pushTimeId: cn.pushTimeId,
+                          startDate: cn.dateRange[0],
+                          endDate: cn.dateRange[1],
+                          intervalType: cn.timingDateType,
+                          interval: cn.timingDateValue,
+                          moment: cn.timingTimeValue
+                        }
+                        : undefined,
+                    // 规则型的值
+                    rulePushInfoList:
+                      cn.chooseType === 2
+                        ? cn.ruleValue.map((ruleItem, rule_i) => {
+                          return {
+                            pushTimeId: ruleItem.pushTimeId,
+                            delay: ruleItem.date,
+                            moment: ruleItem.time
+                          }
+                        })
+                        : undefined,
+                    // 触发型的值
+                    triggerInfoList:
+                      cn.chooseType === 3
+                        ? {
+                          // pushTimeId: cn.pushTimeId,
+                          startDate: cn.dateRange[0],
+                          endDate: cn.dateRange[1],
+                          triggerRuleList: cn.trigger.map(triggerItem => {
+                            return {
+                              triggerId: triggerItem.rule.map(n => {
+                                return n.id
+                              }),
+                              triggerDate: triggerItem.date,
+                              triggerTime: triggerItem.time
+                            }
+                          })
+                        }
+                        : undefined
+                  }
+                }
+              })
+            }
+          })
+        }
+      })
+    },
     validateAndNext() {
+      return this.beforeValidateAndNext((data, resolve, reject) => {
+        const param = {
+          baseId: this.id,
+          strategySaveCriteriaList: data
+        }
+        savePloy(param)
+          .then(res => {
+            resolve()
+          })
+          .catch(() => {
+            reject()
+          })
+      })
+    },
+    beforeValidateAndNext(cb) {
       this.isSubmit = true
       return new Promise((resolve, reject) => {
         this.$refs.refCustomerForm.validate((valid, field) => {
           // console.log(valid, field)
           if (valid) {
             // 客群
-            // console.log(this.group)
-            const data = this.group.map((gn, gi) => {
-              return {
-                // 客群id
-                customerInfoId: gn.gid,
-                // 策略
-                strategyDetailList: gn.ployTabs.map((pn, pi) => {
-                  return {
-                    // 策略id
-                    abstractId: pn.abstractId,
-                    // 策略名称
-                    name: pn.title,
-                    // 分发范围
-                    range: pn.percent,
-                    // 产品id
-                    productIdList: pn.product.map(n => n.id),
-                    // 权益id
-                    couponIdList: pn.interest.map(n => n.id),
-                    // 渠道
-                    strategyInfoList: pn.channel.map((cn, ci) => {
-                      // console.log(cn)
-                      return {
-                        // 渠道id
-                        // infoId: cn.infoId,
-                        // 渠道类型 1:crm 2:短信 3:微信 5:stm 6:AI
-                        channel: cn.value,
-                        // SMS发送模式（重复均分）
-                        sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
-                        // 大额存单
-                        isBigDeposit:
-                          cn.value === 5 ? cn.isBigDeposit : undefined,
-                        // 话术id
-                        scriptList:
-                          cn.value === 1
-                            ? cn.model.map(n => {
-                              return {
-                                scriptId: n.id,
-                                scriptContent: n.content,
-                                scriptInstId: n.scriptInstId
-                              }
-                            })
-                            : undefined,
-                        // 预热短信ids
-                        advanceSMSIds:
-                          cn.value === 1
-                            ? cn.beforeSms.map(n => n.id)
-                            : undefined,
-                        // 跟尾短信ids
-                        followSMSIds:
-                          cn.value === 1
-                            ? cn.afterSms.map(n => n.id)
-                            : undefined,
-                        // 模版id
-                        materialIdList:
-                          cn.value === 2 || cn.value === 3
-                            ? cn.model.map(n => n.id)
-                            : undefined,
-                        smsAttr: cn.model?.[0]?.smsAttr || {},
-                        // 推送类型 1:定时 2:规则
-                        pushType: cn.chooseType,
-                        pushTimeInfo: {
-                          // 定时型的值
-                          schedulePushInfo:
-                            cn.chooseType === 1
-                              ? {
-                                // pushTimeId: cn.pushTimeId,
-                                startDate: cn.dateRange[0],
-                                endDate: cn.dateRange[1],
-                                intervalType: cn.timingDateType,
-                                interval: cn.timingDateValue,
-                                moment: cn.timingTimeValue
-                              }
-                              : undefined,
-                          // 规则型的值
-                          rulePushInfoList:
-                            cn.chooseType === 2
-                              ? cn.ruleValue.map((ruleItem, rule_i) => {
-                                return {
-                                  // pushTimeId: ruleItem.pushTimeId,
-                                  delay: ruleItem.date,
-                                  moment: ruleItem.time
-                                }
-                              })
-                              : undefined
-                        }
-                      }
-                    })
-                  }
-                })
-              }
-            })
-            // console.log(data)
-            // reject()
-            const param = {
-              baseId: this.id,
-              strategySaveCriteriaList: data
-            }
-            savePloy(param)
-              .then(res => {
-                resolve()
-              })
-              .catch(() => {
-                reject()
-              })
+            const data = this.getData()
+            // resolve()
+            // const param = {
+            //   baseId: this.id,
+            //   strategySaveCriteriaList: data
+            // }
+            cb(data, resolve, reject)
+            // savePloy(param)
+            //   .then(res => {
+            //     resolve()
+            //   })
+            //   .catch(() => {
+            //     reject()
+            //   })
           } else {
             // console.log(field)
             let errList = Object.keys(field).map(key => this.getIndex(key))
@@ -1505,10 +1688,10 @@ export default {
     },
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.property === 'groupName' || column.property === 'income') {
-        if (rowIndex === 0) {
+      if (columnIndex === 0) {
+        if (rowIndex % 2 === 0) {
           return {
-            rowspan: row.total,
+            rowspan: 2,
             colspan: 1
           }
         } else {
@@ -1519,7 +1702,6 @@ export default {
         }
       }
     },
-
     // 添加渠道
     handleCommandChannel(index, item) {
       CHANNEL_OPT.forEach((n, i) => {
@@ -1532,7 +1714,7 @@ export default {
         const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item
           .channel.length - 1}`
         const top = document.querySelector(id).getBoundingClientRect().top
-        document.querySelector('.content').scrollTop = top
+        document.querySelector('.ploy-scroll-content').scrollTop = top
       })
       // 已选择的渠道禁止选择
       item.channelOpt.forEach((n, i) => {
@@ -1583,13 +1765,13 @@ export default {
       })
       this.channelIndex = ci
     },
-
     // 短信
     addSmsWords(item, ci) {
       this.showSms = true
       this.$nextTick(() => {
         this.$refs.smsRef.reset()
-        this.$refs.smsRef.parentRef.setSelection(item.model)
+        // this.$refs.smsRef.parentRef.setSelection(item.model)
+        this.$refs.smsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -1598,7 +1780,8 @@ export default {
       this.showBeforeSms = true
       this.$nextTick(() => {
         this.$refs.beforeSmsRef.reset()
-        this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+        // this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+        this.$refs.beforeSmsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -1611,7 +1794,8 @@ export default {
       this.showAfterSms = true
       this.$nextTick(() => {
         this.$refs.afterSmsRef.reset()
-        this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+        // this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+        this.$refs.afterSmsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -1675,6 +1859,8 @@ export default {
           this.channelIndex
         ].beforeSms = val.map(n => {
           return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
             smsAttr: {}
           })
         })
@@ -1700,11 +1886,15 @@ export default {
           this.showAfterSms = false
           this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
             this.channelIndex
-          ].afterSms = val.map(n => {
-            return Object.assign({}, n, {
-              smsAttr: {}
+          ].afterSms.push(
+            ...val.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                smsAttr: {}
+              })
             })
-          })
+          )
         }
       } else {
         Message({
@@ -1724,6 +1914,8 @@ export default {
           this.channelIndex
         ].model = val.map(n => {
           return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
             smsAttr: {}
           })
         })
@@ -1786,6 +1978,10 @@ export default {
         item.time = parseTime(new Date(), '{h}:{i}')
       }
     },
+    handleContentEdit(scope) {
+      scope.row.content = scope.row._content
+      scope.row.isEdit = false
+    },
     ValidatorModel(rule, value, callback) {
       // console.log('ValidatorModelValue>>>>>>>>>>>>', value)
       if (value.length) {
@@ -1808,7 +2004,7 @@ export default {
     },
     ValidatorTestSelect(rule, value, callback) {
       // console.log(value)
-      if (this.isSubmit) callback()
+      if (this.isUpdate || this.isSubmit) callback()
       // if (!value) callback()
       const b = isPhone(value)
       if (!b) {
@@ -1964,6 +2160,31 @@ export default {
           color: $blue;
           cursor: pointer;
         }
+      }
+    }
+  }
+  .dialog {
+    .dialog-table {
+      margin: 20px 0;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      .dialog-table-label {
+        margin-bottom: 5px;
+      }
+    }
+  }
+}
+.dialog {
+  .dialog-table {
+    .table-first-col {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      div {
+        flex: 1;
       }
     }
   }

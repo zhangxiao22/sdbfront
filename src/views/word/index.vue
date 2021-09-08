@@ -180,12 +180,12 @@
                       :rules="[{
                         required: true, message: '请选择话术分类', trigger: 'blur'
                       }]"
-                      prop="productList"
-                      style="width:300px;">
+                      prop="productList">
           <el-select v-model="addInfo.productList"
                      multiple
                      clearable
-                     filterable>
+                     filterable
+                     style="width:90%;">
             <el-option v-for="item of productListOpt"
                        :key="item.value"
                        :label="item.label"
@@ -196,12 +196,12 @@
                       :rules="[{
                         required: true, message: '请选择话术分类', trigger: 'blur'
                       }]"
-                      prop="useCaseList"
-                      style="width:300px;">
+                      prop="useCaseList">
           <el-select v-model="addInfo.useCaseList"
                      multiple
                      clearable
-                     filterable>
+                     filterable
+                     style="width:90%;">
             <el-option v-for="item of useCaseListOpt"
                        :key="item.value"
                        :label="item.label"
@@ -319,11 +319,11 @@ export default {
       useCaseListOpt: [],
       productListOpt: [],
       tableColumnList: [
-        {
-          prop: 'id',
-          label: 'ID',
-          minWidth: 50
-        },
+        // {
+        //   prop: 'id',
+        //   label: 'ID',
+        //   minWidth: 50
+        // },
         {
           prop: 'content',
           label: '话术内容',
@@ -350,6 +350,10 @@ export default {
           label: '话术说明',
           minWidth: 200,
           notShowOverflowTooltip: true
+        },
+        {
+          prop: 'products',
+          label: '对应产品'
         },
         {
           prop: 'operate',
