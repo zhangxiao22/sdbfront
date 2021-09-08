@@ -22,7 +22,7 @@
                        label="每周线索分配上限（CRM）" />
       <el-table-column prop="smsWeekClueLimit"
                        show-overflow-tooltip
-                       label="每周线索分配上限（短信）" />
+                       label="每天线索分配上限（短信）" />
       <el-table-column prop="description"
                        show-overflow-tooltip
                        label="描述" />
@@ -74,7 +74,7 @@
                            @blur="handleBlurCRM" />
         </el-form-item>
         <el-form-item required
-                      label="每周线索分配上限（短信）："
+                      label="每天线索分配上限（短信）："
                       prop="assignUpper_sms">
           <el-input-number v-model="clueInfo.assignUpper_sms"
                            style="width:200px;"
@@ -99,7 +99,11 @@
 
 <script>
 import Info from '@/components/Info'
-import { getUseCaseList, setUseCasePriority, setDistributeLimit } from '@/api/api'
+import {
+  getUseCaseList,
+  setUseCasePriority,
+  setDistributeLimit
+} from '@/api/api'
 import Sortable from 'sortablejs'
 import { MAX_NUMBER } from '@/utils'
 
@@ -141,11 +145,8 @@ export default {
   },
 
   watch: {},
-  created() {
-  },
-  mounted() {
-
-  },
+  created() {},
+  mounted() {},
   methods: {
     init() {
       this.getList()
@@ -164,22 +165,24 @@ export default {
     },
     // 编辑用例线索分发
     ensureEditClue() {
-      this.$refs['formRef'].validate((valid) => {
+      this.$refs['formRef'].validate(valid => {
         if (valid) {
           this.buttonLoading = true
-          setDistributeLimit(this.getClueData).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.getList()
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-            this.clueDialog = false
-          })
+          setDistributeLimit(this.getClueData)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.getList()
+              }
+            })
+            .finally(() => {
+              this.buttonLoading = false
+              this.clueDialog = false
+            })
         }
       })
     },
@@ -205,7 +208,8 @@ export default {
       this.sortable = Sortable.create(el, {
         disabled: true,
         animation: 150,
-        onEnd({ newIndex, oldIndex }) { // oldIIndex拖放前的位置， newIndex拖放后的位置
+        onEnd({ newIndex, oldIndex }) {
+          // oldIIndex拖放前的位置， newIndex拖放后的位置
           const currRow = _this.tableData.splice(oldIndex, 1)[0] // 删除拖拽项
           _this.tableData.splice(newIndex, 0, currRow) // 添加至指定位置
           // if (newIndex !== oldIndex) {
@@ -231,20 +235,22 @@ export default {
       const data = {}
       data.priorityData = this.tableData
       this.$emit('update:loading', true)
-      setUseCasePriority(data).then(res => {
-        if (res.code === 200) {
-          this.$message({
-            message: '修改成功',
-            type: 'success',
-            duration: '3000'
-          })
-        }
-      }).finally(() => {
-        this.getList()
-        this.$emit('update:loading', false)
-        this.sortable.options.disabled = true
-        this.canMove = false
-      })
+      setUseCasePriority(data)
+        .then(res => {
+          if (res.code === 200) {
+            this.$message({
+              message: '修改成功',
+              type: 'success',
+              duration: '3000'
+            })
+          }
+        })
+        .finally(() => {
+          this.getList()
+          this.$emit('update:loading', false)
+          this.sortable.options.disabled = true
+          this.canMove = false
+        })
     }
   }
 }

@@ -104,7 +104,6 @@
 </template>
 
 <script>
-
 import { updateProduct, getProductExtraParams } from '@/api/api'
 
 export default {
@@ -155,8 +154,7 @@ export default {
       }
     }
   },
-  watch: {
-  },
+  watch: {},
   created() {
     this.getExtraParams()
   },
@@ -177,8 +175,13 @@ export default {
       setTimeout(() => {
         // 基础字段
         this.addInfo.name = row.name
-        this.addInfo.category = [row.firstCategory.value, row.secondCategory.value].filter(n => n)
-        this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(n => n.value)
+        this.addInfo.category = [
+          row.firstCategory.value,
+          row.secondCategory.value
+        ].filter(n => n)
+        this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(
+          n => n.value
+        )
         this.addInfo.description = row.description
         this.changeCategory([row.firstCategory.value])
         this.productParams.forEach(n => {
@@ -189,10 +192,11 @@ export default {
       })
     },
     changeCategory(val) {
-      this.productParams = this.allParams.find(n => n.type === val?.[0])?.array || []
+      this.productParams =
+        this.allParams.find(n => n.type === val?.[0])?.array || []
     },
     ensureEdit() {
-      this.$refs['formRef'].validate((valid) => {
+      this.$refs['formRef'].validate(valid => {
         if (valid) {
           const data = {
             id: this.addInfo.id,
@@ -205,19 +209,21 @@ export default {
             data[n.fieldName] = this.addInfo[n.fieldName]
           })
           this.buttonLoading = true
-          updateProduct(data).then(res => {
-            if (res.code === 200) {
-              this.$message({
-                message: '保存成功',
-                type: 'success',
-                duration: '3000'
-              })
-              this.$emit('update:visible', false)
-              this.$emit('afterEnsure')
-            }
-          }).finally(() => {
-            this.buttonLoading = false
-          })
+          updateProduct(data)
+            .then(res => {
+              if (res.code === 200) {
+                this.$message({
+                  message: '保存成功',
+                  type: 'success',
+                  duration: '3000'
+                })
+                this.$emit('update:visible', false)
+                this.$emit('afterEnsure')
+              }
+            })
+            .finally(() => {
+              this.buttonLoading = false
+            })
         }
       })
     }

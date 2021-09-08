@@ -1184,11 +1184,9 @@ export default {
                               obj.timingDateType =
                                 m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
                               // 定时型的值-规则 (周几或者几号) (多选)
-                              obj.timingDateValue =
-                                m.pushTimeInfo.scheduelPushInfoVO.interval
+                              obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
                               // 定时型的值-时间
-                              obj.timingTimeValue =
-                                m.pushTimeInfo.scheduelPushInfoVO.moment
+                              obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
                               // 定时型的值-起止时间
                               obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO
                                 .startDate

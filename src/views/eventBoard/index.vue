@@ -192,7 +192,9 @@
     </shun-table>
     <Dialog ref="dialog"
             :visible.sync="showDialog"
-            @afterEnsure="getList(1)" />
+            :update-row="updateRow"
+            @afterEnsure="getList(1)"
+            @afterClose="afterDetailDialogClose" />
     <DetailDialog :id="detailDialogId"
                   ref="detailDialog"
                   :visible.sync="showDetailDialog"
@@ -249,6 +251,7 @@ export default {
   data() {
     return {
       showDialog: false,
+      updateRow: {},
       showDetailDialog: false,
       detailDialogId: null,
       // 权限判断
@@ -323,99 +326,119 @@ export default {
     }
   },
   computed: {
-    ...mapGetters([
-      'roles',
-      'user'
-    ]),
+    ...mapGetters(['roles', 'user']),
     parentRef() {
       return this.$refs.table
     },
     btnList() {
-      return (scope) => {
+      return scope => {
         const _this = this
-        const btns = [{
-          condition: this.roleJudge.downloadCustomer && scope.row.loadType?.value === 1,
-          style: {
-            color: '#1890FF'
+        const btns = [
+          {
+            condition:
+              this.roleJudge.downloadCustomer &&
+              scope.row.loadType?.value === 1,
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleDownload(scope.row)
+            },
+            name: '下载名单'
           },
-          clickFn() {
-            return _this.handleDownload(scope.row)
+          {
+            condition: this.judgeStatus(scope.row.status.value) === 2,
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleEdit(scope.row)
+            },
+            name: '编辑'
           },
-          name: '下载名单'
-        }, {
-          condition: this.judgeStatus(scope.row.status.value) === 2,
-          style: {
-            color: '#1890FF'
+          {
+            condition:
+              scope.row.creater === this.user.userName &&
+              this.judgeStatus(scope.row.status.value) === 4,
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleUpdate(scope.row)
+            },
+            name: '更新'
           },
-          clickFn() {
-            return _this.handleEdit(scope.row)
+          {
+            condition:
+              this.roleJudge.createEvent &&
+              (this.judgeStatus(scope.row.status.value) === 4 ||
+                this.judgeStatus(scope.row.status.value) === 5),
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleCopy(scope.row)
+            },
+            name: '复制'
           },
-          name: '编辑'
-        }, {
-          condition: scope.row.creater === this.user.userName && this.judgeStatus(scope.row.status.value) === 4,
-          style: {
-            color: '#1890FF'
+          {
+            condition:
+              scope.row.reviewer === this.user.userName &&
+              this.judgeStatus(scope.row.status.value) === 4,
+            style: {
+              color: '#f56c6c'
+            },
+            clickFn() {
+              return _this.handleOfflineEvent(scope.row)
+            },
+            name: '下线'
           },
-          clickFn() {
-            return _this.handleUpdate(scope.row)
+          {
+            condition:
+              this.judgeStatus(scope.row.status.value) === 4 &&
+              (this.user.userName === scope.row.creater ||
+                this.user.userName === scope.row.reviewer),
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleSyncProduct(scope.row)
+            },
+            name: '同步'
           },
-          name: '更新'
-        },
-        {
-          condition: this.roleJudge.createEvent && (this.judgeStatus(scope.row.status.value) === 4 || this.judgeStatus(scope.row.status.value) === 5),
-          style: {
-            color: '#1890FF'
+          {
+            condition:
+              this.judgeStatus(scope.row.status.value) === 4 &&
+              (this.user.userName === scope.row.creater ||
+                this.user.userName === scope.row.reviewer),
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleDownloadAssign(scope.row)
+            },
+            name: '下载预分发名单'
           },
-          clickFn() {
-            return _this.handleCopy(scope.row)
-          },
-          name: '复制'
-        }, {
-          condition: scope.row.reviewer === this.user.userName && this.judgeStatus(scope.row.status.value) === 4,
-          style: {
-            color: '#f56c6c'
-          },
-          clickFn() {
-            return _this.handleOfflineEvent(scope.row)
-          },
-          name: '下线'
-        }, {
-          condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
-          style: {
-            color: '#1890FF'
-          },
-          clickFn() {
-            return _this.handleSyncProduct(scope.row)
-          },
-          name: '同步'
-        }, {
-          condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
-          style: {
-            color: '#1890FF'
-          },
-          clickFn() {
-            return _this.handleDownloadAssign(scope.row)
-          },
-          name: '下载预分发名单'
-        }, {
-          //   condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
-          //   style: {
-          //     color: '#1890FF'
-          //   },
-          //   clickFn() {
-          //     return _this.handleAllocate(scope.row)
-          //   },
-          //   name: '分发'
-          // }, {
-          condition: this.judgeStatus(scope.row.status.value) === 2,
-          style: {
-            color: '#f56c6c'
-          },
-          clickFn() {
-            return _this.handleDelete(scope.row)
-          },
-          name: '删除'
-        }]
+          {
+            //   condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
+            //   style: {
+            //     color: '#1890FF'
+            //   },
+            //   clickFn() {
+            //     return _this.handleAllocate(scope.row)
+            //   },
+            //   name: '分发'
+            // }, {
+            condition: this.judgeStatus(scope.row.status.value) === 2,
+            style: {
+              color: '#f56c6c'
+            },
+            clickFn() {
+              return _this.handleDelete(scope.row)
+            },
+            name: '删除'
+          }
+        ]
         return btns.filter(n => n.condition)
       }
     }
@@ -427,8 +450,12 @@ export default {
   watch: {},
   created() {
     // 是否能新建事件
-    this.roleJudge.createEvent = this.roles === '事件注册' || this.roles === '用例管理'
-    this.roleJudge.downloadCustomer = this.roles === '事件注册' || this.roles === '用例管理' || this.roles === '领导审批'
+    this.roleJudge.createEvent =
+      this.roles === '事件注册' || this.roles === '用例管理'
+    this.roleJudge.downloadCustomer =
+      this.roles === '事件注册' ||
+      this.roles === '用例管理' ||
+      this.roles === '领导审批'
     // this.eventCategoryList()
     this.getOwner()
     this.getReviewer()
@@ -443,9 +470,12 @@ export default {
     // 判断事件大状态
     judgeStatus(subId) {
       return this.tabList.find(n => {
-        return n.id !== 'all' && n.children.find(m => {
-          return m.value === subId
-        })
+        return (
+          n.id !== 'all' &&
+          n.children.find(m => {
+            return m.value === subId
+          })
+        )
       }).id
     },
     resetAll() {
@@ -512,7 +542,7 @@ export default {
     },
     // 获取状态
     getStatus() {
-      return new Promise((resolve) => {
+      return new Promise(resolve => {
         getEventStatus().then(res => {
           const total = {
             id: 'all',
@@ -524,10 +554,12 @@ export default {
           this.tabList = []
           res.data.forEach((n, i) => {
             total.children.push(...n.children)
-            this.tabList.push(Object.assign({}, n, {
-              color: this.colors[i],
-              count: 0
-            }))
+            this.tabList.push(
+              Object.assign({}, n, {
+                color: this.colors[i],
+                count: 0
+              })
+            )
           })
           this.tabList.unshift(total)
           resolve()
@@ -564,9 +596,12 @@ export default {
     },
     getColor(subId) {
       return this.tabList.find(n => {
-        return n.id !== 'all' && n.children.find(m => {
-          return m.value === subId
-        })
+        return (
+          n.id !== 'all' &&
+          n.children.find(m => {
+            return m.value === subId
+          })
+        )
       }).color
     },
     search() {
@@ -584,36 +619,40 @@ export default {
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
       // console.log(this.statusValue)
-      const data = Object.assign({
-        pageNo: this.currentPage,
-        pageSize: this.pageSize,
-        status: this.statusValue
-      }, this.searchForm)
+      const data = Object.assign(
+        {
+          pageNo: this.currentPage,
+          pageSize: this.pageSize,
+          status: this.statusValue
+        },
+        this.searchForm
+      )
 
       this.filterForm = JSON.parse(JSON.stringify(this.searchForm))
       this.loading = true
-      getEventList(data).then(res => {
-        this.tableData = res.data.resultList
-          .map(n => {
+      getEventList(data)
+        .then(res => {
+          this.tableData = res.data.resultList.map(n => {
             return Object.assign({}, n.eventBaseInfo, {
               group: n.customerInfoRespList,
               useCase: n.useCase
             })
           })
-        this.total = res.pagination.totalItemCount
-        this.tabList.forEach(n => {
-          if (n.id === 'all') {
-            n.count = res.data.totalCount
-          }
-          res.data.count.forEach(m => {
-            if (n.id === m.id) {
-              n.count = m.totalCount
+          this.total = res.pagination.totalItemCount
+          this.tabList.forEach(n => {
+            if (n.id === 'all') {
+              n.count = res.data.totalCount
             }
+            res.data.count.forEach(m => {
+              if (n.id === m.id) {
+                n.count = m.totalCount
+              }
+            })
           })
         })
-      }).finally(() => {
-        this.loading = false
-      })
+        .finally(() => {
+          this.loading = false
+        })
     },
     eventDetail(id) {
       this.detailDialogId = id
@@ -631,7 +670,12 @@ export default {
     handleDownload(row) {
       // console.log(row, '????')
       if (row.group.length) {
-        window.open(process.env.VUE_APP_BASE_API + '/customer/customerDownload?baseId=' + row.id, '_self')
+        window.open(
+          process.env.VUE_APP_BASE_API +
+            '/customer/customerDownload?baseId=' +
+            row.id,
+          '_self'
+        )
       } else {
         return this.$message({
           message: '客群名单不存在',
@@ -644,7 +688,12 @@ export default {
     handleDownloadAssign(row) {
       // console.log(row, '????')
       if (row.id) {
-        window.open(process.env.VUE_APP_BASE_API + '/event/download_assign_result?eventId=' + row.id, '_self')
+        window.open(
+          process.env.VUE_APP_BASE_API +
+            '/event/download_assign_result?eventId=' +
+            row.id,
+          '_self'
+        )
       } else {
         return this.$message({
           message: '客群名单不存在',
@@ -655,14 +704,16 @@ export default {
     },
     handleEdit(row) {
       this.$router.push({
-        path: '/createEvent', query: {
+        path: '/createEvent',
+        query: {
           id: row.id
         }
       })
     },
     handleUpdate(row) {
       this.showDialog = true
-      this.$refs['dialog'].update(row)
+      this.updateRow = row
+      // this.$refs['dialog'].update(row)
     },
     handleCopy(row) {
       this.$confirm(`确定复制事件（${row.name}）？`)
@@ -706,20 +757,20 @@ export default {
         })
     },
     handleSyncProduct(row) {
-      const confirmText = ['同步时间较长，请勿重复点击，', `是否确认事件【${row.name}】同步产品？`]
+      const confirmText = [
+        '同步时间较长，请勿重复点击，',
+        `是否确认事件【${row.name}】同步产品？`
+      ]
       const newDatas = []
       const h = this.$createElement
       for (const i in confirmText) {
         newDatas.push(h('p', null, confirmText[i]))
       }
-      this.$confirm(
-        '提示',
-        {
-          title: '提示',
-          message: h('div', null, newDatas),
-          type: 'warning'
-        }
-      )
+      this.$confirm('提示', {
+        title: '提示',
+        message: h('div', null, newDatas),
+        type: 'warning'
+      })
         // this.$confirm(`同步时间较长，请勿重复点击，是否确认事件（${row.name} ）同步产品？`)
         .then(() => {
           this.loading = true
