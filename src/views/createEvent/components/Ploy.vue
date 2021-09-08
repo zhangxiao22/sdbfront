@@ -1,7 +1,7 @@
 <template>
   <div ref="ployRef"
        class="ploy-container">
-    <el-form ref="customerFormRef"
+    <el-form ref="refCustomerForm"
              :model="{group}"
              label-width="120px"
              @validate="validateForm">
@@ -19,7 +19,6 @@
               {{ groupItem.people }}
             </el-tag>
           </div>
-
           <div class="top">
             <div class="left">当前客群人数：<b>{{ animatedNumber }}</b></div>
             <div>
@@ -30,11 +29,13 @@
                             }]">
                 <el-button icon="el-icon-plus"
                            type="primary"
+                           :disabled="isUpdate"
                            @click="addStrategy">
                   选择历史策略
                 </el-button>
                 <el-button icon="el-icon-plus"
                            type="primary"
+                           :disabled="isUpdate"
                            @click="addTab">
                   添加空白策略
                 </el-button>
@@ -47,7 +48,7 @@
           <div v-show="groupItem.ployTabs.length">
             <el-tabs v-model="groupItem.ployTabsValue"
                      type="card"
-                     closable
+                     :closable="!isUpdate"
                      @tab-click="handleChangeTab"
                      @tab-remove="handleRemoveTab">
               <!-- {{ groupItem.ployTabs.map(n => n.name) }} -->
@@ -66,6 +67,7 @@
                                circle
                                icon="el-icon-document-copy"
                                type="primary"
+                               :disabled="isUpdate"
                                @click="copyTab(ployItem)" />
                   </el-tooltip>
 
@@ -81,7 +83,8 @@
                               }]">
                   <el-input v-model.trim="ployItem.title"
                             style="width:300px"
-                            placeholder="请输入策略名称" />
+                            placeholder="请输入策略名称"
+                            :disabled="isUpdate" />
                 </el-form-item>
                 <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.percent'"
                               :rules="[{
@@ -100,6 +103,7 @@
                                      :min="0"
                                      :max="100"
                                      :step="10"
+                                     :disabled="isUpdate"
                                      @blur="handlePercentBlur(ployItem)"
                                      @change="handlePercentChange" />%
                     <el-form-item style="margin-left:10px;margin-bottom:0;"
@@ -127,85 +131,74 @@
                     添加产品
                   </el-button>
                 </el-form-item>
-                <div v-show="ployItem.product.length"
-                     class="product-card">
-                  <el-table :data="ployItem.product.slice(5 * (productCurrentPage - 1), 5 * productCurrentPage)"
-                            border
-                            style="width: 100%;margin-bottom:18px;">
-                    <el-table-column type="expand">
-                      <template slot-scope="scope">
-                        <el-form label-position="left"
-                                 inline
-                                 class="demo-table-expand">
-                          <div v-for="(item,i) in getTableColumnListByType(scope.row.firstCategory.value)"
-                               :key="i">
-                            <el-form-item :label="item.label+'：'">
-                              <span>{{ scope.row[item.prop] }}</span>
-                            </el-form-item>
-                          </div>
-                        </el-form>
-                      </template>
-                    </el-table-column>
-                    <template v-for="(item,i) of COMMON_COLUMN_LIST.filter(n => !n.hide)">
-                      <el-table-column v-if="item.prop === 'attributionUseCaseList'"
-                                       :key="i"
-                                       :prop="item.prop"
-                                       :label="item.label"
-                                       :min-width="item.minWidth">
-                        <template slot-scope="scope">
-                          <template>
-                            <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
-                              <el-tooltip placement="top-start"
-                                          class="hover-text">
-                                <div slot="content">
-                                  <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
-                                       :key="useItemIndex"
-                                       style="margin:5px 0;">
-                                    {{ useItem.label }}
-                                  </div>
-                                </div>
-                                <span>
-                                  {{ scope.row.attributionUseCaseList.length }}个用例
-                                </span>
-                              </el-tooltip>
-                            </template>
-                            <div v-else>
-                              无
-                            </div>
-                          </template>
-                        </template>
-                      </el-table-column>
-                      <el-table-column v-else
-                                       :key="i"
-                                       :prop="item.prop"
-                                       :label="item.label"
-                                       :width="item.width"
-                                       :min-width="item.minWidth" />
+                <el-table v-show="ployItem.product.length"
+                          :data="ployItem.product"
+                          border
+                          style="width: 100%;margin-bottom:18px;">
+                  <el-table-column type="expand">
+                    <template slot-scope="scope">
+                      <el-form label-position="left"
+                               inline
+                               class="demo-table-expand">
+                        <div v-for="(item,i) in getTableColumnListByType(scope.row.firstCategory.value)"
+                             :key="i">
+                          <el-form-item :label="item.label+'：'">
+                            <span>{{ scope.row[item.prop] }}</span>
+                          </el-form-item>
+                        </div>
+                      </el-form>
                     </template>
-                    <el-table-column fixed="right"
-                                     label="操作"
-                                     width="100">
+                  </el-table-column>
+                  <template v-for="(item,i) of COMMON_COLUMN_LIST">
+                    <el-table-column v-if="item.prop === 'attributionUseCaseList'"
+                                     :key="i"
+                                     :prop="item.prop"
+                                     :label="item.label"
+                                     :min-width="item.minWidth">
                       <template slot-scope="scope">
-                        <el-popconfirm title="确定删除吗？"
-                                       @onConfirm="deleteProduct(ployItem,scope.$index)">
-                          <el-button slot="reference"
-                                     type="text"
-                                     style="color:#f56c6c;"
-                                     size="small">删除</el-button>
-                        </el-popconfirm>
+                        <template>
+                          <template v-if="scope.row.attributionUseCaseList && scope.row.attributionUseCaseList.length">
+                            <el-tooltip placement="top-start"
+                                        class="hover-text">
+                              <div slot="content">
+                                <div v-for="(useItem,useItemIndex) of scope.row.attributionUseCaseList"
+                                     :key="useItemIndex"
+                                     style="margin:5px 0;">
+                                  {{ useItem.label }}
+                                </div>
+                              </div>
+                              <span>
+                                {{ scope.row.attributionUseCaseList.length }}个用例
+                              </span>
+                            </el-tooltip>
+                          </template>
+                          <div v-else>
+                            无
+                          </div>
+                        </template>
                       </template>
                     </el-table-column>
-                  </el-table>
-                  <!-- 推荐产品分页 -->
-                  <el-pagination background
-                                 small
-                                 :page-size="5"
-                                 :pager-count="5"
-                                 :current-page.sync="productCurrentPage"
-                                 :total="ployItem.product.length"
-                                 layout="total, prev, pager, next"
-                                 :hide-on-single-page="true" />
-                </div>
+                    <el-table-column v-else
+                                     :key="i"
+                                     :prop="item.prop"
+                                     :label="item.label"
+                                     :width="item.width"
+                                     :min-width="item.minWidth" />
+                  </template>
+                  <el-table-column fixed="right"
+                                   label="操作"
+                                   width="100">
+                    <template slot-scope="scope">
+                      <el-popconfirm title="确定删除吗？"
+                                     @onConfirm="deleteProduct(ployItem,scope.$index)">
+                        <el-button slot="reference"
+                                   type="text"
+                                   style="color:#f56c6c;"
+                                   size="small">删除</el-button>
+                      </el-popconfirm>
+                    </template>
+                  </el-table-column>
+                </el-table>
                 <!-- :rules="[{
                                 required: true, message: '请选择权益', type: 'array'
                               }]" -->
@@ -220,7 +213,7 @@
                 </el-form-item>
                 <div v-show="ployItem.interest.length"
                      class="ploy-card">
-                  <el-table :data="ployItem.interest.slice(5 * (interestCurrentPage - 1), 5 * interestCurrentPage)"
+                  <el-table :data="ployItem.interest"
                             border
                             style="width: 100%;margin-bottom:18px;">
                     <el-table-column prop="name"
@@ -244,15 +237,6 @@
                       </template>
                     </el-table-column>
                   </el-table>
-                  <!-- 推荐权益分页 -->
-                  <el-pagination background
-                                 small
-                                 :page-size="5"
-                                 :pager-count="5"
-                                 :current-page.sync="interestCurrentPage"
-                                 :total="ployItem.interest.length"
-                                 layout="total, prev, pager, next"
-                                 :hide-on-single-page="true" />
                 </div>
                 <!-- <el-divider /> -->
                 <el-form-item label="下发渠道："
@@ -264,7 +248,8 @@
                                size="medium"
                                @command="handleCommandChannel($event,ployItem)">
                     <el-button type="primary"
-                               plain>
+                               plain
+                               :disabled="isUpdate">
                       选择添加
                       <i class="el-icon-arrow-down el-icon--right" />
                     </el-button>
@@ -300,6 +285,7 @@
                                    @onConfirm="deleteChannel(ployItem,ci)">
                       <el-button slot="reference"
                                  class="channel-card-delete"
+                                 :disabled="isUpdate"
                                  type="text">
                         删除
                       </el-button>
@@ -310,7 +296,8 @@
                                 :rules="[{
                                   required: true, message: '请选择下发类型', trigger: 'change'
                                 }]">
-                    <el-radio-group v-model="channelCardItem.chooseType">
+                    <el-radio-group v-model="channelCardItem.chooseType"
+                                    :disabled="isUpdate">
                       <el-radio v-for="item of channelCardItem.type"
                                 :key="item.id"
                                 style="margin-right:0;"
@@ -337,33 +324,38 @@
                                         value-format="yyyy-MM-dd"
                                         :picker-options="pickerOptions"
                                         start-placeholder="开始日期"
-                                        end-placeholder="结束日期" />
+                                        end-placeholder="结束日期"
+                                        :disabled="isUpdate" />
                       </el-form-item>
                       <el-form-item v-if="channelCardItem.value!==5 && channelCardItem.value!==6"
                                     label="推送时间："
                                     required>
                         <div style="display:flex">
-                          <div style="margin-bottom:0;margin-right:10px;">
+                          <el-form-item style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateType"
                                        style="width:80px;"
-                                       @change="channelCardItem.timingDateValue = []">
+                                       :disabled="isUpdate"
+                                       @change="channelCardItem.timingDateValue = ''">
                               <el-option v-for="item of timingOpt"
                                          :key="item.value"
                                          :label="item.label"
                                          :value="item.value" />
                             </el-select>
-                          </div>
-                          <div style="margin-bottom:0;margin-right:10px;">
+                          </el-form-item>
+                          <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.timingDateValue'"
+                                        :rules="[{
+                                          required: true, message: '请选择推送时间', trigger: 'change'
+                                        }]"
+                                        style="margin-bottom:0;margin-right:10px;">
                             <el-select v-model="channelCardItem.timingDateValue"
-                                       multiple
-                                       collapse-tags>
+                                       :disabled="isUpdate">
                               <el-option v-for="item of timingOpt.find(n => channelCardItem.timingDateType === n.value).children"
                                          :key="item.value"
                                          :label="item.label"
                                          :value="item.value" />
                             </el-select>
-                          </div>
-                          <div style="margin-bottom:0;">
+                          </el-form-item>
+                          <el-form-item style="margin-bottom:0;">
                             <el-time-select v-model="channelCardItem.timingTimeValue"
                                             style="width:150px;"
                                             :picker-options="{
@@ -374,15 +366,15 @@
                                             :clearable="false"
                                             :editable="false"
                                             format="HH:mm"
-                                            value-format="HH:mm" />
-                          </div>
+                                            value-format="HH:mm"
+                                            :disabled="isUpdate" />
+                          </el-form-item>
                         </div>
                       </el-form-item>
                     </template>
                     <!-- 规则型 -->
                     <template v-if="channelCardItem.chooseType===2">
                       <el-form-item class="rule-form"
-                                    required
                                     label="推送时间："
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.ruleValue'"
                                     :rules="[{
@@ -398,113 +390,24 @@
                                            style="margin-right:10px;"
                                            controls-position="right"
                                            :min="0"
+                                           :disabled="isUpdate"
                                            @blur="item.date=item.date||0" />天
                           <el-time-picker v-model="item.time"
                                           style="width:150px;margin-left:10px;"
                                           :clearable="false"
                                           format="HH:mm"
                                           value-format="HH:mm"
+                                          :disabled="isUpdate"
                                           @blur="handleTimeBlur($event,item)" />
                           <i v-if="channelCardItem.ruleValue.length > 1"
                              class="el-icon-delete delete"
-                             @click="delRuleItem(channelCardItem,rule_i,ci)" />
+                             @click="delRuleItem(channelCardItem,rule_i)" />
                         </div>
                         <el-button class="add"
                                    icon="el-icon-plus"
-                                   @click="addRuleItem(channelCardItem,ci)" />
+                                   :disabled="isUpdate"
+                                   @click="addRuleItem(channelCardItem)" />
                       </el-form-item>
-                    </template>
-                    <!-- 触发型 -->
-                    <template v-if="channelCardItem.chooseType===3">
-                      <el-form-item label="起止日期："
-                                    :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.dateRange'"
-                                    :rules="[{
-                                      required: true, message: '请选择起止日期', trigger: 'change'
-                                    }]">
-                        <el-date-picker v-model="channelCardItem.dateRange"
-                                        type="daterange"
-                                        range-separator="至"
-                                        value-format="yyyy-MM-dd"
-                                        :picker-options="pickerOptions"
-                                        start-placeholder="开始日期"
-                                        end-placeholder="结束日期" />
-                      </el-form-item>
-                      <div class="rule-form">
-                        <div v-for="(item,rule_i) of channelCardItem.trigger"
-                             :key="rule_i"
-                             class="item-box">
-                          <el-form-item label="触发规则："
-                                        required
-                                        :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.trigger.' + rule_i + '.rule'"
-                                        :rules="[{
-                                          validator: validateTrigger
-                                        }]">
-                            <el-button icon="el-icon-plus"
-                                       @click="handleAddRule(channelCardItem,ci,rule_i)">
-                              选择规则
-                            </el-button>
-                          </el-form-item>
-                          <!-- //  规则--- -->
-                          <div v-show="item.rule.length > 0"
-                               style="margin-bottom:18px;padding:0 18px;">
-                            <el-table :data="item.rule"
-                                      style="width:100%;"
-                                      border>
-                              <el-table-column prop="id"
-                                               width="100"
-                                               label="ID" />
-                              <el-table-column prop="name"
-                                               min-width="200"
-                                               label="规则名称" />
-                              <el-table-column prop="detail"
-                                               show-overflow-tooltip
-                                               min-width="300"
-                                               label="描述" />
-                              <el-table-column label="操作"
-                                               width="100">
-                                <template slot-scope="scope">
-                                  <el-popconfirm title="确定删除吗？"
-                                                 @onConfirm="deleteRule(item,ci,scope.$index)">
-                                    <el-button slot="reference"
-                                               type="text"
-                                               style="color:#f56c6c;"
-                                               size="small">删除</el-button>
-                                  </el-popconfirm>
-                                </template>
-                              </el-table-column>
-                            </el-table>
-                          </div>
-
-                          <!-- // 规则 -->
-                          <el-form-item required
-                                        label="推送时间：">
-                            <div class="rule-time-item">
-                              <Info content="规则触发日" />
-                              <span class="text-text">T</span>
-                              <span class="plus-text">+</span>
-                              <el-input-number v-model="item.date"
-                                               style="margin-right:10px;"
-                                               controls-position="right"
-                                               :min="0"
-                                               @blur="item.date=item.date||0" />天
-                              <el-time-picker v-model="item.time"
-                                              style="width:150px;margin-left:10px;"
-                                              :clearable="false"
-                                              format="HH:mm"
-                                              value-format="HH:mm"
-                                              @blur="handleTimeBlur($event,item)" />
-                            </div>
-                          </el-form-item>
-                          <i v-if="channelCardItem.trigger.length > 1"
-                             class="el-icon-delete delete"
-                             @click="delTriggerItem(channelCardItem,rule_i,ci)" />
-                        </div>
-                        <el-button class="add"
-                                   icon="el-icon-plus"
-                                   @click="addTriggerItem(channelCardItem,ci)">
-                          添加规则
-                        </el-button>
-                      </div>
                     </template>
                     <!-- crm -->
                     <template v-if="channelCardItem.value===1">
@@ -521,9 +424,7 @@
                       <el-table v-show="channelCardItem.model.length"
                                 :data="channelCardItem.model"
                                 border
-                                style="width: 100%;margin-bottom:18px;"
-                                @cell-mouse-enter="handleMouseEnter"
-                                @cell-mouse-leave="handleMouseLeave">
+                                style="width: 100%;margin-bottom:18px;">
                         <el-table-column label="话术内容"
                                          :min-width="400">
                           <div slot-scope="scope"
@@ -541,9 +442,15 @@
                                 <el-button size="mini"
                                            type="text"
                                            @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
                                 <el-button type="primary"
                                            size="mini"
-                                           @click="scope.row.content = scope.row._content;scope.row.isEdit = false">确定</el-button>
+                                           @click="handleContentEdit(scope)">确定</el-button>
                               </div>
                               <div slot="reference"
                                    class="table-edit touch-tap-x"
@@ -576,19 +483,50 @@
                           选择模版
                         </el-button>
                       </el-form-item>
-                      <el-table v-show="channelCardItem.beforeSms&&channelCardItem.beforeSms.length"
+                      <el-table v-show="channelCardItem.beforeSms.length"
                                 :data="channelCardItem.beforeSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content"
-                                         :min-width="300"
-                                         label="预热短信内容" />
+                        <el-table-column :min-width="300"
+                                         label="预热短信内容">
+                          <div slot-scope="scope"
+                               class="table-desc">
+                            <span>{{ scope.row.content }}</span>
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model.trim="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleContentEdit(scope)">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="table-edit touch-tap-x"
+                                   @click="scope.row._content = scope.row.content;">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
+                        </el-table-column>
                         <el-table-column prop="description"
                                          show-overflow-tooltip
                                          :min-width="300"
                                          label="预热短信描述" />
-                        <el-table-column fixed="right"
-                                         label="操作"
+                        <el-table-column label="操作"
                                          width="100">
                           <template slot-scope="scope">
                             <el-popconfirm title="确定删除吗？"
@@ -602,26 +540,57 @@
                         </el-table-column>
                       </el-table>
                       <!-- 预热短信end -->
-                      <!-- 跟进短信 -->
-                      <el-form-item label="跟进短信：">
+                      <!-- 跟尾短信 -->
+                      <el-form-item label="跟尾短信：">
                         <el-button icon="el-icon-plus"
                                    @click="addAfterSmsWords(channelCardItem,ci)">
                           选择模版
                         </el-button>
                       </el-form-item>
-                      <el-table v-show="channelCardItem.afterSms&&channelCardItem.afterSms.length"
+                      <el-table v-show="channelCardItem.afterSms.length"
                                 :data="channelCardItem.afterSms"
                                 border
                                 style="width: 100%;margin-bottom:18px;">
-                        <el-table-column prop="content"
-                                         :min-width="300"
-                                         label="跟进短信内容" />
+                        <el-table-column :min-width="300"
+                                         label="跟进短信内容">
+                          <div slot-scope="scope"
+                               class="table-desc">
+                            <span>{{ scope.row.content }}</span>
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model.trim="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleContentEdit(scope)">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="table-edit touch-tap-x"
+                                   @click="scope.row._content = scope.row.content;">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
+                        </el-table-column>
                         <el-table-column prop="description"
                                          show-overflow-tooltip
                                          :min-width="300"
                                          label="跟进短信描述" />
-                        <el-table-column fixed="right"
-                                         label="操作"
+                        <el-table-column label="操作"
                                          width="100">
                           <template slot-scope="scope">
                             <el-popconfirm title="确定删除吗？"
@@ -635,15 +604,15 @@
                         </el-table-column>
                       </el-table>
                       <!-- {{ channelCardItem.afterSms.map(n=>n.id) }} -->
-                      <!-- 跟进短信end -->
+                      <!-- 跟尾短信end -->
                     </template>
                     <!-- 短信 -->
-                    <!-- {{ channelCardItem }} -->
                     <template v-if="channelCardItem.value===2">
                       <el-form-item label="发送模式："
                                     required
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.smsSendMode'">
-                        <el-radio-group v-model="channelCardItem.smsSendMode">
+                        <el-radio-group v-model="channelCardItem.smsSendMode"
+                                        :disabled="isUpdate">
                           <el-radio v-for="(item,i) of smsSendModeOpt"
                                     :key="i"
                                     :label="item.value"
@@ -667,12 +636,42 @@
                                 style="width: 100%;margin-bottom:18px;">
                         <el-table-column label="短信内容"
                                          width="650">
-                          <template slot-scope="scope">
+                          <div slot-scope="scope"
+                               class="table-desc">
                             <!-- <span style="color:red;">{{ scope.row.smsAttr }}</span> -->
                             <TextToHtml :ref="'testSmsRef-'+gi+'-'+pi"
                                         :params.sync="scope.row.smsAttr"
-                                        :text="scope.row.content" />
-                          </template>
+                                        :text="scope.row.content"
+                                        style="display:inline" />
+                            <el-popover v-model="scope.row.isEdit"
+                                        placement="top"
+                                        width="300">
+                              <el-input v-model.trim="scope.row._content"
+                                        type="textarea"
+                                        :rows="5"
+                                        style="margin-bottom:10px;"
+                                        placeholder="请输入内容" />
+                              <div style="text-align: right; margin: 0">
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="scope.row.isEdit = false">取消</el-button>
+                                <!-- <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsTemplate')">保存为模板</el-button>
+                                <el-button size="mini"
+                                           type="text"
+                                           @click="handleContentEdit(scope, 'saveAsNewTemplate')">保存为新模板</el-button> -->
+                                <el-button type="primary"
+                                           size="mini"
+                                           @click="handleContentEdit(scope)">确定</el-button>
+                              </div>
+                              <div slot="reference"
+                                   class="table-edit touch-tap-x"
+                                   @click="scope.row._content = scope.row.content;">
+                                <i class="el-icon-edit" />
+                              </div>
+                            </el-popover>
+                          </div>
                         </el-table-column>
                         <el-table-column label="参数描述"
                                          show-overflow-tooltip>
@@ -680,9 +679,6 @@
                             <pre>{{ scope.row.parameterDescription }}</pre>
                           </template>
                         </el-table-column>
-                        <!-- <el-table-column prop="parameterDescription"
-                                         show-overflow-tooltip
-                                         label="参数描述" /> -->
                       </el-table>
                       <el-form-item :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.test'"
                                     :rules="[{
@@ -697,9 +693,11 @@
                                    filterable
                                    allow-create
                                    default-first-option
+                                   :disabled="isUpdate"
                                    placeholder="请选择电话号码/输入电话号码并选择或按回车键创建" />
                         <el-button icon="el-icon-thumb"
                                    style="float:left;"
+                                   :disabled="isUpdate"
                                    @click="handleTestSms(ci)">
                           测试一下
                         </el-button>
@@ -734,7 +732,8 @@
                       <el-form-item label="大额存单："
                                     required
                                     :prop="'group.' + gi + '.ployTabs.' + pi + '.channel.' + ci + '.isBigDeposit'">
-                        <el-radio-group v-model="channelCardItem.isBigDeposit">
+                        <el-radio-group v-model="channelCardItem.isBigDeposit"
+                                        :disabled="isUpdate">
                           <el-radio v-for="(item,i) of isBigDepositOpt"
                                     :key="i"
                                     :label="item.value"
@@ -771,54 +770,44 @@
     <!-- 产品 -->
     <ShunDrawer title="选择产品"
                 :show.sync="showProduct"
-                @submit="submitProduct">
+                @submit="submitProduct()">
       <template v-slot:container>
-        <Product ref="productRef"
+        <product ref="productRef"
                  :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 权益 -->
     <ShunDrawer title="选择权益"
                 :show.sync="showInterest"
-                @submit="submitInterest">
+                @submit="submitInterest()">
       <template v-slot:container>
-        <Interest ref="interestRef"
+        <interest ref="interestRef"
                   :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 话术 -->
     <ShunDrawer title="选择话术"
                 :show.sync="showCRMWord"
-                @submit="submitWord">
+                @submit="submitWord()">
       <template v-slot:container>
-        <Word ref="wordRef"
+        <word ref="wordRef"
               :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showSms"
-                @submit="submitSms">
+                @submit="submitSms()">
       <template v-slot:container>
-        <Sms ref="smsRef"
+        <sms ref="smsRef"
              :multiple="false"
              :show-selection="true" />
-      </template>
-    </ShunDrawer>
-    <!-- 规则 -->
-    <ShunDrawer title="选择规则"
-                size="90%"
-                :show.sync="showRule"
-                @submit="submitRule">
-      <template v-slot:container>
-        <Rule ref="ruleRef"
-              :show-selection="true" />
       </template>
     </ShunDrawer>
     <!-- 预热短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showBeforeSms"
-                @submit="submitBeforeSms()">
+                @submit="submitBeforeSms">
       <template v-slot:container>
         <sms ref="beforeSmsRef"
              :multiple="false"
@@ -826,10 +815,10 @@
              :show-selection="true" />
       </template>
     </ShunDrawer>
-    <!-- 跟进短信 -->
+    <!-- 跟尾短信 -->
     <ShunDrawer title="选择短信"
                 :show.sync="showAfterSms"
-                @submit="submitAfterSms()">
+                @submit="submitAfterSms">
       <template v-slot:container>
         <sms ref="afterSmsRef"
              multiple
@@ -841,14 +830,7 @@
 </template>
 
 <script>
-import {
-  savePloy,
-  getPloyDetail,
-  testSms,
-  getRecommendedProducts,
-  getRecommendedInterests
-} from '@/api/api'
-
+import { savePloy, getPloyDetail, testSms } from '@/api/api'
 import gsap from 'gsap'
 import Info from '@/components/Info'
 import ShunDrawer from '@/components/ShunDrawer'
@@ -858,7 +840,6 @@ import Product from '@/views/product/index'
 import Interest from '@/views/interest/index'
 import Word from '@/views/word/index'
 import Sms from '@/views/sms/index'
-import Rule from '@/views/rule/index'
 import { isPhone } from '@/utils/validate'
 import { MessageBox, Message } from 'element-ui'
 import { parseTime, SELF_COLUMN_LIST, COMMON_COLUMN_LIST } from '@/utils'
@@ -875,8 +856,17 @@ export default {
     Word,
     ShunDrawer,
     Sms,
-    Rule,
     TextToHtml
+  },
+  props: {
+    passedId: {
+      type: Number,
+      default: null
+    },
+    isUpdate: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     const _this = this
@@ -899,12 +889,10 @@ export default {
       showCRMWord: false,
       // crm预热短信侧边栏
       showBeforeSms: false,
-      // crm跟进短信侧边栏
+      // crm跟尾短信侧边栏
       showAfterSms: false,
       // 短信侧边栏
       showSms: false,
-      // 规则侧边栏
-      showRule: false,
       // 短信发送模式的选项
       smsSendModeOpt: [
         { label: '重复下发', value: 0 },
@@ -939,16 +927,12 @@ export default {
         //     channel: [],
         //     channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT))
         //   }],
-        //   // v-model值：控制策略tab显示
+        //   // v-model值
         //   ployTabsValue: '1',
-        //   // 累加数量：策略数量的累加,用于显示‘新策略几’
+        //   // 累加数量
         //   ployTabIndex: 1
         // },
       ],
-      // 推荐产品分页
-      productCurrentPage: 1,
-      // 推荐权益分页
-      interestCurrentPage: 1,
 
       tempPloyItem: null,
       pickerOptions: {
@@ -965,24 +949,18 @@ export default {
   },
   computed: {
     id() {
-      return +this.$route.query.id
+      return +this.$route.query.id || +this.passedId
     },
     animatedNumber() {
       return parseInt(this.tweenedNumber.toFixed(0)).toLocaleString()
     },
     groupIndex() {
-      // console.log('this.groupName:', this.groupName)
       return +this.groupName
     },
     ployIndex() {
-      // console.log('ployIndex>>>>>>', this.group, this.groupIndex, this.group[this.groupIndex])
-      if (this.group.length) {
-        return this.group[this.groupIndex]?.ployTabs.findIndex((n, i) => {
-          return n.name === this.group[this.groupIndex].ployTabsValue
-        })
-      } else {
-        return null
-      }
+      return this.group[this.groupIndex].ployTabs.findIndex((n, i) => {
+        return n.name === this.group[this.groupIndex].ployTabsValue
+      })
     },
     ployCounts() {
       let count = 0
@@ -999,16 +977,14 @@ export default {
 
   methods: {
     reset() {
-      this.ployDetail()
-        .then(() => {
-          this.$nextTick(() => {
-            this.beforeHandleGroupTabClick(0)
-            this.$refs['customerFormRef'].clearValidate()
-          })
+      this.ployDetail().then(() => {
+        this.$nextTick(() => {
+          // 客群tab跳转到第一个
+          this.beforeHandleGroupTabClick(0)
+          // 清除校验
+          this.$refs['refCustomerForm'].clearValidate()
         })
-        .catch(err => {
-          console.error(err)
-        })
+      })
     },
     // 从字符串中获取gi pi, 如 group.0.ployTabs.0.title => [0,0]
     getIndex(str) {
@@ -1024,7 +1000,7 @@ export default {
         const bHas = isNaN(b[1])
         return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function (a, b) {
+      return newArray.sort(function(a, b) {
         return a[0] - b[0]
       })
     },
@@ -1067,16 +1043,31 @@ export default {
               isBigDeposit: m.isBigDeposit?.value,
               model:
                 m.channel.value === 1
-                  ? m.scriptInfoList.map(n => {
+                  ? m.scriptInfoList?.map(n => {
                     return Object.assign({}, n, {
                       _content: n.content,
                       isEdit: false,
                       isHover: false
                     })
                   })
-                  : m.meterialInfoList,
-              beforeSms: m.advanceSMSInfoList || [],
-              afterSms: m.followSMSInfoList || []
+                  : m.meterialInfoList?.map(n => {
+                    return Object.assign({}, n, {
+                      _content: n.content,
+                      isEdit: false
+                    })
+                  }),
+              beforeSms: m.advanceSMSInfoList?.map(n => {
+                return Object.assign({}, n, {
+                  _content: n.content,
+                  isEdit: false
+                })
+              }),
+              afterSms: m.followSMSInfoList?.map(n => {
+                return Object.assign({}, n, {
+                  _content: n.content,
+                  isEdit: false
+                })
+              })
             },
             (() => {
               const obj = {}
@@ -1091,12 +1082,10 @@ export default {
                 // 定时型的值-时间
                 obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
                 // 定时型的值-起止时间
-                obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO.startDate
-                  ? [
-                    m.pushTimeInfo.scheduelPushInfoVO.startDate,
-                    m.pushTimeInfo.scheduelPushInfoVO.endDate
-                  ]
-                  : []
+                obj.dateRange = [
+                  m.pushTimeInfo.scheduelPushInfoVO.startDate,
+                  m.pushTimeInfo.scheduelPushInfoVO.endDate
+                ]
               } else if (m.pushType.value === 2) {
                 // 规则型
                 // 规则型的值
@@ -1127,6 +1116,7 @@ export default {
         getPloyDetail({ baseId: this.id })
           .then(res => {
             if (res.code === 200) {
+              console.log(res.data)
               this.group = res.data.strategyQueryVOList.map((n, i) => {
                 return {
                   gid: n.customeInfoId,
@@ -1135,115 +1125,11 @@ export default {
                   desc: n.desc,
                   totalPercent: 100,
                   ployTabs: n.strategyDetailVOList.map((n, i) => {
-                    return {
-                      abstractId: n.abstractId,
-                      // 策略名称
-                      title: n.name,
-                      // 策略分发范围
-                      percent: n.range,
-                      // 策略tab id
-                      name: i + 1 + '',
-                      // 产品
-                      product: n.productInfoList.map(product => {
-                        return Object.assign({}, product, product.extraField)
-                      }),
-                      // 权益
-                      interest: n.couponInfoList,
-                      channel: n.strategyInfoList.map(m => {
-                        // console.log(m)
-                        return Object.assign(
-                          {},
-                          CHANNEL_OPT.find(x => {
-                            return x.value === m.channel.value
-                          }),
-                          {
-                            infoId: m.infoId,
-                            chooseType: m.pushType.value,
-                            smsSendMode: m.sendMode?.value,
-                            isBigDeposit: m.isBigDeposit?.value,
-                            // validPeriod: m.clueEffectDays,
-                            model:
-                              m.channel.value === 1
-                                ? m.scriptInfoList.map(n => {
-                                  return Object.assign({}, n, {
-                                    _content: n.content,
-                                    isEdit: false,
-                                    isHover: false
-                                  })
-                                })
-                                : m.meterialInfoList,
-                            beforeSms: m.advanceSMSInfoList || [],
-                            afterSms: m.followSMSInfoList || []
-                          },
-                          (() => {
-                            const obj = {}
-                            if (m.pushType.value === 1) {
-                              // 定时型
-                              // obj.pushTimeId = m.pushTimeInfo.scheduelPushInfoVO.pushTimeId
-                              // 定时型的值-规则 (每周几或每月)
-                              obj.timingDateType =
-                                m.pushTimeInfo.scheduelPushInfoVO.intervalType?.value
-                              // 定时型的值-规则 (周几或者几号) (多选)
-                              obj.timingDateValue = m.pushTimeInfo.scheduelPushInfoVO.interval
-                              // 定时型的值-时间
-                              obj.timingTimeValue = m.pushTimeInfo.scheduelPushInfoVO.moment
-                              // 定时型的值-起止时间
-                              obj.dateRange = m.pushTimeInfo.scheduelPushInfoVO
-                                .startDate
-                                ? [
-                                  m.pushTimeInfo.scheduelPushInfoVO.startDate,
-                                  m.pushTimeInfo.scheduelPushInfoVO.endDate
-                                ]
-                                : []
-                            } else if (m.pushType.value === 2) {
-                              // 规则型
-                              // 规则型的值
-                              obj.ruleValue = m.pushTimeInfo.rulePushInfoList.map(
-                                r => {
-                                  return {
-                                    pushTimeId: r.pushTimeId,
-                                    date: r.delay,
-                                    time: r.moment
-                                  }
-                                }
-                              )
-                            } else if (m.pushType.value === 3) {
-                              obj.dateRange = m.pushTimeInfo.triggerInfoList
-                                .startDate
-                                ? [
-                                  m.pushTimeInfo.triggerInfoList.startDate,
-                                  m.pushTimeInfo.triggerInfoList.endDate
-                                ]
-                                : []
-                              obj.trigger = m.pushTimeInfo.triggerInfoList.triggerRuleList.map(
-                                t => {
-                                  return {
-                                    rule: [t.triggerId],
-                                    date: t.triggerDate,
-                                    time: t.triggerTime
-                                  }
-                                }
-                              )
-                            }
-                            return obj
-                          })()
-                        )
-                      }),
-                      channelOpt: JSON.parse(JSON.stringify(CHANNEL_OPT)).map(
-                        c => {
-                          return Object.assign({}, c, {
-                            // 已选择的渠道禁止选择
-                            disabled: n.strategyInfoList.some(
-                              x => x.channel.value === c.value
-                            )
-                          })
-                        }
-                      )
-                    }
+                    return this.ployTranslate(n, i + 1)
                   }),
-                  // v-model值
+                  // v-model值：控制策略tab显示
                   ployTabsValue: '1',
-                  // 累加数量
+                  // 累加数量：策略数量的累加,用于显示‘新策略几’
                   ployTabIndex: n.strategyDetailVOList.length
                 }
               })
@@ -1252,14 +1138,14 @@ export default {
               reject()
             }
           })
-          .catch(err => {
-            reject(err)
+          .catch(() => {
+            reject()
           })
       })
     },
     // 切换策略
     handleChangeTab() {
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
       )
     },
@@ -1285,28 +1171,11 @@ export default {
         callback()
       }
     },
-    validateTiming(rule, value, callback) {
-      // console.log('value???:', value)
-      if (value.length === 0) {
-        callback(new Error('请选择推送时间'))
-      } else {
-        callback()
-      }
-    },
-    validateTrigger(rule, value, callback) {
-      console.log('value:', value)
-      if (!value.length) {
-        return callback(new Error('请选择规则'))
-      }
-      callback()
-    },
     validateRule(rule, value, callback) {
       let hasSame = false
+
       for (let i = 0; i < value.length - 1; i++) {
         for (let j = i + 1; j < value.length; j++) {
-          // console.log(value[i], value[j])
-          delete value[i].pushTimeId
-          delete value[j].pushTimeId
           if (JSON.stringify(value[i]) === JSON.stringify(value[j])) {
             hasSame = true
             break
@@ -1336,137 +1205,161 @@ export default {
         callback()
       }
     },
-
+    getData() {
+      return this.group.map((gn, gi) => {
+        return {
+          // 客群id
+          customerInfoId: gn.gid,
+          // 策略
+          strategyDetailList: gn.ployTabs.map((pn, pi) => {
+            return {
+              // 策略id
+              abstractId: pn.abstractId,
+              // 策略名称
+              name: pn.title,
+              // 分发范围
+              range: pn.percent,
+              // 产品id
+              productIdList: pn.product.map(n => n.id),
+              // 权益id
+              couponIdList: pn.interest.map(n => n.id),
+              // 渠道
+              strategyInfoList: pn.channel.map((cn, ci) => {
+                // console.log(cn.model)
+                return {
+                  // 渠道id
+                  // infoId: cn.infoId,
+                  // 渠道类型 1:crm 2:短信 3:微信 5:stm 6:AI
+                  channel: cn.value,
+                  // SMS发送模式（重复均分）
+                  sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
+                  // 大额存单
+                  isBigDeposit: cn.value === 5 ? cn.isBigDeposit : undefined,
+                  // 话术
+                  scriptList:
+                    cn.value === 1
+                      ? cn.model.map(n => ({
+                        scriptId: n.id,
+                        scriptContent: n.content,
+                        scriptInstId: n.scriptInstId
+                      }))
+                      : undefined,
+                  // 预热短信
+                  advanceSMSList:
+                    cn.value === 1
+                      ? cn.beforeSms.map(n => ({
+                        advanceId: n.id,
+                        advanceContent: n.content,
+                        advanceInstId: n.advanceInstId
+                      }))
+                      : undefined,
+                  // 跟进短信
+                  followSMSList:
+                    cn.value === 1
+                      ? cn.afterSms.map(n => ({
+                        followId: n.id,
+                        followContent: n.content,
+                        followInstId: n.followInstId
+                      }))
+                      : undefined,
+                  // 模版
+                  materialList:
+                    cn.value === 2 || cn.value === 3
+                      ? cn.model.map(n => ({
+                        materialId: n.id,
+                        materialContent: n.content,
+                        materialInstId: n.materialInstId
+                      }))
+                      : undefined,
+                  smsAttr: cn.model?.[0]?.smsAttr || {},
+                  // 推送类型 1:定时 2:规则
+                  pushType: cn.chooseType,
+                  pushTimeInfo: {
+                    // 定时型的值
+                    schedulePushInfo:
+                      cn.chooseType === 1
+                        ? {
+                          // pushTimeId: cn.pushTimeId,
+                          startDate: cn.dateRange[0],
+                          endDate: cn.dateRange[1],
+                          intervalType: cn.timingDateType,
+                          interval: cn.timingDateValue,
+                          moment: cn.timingTimeValue
+                        }
+                        : undefined,
+                    // 规则型的值
+                    rulePushInfoList:
+                      cn.chooseType === 2
+                        ? cn.ruleValue.map((ruleItem, rule_i) => {
+                          return {
+                            pushTimeId: ruleItem.pushTimeId,
+                            delay: ruleItem.date,
+                            moment: ruleItem.time
+                          }
+                        })
+                        : undefined,
+                    // 触发型的值
+                    triggerInfoList:
+                      cn.chooseType === 3
+                        ? {
+                          // pushTimeId: cn.pushTimeId,
+                          startDate: cn.dateRange[0],
+                          endDate: cn.dateRange[1],
+                          triggerRuleList: cn.trigger.map(triggerItem => {
+                            return {
+                              triggerId: triggerItem.rule.map(n => {
+                                return n.id
+                              }),
+                              triggerDate: triggerItem.date,
+                              triggerTime: triggerItem.time
+                            }
+                          })
+                        }
+                        : undefined
+                  }
+                }
+              })
+            }
+          })
+        }
+      })
+    },
     validateAndNext() {
+      return this.beforeValidateAndNext((data, resolve, reject) => {
+        const param = {
+          baseId: this.id,
+          strategySaveCriteriaList: data
+        }
+        savePloy(param)
+          .then(res => {
+            resolve()
+          })
+          .catch(() => {
+            reject()
+          })
+      })
+    },
+    beforeValidateAndNext(cb) {
       this.isSubmit = true
       return new Promise((resolve, reject) => {
-        this.$refs.customerFormRef.validate((valid, field) => {
-          // console.log('valid:', valid, 'field:', field)
+        this.$refs.refCustomerForm.validate((valid, field) => {
+          // console.log(valid, field)
           if (valid) {
             // 客群
-            const data = this.group.map((gn, gi) => {
-              return {
-                // 客群id
-                customerInfoId: gn.gid,
-                // 策略
-                strategyDetailList: gn.ployTabs.map((pn, pi) => {
-                  return {
-                    // 策略id
-                    abstractId: pn.abstractId,
-                    // 策略名称
-                    name: pn.title,
-                    // 分发范围
-                    range: pn.percent,
-                    // 产品id
-                    productIdList: pn.product.map(n => n.id),
-                    // 权益id
-                    couponIdList: pn.interest.map(n => n.id),
-                    // 渠道
-                    strategyInfoList: pn.channel.map((cn, ci) => {
-                      // console.log(cn.model)
-                      return {
-                        // 渠道id
-                        // infoId: cn.infoId,
-                        // 渠道类型 1:crm 2:短信 3:微信 5:stm 6:AI
-                        channel: cn.value,
-                        // SMS发送模式（重复均分）
-                        sendMode: cn.value === 2 ? cn.smsSendMode : undefined,
-                        // 大额存单
-                        isBigDeposit:
-                          cn.value === 5 ? cn.isBigDeposit : undefined,
-                        // 话术id
-                        scriptList:
-                          cn.value === 1
-                            ? cn.model.map(n => {
-                              return {
-                                scriptId: n.id,
-                                scriptContent: n.content,
-                                scriptInstId: n.scriptInstId
-                              }
-                            })
-                            : undefined,
-                        // 预热短信ids
-                        advanceSMSIds:
-                          cn.value === 1
-                            ? cn.beforeSms.map(n => n.id)
-                            : undefined,
-                        // 跟进短信ids
-                        followSMSIds:
-                          cn.value === 1
-                            ? cn.afterSms.map(n => n.id)
-                            : undefined,
-                        // 模版id
-                        materialIdList:
-                          cn.value === 2 || cn.value === 3
-                            ? cn.model.map(n => n.id)
-                            : undefined,
-                        smsAttr: cn.model?.[0]?.smsAttr || {},
-                        // 推送类型 1:定时 2:规则
-                        pushType: cn.chooseType,
-                        pushTimeInfo: {
-                          // 定时型的值
-                          schedulePushInfo:
-                            cn.chooseType === 1
-                              ? {
-                                // pushTimeId: cn.pushTimeId,
-                                startDate: cn.dateRange[0],
-                                endDate: cn.dateRange[1],
-                                intervalType: cn.timingDateType,
-                                interval: cn.timingDateValue,
-                                moment: cn.timingTimeValue
-                              }
-                              : undefined,
-                          // 规则型的值
-                          rulePushInfoList:
-                            cn.chooseType === 2
-                              ? cn.ruleValue.map((ruleItem, rule_i) => {
-                                return {
-                                  pushTimeId: ruleItem.pushTimeId,
-                                  delay: ruleItem.date,
-                                  moment: ruleItem.time
-                                }
-                              })
-                              : undefined,
-                          // 触发型的值
-                          triggerInfoList:
-                            cn.chooseType === 3
-                              ? {
-                                // pushTimeId: cn.pushTimeId,
-                                startDate: cn.dateRange[0],
-                                endDate: cn.dateRange[1],
-                                triggerRuleList: cn.trigger.map(
-                                  triggerItem => {
-                                    return {
-                                      triggerId: triggerItem.rule.map(n => {
-                                        return n.id
-                                      }),
-                                      triggerDate: triggerItem.date,
-                                      triggerTime: triggerItem.time
-                                    }
-                                  }
-                                )
-                              }
-                              : undefined
-                        }
-                      }
-                    })
-                  }
-                })
-              }
-            })
-            // console.log(data)
-            // reject()
-            const param = {
-              baseId: this.id,
-              strategySaveCriteriaList: data
-            }
-            savePloy(param)
-              .then(res => {
-                resolve()
-              })
-              .catch(() => {
-                reject()
-              })
+            const data = this.getData()
+            // resolve()
+            // const param = {
+            //   baseId: this.id,
+            //   strategySaveCriteriaList: data
+            // }
+            cb(data, resolve, reject)
+            // savePloy(param)
+            //   .then(res => {
+            //     resolve()
+            //   })
+            //   .catch(() => {
+            //     reject()
+            //   })
           } else {
             // console.log(field)
             let errList = Object.keys(field).map(key => this.getIndex(key))
@@ -1526,8 +1419,10 @@ export default {
           const newTabName = ++this.group[gi].ployTabIndex
           const obj = this.ployTranslate(n, newTabName)
           obj.channel.forEach(n => {
-            // n.dateRange = [this.$parent.baseInfoDetail.startDate, this.$parent.baseInfoDetail.endDate]
-            n.dateRange = []
+            n.dateRange = [
+              this.$parent.baseInfoDetail.startDate,
+              this.$parent.baseInfoDetail.endDate
+            ]
           })
           obj.abstractId = undefined
           this.group[gi].ployTabs.push(obj)
@@ -1540,11 +1435,11 @@ export default {
         // 校验
         this.$nextTick(() => {
           // 校验策略是否为空
-          this.$refs.customerFormRef.validateField(
+          this.$refs.refCustomerForm.validateField(
             `group.${this.groupIndex}.ployTabs`
           )
           // 校验策略名是否重复
-          this.$refs.customerFormRef.validateField(
+          this.$refs.refCustomerForm.validateField(
             `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
           )
         })
@@ -1582,11 +1477,11 @@ export default {
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
       this.$nextTick(() => {
         // 校验策略是否为空
-        this.$refs.customerFormRef.validateField(
+        this.$refs.refCustomerForm.validateField(
           `group.${this.groupIndex}.ployTabs`
         )
         // 校验策略名是否重复
-        this.$refs.customerFormRef.validateField(
+        this.$refs.refCustomerForm.validateField(
           `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
         )
       })
@@ -1626,9 +1521,9 @@ export default {
       // console.log(typeof this.group[gi].totalPercent, typeof percent)
       // this.$nextTick(() => {
       //   // 校验策略是否为空
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs`)
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs`)
       //   // 校验策略名是否重复
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
+      //   this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`)
       // })
 
       // 修改简介
@@ -1656,47 +1551,38 @@ export default {
 
           this.$nextTick(() => {
             // 校验策略是否为空
-            this.$refs.customerFormRef.validateField(
+            this.$refs.refCustomerForm.validateField(
               `group.${this.groupIndex}.ployTabs`
             )
             // 校验策略名是否重复
-            this.$refs.customerFormRef.validateField(
+            this.$refs.refCustomerForm.validateField(
               `group.${this.groupIndex}.ployTabs.${this.ployIndex}.title`
             )
           })
           // 修改简介
           this.$parent.ployDetail.ployCount = this.ployCounts
         })
-        .catch(() => { })
+        .catch(() => {})
     },
     // 选择推送类型
     handleChannelTypeChange(val, ci) {
       this.channelIndex = ci
       // 校验
-      // this.$nextTick(() => {
-      // 1 定时型 2 规则型
-      // 为什么要做这个：切换推送类型tab，之前的校验还在
-      // 之前的做法：切换推送类型就校验被选中类型下的选项
-      // 缺点：1.判断过于复杂 2.有一些没必要的校验
-      // if (val === 1) {
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`)
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`)
-      // } else if (val === 2) {
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`)
-      // } else if (val === 3) {
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`)
-      //   this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
-      // }
-      // 现在的做法：切换tab就全部清除校验
-      const validateArr = [
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`,
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
-        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerId`,
-        // `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`
-      ]
-      this.$refs.customerFormRef.clearValidate(validateArr)
-      // })
+      this.$nextTick(() => {
+        // 1 定时型 2 规则型
+        if (val === 1) {
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.dateRange`
+          )
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.timingDateValue`
+          )
+        } else if (val === 2) {
+          this.$refs.refCustomerForm.validateField(
+            `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
+          )
+        }
+      })
     },
     handlePercentChange() {
       let total = 0
@@ -1706,7 +1592,7 @@ export default {
       // console.log(total)
       this.group[+this.groupName].totalPercent = total
       // 校验
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.totalPercent`
       )
     },
@@ -1730,24 +1616,9 @@ export default {
       // console.log(item.product, row)
       item.product.splice(i, 1)
       // 校验
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
       )
-    },
-    // 刷新产品
-    refreshProducts() {
-      // 通过 `添加推荐产品` 修改产品库的产品内容时刷新推荐产品列表
-      this.group.forEach(group => {
-        group.ployTabs.forEach(ployTabs => {
-          const ids = ployTabs.product.map(p => p.id).join(',')
-          getRecommendedProducts({ ids }).then(res => {
-            // console.log(res)
-            ployTabs.product = res.data.map(product =>
-              Object.assign({}, product, product.extraField)
-            )
-          })
-        })
-      })
     },
     // 选择产品-确定
     submitProduct() {
@@ -1755,9 +1626,8 @@ export default {
       if (val.length) {
         this.showProduct = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].product = val
-        this.refreshProducts()
         // 校验
-        this.$refs.customerFormRef.validateField(
+        this.$refs.refCustomerForm.validateField(
           `group.${this.groupIndex}.ployTabs.${this.ployIndex}.product`
         )
       } else {
@@ -1786,20 +1656,7 @@ export default {
     deleteInterest(item, i) {
       item.interest.splice(i, 1)
       // 校验
-      // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
-    },
-    // 刷新权益
-    refreshInterests() {
-      // 通过 `添加推荐权益` 修改权益库的产品内容时刷新推荐权益列表
-      this.group.forEach(group => {
-        group.ployTabs.forEach(ployTabs => {
-          const ids = ployTabs.interest.map(i => i.id).join(',')
-          getRecommendedInterests({ ids }).then(res => {
-            // console.log(res)
-            ployTabs.interest = res.data
-          })
-        })
-      })
+      // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
     },
     // 选择权益-确定
     submitInterest() {
@@ -1807,9 +1664,8 @@ export default {
       if (val.length) {
         this.showInterest = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].interest = val
-        this.refreshInterests()
         // 校验
-        // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
+        // this.$refs.refCustomerForm.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.interest`)
       } else {
         Message({
           message: '请选择至少一项',
@@ -1832,10 +1688,10 @@ export default {
     },
 
     objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.property === 'groupName' || column.property === 'income') {
-        if (rowIndex === 0) {
+      if (columnIndex === 0) {
+        if (rowIndex % 2 === 0) {
           return {
-            rowspan: row.total,
+            rowspan: 2,
             colspan: 1
           }
         } else {
@@ -1846,7 +1702,6 @@ export default {
         }
       }
     },
-
     // 添加渠道
     handleCommandChannel(index, item) {
       CHANNEL_OPT.forEach((n, i) => {
@@ -1859,14 +1714,14 @@ export default {
         const id = `#channelRef-${this.groupIndex}-${this.ployIndex}-${item
           .channel.length - 1}`
         const top = document.querySelector(id).getBoundingClientRect().top
-        document.querySelector('.content').scrollTop = top
+        document.querySelector('.ploy-scroll-content').scrollTop = top
       })
       // 已选择的渠道禁止选择
       item.channelOpt.forEach((n, i) => {
         n.disabled = item.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`
       )
     },
@@ -1879,54 +1734,18 @@ export default {
         n.disabled = ployItem.channel.some(m => m.value === n.value)
       })
       // 校验
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel`
       )
     },
-    addRuleItem(item, ci) {
+    addRuleItem(item) {
       item.ruleValue.push({
         date: 0,
         time: '00:00'
       })
-      this.channelIndex = ci
-      // 校验
-      this.$refs.customerFormRef.validateField(
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
-      )
     },
-    delRuleItem(item, i, ci) {
+    delRuleItem(item, i) {
       item.ruleValue.splice(i, 1)
-      this.channelIndex = ci
-      // 校验
-      this.$refs.customerFormRef.validateField(
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.ruleValue`
-      )
-    },
-    addTriggerItem(item, ci) {
-      item.trigger.push({
-        rule: [],
-        date: 0,
-        time: '00:00'
-      })
-      this.channelIndex = ci
-      // 校验
-      // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
-    },
-    delTriggerItem(item, i, ci) {
-      item.trigger.splice(i, 1)
-      this.channelIndex = ci
-      // 校验
-      // this.$refs.customerFormRef.validateField(`group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.triggerValue`)
-    },
-    // 删除规则 ？
-    deleteRule(item, ci, i) {
-      item.rule.splice(i, 1)
-      this.channelIndex = ci
-      this.ruleIndex = i
-      // 校验
-      this.$refs.customerFormRef.validateField(
-        `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`
-      )
     },
 
     handleMouseEnter(row, column, cell, event) {
@@ -1937,31 +1756,6 @@ export default {
       // console.log(row)
       row.isHover = false
     },
-    // // 选择产品
-    // addProduct(item) {
-    //   // console.log(item.product)
-    //   // this.$refs.productRef && this.$refs.productRef.resetAll()
-    //   this.showProduct = true
-    //   this.$nextTick(() => {
-    //     this.$refs.productRef.reset()
-    //     this.$refs.productRef.parentRef.setSelection(item.product)
-    //   })
-    // }
-
-    // 触发规则
-    handleAddRule(item, ci, rule_i) {
-      this.showRule = true
-      this.channelIndex = ci
-      this.ruleIndex = rule_i
-      this.$nextTick(() => {
-        this.$refs.ruleRef.reset()
-        this.$refs.ruleRef.parentRef.setSelection(item.trigger[rule_i].rule)
-      })
-      // const arr = [
-      //   `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${rule_i}.id`
-      // ]
-      // this.$refs.customerFormRef.clearValidate(arr)
-    },
     // crm选择话术
     addCRMWords(item, ci) {
       this.showCRMWord = true
@@ -1971,13 +1765,13 @@ export default {
       })
       this.channelIndex = ci
     },
-
     // 短信
     addSmsWords(item, ci) {
       this.showSms = true
       this.$nextTick(() => {
         this.$refs.smsRef.reset()
-        this.$refs.smsRef.parentRef.setSelection(item.model)
+        // this.$refs.smsRef.parentRef.setSelection(item.model)
+        this.$refs.smsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -1986,7 +1780,8 @@ export default {
       this.showBeforeSms = true
       this.$nextTick(() => {
         this.$refs.beforeSmsRef.reset()
-        this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+        // this.$refs.beforeSmsRef.parentRef.setSelection(item.beforeSms)
+        this.$refs.beforeSmsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
@@ -1994,16 +1789,17 @@ export default {
     deleteBeforeSms(item, i) {
       item.beforeSms.splice(i, 1)
     },
-    // crm-跟进短信
+    // crm-跟尾短信
     addAfterSmsWords(item, ci) {
       this.showAfterSms = true
       this.$nextTick(() => {
         this.$refs.afterSmsRef.reset()
-        this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+        // this.$refs.afterSmsRef.parentRef.setSelection(item.afterSms)
+        this.$refs.afterSmsRef.parentRef.setSelection([])
       })
       this.channelIndex = ci
     },
-    // 删除crm-跟进短信
+    // 删除crm-跟尾短信
     deleteAfterSms(item, i) {
       item.afterSms.splice(i, 1)
     },
@@ -2022,7 +1818,7 @@ export default {
       this.channelIndex = ci
 
       // 校验
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
       )
     },
@@ -2043,7 +1839,7 @@ export default {
           })
         )
         // 校验
-        this.$refs.customerFormRef.validateField(
+        this.$refs.refCustomerForm.validateField(
           `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
         )
       } else {
@@ -2057,13 +1853,14 @@ export default {
     // crm-预热短信-确认
     submitBeforeSms() {
       const val = this.$refs.beforeSmsRef.parentRef.getVal()
-
       if (val.length) {
         this.showBeforeSms = false
         this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
           this.channelIndex
         ].beforeSms = val.map(n => {
           return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
             smsAttr: {}
           })
         })
@@ -2075,10 +1872,9 @@ export default {
         })
       }
     },
-    // crm-跟进短信-确认
+    // crm-跟尾短信-确认
     submitAfterSms() {
       const val = this.$refs.afterSmsRef.parentRef.getVal()
-
       if (val.length) {
         if (val.length > 15) {
           Message({
@@ -2090,11 +1886,15 @@ export default {
           this.showAfterSms = false
           this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
             this.channelIndex
-          ].afterSms = val.map(n => {
-            return Object.assign({}, n, {
-              smsAttr: {}
+          ].afterSms.push(
+            ...val.map(n => {
+              return Object.assign({}, n, {
+                _content: n.content,
+                isEdit: false,
+                smsAttr: {}
+              })
             })
-          })
+          )
         }
       } else {
         Message({
@@ -2114,11 +1914,13 @@ export default {
           this.channelIndex
         ].model = val.map(n => {
           return Object.assign({}, n, {
+            _content: n.content,
+            isEdit: false,
             smsAttr: {}
           })
         })
         // 校验
-        this.$refs.customerFormRef.validateField(
+        this.$refs.refCustomerForm.validateField(
           `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.model`
         )
       } else {
@@ -2129,37 +1931,16 @@ export default {
         })
       }
     },
-    submitRule() {
-      const val = this.$refs.ruleRef.parentRef.getVal()
-      console.log(val)
-      if (val.length) {
-        this.showRule = false
-        this.group[this.groupIndex].ployTabs[this.ployIndex].channel[
-          this.channelIndex
-        ].trigger[this.ruleIndex].rule = val.map(n => {
-          return n
-        })
-        // 校验
-        this.$refs.customerFormRef.validateField(
-          `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${this.channelIndex}.trigger.${this.ruleIndex}.rule`
-        )
-      } else {
-        Message({
-          message: '请选择至少一项',
-          type: 'error',
-          duration: 5 * 1000
-        })
-      }
-    },
+
     // 精准内侧
     handleTestSms(channelIndex) {
       this.validateList = []
       // 校验model
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.model`
       )
       // 校验phone
-      this.$refs.customerFormRef.validateField(
+      this.$refs.refCustomerForm.validateField(
         `group.${this.groupIndex}.ployTabs.${this.ployIndex}.channel.${channelIndex}.test`
       )
       const data = {}
@@ -2197,6 +1978,10 @@ export default {
         item.time = parseTime(new Date(), '{h}:{i}')
       }
     },
+    handleContentEdit(scope) {
+      scope.row.content = scope.row._content
+      scope.row.isEdit = false
+    },
     ValidatorModel(rule, value, callback) {
       // console.log('ValidatorModelValue>>>>>>>>>>>>', value)
       if (value.length) {
@@ -2219,7 +2004,7 @@ export default {
     },
     ValidatorTestSelect(rule, value, callback) {
       // console.log(value)
-      if (this.isSubmit) callback()
+      if (this.isUpdate || this.isSubmit) callback()
       // if (!value) callback()
       const b = isPhone(value)
       if (!b) {
@@ -2288,11 +2073,6 @@ export default {
       transform: scale(0.8);
     }
   }
-  .product-card {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-  }
 
   .ploy-card {
     // @include shun-text;
@@ -2302,9 +2082,6 @@ export default {
     // margin-bottom: 0;
     // font-size: 13px;
     // display: flex;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
   }
   .channel-card {
     background: #fefdfc;
@@ -2332,27 +2109,26 @@ export default {
       padding-bottom: 2px;
     }
     .rule-form {
-      margin-bottom: 18px;
-      // width: 470px;
-      .item-box {
+      width: 470px;
+      .rule-item {
+        display: flex;
         position: relative;
-        padding-top: 18px;
-        background: #fff;
-        border: 1px solid #ebeef5;
-        border-radius: 4px;
-        margin-bottom: 18px;
-        .rule-time-item {
-          display: flex;
-          position: relative;
-          .text-text {
-            margin: 0 10px 0 5px;
-            font-size: 16px;
-          }
-          .plus-text {
-            font-size: 18px;
-            margin-right: 10px;
-          }
+        margin-bottom: 10px;
+        // height: 32px;
+        .text-text {
+          margin: 0 10px 0 5px;
+          font-size: 16px;
         }
+        .plus-text {
+          font-size: 18px;
+          margin-right: 10px;
+        }
+        // .el-form-item {
+        //   flex: 1;
+        // }
+        // .target-item-input {
+        //   width: 100%;
+        // }
         .delete {
           color: $red;
           display: inline-block;
@@ -2363,9 +2139,8 @@ export default {
           font-size: 18px;
           line-height: 32px;
           position: absolute;
-          right: 10px;
-          top: 10px;
-          // transform: translateY(-50%);
+          right: -30px;
+          top: 0;
           &:hover {
             opacity: 0.8;
           }
@@ -2385,6 +2160,31 @@ export default {
           color: $blue;
           cursor: pointer;
         }
+      }
+    }
+  }
+  .dialog {
+    .dialog-table {
+      margin: 20px 0;
+
+      &:last-child {
+        margin: 0;
+      }
+
+      .dialog-table-label {
+        margin-bottom: 5px;
+      }
+    }
+  }
+}
+.dialog {
+  .dialog-table {
+    .table-first-col {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      div {
+        flex: 1;
       }
     }
   }
