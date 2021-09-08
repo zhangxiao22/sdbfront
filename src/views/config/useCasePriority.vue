@@ -22,7 +22,7 @@
                        label="每周线索分配上限（CRM）" />
       <el-table-column prop="smsWeekClueLimit"
                        show-overflow-tooltip
-                       label="每周线索分配上限（短信）" />
+                       label="每天线索分配上限（短信）" />
       <el-table-column prop="description"
                        show-overflow-tooltip
                        label="描述" />
