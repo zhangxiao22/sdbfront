@@ -203,7 +203,7 @@ export default {
           ref: 'previewRef'
         }
       ],
-      stepActive: process.env.NODE_ENV === 'development' ? 0 : 0
+      stepActive: process.env.NODE_ENV === 'development' ? 2 : 0
     }
   },
   computed: {
@@ -211,7 +211,7 @@ export default {
       return +this.$route.query.id
     }
   },
-  mounted() {},
+  mounted() { },
   created() {
     bus.$on('setBaseInfoDetail', this.setBaseInfoDetail)
     bus.$on('setGroupDetail', this.setGroupDetail)
