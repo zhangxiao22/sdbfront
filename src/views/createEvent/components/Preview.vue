@@ -8,7 +8,7 @@
         {{ detail.name }}
         <div v-show="detail.trial"
              class="main-info-box">
-          <div class="label">对照组</div>
+          <!-- <div class="label">对照组</div> -->
           <div class="value">{{ detail.control }}%</div>
           <div class="value">{{ detail.sample.label }}</div>
         </div>
@@ -445,8 +445,8 @@ export default {
                         TIMING_OPT.forEach(b => {
                           if (
                             b.value ===
-                              x.pushTimeInfo.scheduelPushInfoVO.intervalType
-                                .value
+                            x.pushTimeInfo.scheduelPushInfoVO.intervalType
+                              .value
                           ) {
                             b.children.forEach(c => {
                               if (c.value === a) {
