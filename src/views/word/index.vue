@@ -83,14 +83,14 @@
                       :description="DESCRIPTION.uploadSome"
                       button-name="增量更新"
                       @afterUploadSuccess="resetAll" />
-        <!-- <el-button class="button"
+        <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
                    plain
                    @click="handleAddList">
           新增话术
         </el-button>
-        <el-tooltip class="item"
+        <!-- <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有话术"
                     placement="top">
@@ -170,9 +170,9 @@
       </template>
     </shun-table>
     <el-dialog :title="isEdit ? '编辑话术' : '新增话术'"
-               :before-close="cancelAddList"
-               :append-to-body="true"
-               :visible.sync="showDialog">
+               append-to-body
+               :visible.sync="showDialog"
+               @closed="handleDialogClosed">
       <el-form ref="regFormRef"
                label-width="110px"
                :model="addInfo">
@@ -271,7 +271,8 @@ import {
   getAttributionUseCaseEnumList,
   getProductCategoryList,
   delScript,
-  updateScript
+  updateScript,
+  addScript
 } from '@/api/api'
 import { downloadFile, DESCRIPTION } from '@/utils'
 import UploadButton from '@/components/UploadButton'
@@ -371,11 +372,6 @@ export default {
       return this.$refs.table
     },
     getData() {
-      // const data = {}
-      // data.content = this.addInfo.content
-      // data.category = this.addInfo.category
-      // data.desc = this.addInfo.desc
-      // return data
       return {
         id: this.addInfo.id,
         productFirstCategoryList: this.addInfo.productList,
@@ -407,50 +403,48 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
+    handleDialogClosed() {
+      this.$refs['regFormRef'].resetFields()
+      this.addInfo = {}
+    },
     handleEdit(row) {
-      console.log('row', row)
       this.showDialog = true
       this.isEdit = true
-      this.$nextTick(() => {
-        this.addInfo = {
-          id: row.id,
-          productList: row.productFirstCategoryList.map(n => n.value),
-          useCaseList: row.attributionUseCaseList.map(n => n.value),
-          category: row.category.value,
-          content: row.content,
-          description: row.description,
-          product: row.products
-        }
-      })
+      this.addInfo = {
+        id: row.id,
+        productList: row.productFirstCategoryList?.map(n => n.value),
+        useCaseList: row.attributionUseCaseList?.map(n => n.value),
+        category: row.category.value,
+        content: row.content,
+        description: row.description,
+        product: row.products
+      }
     },
     handleAddList() {
-      this.$refs['regFormRef'] && this.$refs['regFormRef'].resetFields()
+      this.isEdit = false
       this.showDialog = true
     },
     cancelAddList() {
-      // this.$refs['regFormRef'].resetFields()
       this.showDialog = false
     },
     ensureAddList() {
       this.$refs['regFormRef'].validate(valid => {
         if (valid) {
+          const ajax = this.isEdit ? updateScript : addScript
           this.buttonLoading = true
-          updateScript(this.getData)
-            .then(res => {
-              this.buttonLoading = false
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.showDialog = false
-                this.resetAll()
-              }
-            })
-            .catch(() => {
-              this.buttonLoading = false
-            })
+          ajax(this.getData).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList(1)
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
