@@ -13,6 +13,18 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
+        <el-tooltip class="item"
+                    effect="dark"
+                    :content="DESCRIPTION.add"
+                    placement="top">
+          <el-button class="button"
+                     icon="el-icon-plus"
+                     type="primary"
+                     plain
+                     @click="handleAdd">
+            新增
+          </el-button>
+        </el-tooltip>
         <UploadButton button-name="增量更新"
                       class="button"
                       :description="DESCRIPTION.uploadSome"
@@ -262,10 +274,10 @@ export default {
     },
 
     // 新增单个产品
-    // handleAdd() {
-    //   this.addInfo.id = ''
-    //   this.showDialog = true
-    // },
+    handleAdd() {
+      this.addInfo.id = ''
+      this.showDialog = true
+    },
     // 编辑单个产品
     handleEdit(row) {
       this.showDialog = true
