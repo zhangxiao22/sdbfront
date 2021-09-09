@@ -159,6 +159,15 @@ export function updateInterests(data) {
   })
 }
 
+// 新增权益
+export function addInterest(data) {
+  return request({
+    url: '/interests/insert',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 短信 ************************************************************/
 // 获取短信库
 export function getSmsList(data) {
