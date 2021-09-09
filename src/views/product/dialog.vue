@@ -3,7 +3,9 @@
     <el-dialog :title="isEdit?'编辑产品':'新增产品'"
                :visible="visible"
                append-to-body
-               @close="handleClose">
+               @open="handleOpen"
+               @close="handleClose"
+               @closed="handleClosed">
       <el-form ref="formRef"
                label-width="170px"
                :model="addInfo">
@@ -104,7 +106,7 @@
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="validateAndNext">确 定</el-button>
+                   @click="ensure">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -171,33 +173,43 @@ export default {
         this.allParams = res.data
       })
     },
+    handleOpen() {
+      this.render(this.dialogData)
+    },
     handleClose() {
       this.$emit('update:visible', false)
-      this.$refs['formRef'].resetFields()
-      this.addInfo.id = ''
+    },
+    handleClosed() {
+      this.addInfo = {}
+      this.$refs['formRef'].clearValidate()
+      // this.$refs['formRef'].resetFields()
+      this.isEdit = false
+      // this.addInfo.id = ''
       this.productParams = []
     },
-    edit(row) {
-      this.isEdit = true
-      this.addInfo.id = row.id
-      setTimeout(() => {
-        // 基础字段
-        this.addInfo.name = row.name
-        this.addInfo.category = [
-          row.firstCategory.value,
-          row.secondCategory.value
-        ].filter(n => n)
-        this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(
-          n => n.value
-        )
-        this.addInfo.description = row.description
-        this.changeCategory([row.firstCategory.value])
-        this.productParams.forEach(n => {
-          this.addInfo = Object.assign({}, this.addInfo, {
-            [n.fieldName]: row[n.fieldName]
+    render(row) {
+      if (row.id) {
+        this.$nextTick(() => {
+          this.isEdit = true
+          this.addInfo.id = row.id
+          // 基础字段
+          this.addInfo.name = row.name
+          this.addInfo.category = [
+            row.firstCategory.value,
+            row.secondCategory.value
+          ].filter(n => n)
+          this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(
+            n => n.value
+          )
+          this.addInfo.description = row.description
+          this.changeCategory([row.firstCategory.value])
+          this.productParams.forEach(n => {
+            this.addInfo = Object.assign({}, this.addInfo, {
+              [n.fieldName]: row[n.fieldName]
+            })
           })
         })
-      })
+      }
     },
     changeCategory(val) {
       this.productParams =
@@ -216,12 +228,12 @@ export default {
       })
       return data
     },
-    validateAndNext() {
+    ensure() {
       this.$refs['formRef'].validate(valid => {
         if (valid) {
           // this.buttonLoading = true
           const data = this.getData()
-          console.log(this.isEdit)
+          console.log(data)
           const fn = this.isEdit ? updateProduct : addProduct
           console.log(fn)
           // fn(data).then(res => {
