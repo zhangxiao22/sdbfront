@@ -8,7 +8,7 @@
         {{ detail.name }}
         <div v-show="detail.trial"
              class="main-info-box">
-          <div class="label">对照组</div>
+          <!-- <div class="label">对照组</div> -->
           <div class="value">{{ detail.control }}%</div>
           <div class="value">{{ detail.sample.label }}</div>
         </div>
