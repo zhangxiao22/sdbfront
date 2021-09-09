@@ -516,8 +516,7 @@ export const DESCRIPTION = {
   uploadAll: '上传并覆盖原数据',
   downloadSome: '下载已选项',
   downloadSearch: '全部下载当前搜索结果',
-  delSome: '删除已选项',
-  add: '新增数据'
+  delSome: '删除已选项'
 }
 
 /**

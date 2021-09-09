@@ -65,39 +65,35 @@
                         :key="pi"
                         :prop="`${pItem.fieldName}`"
                         :label="`${pItem.desc}：`">
-            <template v-if="pItem.formatType==='input'">
-              <el-input v-model="addInfo[pItem.fieldName]"
-                        class="form-item"
-                        style="width: 90%" />
-            </template>
+            <el-input v-if="pItem.formatType==='input'"
+                      v-model="addInfo[pItem.fieldName]"
+                      class="form-item"
+                      style="width: 90%" />
             <!-------------------------- rate -------------------------->
-            <template v-if="pItem.formatType==='rate'">
-              <el-input-number v-model="addInfo[pItem.fieldName]"
-                               :precision="2"
-                               :step="0.1"
-                               controls-position="right"
-                               style="width: 90%" />
-            </template>
+            <el-input-number v-if="pItem.formatType==='rate'"
+                             v-model="addInfo[pItem.fieldName]"
+                             :precision="2"
+                             :step="0.1"
+                             controls-position="right"
+                             style="width: 90%" />
             <!-------------------------- date -------------------------->
-            <template v-if="pItem.formatType==='date'">
-              <el-date-picker v-model="addInfo[pItem.fieldName]"
-                              value-format="yyyy-MM-dd"
-                              type="date"
-                              class="form-item"
-                              placeholder="选择日期" />
-            </template>
+            <el-date-picker v-if="pItem.formatType==='date'"
+                            v-model="addInfo[pItem.fieldName]"
+                            value-format="yyyy-MM-dd"
+                            type="date"
+                            class="form-item"
+                            placeholder="选择日期" />
             <!-------------------------- select -------------------------->
-            <template v-if="pItem.formatType==='select'">
-              <el-select v-model="addInfo[pItem.fieldName]"
-                         class="form-item"
-                         placeholder="请选择"
-                         style="width: 90%">
-                <el-option v-for="(item,i) of pItem.formatContent"
-                           :key="i"
-                           :label="item"
-                           :value="item" />
-              </el-select>
-            </template>
+            <el-select v-if="pItem.formatType==='select'"
+                       v-model="addInfo[pItem.fieldName]"
+                       class="form-item"
+                       placeholder="请选择"
+                       style="width: 90%">
+              <el-option v-for="(item,i) of pItem.formatContent"
+                         :key="i"
+                         :label="item"
+                         :value="item" />
+            </el-select>
           </el-form-item>
         </div>
       </el-form>
@@ -180,11 +176,9 @@ export default {
       this.$emit('update:visible', false)
     },
     handleClosed() {
-      this.addInfo = {}
-      this.$refs['formRef'].clearValidate()
-      // this.$refs['formRef'].resetFields()
+      this.$refs['formRef'].resetFields()
       this.isEdit = false
-      // this.addInfo.id = ''
+      this.addInfo = {}
       this.productParams = []
     },
     render(row) {
@@ -229,26 +223,26 @@ export default {
       return data
     },
     ensure() {
+      // this.$refs['formRef'].resetFields()
+      // return
       this.$refs['formRef'].validate(valid => {
         if (valid) {
           // this.buttonLoading = true
           const data = this.getData()
-          console.log(data)
           const fn = this.isEdit ? updateProduct : addProduct
-          console.log(fn)
-          // fn(data).then(res => {
-          //   if (res.code === 200) {
-          //     this.$message({
-          //       message: '保存成功',
-          //       type: 'success',
-          //       duration: '3000'
-          //     })
-          //     this.$emit('update:visible', false)
-          //     this.$emit('afterEnsure')
-          //   }
-          // }).finally(() => {
-          //   this.buttonLoading = false
-          // })
+          fn(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.$emit('update:visible', false)
+              this.$emit('afterEnsure')
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     }

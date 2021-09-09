@@ -13,23 +13,19 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-        <el-tooltip class="item"
-                    effect="dark"
-                    :content="DESCRIPTION.add"
-                    placement="top">
-          <el-button class="button"
-                     icon="el-icon-plus"
-                     type="primary"
-                     plain
-                     @click="handleAdd">
-            新增
-          </el-button>
-        </el-tooltip>
+
         <UploadButton button-name="增量更新"
                       class="button"
                       :description="DESCRIPTION.uploadSome"
                       :upload-method="uploadProductFile"
                       @afterUploadSuccess="resetAll" />
+        <el-button class="button"
+                   icon="el-icon-plus"
+                   type="primary"
+                   plain
+                   @click="handleAdd">
+          新增产品
+        </el-button>
         <el-tooltip class="item"
                     effect="dark"
                     :content="DESCRIPTION.downloadSome"

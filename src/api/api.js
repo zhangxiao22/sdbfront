@@ -81,7 +81,7 @@ export function updateProduct(data) {
 // 新增产品
 export function addProduct(data) {
   return request({
-    url: '/resource/addProduct',
+    url: '/retrospect/insert',
     method: 'post',
     data
   })
