@@ -81,13 +81,13 @@
                       :description="DESCRIPTION.uploadSome"
                       button-name="增量更新"
                       @afterUploadSuccess="resetAll" />
-        <!-- <el-button class="button"
+        <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
                    plain
                    @click="handleAdd">
           新增权益
-        </el-button> -->
+        </el-button>
         <!-- <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有权益"
@@ -168,7 +168,7 @@
     <el-dialog :title="isEdit?'编辑':'新增'"
                :visible.sync="showDialog"
                append-to-body
-               @close="handleCloseDialog">
+               @closed="handleClosedDialog">
       <el-form ref="formRef"
                label-width="110px"
                :model="addInfo">
@@ -272,7 +272,8 @@ import {
   getAttributionUseCaseEnumList,
   getProductCategoryList,
   delInterests,
-  updateInterests
+  updateInterests,
+  addInterest
 } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 import { DESCRIPTION } from '@/utils'
@@ -309,13 +310,14 @@ export default {
       useCaseListOpt: [],
       productListOpt: [],
       addInfo: {
+        id: '',
         name: '',
         attributionUseCaseList: '',
         productFirstCategoryList: '',
         validateDate: [],
         content: '',
-        description: '',
-        parameterDescription: ''
+        description: ''
+        // parameterDescription: ''
       },
       searchForm: {},
       // typeOpt: [],
@@ -403,33 +405,28 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-    resetDialog() {
-      this.$refs['formRef'].resetFields()
-      this.addInfo.id = ''
-    },
     handleAdd() {
       this.isEdit = false
       this.showDialog = true
     },
     handleEdit(row) {
-      this.showDialog = true
       this.isEdit = true
-      this.$nextTick(() => {
-        this.addInfo = {
-          id: row.id,
-          name: row.name,
-          content: row.content,
-          description: row.description,
-          attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
-          productFirstCategoryList: row.productFirstCategoryList?.map(
-            n => n.value
-          ),
-          validateDate: [row.validateStartDate || '', row.validateEndDate || '']
-        }
-      })
+      this.showDialog = true
+      this.addInfo = {
+        id: row.id,
+        name: row.name,
+        content: row.content,
+        description: row.description,
+        attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
+        productFirstCategoryList: row.productFirstCategoryList?.map(
+          n => n.value
+        ),
+        validateDate: [row.validateStartDate || '', row.validateEndDate || '']
+      }
     },
-    handleCloseDialog() {
-      this.resetDialog()
+    handleClosedDialog() {
+      this.$refs['formRef'].resetFields()
+      this.addInfo = {}
     },
     cancelAddList() {
       this.showDialog = false
@@ -437,37 +434,31 @@ export default {
     ensureAddList() {
       this.$refs['formRef'].validate(valid => {
         if (valid) {
-          this.buttonLoading = true
-          let ajax
-          const data = {}
-          if (this.isEdit) {
-            data.id = this.addInfo.id
-            ajax = updateInterests
-          } else {
-            // ajax = updateInterests
+          // this.buttonLoading = true
+          const ajax = this.isEdit ? updateInterests : addInterest
+          const data = {
+            id: this.addInfo.id,
+            name: this.addInfo.name,
+            content: this.addInfo.content,
+            description: this.addInfo.description,
+            attributionUseCaseList: this.addInfo.attributionUseCaseList,
+            productFirstCategoryList: this.addInfo.productFirstCategoryList,
+            validateStartDate: this.addInfo.validateDate?.[0],
+            validateEndDate: this.addInfo.validateDate?.[1]
           }
-          data.name = this.addInfo.name
-          data.content = this.addInfo.content
-          data.description = this.addInfo.description
-          data.attributionUseCaseList = this.addInfo.attributionUseCaseList
-          data.productFirstCategoryList = this.addInfo.productFirstCategoryList
-          data.validateStartDate = this.addInfo.validateDate?.[0]
-          data.validateEndDate = this.addInfo.validateDate?.[1]
-          ajax(data)
-            .then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.showDialog = false
-                this.getList(1)
-              }
-            })
-            .finally(() => {
-              this.buttonLoading = false
-            })
+          ajax(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList(1)
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
