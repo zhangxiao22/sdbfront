@@ -165,7 +165,7 @@
       </template>
     </shun-table>
     <!-- dialog -->
-    <el-dialog :title="isEdit?'编辑':'新增'"
+    <el-dialog :title="isEdit?'编辑权益':'新增权益'"
                :visible.sync="showDialog"
                append-to-body
                @closed="handleClosedDialog">
@@ -185,7 +185,7 @@
 
         <el-form-item label="权益用例："
                       :rules="[{
-                        required: true, message: '请选择权益用例', trigger: 'change'
+                        required: true, message: '请选择权益用例', trigger: 'blur'
                       }]"
                       prop="attributionUseCaseList">
           <el-select v-model="addInfo.attributionUseCaseList"
@@ -201,7 +201,7 @@
         </el-form-item>
         <el-form-item label="归属产品："
                       :rules="[{
-                        required: true, message: '请选择归属产品', trigger: 'change'
+                        required: true, message: '请选择归属产品', trigger: 'blur'
                       }]"
                       prop="productFirstCategoryList">
           <el-select v-model="addInfo.productFirstCategoryList"
