@@ -134,7 +134,7 @@ export const CHANNEL_OPT = [
   //   value: 6,
   //   label: '智能客服',
   //   disabled: false,
-  //   icon: 'kf3',
+  //   icon: 'ai-customer',
   //   iconColor: '#f56c6c',
   //   chooseType: 1,
   //   type: [{
