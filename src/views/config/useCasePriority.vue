@@ -16,13 +16,14 @@
                        label="原优先级" />
       <el-table-column prop="name"
                        show-overflow-tooltip
+                       width="140"
                        label="用例名称" />
       <el-table-column prop="crmWeekClueLimit"
                        show-overflow-tooltip
                        label="每周线索分配上限（CRM）" />
       <el-table-column prop="smsWeekClueLimit"
                        show-overflow-tooltip
-                       label="每天线索分配上限（短信）" />
+                       label="每日线索分配上限（短信）" />
       <el-table-column prop="description"
                        show-overflow-tooltip
                        label="描述" />
@@ -74,7 +75,7 @@
                            @blur="handleBlurCRM" />
         </el-form-item>
         <el-form-item required
-                      label="每天线索分配上限（短信）："
+                      label="每日线索分配上限（短信）："
                       prop="assignUpper_sms">
           <el-input-number v-model="clueInfo.assignUpper_sms"
                            style="width:200px;"

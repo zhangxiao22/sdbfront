@@ -34,9 +34,9 @@
         <el-form-item label="客户数量：">
           {{ customerCount | formatMoney }}
         </el-form-item>
-        <el-form-item label="对照组人数：">
+        <!-- <el-form-item label="对照组人数：">
           {{ compareCount | formatMoney }}
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item>
           <div slot="label">
             <!-- <Info content="可选择多个维度" /> -->

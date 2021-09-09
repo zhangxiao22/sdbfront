@@ -216,12 +216,12 @@ export default {
         {
           prop: 'crmWeekClueLimit',
           label: 'CRM每周线索分发数',
-          width: 100
+          minWidth: 200
         },
         {
           prop: 'smsWeekClueLimit',
-          label: '短信每周线索分发数',
-          width: 100
+          label: '短信每日线索分发数',
+          minWidth: 200
         },
         {
           prop: 'caseTarget',

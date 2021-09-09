@@ -35,7 +35,7 @@
             <!-- 对照组 && 抽样方式 -->
             <div v-show="baseInfoDetail.trial"
                  class="shun-sibling-box item">
-              <div class="value">{{ baseInfoDetail.control }}%</div>
+              <div class="value">对照组 {{ baseInfoDetail.control }}%</div>
               <div class="value">{{ baseInfoDetail.sampleValue }}</div>
             </div>
           </div>
@@ -52,12 +52,12 @@
                     type="warning">
               总计 {{ groupDetail.peopleNum | formatMoney }} 人
             </el-tag>
-            <el-tag v-show="groupDetail.comparePeopleNum"
+            <!-- <el-tag v-show="groupDetail.comparePeopleNum"
                     class="item"
                     size="mini"
                     type="warning">
               对照组 {{ groupDetail.comparePeopleNum | formatMoney }} 人
-            </el-tag>
+            </el-tag> -->
             <div v-show="groupDetail.groupNum"
                  class="shun-sibling-box item">
               <div class="value">{{ groupDetail.groupNum }} 个客群</div>
