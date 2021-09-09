@@ -81,7 +81,7 @@ export function updateProduct(data) {
 // 新增产品
 export function addProduct(data) {
   return request({
-    url: '/retrospect/insert',
+    url: '/resource/insert',
     method: 'post',
     data
   })
@@ -126,6 +126,15 @@ export function delScript(params) {
 export function updateScript(data) {
   return request({
     url: '/script/update',
+    method: 'post',
+    data
+  })
+}
+
+// 话术新增
+export function addScript(data) {
+  return request({
+    url: '/script/insert',
     method: 'post',
     data
   })
