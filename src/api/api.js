@@ -231,6 +231,15 @@ export function getStrategyChangeListByEventId(params) {
   })
 }
 
+// 短信新增
+export function addSms(data) {
+  return request({
+    url: 'material/insert',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 策略 ************************************************************/
 // 获取策略库
 export function getStragetyList(params) {
