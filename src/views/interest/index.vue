@@ -216,7 +216,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="生效日期："
-                      prop="dateRange">
+                      prop="validateDate">
           <el-date-picker v-model="addInfo.validateDate"
                           value-format="yyyy-MM-dd"
                           style="width:300px;"
@@ -235,7 +235,7 @@
                     placeholder="请输入权益内容" />
         </el-form-item>
         <el-form-item label="权益说明："
-                      prop="desc">
+                      prop="description">
           <el-input v-model.trim="addInfo.description"
                     style="width:90%;"
                     type="textarea"
@@ -412,21 +412,24 @@ export default {
     handleEdit(row) {
       this.isEdit = true
       this.showDialog = true
-      this.addInfo = {
-        id: row.id,
-        name: row.name,
-        content: row.content,
-        description: row.description,
-        attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
-        productFirstCategoryList: row.productFirstCategoryList?.map(
-          n => n.value
-        ),
-        validateDate: [row.validateStartDate || '', row.validateEndDate || '']
-      }
+      this.$nextTick(() => {
+        this.addInfo = {
+          id: row.id,
+          name: row.name,
+          content: row.content,
+          description: row.description,
+          attributionUseCaseList: row.attributionUseCaseList?.map(n => n.value),
+          productFirstCategoryList: row.productFirstCategoryList?.map(
+            n => n.value
+          ),
+          validateDate: [row.validateStartDate || '', row.validateEndDate || '']
+        }
+      })
     },
     handleClosedDialog() {
       this.$refs['formRef'].resetFields()
-      this.addInfo = {}
+      this.addInfo.id = ''
+      this.isEdit = false
     },
     cancelAddList() {
       this.showDialog = false

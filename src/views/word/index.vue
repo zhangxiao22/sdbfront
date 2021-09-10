@@ -232,7 +232,7 @@
                     placeholder="请输入话术内容" />
         </el-form-item>
         <el-form-item label="话术说明："
-                      prop="desc">
+                      prop="description">
           <el-input v-model.trim="addInfo.description"
                     style="width:90%;"
                     type="textarea"
@@ -405,20 +405,23 @@ export default {
     },
     handleDialogClosed() {
       this.$refs['regFormRef'].resetFields()
-      this.addInfo = {}
+      this.addInfo.id = ''
+      this.isEdit = false
     },
     handleEdit(row) {
-      this.showDialog = true
       this.isEdit = true
-      this.addInfo = {
-        id: row.id,
-        productList: row.productFirstCategoryList?.map(n => n.value),
-        useCaseList: row.attributionUseCaseList?.map(n => n.value),
-        category: row.category.value,
-        content: row.content,
-        description: row.description,
-        product: row.products
-      }
+      this.showDialog = true
+      this.$nextTick(() => {
+        this.addInfo = {
+          id: row.id,
+          productList: row.productFirstCategoryList?.map(n => n.value),
+          useCaseList: row.attributionUseCaseList?.map(n => n.value),
+          category: row.category.value,
+          content: row.content,
+          description: row.description,
+          product: row.products
+        }
+      })
     },
     handleAddList() {
       this.isEdit = false
