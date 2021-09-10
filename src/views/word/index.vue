@@ -78,11 +78,6 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <UploadButton :upload-method="uploadScriptFile"
-                      class="button"
-                      :description="DESCRIPTION.uploadSome"
-                      button-name="增量更新"
-                      @afterUploadSuccess="resetAll" />
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -90,6 +85,12 @@
                    @click="handleAddList">
           新增话术
         </el-button>
+        <UploadButton :upload-method="uploadScriptFile"
+                      class="button"
+                      :description="DESCRIPTION.uploadSome"
+                      button-name="增量更新"
+                      @afterUploadSuccess="resetAll" />
+
         <!-- <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有话术"

@@ -12,11 +12,6 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
-        <UploadButton button-name="增量更新"
-                      class="button"
-                      :description="DESCRIPTION.uploadSome"
-                      :upload-method="uploadSmsFile"
-                      @afterUploadSuccess="resetAll" />
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -24,6 +19,12 @@
                    @click="handleAdd">
           新增短信
         </el-button>
+        <UploadButton button-name="增量更新"
+                      class="button"
+                      :description="DESCRIPTION.uploadSome"
+                      :upload-method="uploadSmsFile"
+                      @afterUploadSuccess="resetAll" />
+
         <el-tooltip class="item"
                     effect="dark"
                     :content="DESCRIPTION.delSome"

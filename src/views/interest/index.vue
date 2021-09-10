@@ -76,11 +76,6 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <UploadButton :upload-method="uploadInterestFile"
-                      class="button"
-                      :description="DESCRIPTION.uploadSome"
-                      button-name="增量更新"
-                      @afterUploadSuccess="resetAll" />
         <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
@@ -88,6 +83,12 @@
                    @click="handleAdd">
           新增权益
         </el-button>
+        <UploadButton :upload-method="uploadInterestFile"
+                      class="button"
+                      :description="DESCRIPTION.uploadSome"
+                      button-name="增量更新"
+                      @afterUploadSuccess="resetAll" />
+
         <!-- <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有权益"
