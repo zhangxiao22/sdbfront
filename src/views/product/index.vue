@@ -195,8 +195,6 @@ export default {
       dialogData: {},
       // 增量更新
       uploadProductFile,
-      // 是否编辑
-      isEdit: false,
       // 全量上传
       loading: false,
       buttonLoading: false,
