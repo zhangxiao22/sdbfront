@@ -81,7 +81,7 @@ export function updateProduct(data) {
 // 新增产品
 export function addProduct(data) {
   return request({
-    url: '/retrospect/insert',
+    url: '/resource/insert',
     method: 'post',
     data
   })
@@ -131,6 +131,15 @@ export function updateScript(data) {
   })
 }
 
+// 话术新增
+export function addScript(data) {
+  return request({
+    url: '/script/insert',
+    method: 'post',
+    data
+  })
+}
+
 /** ************************************************ 权益 ************************************************************/
 // 获取权益库
 export function getInterestList(data) {
@@ -163,6 +172,15 @@ export function delInterests(params) {
 export function updateInterests(data) {
   return request({
     url: '/interests/updateData',
+    method: 'post',
+    data
+  })
+}
+
+// 新增权益
+export function addInterest(data) {
+  return request({
+    url: '/interests/insert',
     method: 'post',
     data
   })
@@ -210,6 +228,15 @@ export function getStrategyChangeListByEventId(params) {
     url: 'strategy/selectUpdate',
     method: 'get',
     params
+  })
+}
+
+// 短信新增
+export function addSms(data) {
+  return request({
+    url: 'material/insert',
+    method: 'post',
+    data
   })
 }
 

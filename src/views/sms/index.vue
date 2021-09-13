@@ -12,11 +12,19 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
+        <el-button class="button"
+                   type="primary"
+                   icon="el-icon-plus"
+                   plain
+                   @click="handleAdd">
+          新增短信
+        </el-button>
         <UploadButton button-name="增量更新"
                       class="button"
                       :description="DESCRIPTION.uploadSome"
                       :upload-method="uploadSmsFile"
                       @afterUploadSuccess="resetAll" />
+
         <el-tooltip class="item"
                     effect="dark"
                     :content="DESCRIPTION.delSome"
@@ -72,10 +80,10 @@
       </template>
     </shun-table>
     <!-- dialog -->
-    <el-dialog title="编辑短信"
+    <el-dialog :title="isEdit ? '编辑短信' : '新增短信'"
                :visible.sync="showDialog"
                append-to-body
-               @close="handleClose">
+               @closed="handleClosed">
       <el-form ref="formRef"
                label-width="110px"
                :model="addInfo">
@@ -91,7 +99,8 @@
                     resize="none"
                     placeholder="请输入短信内容" />
         </el-form-item>
-        <el-form-item label="短信描述：">
+        <el-form-item label="短信描述："
+                      prop="description">
           <el-input v-model.trim="addInfo.description"
                     style="width:90%;"
                     type="textarea"
@@ -105,7 +114,7 @@
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="ensureEdit">确 定</el-button>
+                   @click="ensure">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -113,7 +122,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { getSmsList, uploadSmsFile, delSms, editSms } from '@/api/api'
+import { getSmsList, uploadSmsFile, delSms, editSms, addSms } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 import { DESCRIPTION } from '@/utils'
 
@@ -141,6 +150,7 @@ export default {
   data() {
     return {
       showDialog: false,
+      isEdit: false,
       buttonLoading: false,
       DESCRIPTION,
       uploadSmsFile,
@@ -210,36 +220,40 @@ export default {
   methods: {
     handleClose() {
       this.showDialog = false
-      this.resetDialog()
     },
-    ensureEdit() {
+    handleClosed() {
+      this.$refs.formRef.resetFields()
+      this.addInfo.id = ''
+      this.isEdit = false
+    },
+    ensure() {
+      console.log(this.addInfo)
       this.$refs.formRef.validate(valid => {
         if (valid) {
-          // console.log(this.addInfo)
+          const fn = this.isEdit ? editSms : addSms
           this.buttonLoading = true
-          editSms(this.addInfo)
-            .then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.handleClose()
-                this.search()
-              }
-            })
-            .finally(() => {
-              this.buttonLoading = false
-            })
+          fn(this.addInfo).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.handleClose()
+              this.search()
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
-    resetDialog() {
-      this.$refs['formRef'].resetFields()
-      this.addInfo.id = ''
+    handleAdd() {
+      this.isEdit = false
+      this.showDialog = true
     },
     handleEdit(row) {
+      this.isEdit = true
       this.showDialog = true
       this.$nextTick(() => {
         this.addInfo = {

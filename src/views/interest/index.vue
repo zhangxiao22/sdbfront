@@ -76,18 +76,19 @@
         </el-form>
       </template>
       <template v-slot:main-buttons>
-        <UploadButton :upload-method="uploadInterestFile"
-                      class="button"
-                      :description="DESCRIPTION.uploadSome"
-                      button-name="增量更新"
-                      @afterUploadSuccess="resetAll" />
-        <!-- <el-button class="button"
+        <el-button class="button"
                    type="primary"
                    icon="el-icon-plus"
                    plain
                    @click="handleAdd">
           新增权益
-        </el-button> -->
+        </el-button>
+        <UploadButton :upload-method="uploadInterestFile"
+                      class="button"
+                      :description="DESCRIPTION.uploadSome"
+                      button-name="增量更新"
+                      @afterUploadSuccess="resetAll" />
+
         <!-- <el-tooltip class="item"
                     effect="dark"
                     content="全部下载所有权益"
@@ -165,10 +166,10 @@
       </template>
     </shun-table>
     <!-- dialog -->
-    <el-dialog :title="isEdit?'编辑':'新增'"
+    <el-dialog :title="isEdit?'编辑权益':'新增权益'"
                :visible.sync="showDialog"
                append-to-body
-               @close="handleCloseDialog">
+               @closed="handleClosedDialog">
       <el-form ref="formRef"
                label-width="110px"
                :model="addInfo">
@@ -185,7 +186,7 @@
 
         <el-form-item label="权益用例："
                       :rules="[{
-                        required: true, message: '请选择权益用例', trigger: 'change'
+                        required: true, message: '请选择权益用例', trigger: 'blur'
                       }]"
                       prop="attributionUseCaseList">
           <el-select v-model="addInfo.attributionUseCaseList"
@@ -201,7 +202,7 @@
         </el-form-item>
         <el-form-item label="归属产品："
                       :rules="[{
-                        required: true, message: '请选择归属产品', trigger: 'change'
+                        required: true, message: '请选择归属产品', trigger: 'blur'
                       }]"
                       prop="productFirstCategoryList">
           <el-select v-model="addInfo.productFirstCategoryList"
@@ -216,7 +217,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="生效日期："
-                      prop="dateRange">
+                      prop="validateDate">
           <el-date-picker v-model="addInfo.validateDate"
                           value-format="yyyy-MM-dd"
                           style="width:300px;"
@@ -235,7 +236,7 @@
                     placeholder="请输入权益内容" />
         </el-form-item>
         <el-form-item label="权益说明："
-                      prop="desc">
+                      prop="description">
           <el-input v-model.trim="addInfo.description"
                     style="width:90%;"
                     type="textarea"
@@ -272,7 +273,8 @@ import {
   getAttributionUseCaseEnumList,
   getProductCategoryList,
   delInterests,
-  updateInterests
+  updateInterests,
+  addInterest
 } from '@/api/api'
 import UploadButton from '@/components/UploadButton'
 import { DESCRIPTION } from '@/utils'
@@ -309,13 +311,14 @@ export default {
       useCaseListOpt: [],
       productListOpt: [],
       addInfo: {
+        id: '',
         name: '',
         attributionUseCaseList: '',
         productFirstCategoryList: '',
         validateDate: [],
         content: '',
-        description: '',
-        parameterDescription: ''
+        description: ''
+        // parameterDescription: ''
       },
       searchForm: {},
       // typeOpt: [],
@@ -403,17 +406,13 @@ export default {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
     },
-    resetDialog() {
-      this.$refs['formRef'].resetFields()
-      this.addInfo.id = ''
-    },
     handleAdd() {
       this.isEdit = false
       this.showDialog = true
     },
     handleEdit(row) {
-      this.showDialog = true
       this.isEdit = true
+      this.showDialog = true
       this.$nextTick(() => {
         this.addInfo = {
           id: row.id,
@@ -428,8 +427,10 @@ export default {
         }
       })
     },
-    handleCloseDialog() {
-      this.resetDialog()
+    handleClosedDialog() {
+      this.$refs['formRef'].resetFields()
+      this.addInfo.id = ''
+      this.isEdit = false
     },
     cancelAddList() {
       this.showDialog = false
@@ -437,37 +438,31 @@ export default {
     ensureAddList() {
       this.$refs['formRef'].validate(valid => {
         if (valid) {
-          this.buttonLoading = true
-          let ajax
-          const data = {}
-          if (this.isEdit) {
-            data.id = this.addInfo.id
-            ajax = updateInterests
-          } else {
-            // ajax = updateInterests
+          // this.buttonLoading = true
+          const ajax = this.isEdit ? updateInterests : addInterest
+          const data = {
+            id: this.addInfo.id,
+            name: this.addInfo.name,
+            content: this.addInfo.content,
+            description: this.addInfo.description,
+            attributionUseCaseList: this.addInfo.attributionUseCaseList,
+            productFirstCategoryList: this.addInfo.productFirstCategoryList,
+            validateStartDate: this.addInfo.validateDate?.[0],
+            validateEndDate: this.addInfo.validateDate?.[1]
           }
-          data.name = this.addInfo.name
-          data.content = this.addInfo.content
-          data.description = this.addInfo.description
-          data.attributionUseCaseList = this.addInfo.attributionUseCaseList
-          data.productFirstCategoryList = this.addInfo.productFirstCategoryList
-          data.validateStartDate = this.addInfo.validateDate?.[0]
-          data.validateEndDate = this.addInfo.validateDate?.[1]
-          ajax(data)
-            .then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.showDialog = false
-                this.getList(1)
-              }
-            })
-            .finally(() => {
-              this.buttonLoading = false
-            })
+          ajax(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.showDialog = false
+              this.getList(1)
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     },
