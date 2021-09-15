@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="crm与ods反馈数据的查询列表"
+                title="线索执行记录查询"
                 :loading="loading"
                 :page-size.sync="pageSize"
                 :is-card="false"
