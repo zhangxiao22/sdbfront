@@ -1382,3 +1382,75 @@ export function ruleDetail(params) {
   })
 }
 
+/** ************************************************ 督导看板 ************************************************************/
+// 督导总览顶栏
+export function inspectorOverview(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectChannelAndUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 督导总览列表数据
+export function getInspectorOverviewList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectChannelAndUseCasePage',
+    method: 'post',
+    data
+  })
+}
+
+// 获取批次下拉选项
+export function getBatchList(params) {
+  return request({
+    url: '/supervisorSpectaculars/selectPC',
+    method: 'get',
+    params
+  })
+}
+
+// CRM渠道各支行执行情况列表数据
+export function getExecuteStatusList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectSubBranchExecutiveCondition',
+    method: 'post',
+    data
+  })
+}
+
+// 网点综合排名
+export function getOutletRankingList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectNetworkRanking',
+    method: 'post',
+    data
+  })
+}
+
+// 人员综合排名
+export function getPeopleRankingList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectMarketingPersonnelRanking',
+    method: 'post',
+    data
+  })
+}
+
+// 各支行负债类小计用例关键指标趋势列表
+export function getUseCaseKeyIndicatorList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectDebtsTendency',
+    method: 'post',
+    data
+  })
+}
+
+// 各支行成功购买率
+export function getOutletPurchaseRateList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchPurchaseRate',
+    method: 'post',
+    data
+  })
+}
