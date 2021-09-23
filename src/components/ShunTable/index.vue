@@ -48,6 +48,18 @@
       </el-tabs>
       <el-table ref="table"
                 :data="tableData"
+                v-bind="$attrs"
+                class="table"
+                size="medium"
+                :border="!isCard"
+                style="width: 100%"
+                v-on="$listeners"
+                @row-click="handleRowClick"
+                @select="handleSelect"
+                @select-all="handleSelectAll"
+                @selection-change="selectionChange"
+                @filter-change="handleFilterChange">
+        <!-- <el-table ref="table"
                 class="table"
                 size="medium"
                 :border="!isCard"
@@ -58,7 +70,7 @@
                 @select="handleSelect"
                 @select-all="handleSelectAll"
                 @selection-change="selectionChange"
-                @filter-change="handleFilterChange">
+                @filter-change="handleFilterChange"> -->
         <!-- index -->
         <el-table-column v-if="showIndex"
                          type="index"
@@ -93,13 +105,13 @@
       <!-- {{ selection.map(n => n.id) }} -->
       <!-- {{ currentPage }}{{ pageSize }} -->
       <el-pagination v-if="showPagination"
+                     v-bind="$attrs"
                      :current-page="currentPage"
                      background
                      style="padding:15px;text-align:right;"
                      :page-sizes="[5, 10, 20, 30]"
                      :page-size="pageSize"
                      layout="total, sizes, prev, pager, next, jumper"
-                     :total="total"
                      @size-change="handleSizeChange"
                      @current-change="handleCurrentChange" />
     </div>
@@ -120,18 +132,6 @@ export default {
       type: Boolean,
       default: true
     },
-    // 是否显示斑马条纹
-    stripe: {
-      type: Boolean,
-      default: true
-    },
-    // 行样式
-    rowStyle: {
-      type: [Function, Object],
-      default() {
-        return {}
-      }
-    },
     // 是否使用翻页
     showPagination: {
       type: Boolean,
@@ -147,11 +147,11 @@ export default {
       type: Number,
       default: 1
     },
-    // 总条数
-    total: {
-      type: Number,
-      default: 0
-    },
+    // // 总条数
+    // total: {
+    //   type: Number,
+    //   default: 0
+    // },
     // 表格是否加载
     loading: {
       type: Boolean,
