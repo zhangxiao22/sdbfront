@@ -13,6 +13,13 @@
                 :table-column-list="tableColumnList"
                 @render="getList">
       <template v-slot:main-buttons>
+        <el-button class="button"
+                   icon="el-icon-plus"
+                   type="primary"
+                   plain
+                   @click="handleAdd">
+          新增产品
+        </el-button>
         <UploadButton button-name="增量更新"
                       class="button"
                       :description="DESCRIPTION.uploadSome"
@@ -136,6 +143,7 @@
       </template>
     </shun-table>
     <Dialog ref="dialog"
+            :dialog-data="dialogData"
             :visible.sync="showDialog"
             :use-case-list-opt="useCaseListOpt"
             :category-opt="categoryOpt"
@@ -184,23 +192,16 @@ export default {
     return {
       DESCRIPTION,
       showDialog: false,
+      dialogData: {},
       // 增量更新
       uploadProductFile,
-      // 是否编辑
-      isEdit: false,
       // 全量上传
       loading: false,
       buttonLoading: false,
       currentPage: 1,
       pageSize: 10,
       total: 0,
-      addInfo: {
-        id: '',
-        name: '',
-        category: [],
-        attributionUseCaseList: [],
-        description: ''
-      },
+
       dataSetParams:
         [
           {
@@ -262,14 +263,15 @@ export default {
     },
 
     // 新增单个产品
-    // handleAdd() {
-    //   this.addInfo.id = ''
-    //   this.showDialog = true
-    // },
+    handleAdd() {
+      this.showDialog = true
+      this.dialogData = {}
+    },
     // 编辑单个产品
     handleEdit(row) {
       this.showDialog = true
-      this.$refs['dialog'].edit(row)
+      this.dialogData = row
+      // this.$refs['dialog'].edit(row)
     },
     // 下载模版
     downloadModel() {

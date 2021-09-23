@@ -440,7 +440,7 @@ export default {
                 return Object.assign({}, item, x, {
                   timingDateValue:
                     x.pushType.value === 1
-                      ? [x.pushTimeInfo.scheduelPushInfoVO.interval].map(a => {
+                      ? x.pushTimeInfo.scheduelPushInfoVO.interval && [x.pushTimeInfo.scheduelPushInfoVO.interval].map(a => {
                         let timerTime
                         TIMING_OPT.forEach(b => {
                           if (
