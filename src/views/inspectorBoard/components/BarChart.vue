@@ -31,7 +31,7 @@ export default {
         container: this.id,
         autoFit: true,
         height: 300,
-        appendPadding: [0, 20, 20, 0]
+        appendPadding: [0, 50, 50, 0]
       })
       this.chart.data(this.data)
       this.chart.scale('value', {

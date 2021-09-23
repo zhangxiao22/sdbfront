@@ -6,7 +6,7 @@
 import { Chart } from '@antv/g2'
 
 export default {
-  name: 'DoubleAreaChart',
+  name: 'TripleAreaChart',
   props: {
     id: {
       type: String,
@@ -19,12 +19,12 @@ export default {
     categoryList: {
       type: Array,
       required: true,
-      validator: n => n.length === 2
+      validator: n => n.length === 3
     },
     colorList: {
       type: Array,
       required: true,
-      validator: n => n.length === 2
+      validator: n => n.length === 3
     }
   },
   watch: {
@@ -50,10 +50,11 @@ export default {
       this.chart.scale('value1', {
         nice: true
       })
-      this.chart.scale('value2', {
-        nice: true
-      })
       this.chart.axis('value2', {
+        grid: null,
+        label: null
+      })
+      this.chart.axis('value3', {
         grid: null,
         label: {
           formatter: n => `${Math.floor(n * 100)}%`
@@ -62,45 +63,44 @@ export default {
       this.chart.legend({
         position: 'right',
         custom: true,
-        items: [{
-          value: 'value1',
-          name: this.categoryList[0],
+        items: this.categoryList.map((n, i) => ({
+          value: `value${i + 1}`,
+          name: this.categoryList[i],
           marker: {
             symbol: 'square',
             style: {
-              fill: this.colorList[0],
+              fill: this.colorList[i],
               r: 5
             }
           }
-        }, {
-          value: 'value2',
-          name: this.categoryList[1],
-          marker: {
-            symbol: 'square',
-            style: {
-              fill: this.colorList[1],
-              r: 5
-            }
-          }
-        }]
+        }))
       })
       this.chart.tooltip({
         shared: true,
         showCrosshairs: true,
         customItems: items => {
-          return items.map(item => ({
-            ...item,
-            value: item.name === 'value2' ? `${Math.floor(+item.value * 100)}%` : item.value,
-            name: this.categoryList[item.name === 'value1' ? 0 : 1]
-          }))
+          return items.map((n, i) => {
+            const item = {
+              ...n,
+              name: this.categoryList[i]
+            }
+            return i === items.length - 1
+              ? {
+                ...item,
+                value: `${Math.floor(+n.value * 100)}%`
+              }
+              : item
+          })
         }
       })
-      this.chart.area().position('label*value1').color(this.colorList[0]).shape('smooth')
-      this.chart.area().position('label*value2').color(this.colorList[1]).shape('smooth')
-      this.chart.line().position('label*value1').color(this.colorList[0]).shape('smooth')
-      this.chart.line().position('label*value2').color(this.colorList[1]).shape('smooth')
-      this.chart.point().position('label*value1').color(this.colorList[0])
-      this.chart.point().position('label*value2').color(this.colorList[1])
+      this.categoryList.forEach((n, i) => {
+        const p = `label*value${i + 1}`
+        const c = this.colorList[i]
+        const s = 'smooth'
+        this.chart.area().position(p).color(c).shape(s)
+        this.chart.line().position(p).color(c).shape(s)
+        this.chart.point().position(p).color(c)
+      })
       this.chart.removeInteraction('legend-filter')
       this.chart.render()
     }
