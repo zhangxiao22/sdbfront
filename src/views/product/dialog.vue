@@ -3,7 +3,9 @@
     <el-dialog :title="isEdit?'编辑产品':'新增产品'"
                :visible="visible"
                append-to-body
-               @close="handleClose">
+               @open="handleOpen"
+               @close="handleClose"
+               @closed="handleClosed">
       <el-form ref="formRef"
                label-width="170px"
                :model="addInfo">
@@ -16,7 +18,8 @@
           <el-input v-model.trim="addInfo.name"
                     show-word-limit
                     class="form-item"
-                    maxlength="50" />
+                    maxlength="50"
+                    style="width: 90%" />
         </el-form-item>
         <el-form-item label="产品类型："
                       :rules="[{
@@ -28,6 +31,7 @@
                        :options="categoryOpt"
                        :props="{ expandTrigger: 'hover' }"
                        clearable
+                       style="width: 90%"
                        @change="changeCategory" />
         </el-form-item>
         <el-form-item label="产品用例："
@@ -36,7 +40,8 @@
                      multiple
                      class="form-item"
                      clearable
-                     placeholder="请选择">
+                     placeholder="请选择"
+                     style="width: 90%">
             <el-option v-for="item in useCaseListOpt"
                        :key="item.value"
                        :label="item.label"
@@ -50,61 +55,59 @@
                     type="textarea"
                     :rows="3"
                     resize="none"
-                    placeholder="请输入产品说明" />
+                    placeholder="请输入产品说明"
+                    style="width: 90%" />
         </el-form-item>
         <!-- 额外信息 -->
-        <div class="extra-items">
-          <!-------------------------- input -------------------------->
-          <el-form-item v-for="(pItem,pi) of productParams"
-                        :key="pi"
-                        :prop="`${pItem.fieldName}`"
-                        :label="`${pItem.desc}：`">
-            <template v-if="pItem.formatType==='input'">
-              <el-input v-model="addInfo[pItem.fieldName]"
-                        class="form-item" />
-            </template>
-            <!-------------------------- rate -------------------------->
-            <template v-if="pItem.formatType==='rate'">
-              <el-input-number v-model="addInfo[pItem.fieldName]"
-                               :precision="2"
-                               :step="0.1"
-                               controls-position="right" />
-            </template>
-            <!-------------------------- date -------------------------->
-            <template v-if="pItem.formatType==='date'">
-              <el-date-picker v-model="addInfo[pItem.fieldName]"
-                              value-format="yyyy-MM-dd"
-                              type="date"
-                              class="form-item"
-                              placeholder="选择日期" />
-            </template>
-            <!-------------------------- select -------------------------->
-            <template v-if="pItem.formatType==='select'">
-              <el-select v-model="addInfo[pItem.fieldName]"
-                         class="form-item"
-                         placeholder="请选择">
-                <el-option v-for="(item,i) of pItem.formatContent"
-                           :key="i"
-                           :label="item"
-                           :value="item" />
-              </el-select>
-            </template>
-          </el-form-item>
-        </div>
+        <!-------------------------- input -------------------------->
+        <el-form-item v-for="(pItem,pi) of productParams"
+                      :key="pi"
+                      :prop="pItem.fieldName"
+                      :label="`${pItem.desc}：`">
+          <el-input v-if="pItem.formatType==='input'"
+                    v-model="addInfo[pItem.fieldName]"
+                    class="form-item"
+                    style="width: 90%" />
+          <!-------------------------- rate -------------------------->
+          <el-input-number v-if="pItem.formatType==='rate'"
+                           v-model="addInfo[pItem.fieldName]"
+                           :precision="2"
+                           :step="0.1"
+                           controls-position="right"
+                           style="width: 90%" />
+          <!-------------------------- date -------------------------->
+          <el-date-picker v-if="pItem.formatType==='date'"
+                          v-model="addInfo[pItem.fieldName]"
+                          value-format="yyyy-MM-dd"
+                          type="date"
+                          class="form-item"
+                          placeholder="选择日期" />
+          <!-------------------------- select -------------------------->
+          <el-select v-if="pItem.formatType==='select'"
+                     v-model="addInfo[pItem.fieldName]"
+                     class="form-item"
+                     placeholder="请选择"
+                     style="width: 90%">
+            <el-option v-for="(item,i) of pItem.formatContent"
+                       :key="i"
+                       :label="item"
+                       :value="item" />
+          </el-select>
+        </el-form-item>
       </el-form>
       <div slot="footer"
            class="dialog-footer">
         <el-button @click="handleClose">取 消</el-button>
         <el-button type="primary"
                    :loading="buttonLoading"
-                   @click="ensureEdit">确 定</el-button>
+                   @click="ensure">确 定</el-button>
       </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { updateProduct, getProductExtraParams } from '@/api/api'
+import { updateProduct, getProductExtraParams, addProduct } from '@/api/api'
 
 export default {
   props: {
@@ -164,66 +167,78 @@ export default {
         this.allParams = res.data
       })
     },
+    handleOpen() {
+      this.render(this.dialogData)
+    },
     handleClose() {
       this.$emit('update:visible', false)
+    },
+    handleClosed() {
       this.$refs['formRef'].resetFields()
       this.addInfo.id = ''
+      this.productParams = []
+      this.isEdit = false
     },
-    edit(row) {
-      this.isEdit = true
-      this.addInfo.id = row.id
-      setTimeout(() => {
-        // 基础字段
-        this.addInfo.name = row.name
-        this.addInfo.category = [
-          row.firstCategory.value,
-          row.secondCategory.value
-        ].filter(n => n)
-        this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(
-          n => n.value
-        )
-        this.addInfo.description = row.description
+    render(row) {
+      if (row.id) {
         this.changeCategory([row.firstCategory.value])
-        this.productParams.forEach(n => {
-          this.addInfo = Object.assign({}, this.addInfo, {
-            [n.fieldName]: row[n.fieldName]
+        this.isEdit = true
+        this.$nextTick(() => {
+          this.addInfo.id = row.id
+          // 基础字段
+          this.addInfo.name = row.name
+          this.addInfo.category = [
+            row.firstCategory.value,
+            row.secondCategory.value
+          ].filter(n => n)
+          this.addInfo.attributionUseCaseList = row.attributionUseCaseList?.map(
+            n => n.value
+          )
+          this.addInfo.description = row.description
+          this.productParams.forEach(n => {
+            this.addInfo = Object.assign({}, this.addInfo, {
+              [n.fieldName]: row[n.fieldName]
+            })
           })
         })
-      })
+      }
     },
     changeCategory(val) {
       this.productParams =
         this.allParams.find(n => n.type === val?.[0])?.array || []
     },
-    ensureEdit() {
+    getData() {
+      const data = {
+        id: this.addInfo.id,
+        name: this.addInfo.name,
+        category: this.addInfo.category,
+        attributionUseCaseList: this.addInfo.attributionUseCaseList,
+        description: this.addInfo.description
+      }
+      this.productParams.forEach(n => {
+        data[n.fieldName] = this.addInfo[n.fieldName]
+      })
+      return data
+    },
+    ensure() {
       this.$refs['formRef'].validate(valid => {
         if (valid) {
-          const data = {
-            id: this.addInfo.id,
-            name: this.addInfo.name,
-            category: this.addInfo.category,
-            attributionUseCaseList: this.addInfo.attributionUseCaseList,
-            description: this.addInfo.description
-          }
-          this.productParams.forEach(n => {
-            data[n.fieldName] = this.addInfo[n.fieldName]
-          })
           this.buttonLoading = true
-          updateProduct(data)
-            .then(res => {
-              if (res.code === 200) {
-                this.$message({
-                  message: '保存成功',
-                  type: 'success',
-                  duration: '3000'
-                })
-                this.$emit('update:visible', false)
-                this.$emit('afterEnsure')
-              }
-            })
-            .finally(() => {
-              this.buttonLoading = false
-            })
+          const data = this.getData()
+          const fn = this.isEdit ? updateProduct : addProduct
+          fn(data).then(res => {
+            if (res.code === 200) {
+              this.$message({
+                message: '保存成功',
+                type: 'success',
+                duration: '3000'
+              })
+              this.$emit('update:visible', false)
+              this.$emit('afterEnsure')
+            }
+          }).finally(() => {
+            this.buttonLoading = false
+          })
         }
       })
     }
