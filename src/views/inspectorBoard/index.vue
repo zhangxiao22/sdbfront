@@ -14,7 +14,8 @@
             {{ item.name }}
           </div>
           <div class="value">
-            {{ item.value | formatMoney }}
+            <template v-if="i === 2">{{ percentFormatter(null, null, item.value).slice(0, -1) }}</template>
+            <template v-else>{{ item.value | formatMoney }}</template>
             <div class="unit">{{ item.unit }}</div>
           </div>
         </div>
@@ -30,18 +31,8 @@
                :table-data="overview.tableData"
                :table-column-list="overview.tableColumnList"
                class="block"
-               @render="overviewGetList">
-      <template v-slot:main-buttons>
-        <!-- <el-button type="success"
-                   icon="el-icon-document-checked"
-                   @click="generate">
-          生成详细督导数据
-        </el-button> -->
-        <!-- <el-button type="primary"
-                   @click="download">
-          导出
-        </el-button> -->
-      </template>
+               @render="overviewGetList"
+               @sort-change="handleOverviewSortChange">
       <template v-slot:filter>
         <el-form ref="overviewFilterRef"
                  :inline="true"
@@ -66,6 +57,8 @@
             <el-select v-model.trim="overview.filterForm.event"
                        placeholder="请选择营销事件"
                        clearable
+                       multiple
+                       collapse-tags
                        style="width: 200px">
               <el-option v-for="item of eventList"
                          :key="item.value"
@@ -73,13 +66,13 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="渠道："
-                        prop="channel">
-            <el-select v-model.trim="overview.filterForm.channel"
-                       placeholder="请选择渠道"
+          <el-form-item label="周数："
+                        prop="week">
+            <el-select v-model.trim="overview.filterForm.week"
+                       placeholder="请选择周数"
                        clearable
                        style="width: 200px">
-              <el-option v-for="item of channelList"
+              <el-option v-for="item of weekList"
                          :key="item.value"
                          :label="item.label"
                          :value="item.value" />
@@ -99,18 +92,6 @@
                          :value="item" />
             </el-select>
           </el-form-item>
-          <el-form-item label="用例类型："
-                        prop="type">
-            <el-select v-model.trim="overview.filterForm.category"
-                       placeholder="请选择用例类型"
-                       clearable
-                       style="width: 200px">
-              <el-option v-for="item of categoryList"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item>
           <el-form-item label="日期范围："
                         prop="dateRange">
             <el-date-picker v-model="overview.filterForm.dateRange"
@@ -120,6 +101,30 @@
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
                             style="width: 300px" />
+          </el-form-item>
+          <el-form-item label="渠道："
+                        prop="channel">
+            <el-select v-model.trim="overview.filterForm.channel"
+                       placeholder="请选择渠道"
+                       clearable
+                       style="width: 200px">
+              <el-option v-for="item of channelList"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="用例类型："
+                        prop="category">
+            <el-select v-model.trim="overview.filterForm.category"
+                       placeholder="请选择用例类型"
+                       clearable
+                       style="width: 200px">
+              <el-option v-for="item of categoryList"
+                         :key="item.value"
+                         :label="item.label"
+                         :value="item.value" />
+            </el-select>
           </el-form-item>
           <el-form-item class="filter-item-end">
             <el-button type="primary"
@@ -163,10 +168,14 @@
           <el-table ref="executeStatusRef"
                     v-loading="executeStatus.loading"
                     :data="executeStatus.tableData">
-            <el-table-column v-for="({prop, label}, i) of executeStatus.tableColumnList"
+            <el-table-column type="index"
+                             label="实际购买率排名"
+                             :width="120" />
+            <el-table-column v-for="({prop, label, formatter}, i) of executeStatus.tableColumnList"
                              :key="i"
                              :prop="prop"
-                             :label="label" />
+                             :label="label"
+                             :formatter="formatter" />
           </el-table>
         </div>
       </div>
@@ -188,10 +197,11 @@
                       :data="ranking.org.tableData">
               <el-table-column type="index"
                                label="排名" />
-              <el-table-column v-for="({prop, label}, i) of ranking.org.tableColumnList"
+              <el-table-column v-for="({prop, label, formatter}, i) of ranking.org.tableColumnList"
                                :key="i"
                                :prop="prop"
-                               :label="label" />
+                               :label="label"
+                               :formatter="formatter" />
             </el-table>
           </div>
         </div>
@@ -211,10 +221,11 @@
                       :data="ranking.people.tableData">
               <el-table-column type="index"
                                label="排名" />
-              <el-table-column v-for="({prop, label}, i) of ranking.people.tableColumnList"
+              <el-table-column v-for="({prop, label, formatter}, i) of ranking.people.tableColumnList"
                                :key="i"
                                :prop="prop"
-                               :label="label" />
+                               :label="label"
+                               :formatter="formatter" />
             </el-table>
           </div>
         </div>
@@ -291,7 +302,7 @@
             <div class="chart-title">各支行意向购买客户成功占比</div>
             <DoubleAreaChart id="chart-3"
                              :data="keyIndicator.chart3Data"
-                             :data-title-list="[null, null]" />
+                             :data-title-list="['意向购买客户', '已成功占比']" />
           </div>
           <div class="item">
             <div class="chart-title">各支行预约网点见面成功占比</div>
@@ -301,16 +312,14 @@
           </div>
           <div class="item">
             <div class="chart-title">意向购买产品成功占比与比上批情况</div>
-            <BarChart id="chart-5"
-                      :data="keyIndicator.chart5Data"
-                      :data-title-list="[null, null]" />
+            <DoubleBarChart id="chart-5"
+                            :data="keyIndicator.chart5Data" />
           </div>
-          <div class="item">
+          <!-- <div class="item">
             <div class="chart-title">预约网点见面成功占比与比上批情况</div>
-            <BarChart id="chart-6"
-                      :data="keyIndicator.chart6Data"
-                      :data-title-list="[null, null]" />
-          </div>
+            <DoubleBarChart id="chart-6"
+                            :data="keyIndicator.chart6Data" />
+          </div> -->
         </div>
       </div>
       <!-- 用例各支行督导看板 -->
@@ -382,7 +391,7 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { BarChart, DoubleAreaChart } from './components'
+import { BarChart, DoubleAreaChart, DoubleBarChart } from './components'
 import {
   getBatchList,
   getAllUseCase,
@@ -393,7 +402,9 @@ import {
   getOutletRankingList,
   getPeopleRankingList,
   getUseCaseKeyIndicatorList,
-  getOutletPurchaseRateList
+  getOutletPurchaseRateList,
+  getIntentToBuySuccessRate,
+  getIntentToBuySuccessRateAndLastBatchComparison
 } from '@/api/api'
 
 export default {
@@ -401,7 +412,8 @@ export default {
   components: {
     ShunTable,
     BarChart,
-    DoubleAreaChart
+    DoubleAreaChart,
+    DoubleBarChart
   },
   data() {
     return {
@@ -411,45 +423,57 @@ export default {
       baseInfoLoading: false,
       baseInfo: [{
         name: '线索数量',
-        icon: 'lock',
-        value: 0
-        // unit: '条'
+        icon: '',
+        value: 0,
+        unit: '条'
+      }, {
+        name: '销售成功数量',
+        icon: '',
+        value: 0,
+        unit: '元'
       }, {
         name: '成功购买率',
-        icon: 'lock',
-        value: 0
-        // unit: '%'
+        icon: '',
+        value: 0,
+        unit: '%'
       }, {
-        name: '销售金额',
-        icon: 'lock',
-        value: 0
-        // unit: '万元'
+        name: '全体客户AUM增量',
+        icon: '',
+        value: 0,
+        unit: '元'
+      }, {
+        name: '全体客户户均AUM增量',
+        icon: '',
+        value: 0,
+        unit: '元'
       }, {
         name: '成功客户AUM增量',
-        icon: 'lock',
-        value: 0
-        // unit: '万元'
+        icon: '',
+        value: 0,
+        unit: '元'
       }, {
-        name: '户均AUM增量',
-        icon: 'lock',
-        value: 0
-        // unit: '万元'
+        name: '成功客户户均AUM增量',
+        icon: '',
+        value: 0,
+        unit: '元'
       }],
       // 总览
       overview: {
         loading: false,
         filterForm: {
           useCase: [],
-          category: '',
-          event: '',
-          channel: '',
+          event: [],
+          week: '',
           batch: [],
-          dateRange: []
+          dateRange: [],
+          channel: '',
+          category: ''
         },
         searchForm: {},
         currentPage: 1,
         pageSize: 10,
         total: 0,
+        tableSort: {},
         tableData: [],
         tableColumnList: [{
           prop: 'useCaseName',
@@ -459,22 +483,38 @@ export default {
           label: '渠道'
         }, {
           prop: 'category',
-          label: '用例类型'
+          label: '类型'
         }, {
           prop: 'clueAmount',
           label: '线索数量'
         }, {
+          prop: 'successfulSalesCount',
+          label: '销售成功数量(元)'
+        }, {
           prop: 'purchaseRate',
-          label: '购买成功率(%)'
+          label: '购买成功率(%)',
+          formatter: this.percentFormatter,
+          sortable: 'custom'
         }, {
           prop: 'salesAmount',
-          label: '销售金额(万元)'
+          label: '销售金额(元)',
+          sortable: 'custom'
         }, {
           prop: 'aumIncrease',
-          label: '成功客户AUM增量(万元)'
+          label: '全体客户AUM增量(元)',
+          sortable: 'custom'
         }, {
           prop: 'aumAverage',
-          label: '户均AUM增量(万元)'
+          label: '全体客户户均AUM增量(元)',
+          sortable: 'custom'
+        }, {
+          prop: 'purchaseAumIncrease',
+          label: '成功客户AUM增量(元)',
+          sortable: 'custom'
+        }, {
+          prop: 'purchaseAumAverage',
+          label: '成功客户户均AUM增量(元)',
+          sortable: 'custom'
         }]
       },
       // 执行情况
@@ -490,28 +530,36 @@ export default {
           label: '线索数量'
         }, {
           prop: 'execRate',
-          label: '执行率(%)'
+          label: '执行率(%)',
+          formatter: this.percentFormatter
         }, {
-          prop: 'contactSuccessRate',
-          label: '联络成功率(%)'
+          prop: 'successfulContactRate',
+          label: '联络成功率(%)',
+          formatter: this.percentFormatter
         }, {
           prop: 'purchaseRate',
-          label: '实际购买率(%)'
-        }, {
-          prop: 'purchaseRateRank',
-          label: '实际购买率排名'
+          label: '实际购买率(%)',
+          formatter: this.percentFormatter
         }, {
           prop: 'lastBatchComparison',
-          label: '比上批(%)'
-        }, {
-          prop: 'salesAmount',
-          label: '销售金额(万元)'
+          label: '比上批(%)',
+          formatter: this.percentFormatter
         }, {
           prop: 'aumIncrease',
-          label: '成功客户AUM增量(万元)'
+          label: '全体客户AUM增量(元)',
+          sortable: true
         }, {
           prop: 'aumAverage',
-          label: '户均AUM增量(万元)'
+          label: '全体客户户均AUM增量(元)',
+          sortable: true
+        }, {
+          prop: 'purchaseAumIncrease',
+          label: '成功客户AUM增量(元)',
+          sortable: true
+        }, {
+          prop: 'purchaseAumAverage',
+          label: '户均AUM增量(元)',
+          sortable: true
         }]
       },
       // 综合排名
@@ -529,7 +577,8 @@ export default {
             label: '执行网点'
           }, {
             prop: 'purchaseRate',
-            label: '实际购买率(%)'
+            label: '实际购买率(%)',
+            formatter: this.percentFormatter
           }, {
             prop: 'salesAmount',
             label: '销售成功数量'
@@ -551,7 +600,8 @@ export default {
             label: '执行人岗位'
           }, {
             prop: 'purchaseRate',
-            label: '实际购买率(%)'
+            label: '实际购买率(%)',
+            formatter: this.percentFormatter
           }, {
             prop: 'salesAmount',
             label: '销售成功数量'
@@ -628,7 +678,12 @@ export default {
       // 批次选项
       batchList: [],
       // 用例类型选项
-      categoryList: []
+      categoryList: [],
+      // 周数选项
+      weekList: [{
+        label: '两周',
+        value: 1
+      }]
     }
   },
   computed: {
@@ -655,6 +710,8 @@ export default {
     }
   },
   created() {
+    // 顶栏
+    this.getBaseInfoData()
     this.overviewSearch()
     this.getBatchOpt()
     this.getUseCaseOpt()
@@ -663,6 +720,34 @@ export default {
   mounted() {
   },
   methods: {
+    // 顶栏数据
+    getBaseInfoData() {
+      this.baseInfoLoading = true
+      const data = {
+        useCaseIds: [],
+        event: [],
+        channel: '',
+        category: '',
+        dateRange: [],
+        pcList: [],
+        week: ''
+      }
+      inspectorOverview(data).then(res => {
+        const { data } = res
+        this.baseInfo[0].value = data.count
+        this.baseInfo[1].value = data.purchasedNum
+        this.baseInfo[2].value = data.purchaseRate
+        this.baseInfo[3].value = data.aumUp
+        this.baseInfo[4].value = data.aumAverage
+        this.baseInfo[5].value = data.purchaseAumUp
+        this.baseInfo[6].value = data.purchaseAumAverage
+      }).finally(() => {
+        this.baseInfoLoading = false
+      })
+    },
+    percentFormatter(row, column, cellValue, index) {
+      return `${Number(cellValue * 100).toFixed(2)}%`
+    },
     // 生成详细督导数据
     generate() {
       // const selection = this.$refs.overviewRef.getVal()
@@ -700,6 +785,7 @@ export default {
     // 总览的搜索
     overviewSearch() {
       this.overview.searchForm = JSON.parse(JSON.stringify(this.overview.filterForm))
+      this.overviewClearSort()
       this.overviewGetList(1)
     },
     // 总览的重置
@@ -722,40 +808,43 @@ export default {
         category: this.overview.searchForm.category,
         useCaseIds: this.overview.searchForm.useCase,
         dateRange: this.overview.searchForm.dateRange,
-        pcList: this.overview.searchForm.batch
+        pcList: this.overview.searchForm.batch,
+        week: this.overview.searchForm.week,
+        sort: this.overview.tableSort
       }
       this.overview.filterForm = JSON.parse(JSON.stringify(this.overview.searchForm))
-      // 顶栏数据
-      this.baseInfoLoading = true
-      inspectorOverview(data).then(res => {
-        const { data } = res
-        this.baseInfo[0].value = data.count
-        this.baseInfo[1].value = data.purchaseRate
-        this.baseInfo[2].value = data.purchasedAmount
-        this.baseInfo[3].value = data.aumUp
-        this.baseInfo[4].value = data.aumAverage
-      }).finally(() => {
-        this.baseInfoLoading = false
-      })
       // 督导总览列表数据
       this.overview.loading = true
       getInspectorOverviewList(data).then(res => {
         // console.log(res.data.resultList.map(n => n.useCaseId))
         this.overview.tableData = res.data.resultList.map(n => ({
-          useCaseId: n.useCaseId,
+          // useCaseId: n.useCaseId,
           useCaseName: n.useCaseName,
-          clueAmount: n.count,
           channel: n.channelName,
           category: n.type,
+          clueAmount: n.count,
+          successfulSalesCount: n.purchasedNum,
           purchaseRate: n.purchaseRate,
           salesAmount: n.purchasedAmount,
-          aumIncrease: n.aumUp,
-          aumAverage: n.aumAverage
+          aumIncreaseAll: n.aumUp,
+          aumAverageAll: n.aumAverage,
+          aumIncrease: n.purchaseAumUp,
+          aumAverage: n.purchaseAumAverage
         }))
         this.overview.total = res.pagination.totalItemCount
       }).finally(() => {
         this.overview.loading = false
       })
+    },
+    // 总览 表头 列排序
+    handleOverviewSortChange({ column, prop, order }) {
+      this.overview.tableSort = { [prop]: order }
+      this.overviewGetList()
+    },
+    // 总览清楚排序
+    overviewClearSort() {
+      this.$refs.overviewRef && this.$refs.overviewRef.clearSort()
+      this.overview.tableSort = {}
     },
     // 执行情况的搜索
     executeStatusGetList() {
@@ -771,13 +860,13 @@ export default {
           org: n.subBranchName,
           clueAmount: n.count,
           execRate: n.executeRate,
-          contactSuccessRate: n.contactedRate,
+          successfulContactRate: n.contactedRate,
           purchaseRate: n.purchasedRate,
-          purchaseRateRank: n.purchasedRateOrderly,
           lastBatchComparison: n.comparison,
-          salesAmount: n.purchasedAmount,
-          aumIncrease: n.aumUp,
-          aumAverage: n.aumAverage
+          aumIncreaseAll: n.aumUp,
+          aumAverageAll: n.aumAverage,
+          aumIncrease: n.purchaseAumUp,
+          aumAverage: n.purchaseAumAverage
         }))
       }).finally(() => {
         this.executeStatus.loading = false
@@ -853,7 +942,6 @@ export default {
       const data = {
         useCaseIds: this.keyIndicator.filterForm.useCase,
         dateRange: this.keyIndicator.filterForm.dateRange,
-        category: this.overview.searchForm.category,
         pcList: this.keyIndicator.filterForm.batch
       }
       for (let i = 1; i <= 6; i++) {
@@ -865,7 +953,7 @@ export default {
       this.setKeyIndicatorFilter()
       this.keyIndicatorSearch()
     },
-    // 图1数据 分组柱状图
+    // 图1数据 分组柱状图 各支行负债类小计用例关键指标趋势表现
     getChart1Data(data) {
       this.keyIndicator.chart1Loading = true
       getUseCaseKeyIndicatorList(data).then(res => {
@@ -874,7 +962,7 @@ export default {
         this.keyIndicator.chart1Loading = false
       })
     },
-    // 图2数据 双轴面积图
+    // 图2数据 双轴面积图 各支行执行率
     getChart2Data(data) {
       this.keyIndicator.chart2Loading = true
       getOutletPurchaseRateList(data).then(res => {
@@ -887,13 +975,36 @@ export default {
         this.keyIndicator.chart2Loading = false
       })
     },
-    // 图3数据 双轴面积图
-    getChart3Data(data) { },
-    // 图4数据 双轴面积图
+    // 图3数据 双轴面积图 各支行意向购买客户成功占比
+    getChart3Data(data) {
+      this.keyIndicator.chart3Loading = true
+      getIntentToBuySuccessRate(data).then(res => {
+        this.keyIndicator.chart3Data = res.data.map(n => ({
+          label: n.label,
+          value1: n.purchaseIntentionCount,
+          value2: n.purchaseRate
+        }))
+      }).finally(() => {
+        this.keyIndicator.chart3Loading = false
+      })
+    },
+    // 图4数据 双轴面积图 各支行预约网点见面成功占比
     getChart4Data(data) { },
-    // 图5数据 双轴面积图
-    getChart5Data(data) { },
-    // 图6数据 分组柱状图
+    // 图5数据 双轴面积图 意向购买产品成功占比与比上批情况
+    getChart5Data(data) {
+      this.keyIndicator.chart5Loading = true
+      getIntentToBuySuccessRateAndLastBatchComparison(data).then(res => {
+        this.keyIndicator.chart5Data = res.data.map((arr, i) => {
+          return i === 0
+            ? arr.map(n => ({ label: n.label, category: n.category, value1: n.count }))
+            : arr.map(n => ({ label: n.label, category: n.category, value2: n.rate }))
+        }).flat()
+        console.log(this.keyIndicator.chart5Data)
+      }).finally(() => {
+        this.keyIndicator.chart5Loading = false
+      })
+    },
+    // 图6数据 分组柱状图 预约网点见面成功占比与比上批情况
     getChart6Data(data) { },
     // 用例各支行督导看板搜索
     orgSearch() {

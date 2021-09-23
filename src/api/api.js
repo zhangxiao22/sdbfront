@@ -1437,7 +1437,7 @@ export function getPeopleRankingList(data) {
   })
 }
 
-// 各支行负债类小计用例关键指标趋势列表
+// 各支行负债类小计用例关键指标趋势表现
 export function getUseCaseKeyIndicatorList(data) {
   return request({
     url: '/supervisorSpectaculars/selectDebtsTendency',
@@ -1446,7 +1446,7 @@ export function getUseCaseKeyIndicatorList(data) {
   })
 }
 
-// 各支行成功购买率
+// 各支行成功执行率
 export function getOutletPurchaseRateList(data) {
   return request({
     url: '/supervisorSpectaculars/selectBranchPurchaseRate',
@@ -1454,3 +1454,25 @@ export function getOutletPurchaseRateList(data) {
     data
   })
 }
+
+// 各支行意向购买客户成功占比
+export function getIntentToBuySuccessRate(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchPurchaseIntention',
+    method: 'post',
+    data
+  })
+}
+
+// 各支行预约网点见面成功占比
+
+// 意向购买产品成功占比与比上批情况
+export function getIntentToBuySuccessRateAndLastBatchComparison(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchPurchaseIntentionCompare',
+    method: 'post',
+    data
+  })
+}
+
+// 预约网点见面成功占比与比上批情况
