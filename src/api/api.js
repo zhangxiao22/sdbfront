@@ -1482,10 +1482,10 @@ export function getUseCaseKeyIndicatorList(data) {
   })
 }
 
-// 各支行成功执行率
-export function getOutletPurchaseRateList(data) {
+// 各支行执行率
+export function getOutletExecuteRateList(data) {
   return request({
-    url: '/supervisorSpectaculars/selectBranchPurchaseRate',
+    url: '/supervisorSpectaculars/selectBranchExecuteRate',
     method: 'post',
     data
   })
@@ -1503,7 +1503,7 @@ export function getIntentToBuySuccessRate(data) {
 // 各支行预约网点见面成功占比
 
 // 意向购买产品成功占比与比上批情况
-export function getIntentToBuySuccessRateAndLastBatchComparison(data) {
+export function getIntentToBuySuccessRateAndCompareToLastBatch(data) {
   return request({
     url: '/supervisorSpectaculars/selectBranchPurchaseIntentionCompare',
     method: 'post',
@@ -1512,3 +1512,32 @@ export function getIntentToBuySuccessRateAndLastBatchComparison(data) {
 }
 
 // 预约网点见面成功占比与比上批情况
+
+// 用例各支行督导看板 销售金额
+export function getUseCaseSalesAmount(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectUseCaseSituation',
+    method: 'post',
+    data
+  })
+}
+
+// 用例各支行督导看板 资金流向
+
+// 用例各支行督导看板 （最后一张表）
+export function getInspectorSummary(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchCondition',
+    method: 'post',
+    data
+  })
+}
+
+// 获取客群类型下拉选项
+export function getCustomerGroupList(params) {
+  return request({
+    url: '/supervisorSpectaculars/selectCustomerGroup',
+    method: 'get',
+    params
+  })
+}
