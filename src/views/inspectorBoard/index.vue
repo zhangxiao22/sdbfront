@@ -1129,7 +1129,7 @@ export default {
           label: n.label,
           value1: n.count,
           value2: n.controlGroup,
-          value3: n.executeRate,
+          value3: n.executeRate
         }))
       }).finally(() => {
         this.keyIndicator.chart2Loading = false
@@ -1175,7 +1175,7 @@ export default {
         useCaseIds: this.org.filterForm.useCase,
         dateRange: this.org.filterForm.dateRange,
         PC: this.org.filterForm.batch,
-        customerGroup: this.org.filterForm.customerGroup,
+        customerGroup: this.org.filterForm.customerGroup
       }
       // 表1
       this.org.tableLoading1 = true
