@@ -66,7 +66,7 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="周数："
+          <!-- <el-form-item label="周数："
                         prop="week">
             <el-select v-model.trim="overview.filterForm.week"
                        placeholder="请选择周数"
@@ -77,7 +77,7 @@
                          :label="item.label"
                          :value="item.value" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="批次："
                         prop="batch">
             <el-select v-model.trim="overview.filterForm.batch"
@@ -168,13 +168,11 @@
           <el-table ref="executeStatusRef"
                     v-loading="executeStatus.loading"
                     :data="executeStatus.tableData">
-            <el-table-column type="index"
-                             label="实际购买率排名"
-                             :width="120" />
-            <el-table-column v-for="({prop, label, formatter}, i) of executeStatus.tableColumnList"
+            <el-table-column v-for="({prop, label, formatter, sortable}, i) of executeStatus.tableColumnList"
                              :key="i"
                              :prop="prop"
                              :label="label"
+                             :sortable="sortable"
                              :formatter="formatter" />
           </el-table>
         </div>
@@ -678,6 +676,9 @@ export default {
         batch: '',
         tableData: [],
         tableColumnList: [{
+          prop: 'purchaseRateRanking',
+          label: '实际购买率排名'
+        }, {
           prop: 'org',
           label: '支行'
         }, {
@@ -835,10 +836,7 @@ export default {
       // 用例类型选项
       categoryList: [],
       // 周数选项
-      weekList: [{
-        label: '两周',
-        value: 1
-      }],
+      weekList: [],
       // 客群选项
       customerGroupList: []
     }
@@ -1015,6 +1013,7 @@ export default {
       this.executeStatus.loading = true
       getExecuteStatusList(data).then(res => {
         this.executeStatus.tableData = res.data.map(n => ({
+          purchaseRateRanking: n.purchasedRateRanking,
           org: n.subBranchName,
           clueAmount: n.count,
           execRate: n.executeRate,
