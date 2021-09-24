@@ -52,7 +52,7 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="营销事件："
+          <!-- <el-form-item label="营销事件："
                         prop="event">
             <el-select v-model.trim="overview.filterForm.event"
                        placeholder="请选择营销事件"
@@ -65,7 +65,7 @@
                          :label="item.label"
                          :value="item.value" />
             </el-select>
-          </el-form-item>
+          </el-form-item> -->
           <!-- <el-form-item label="周数："
                         prop="week">
             <el-select v-model.trim="overview.filterForm.week"
@@ -154,7 +154,7 @@
       <!-- 执行情况 -->
       <div class="block shun-card">
         <div class="head">
-          <div class="title">CRM渠道各支行的执行情况</div>
+          <div class="title">各支行的执行情况</div>
           <el-select v-model.trim="executeStatus.batch"
                      placeholder="请选择批次"
                      @change="handleExecuteStatusBatchChange">
@@ -994,7 +994,15 @@ export default {
     },
     // 总览 表头 列排序
     handleOverviewSortChange({ column, prop, order }) {
-      this.overview.tableSort = { [prop]: order }
+      const mappings = {
+        purchaseRate: 'purchaseRate',
+        salesAmount: 'purchasedAmount',
+        aumIncreaseAll: 'aumUp',
+        aumAverageAll: 'aumAverage',
+        aumIncrease: 'purchaseAumUp',
+        aumAverage: 'purchaseAumAverage'
+      }
+      this.overview.tableSort = order ? { [mappings[prop]]: order } : {}
       this.overviewGetList()
     },
     // 总览清楚排序
