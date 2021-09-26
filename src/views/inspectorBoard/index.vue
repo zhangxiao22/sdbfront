@@ -582,8 +582,8 @@ export default {
       }, {
         name: '销售成功数量',
         icon: '',
-        value: 0,
-        unit: '元'
+        value: 0
+        // unit: '元'
       }, {
         name: '成功购买率',
         icon: '',
