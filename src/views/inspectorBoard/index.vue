@@ -291,7 +291,7 @@
                       :data="keyIndicator.chart1Data" />
           </div>
           <div class="item">
-            <div class="chart-title">各支行成功购买率</div>
+            <div class="chart-title">各支行成功执行率</div>
             <TripleAreaChart id="chart-2"
                              :data="keyIndicator.chart2Data"
                              :category-list="['线索数量', '对照组', '执行率']"
@@ -642,7 +642,7 @@ export default {
           label: '线索数量'
         }, {
           prop: 'successfulSalesCount',
-          label: '销售成功数量(元)'
+          label: '销售成功数量'
         }, {
           prop: 'purchaseRate',
           label: '购买成功率(%)',

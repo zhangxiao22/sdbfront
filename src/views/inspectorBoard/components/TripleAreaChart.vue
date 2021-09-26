@@ -48,7 +48,11 @@ export default {
         range: [0.02, 0.98]
       })
       this.chart.scale('value1', {
-        nice: true
+        nice: true,
+        sync: true
+      })
+      this.chart.scale('value2', {
+        sync: 'value1'
       })
       this.chart.axis('value2', {
         grid: null,
