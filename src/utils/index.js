@@ -2,13 +2,17 @@ import qs from 'qs'
 
 export const MAX_NUMBER = 1e14
 
+export function formatTenThousand(val) {
+  return (+val / 10000).toFixed(2)
+}
+
 /**
  * Format decimal to string
  * @param {Number} val
  * @returns {string}
  */
 export function formatPercent(val) {
-  return `${(val * 100).toFixed(2)}%`
+  return `${(+val * 100).toFixed(2)}%`
 }
 
 export function formatMoney(val) {

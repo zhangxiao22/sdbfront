@@ -1437,15 +1437,6 @@ export function getInspectorOverviewList(data) {
   })
 }
 
-// 获取批次下拉选项
-export function getBatchList(params) {
-  return request({
-    url: '/supervisorSpectaculars/selectPC',
-    method: 'get',
-    params
-  })
-}
-
 // CRM渠道各支行执行情况列表数据
 export function getExecuteStatusList(data) {
   return request({
@@ -1539,5 +1530,23 @@ export function getCustomerGroupList(params) {
     url: '/supervisorSpectaculars/selectCustomerGroup',
     method: 'get',
     params
+  })
+}
+
+// 获取营销用例(与批次关联)下拉选项
+export function getUseCaseListByBatchList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 获取批次(与营销用例关联)下拉选项
+export function getBatchListByUseCaseList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectPC',
+    method: 'post',
+    data
   })
 }
