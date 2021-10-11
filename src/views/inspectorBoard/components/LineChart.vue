@@ -6,7 +6,7 @@
 import { Chart } from '@antv/g2'
 
 export default {
-  name: 'BarChart',
+  name: 'LineChart',
   props: {
     id: {
       type: String,
@@ -38,14 +38,8 @@ export default {
         nice: true
       })
       this.chart.tooltip({
-        showMarkers: false,
-        shared: true,
-        customItems: items => {
-          return items.map(item => ({
-            ...item,
-            value: `${Math.floor(+item.value * 100)}%`
-          }))
-        }
+        showCrosshairs: true,
+        shared: true
       })
       this.chart.legend({
         position: 'right'
@@ -56,14 +50,15 @@ export default {
         }
       })
       this.chart
-        .interval()
+        .line()
         .position('label*value')
         .color('category')
-        .adjust([{
-          type: 'dodge',
-          marginRatio: 0
-        }])
-      this.chart.interaction('active-region')
+        .shape('smooth')
+      this.chart
+        .point()
+        .position('label*value')
+        .color('category')
+        .shape('circle')
       this.chart.render()
     }
   }

@@ -1482,7 +1482,7 @@ export function getOutletExecuteRateList(data) {
   })
 }
 
-// 各支行意向购买客户成功占比
+// 意向购买产品 / 预约网点见面 成功占比与比上批情况
 export function getIntentToBuySuccessRate(data) {
   return request({
     url: '/supervisorSpectaculars/selectBranchPurchaseIntention',
@@ -1490,19 +1490,6 @@ export function getIntentToBuySuccessRate(data) {
     data
   })
 }
-
-// 各支行预约网点见面成功占比
-
-// 意向购买产品成功占比与比上批情况
-export function getIntentToBuySuccessRateAndCompareToLastBatch(data) {
-  return request({
-    url: '/supervisorSpectaculars/selectBranchPurchaseIntentionCompare',
-    method: 'post',
-    data
-  })
-}
-
-// 预约网点见面成功占比与比上批情况
 
 // 用例各支行督导看板 销售金额
 export function getUseCaseSalesAmount(data) {
@@ -1542,8 +1529,8 @@ export function getUseCaseListByBatchList(data) {
   })
 }
 
-// 获取批次(与营销用例关联)下拉选项
-export function getBatchListByUseCaseList(data) {
+// 获取批次(与营销用例关联)下拉选项(多选单选通用，参数不同)
+export function getBatchList(data) {
   return request({
     url: '/supervisorSpectaculars/selectPC',
     method: 'post',

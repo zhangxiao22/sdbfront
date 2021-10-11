@@ -145,6 +145,7 @@
                             range-separator="至"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期"
+                            :picker-options="pickerOptions"
                             style="width: 300px" />
           </el-form-item>
           <el-form-item class="filter-item-end">
@@ -181,11 +182,24 @@
       <!-- 执行情况 -->
       <div class="block shun-card">
         <div class="head">
-          <div class="title">各支行的执行情况</div>
+          <div class="title">
+            各支行的执行情况
+            <el-tooltip content="导出到Excel"
+                        placement="top">
+              <el-button size="mini"
+                         type="primary"
+                         circle
+                         plain
+                         icon="el-icon-download"
+                         class="export"
+                         :loading="executeStatus.exportLoading"
+                         @click="handleExecuteStatusExport" />
+            </el-tooltip>
+          </div>
           <el-select v-model.trim="executeStatus.batch"
                      placeholder="请选择批次"
                      @change="handleExecuteStatusBatchChange">
-            <el-option v-for="item of overview.searchForm.batch && overview.searchForm.batch.length ? overview.searchForm.batch : batchList"
+            <el-option v-for="item of executeStatus.singleBatchList"
                        :key="item"
                        :label="item"
                        :value="item" />
@@ -228,7 +242,20 @@
       <div class="block1">
         <div class="left shun-card">
           <div class="head">
-            <div class="title">网点综合排名</div>
+            <div class="title">
+              网点综合排名
+              <el-tooltip content="导出到Excel"
+                          placement="top">
+                <el-button size="mini"
+                           type="primary"
+                           circle
+                           plain
+                           icon="el-icon-download"
+                           class="export"
+                           :loading="ranking.org.exportLoading"
+                           @click="handleOutletRankingExport" />
+              </el-tooltip>
+            </div>
             <el-radio-group v-model="ranking.org.scope"
                             size="mini"
                             @change="handleOutletRankingChange">
@@ -262,7 +289,20 @@
         </div>
         <div class="right shun-card">
           <div class="head">
-            <div class="title">营销人员综合排名</div>
+            <div class="title">
+              营销人员综合排名
+              <el-tooltip content="导出到Excel"
+                          placement="top">
+                <el-button size="mini"
+                           type="primary"
+                           circle
+                           plain
+                           icon="el-icon-download"
+                           class="export"
+                           :loading="ranking.people.exportLoading"
+                           @click="handlePeopleRankingExport" />
+              </el-tooltip>
+            </div>
             <el-radio-group v-model="ranking.people.scope"
                             size="mini"
                             @change="handlePeopleRankingChange">
@@ -303,7 +343,7 @@
                    :inline="true"
                    :model="keyIndicator.filterForm"
                    class="filter">
-            <el-form-item label="用例："
+            <el-form-item label="营销用例："
                           prop="useCase">
               <el-select v-model="keyIndicator.filterForm.useCase"
                          multiple
@@ -323,8 +363,7 @@
                          clearable
                          collapse-tags>
                 <el-option v-for="item of childBatchOpt"
-                           :key="
-                             item"
+                           :key="item"
                            :label="item"
                            :value="item" />
               </el-select>
@@ -337,7 +376,8 @@
                               type="daterange"
                               range-separator="至"
                               start-placeholder="开始日期"
-                              end-placeholder="结束日期" />
+                              end-placeholder="结束日期"
+                              :picker-options="pickerOptions" />
             </el-form-item>
             <el-form-item>
               <el-button type="primary"
@@ -355,7 +395,20 @@
         <div class="content">
           <div class="item">
             <div class="item-head">
-              <div class="chart-title">各支行负债类小计用例关键指标趋势表现</div>
+              <div class="chart-title">
+                各支行负债类小计用例关键指标趋势表现
+                <el-tooltip content="导出到Excel"
+                            placement="top">
+                  <el-button size="mini"
+                             type="primary"
+                             circle
+                             plain
+                             icon="el-icon-download"
+                             class="export"
+                             :loading="keyIndicator.chart1ExportLoading"
+                             @click="handleChart1Export" />
+                </el-tooltip>
+              </div>
               <el-radio-group v-model="keyIndicator.rate"
                               size="mini">
                 <el-radio-button label="实际购买率" />
@@ -363,37 +416,63 @@
                 <el-radio-button label="联络成功率" />
               </el-radio-group>
             </div>
-            <BarChart id="chart-1"
-                      :data="realChart1Data" />
+            <LineChart id="chart-1"
+                       :data="realChart1Data" />
           </div>
           <div class="item">
-            <div class="chart-title">各支行成功执行率</div>
+            <div class="chart-title">
+              各支行成功执行率
+              <el-tooltip content="导出到Excel"
+                          placement="top">
+                <el-button size="mini"
+                           type="primary"
+                           circle
+                           plain
+                           icon="el-icon-download"
+                           class="export"
+                           :loading="keyIndicator.chart2ExportLoading"
+                           @click="handleChart2Export" />
+              </el-tooltip>
+            </div>
             <BarChart id="chart-2"
                       :data="realChart2Data" />
           </div>
           <div class="item">
-            <div class="chart-title">各支行意向购买客户成功占比</div>
-            <DoubleAreaChart id="chart-3"
-                             :data="keyIndicator.chart3Data"
-                             :category-list="['意向购买客户', '已成功占比']"
-                             :color-list="['#6395f9', '#61d9aa']" />
+            <div class="item-head">
+              <div class="chart-title">
+                意向购买产品/预约网点见面 - 成功占比与比上批情况
+                <el-tooltip content="导出到Excel"
+                            placement="top">
+                  <el-button size="mini"
+                             type="primary"
+                             circle
+                             plain
+                             icon="el-icon-download"
+                             class="export"
+                             :loading="keyIndicator.chart3ExportLoading"
+                             @click="handleChart3Export" />
+                </el-tooltip>
+              </div>
+              <div class="chart-filter">
+                <el-radio-group v-model="keyIndicator.compareToLastBatchType"
+                                size="mini"
+                                style="margin-right: 20px;">
+                  <el-radio-button label="意向购买产品" />
+                  <el-radio-button label="预约网点见面" />
+                </el-radio-group>
+                <el-select v-model="keyIndicator.batch"
+                           placeholder="请选择批次"
+                           @change="handleKeyIndicatorBatchChange">
+                  <el-option v-for="item of keyIndicator.singleBatchList"
+                             :key="item"
+                             :label="item"
+                             :value="item" />
+                </el-select>
+              </div>
+            </div>
+            <StackDodgeBarChart id="chart-3"
+                                :data="realChart3Data" />
           </div>
-          <!-- <div class="item">
-            <div class="chart-title">各支行预约网点见面成功占比</div>
-            <DoubleAreaChart id="chart-4"
-                             :data="keyIndicator.chart4Data"
-                             :data-title-list="[null, null]" />
-          </div> -->
-          <div class="item">
-            <div class="chart-title">意向购买产品成功占比与比上批情况</div>
-            <DoubleBarChart id="chart-5"
-                            :data="keyIndicator.chart5Data" />
-          </div>
-          <!-- <div class="item">
-            <div class="chart-title">预约网点见面成功占比与比上批情况</div>
-            <DoubleBarChart id="chart-6"
-                            :data="keyIndicator.chart6Data" />
-          </div> -->
         </div>
       </div>
       <!-- 用例各支行督导看板 -->
@@ -434,7 +513,8 @@
                               type="daterange"
                               range-separator="至"
                               start-placeholder="开始日期"
-                              end-placeholder="结束日期" />
+                              end-placeholder="结束日期"
+                              :picker-options="pickerOptions" />
             </el-form-item>
             <el-form-item label="客群类型："
                           prop="customerGroup">
@@ -578,7 +658,7 @@
               <el-select v-model.trim="org.filterForm.batch"
                          placeholder="请选择批次"
                          clearable>
-                <el-option v-for="item of childBatchOpt"
+                <el-option v-for="item of singleBatchList"
                            :key="item"
                            :label="item"
                            :value="item" />
@@ -613,9 +693,9 @@
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { BarChart, DoubleAreaChart, DoubleBarChart, TripleAreaChart } from './components'
+import { LineChart, BarChart, StackDodgeBarChart } from './components'
 import {
-  getBatchListByUseCaseList,
+  getBatchList,
   getUseCaseListByBatchList,
   getUseCaseType,
   inspectorOverview,
@@ -627,20 +707,18 @@ import {
   getUseCaseKeyIndicatorList,
   getOutletExecuteRateList,
   getIntentToBuySuccessRate,
-  getIntentToBuySuccessRateAndCompareToLastBatch,
   getUseCaseSalesAmount,
   getInspectorSummary
 } from '@/api/api'
-import { formatPercent, formatTenThousand } from '@/utils'
+import { formatPercent, formatTenThousand, downloadFile } from '@/utils'
 
 export default {
   name: 'InspectorBoard',
   components: {
     ShunTable,
+    LineChart,
     BarChart,
-    DoubleAreaChart,
-    DoubleBarChart,
-    TripleAreaChart
+    StackDodgeBarChart
   },
   data() {
     const tenThousandFormatter = (row, column, cellValue, index) => {
@@ -749,7 +827,10 @@ export default {
       // 执行情况
       executeStatus: {
         loading: false,
+        exportLoading: false,
         batch: '',
+        // 单选批次选项
+        singleBatchList: [],
         tableData: [],
         tableColumnList: [{
           prop: 'purchaseRateRanking',
@@ -795,6 +876,7 @@ export default {
         // 网点
         org: {
           loading: false,
+          exportLoading: false,
           showPagination: false,
           scope: '前20名',
           total: 0,
@@ -825,6 +907,7 @@ export default {
         // 人员
         people: {
           loading: false,
+          exportLoading: false,
           showPagination: false,
           scope: '前20名',
           total: 0,
@@ -864,18 +947,19 @@ export default {
           dateRange: []
         },
         rate: '实际购买率',
+        compareToLastBatchType: '意向购买产品',
+        batch: '',
+        // 单选批次选项
+        singleBatchList: [],
         chart1Loading: false,
         chart2Loading: false,
         chart3Loading: false,
-        chart4Loading: false,
-        chart5Loading: false,
-        chart6Loading: false,
+        chart1ExportLoading: false,
+        chart2ExportLoading: false,
+        chart3ExportLoading: false,
         chart1Data: [],
         chart2Data: [],
-        chart3Data: [],
-        chart4Data: [],
-        chart5Data: [],
-        chart6Data: []
+        chart3Data: []
       },
       // 用例各支行
       org: {
@@ -912,8 +996,8 @@ export default {
           formatter: this.percentFormatter
         }, {
           label: '留存率',
-          prop: 'retentionRate',
-          formatter: this.percentFormatter
+          prop: 'retentionRate'
+          // formatter: this.percentFormatter
         }, {
           label: '总流出金额',
           prop: 'totalOutflowAmount'
@@ -941,7 +1025,11 @@ export default {
       // 周数选项
       weekList: [],
       // 客群选项
-      customerGroupList: []
+      customerGroupList: [],
+      // 日期选择器选项
+      pickerOptions: {
+        firstDayOfWeek: 1
+      }
     }
   },
   computed: {
@@ -961,6 +1049,18 @@ export default {
     // 图2数据
     realChart2Data() {
       return this.keyIndicator.chart2Data[this.chartDataKey]
+    },
+    // 图3数据key
+    chart3DataKey() {
+      const mappings = {
+        意向购买产品: 'purchaseIntention',
+        预约网点见面: 'networkToMeet'
+      }
+      return mappings[this.keyIndicator.compareToLastBatchType]
+    },
+    // 图3数据
+    realChart3Data() {
+      return this.keyIndicator.chart3Data[this.chart3DataKey]
     },
     // 执行情况、综合排名 公共请求字段
     executeStatusRankingGetData() {
@@ -988,7 +1088,7 @@ export default {
         ? this.useCaseList.filter(n => this.overview.searchForm.useCase.includes(n.value))
         : this.useCaseList
     },
-    // 总览选择批次时 下面的批次筛选选项
+    // 总览选择批次时 督导数据趋势对比的批次筛选选项
     childBatchOpt() {
       return this.overview.searchForm.batch && this.overview.searchForm.batch.length
         ? this.overview.searchForm.batch
@@ -1037,21 +1137,11 @@ export default {
     },
     // 生成详细督导数据
     generate() {
-      // const selection = this.$refs.overviewRef.getVal()
-      // if (!selection.length) {
-      //   return this.$message({
-      //     message: '请选择用例',
-      //     type: 'warning',
-      //     duration: '3000'
-      //   })
-      // }
       this.showExtra = true
-      this.executeStatus.batch = ''
-      this.ranking.org.scope = '前20名'
-      this.ranking.people.scope = '前20名'
+      this.setExecuteStatusRankingFilters()
       this.setKeyIndicatorFilter()
       this.setOrgFilter()
-      // this.executeStatusRankingGetList()
+      this.executeStatusRankingGetList()
       this.keyIndicatorSearch()
       this.orgSearch()
       // 滚动
@@ -1062,10 +1152,6 @@ export default {
           behavior: 'smooth'
         })
       })
-    },
-    // 导出
-    download() {
-
     },
     // 总览列表 搜索
     overviewSearch() {
@@ -1274,7 +1360,6 @@ export default {
       }
       this.ranking.people.loading = true
       getPeopleRankingList(data).then(res => {
-        console.log(res)
         if (this.ranking.people.scope === '查看全部') {
           this.ranking.people.tableData = res.data.resultList.map(n => ({
             org: n.subBranchName, // 支行
@@ -1311,6 +1396,19 @@ export default {
       this.ranking.people.currentPage = val
       this.peopleRankingGetList()
     },
+    // 设置执行情况和综合排行筛选条件
+    setExecuteStatusRankingFilters() {
+      this.executeStatus.batch = ''
+      this.ranking.org.scope = '前20名'
+      this.ranking.people.scope = '前20名'
+      const data = {
+        dateRange: this.overview.searchForm.dateRange,
+        pcList: this.overview.searchForm.batch
+      }
+      getBatchList(data).then(res => {
+        this.executeStatus.singleBatchList = res.data
+      })
+    },
     // 设置关键指标趋势筛选条件
     setKeyIndicatorFilter() {
       this.keyIndicator.filterForm = {
@@ -1318,6 +1416,20 @@ export default {
         batch: this.overview.searchForm.batch,
         dateRange: this.overview.searchForm.dateRange
       }
+      this.keyIndicator.rate = '实际购买率'
+      this.keyIndicator.compareToLastBatchType = '意向购买产品'
+      this.keyIndicator.batch = ''
+      // this.setKeyIndicatorBatch()
+    },
+    // 设置关键趋势单选批次选项
+    setKeyIndicatorBatch() {
+      const data = {
+        dateRange: this.keyIndicator.filterForm.dateRange,
+        pcList: this.keyIndicator.filterForm.batch
+      }
+      getBatchList(data).then(res => {
+        this.keyIndicator.singleBatchList = res.data
+      })
     },
     // 设置用例各支行督导看板筛选条件
     setOrgFilter() {
@@ -1330,18 +1442,17 @@ export default {
     },
     // 关键指标趋势搜索
     keyIndicatorSearch() {
+      this.setKeyIndicatorBatch()
       this.getChart1Data()
       this.getChart2Data()
-      // for (let i = 1; i <= 6; i++) {
-      //   this[`getChart${i}Data`]()
-      // }
+      this.getChart3Data()
     },
     // 关键指标趋势重置
     keyIndicatorReset() {
       this.setKeyIndicatorFilter()
       this.keyIndicatorSearch()
     },
-    // 图1数据 分组柱状图 各支行负债类小计用例关键指标趋势表现
+    // 图1数据 各支行负债类小计用例关键指标趋势表现
     getChart1Data() {
       this.keyIndicator.chart1Loading = true
       getUseCaseKeyIndicatorList(this.keyIndicatorGetData).then(res => {
@@ -1350,7 +1461,7 @@ export default {
         this.keyIndicator.chart1Loading = false
       })
     },
-    // 图2数据 分组柱状图 各支行3个率(实际购买率 执行率 联络成功率)
+    // 图2数据 各支行3个率(实际购买率 执行率 联络成功率)
     getChart2Data() {
       this.keyIndicator.chart2Loading = true
       getOutletExecuteRateList(this.keyIndicatorGetData).then(res => {
@@ -1359,39 +1470,22 @@ export default {
         this.keyIndicator.chart2Loading = false
       })
     },
-    // 图3数据 双轴面积图 各支行意向购买客户成功占比
+    // 图3数据 意向购买产品成功占比与比上批情况
     getChart3Data() {
       this.keyIndicator.chart3Loading = true
-      getIntentToBuySuccessRate(this.keyIndicatorGetData).then(res => {
-        this.keyIndicator.chart3Data = res.data.map(n => ({
-          label: n.label,
-          value1: n.purchaseIntentionCount,
-          value2: n.purchaseRate
-        }))
+      const data = {
+        ...this.keyIndicatorGetData,
+        PC: this.keyIndicator.batch
+      }
+      getIntentToBuySuccessRate(data).then(res => {
+        this.keyIndicator.chart3Data = res.data
       }).finally(() => {
         this.keyIndicator.chart3Loading = false
       })
     },
-    // 图4数据 双轴面积图 各支行预约网点见面成功占比
-    getChart4Data() {
-
-    },
-    // 图5数据 双轴面积图 意向购买产品成功占比与比上批情况
-    getChart5Data() {
-      this.keyIndicator.chart5Loading = true
-      getIntentToBuySuccessRateAndCompareToLastBatch(this.keyIndicatorGetData).then(res => {
-        this.keyIndicator.chart5Data = res.data.map((arr, i) => {
-          return i === 0
-            ? arr.map(n => ({ label: n.label, category: n.category, value1: n.count }))
-            : arr.map(n => ({ label: n.label, category: n.category, value2: n.rate }))
-        }).flat()
-      }).finally(() => {
-        this.keyIndicator.chart5Loading = false
-      })
-    },
-    // 图6数据 分组柱状图 预约网点见面成功占比与比上批情况
-    getChart6Data() {
-
+    // 意向购买产品成功占比与比上批情况 - 单选渠道更改
+    handleKeyIndicatorBatchChange() {
+      this.getChart3Data()
     },
     // 用例各支行督导看板搜索
     orgSearch() {
@@ -1468,7 +1562,7 @@ export default {
         useCaseIds: this.overview.filterForm.useCase
       }
       this.overview.filterForm.batchLoading = true
-      getBatchListByUseCaseList(data).then(res => {
+      getBatchList(data).then(res => {
         this.batchList = res.data
       }).finally(() => {
         this.overview.filterForm.batchLoading = false
@@ -1485,6 +1579,63 @@ export default {
       getCustomerGroupList().then(res => {
         this.customerGroupList = res.data
       })
+    },
+    // 执行情况 - 导出到excel
+    handleExecuteStatusExport() {
+      const params = {
+        ...this.executeStatusRankingGetData,
+        useCaseIds: this.executeStatusRankingGetData.useCaseIds.join(','),
+        dateRange: this.executeStatusRankingGetData.dateRange.join(',')
+      }
+      // downloadFile('/aaa', params)
+    },
+    // 网点综合排名 - 导出到excel
+    handleOutletRankingExport() {
+      const params = {
+        ...this.executeStatusRankingGetData,
+        useCaseIds: this.executeStatusRankingGetData.useCaseIds.join(','),
+        dateRange: this.executeStatusRankingGetData.dateRange.join(',')
+      }
+      // downloadFile('/aaa', params)
+    },
+    // 人员综合排名 - 导出到excel
+    handlePeopleRankingExport() {
+      const params = {
+        ...this.executeStatusRankingGetData,
+        useCaseIds: this.executeStatusRankingGetData.useCaseIds.join(','),
+        dateRange: this.executeStatusRankingGetData.dateRange.join(',')
+      }
+      // downloadFile('/aaa', params)
+    },
+    // 关键指标趋势表现(图1) - 导出到excel
+    handleChart1Export() {
+      const params = {
+        ...this.keyIndicatorGetData,
+        useCaseIds: this.keyIndicatorGetData.useCaseIds.join(','),
+        pcList: this.keyIndicatorGetData.pcList.join(','),
+        dateRange: this.keyIndicatorGetData.dateRange.join(',')
+      }
+      // downloadFile('/aaa', params)
+    },
+    // 各支行成功执行率(图2) - 导出到excel
+    handleChart2Export() {
+      const params = {
+        ...this.keyIndicatorGetData,
+        useCaseIds: this.keyIndicatorGetData.useCaseIds.join(','),
+        pcList: this.keyIndicatorGetData.pcList.join(','),
+        dateRange: this.keyIndicatorGetData.dateRange.join(',')
+      }
+      // downloadFile('/aaa', params)
+    },
+    // 意向购买产品/预约网点见面 - 成功占比与比上批情况(图3) - 导出到excel
+    handleChart3Export() {
+      const params = {
+        ...this.keyIndicatorGetData,
+        useCaseIds: this.keyIndicatorGetData.useCaseIds.join(','),
+        PC: this.keyIndicator.batch,
+        dateRange: this.keyIndicatorGetData.dateRange.join(',')
+      }
+      // downloadFile('/aaa', params)
     }
   }
 }
@@ -1551,6 +1702,11 @@ export default {
       .title {
         color: #303133;
         font-weight: bold;
+
+        .export {
+          margin-left: 5px;
+          transform: scale(0.8);
+        }
       }
 
       .filter {
@@ -1569,11 +1725,23 @@ export default {
           color: #303133;
           font-weight: bold;
           height: 60px;
+
+          .export {
+            margin-left: 5px;
+            transform: scale(0.8);
+          }
         }
 
         .item-head {
           display: flex;
           justify-content: space-between;
+
+          .chart-title {
+            .export {
+              margin-left: 5px;
+              transform: scale(0.8);
+            }
+          }
         }
       }
     }
@@ -1602,6 +1770,11 @@ export default {
         .title {
           color: #303133;
           font-weight: bold;
+
+          .export {
+            margin-left: 5px;
+            transform: scale(0.8);
+          }
         }
       }
 
