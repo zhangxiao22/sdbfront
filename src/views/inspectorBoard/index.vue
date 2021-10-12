@@ -1069,7 +1069,7 @@ export default {
     this.getUseCaseOpt() // 营销用例
     this.getBatchOpt() // 批次
     this.getCustomerGroupOpt() // 客群
-    this.generate()
+    // this.generate()
   },
   mounted() {
   },
