@@ -279,7 +279,8 @@ export function queryStatistics() {
 export function allocateResult(params) {
   return request({
     url: '/event/count_allocate_result',
-    method: 'get'
+    method: 'get',
+    params
   })
 }
 
