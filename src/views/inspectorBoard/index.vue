@@ -158,6 +158,16 @@
                        @click="overviewReset">
               重置
             </el-button>
+            <el-tooltip content="下载为Excel"
+                        placement="top">
+              <el-button size="mini"
+                         type="primary"
+                         icon="el-icon-download"
+                         circle
+                         plain
+                         :loading="overview.downloadLoading"
+                         @click="handleOverviewDownload" />
+            </el-tooltip>
           </el-form-item>
         </el-form>
       </template>
@@ -184,16 +194,16 @@
         <div class="head">
           <div class="title">
             各支行的执行情况
-            <el-tooltip content="导出到Excel"
+            <el-tooltip content="下载为Excel"
                         placement="top">
               <el-button size="mini"
                          type="primary"
                          circle
                          plain
                          icon="el-icon-download"
-                         class="export"
-                         :loading="executeStatus.exportLoading"
-                         @click="handleExecuteStatusExport" />
+                         class="download"
+                         :loading="executeStatus.downloadLoading"
+                         @click="handleExecuteStatusDownload" />
             </el-tooltip>
           </div>
           <el-select v-model.trim="executeStatus.batch"
@@ -244,16 +254,16 @@
           <div class="head">
             <div class="title">
               网点综合排名
-              <el-tooltip content="导出到Excel"
+              <el-tooltip content="下载为Excel"
                           placement="top">
                 <el-button size="mini"
                            type="primary"
                            circle
                            plain
                            icon="el-icon-download"
-                           class="export"
-                           :loading="ranking.org.exportLoading"
-                           @click="handleOutletRankingExport" />
+                           class="download"
+                           :loading="ranking.org.downloadLoading"
+                           @click="handleOutletRankingDownload" />
               </el-tooltip>
             </div>
             <el-radio-group v-model="ranking.org.scope"
@@ -291,16 +301,16 @@
           <div class="head">
             <div class="title">
               营销人员综合排名
-              <el-tooltip content="导出到Excel"
+              <el-tooltip content="下载为Excel"
                           placement="top">
                 <el-button size="mini"
                            type="primary"
                            circle
                            plain
                            icon="el-icon-download"
-                           class="export"
-                           :loading="ranking.people.exportLoading"
-                           @click="handlePeopleRankingExport" />
+                           class="download"
+                           :loading="ranking.people.downloadLoading"
+                           @click="handlePeopleRankingDownload" />
               </el-tooltip>
             </div>
             <el-radio-group v-model="ranking.people.scope"
@@ -379,7 +389,7 @@
                               end-placeholder="结束日期"
                               :picker-options="pickerOptions" />
             </el-form-item>
-            <el-form-item>
+            <el-form-item class="filter-end">
               <el-button type="primary"
                          icon="el-icon-search"
                          @click="keyIndicatorSearch">
@@ -396,17 +406,17 @@
           <div class="item">
             <div class="item-head">
               <div class="chart-title">
-                各支行负债类小计用例关键指标趋势表现
-                <el-tooltip content="导出到Excel"
+                各支行用例关键指标趋势表现
+                <el-tooltip content="下载为Excel"
                             placement="top">
                   <el-button size="mini"
                              type="primary"
                              circle
                              plain
                              icon="el-icon-download"
-                             class="export"
-                             :loading="keyIndicator.chart1ExportLoading"
-                             @click="handleChart1Export" />
+                             class="download"
+                             :loading="keyIndicator.chart1DownloadLoading"
+                             @click="handleChart1Download" />
                 </el-tooltip>
               </div>
               <el-radio-group v-model="keyIndicator.rate"
@@ -422,16 +432,16 @@
           <div class="item">
             <div class="chart-title">
               各支行成功执行率
-              <el-tooltip content="导出到Excel"
+              <el-tooltip content="下载为Excel"
                           placement="top">
                 <el-button size="mini"
                            type="primary"
                            circle
                            plain
                            icon="el-icon-download"
-                           class="export"
-                           :loading="keyIndicator.chart2ExportLoading"
-                           @click="handleChart2Export" />
+                           class="download"
+                           :loading="keyIndicator.chart2DownloadLoading"
+                           @click="handleChart2Download" />
               </el-tooltip>
             </div>
             <BarChart id="chart-2"
@@ -441,16 +451,16 @@
             <div class="item-head">
               <div class="chart-title">
                 意向购买产品/预约网点见面 - 成功占比与比上批情况
-                <el-tooltip content="导出到Excel"
+                <el-tooltip content="下载为Excel"
                             placement="top">
                   <el-button size="mini"
                              type="primary"
                              circle
                              plain
                              icon="el-icon-download"
-                             class="export"
-                             :loading="keyIndicator.chart3ExportLoading"
-                             @click="handleChart3Export" />
+                             class="download"
+                             :loading="keyIndicator.chart3DownloadLoading"
+                             @click="handleChart3Download" />
                 </el-tooltip>
               </div>
               <div class="chart-filter">
@@ -526,7 +536,7 @@
                            :value="item" />
               </el-select>
             </el-form-item>
-            <el-form-item>
+            <el-form-item class="filter-end">
               <el-button type="primary"
                          icon="el-icon-search"
                          @click="orgSearch">
@@ -536,6 +546,16 @@
                          @click="orgReset">
                 重置
               </el-button>
+              <el-tooltip content="下载为Excel"
+                          placement="top">
+                <el-button size="mini"
+                           type="primary"
+                           icon="el-icon-download"
+                           circle
+                           plain
+                           :loading="org.downloadLoading"
+                           @click="handleOrgDownload" />
+              </el-tooltip>
             </el-form-item>
           </el-form>
         </div>
@@ -628,71 +648,13 @@
           </el-table>
         </div>
       </div>
-      <!-- <ShunTable ref="orgRef"
-                 title="用例各支行督导看板"
-                 :loading="org.loading"
-                 :show-pagination="false"
-                 :table-data="org.tableData"
-                 :table-column-list="org.tableColumnList"
-                 class="block">
-        <template v-slot:filter>
-          <el-form ref="orgFilterRef"
-                   :inline="true"
-                   :model="org.filterForm"
-                   class="filter-container">
-            <el-form-item label="营销用例："
-                          prop="useCase">
-              <el-select v-model.trim="org.filterForm.useCase"
-                         placeholder="请选择营销用例"
-                         clearable
-                         collapse-tags
-                         multiple>
-                <el-option v-for="item of childUseCaseOpt"
-                           :key="item.value"
-                           :label="item.label"
-                           :value="item.value" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="批次："
-                          prop="batch">
-              <el-select v-model.trim="org.filterForm.batch"
-                         placeholder="请选择批次"
-                         clearable>
-                <el-option v-for="item of singleBatchList"
-                           :key="item"
-                           :label="item"
-                           :value="item" />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="日期范围："
-                          prop="dateRange">
-              <el-date-picker v-model="org.filterForm.dateRange"
-                              value-format="yyyy-MM-dd"
-                              type="daterange"
-                              range-separator="至"
-                              start-placeholder="开始日期"
-                              end-placeholder="结束日期" />
-            </el-form-item>
-            <el-form-item class="filter-item-end">
-              <el-button type="primary"
-                         icon="el-icon-search"
-                         @click="orgSearch">
-                搜索
-              </el-button>
-              <el-button icon="el-icon-refresh"
-                         @click="orgReset">
-                重置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </template>
-      </ShunTable> -->
     </div>
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
+import { mapGetters } from 'vuex'
 import { LineChart, BarChart, StackDodgeBarChart } from './components'
 import {
   getBatchList,
@@ -710,7 +672,7 @@ import {
   getUseCaseSalesAmount,
   getInspectorSummary
 } from '@/api/api'
-import { formatPercent, formatTenThousand, downloadFile } from '@/utils'
+import { formatPercent, formatTenThousand, downloadFilePost } from '@/utils'
 
 export default {
   name: 'InspectorBoard',
@@ -772,6 +734,7 @@ export default {
         loading: false,
         useCaseLoading: false,
         batchLoading: false,
+        downloadLoading: false,
         filterForm: {
           useCase: [],
           event: [],
@@ -827,7 +790,7 @@ export default {
       // 执行情况
       executeStatus: {
         loading: false,
-        exportLoading: false,
+        downloadLoading: false,
         batch: '',
         // 单选批次选项
         singleBatchList: [],
@@ -876,7 +839,7 @@ export default {
         // 网点
         org: {
           loading: false,
-          exportLoading: false,
+          downloadLoading: false,
           showPagination: false,
           scope: '前20名',
           total: 0,
@@ -907,7 +870,7 @@ export default {
         // 人员
         people: {
           loading: false,
-          exportLoading: false,
+          downloadLoading: false,
           showPagination: false,
           scope: '前20名',
           total: 0,
@@ -951,12 +914,12 @@ export default {
         batch: '',
         // 单选批次选项
         singleBatchList: [],
+        chart1DownloadLoading: false,
+        chart2DownloadLoading: false,
+        chart3DownloadLoading: false,
         chart1Loading: false,
         chart2Loading: false,
         chart3Loading: false,
-        chart1ExportLoading: false,
-        chart2ExportLoading: false,
-        chart3ExportLoading: false,
         chart1Data: [],
         chart2Data: [],
         chart3Data: []
@@ -964,6 +927,7 @@ export default {
       // 用例各支行
       org: {
         loading: false,
+        downloadLoading: false,
         filterForm: {
           useCase: [],
           batch: '',
@@ -1033,6 +997,9 @@ export default {
     }
   },
   computed: {
+    ...mapGetters([
+      'user'
+    ]),
     // 图1、2数据key
     chartDataKey() {
       const mappings = {
@@ -1452,7 +1419,7 @@ export default {
       this.setKeyIndicatorFilter()
       this.keyIndicatorSearch()
     },
-    // 图1数据 各支行负债类小计用例关键指标趋势表现
+    // 图1数据 各支行用例关键指标趋势表现
     getChart1Data() {
       this.keyIndicator.chart1Loading = true
       getUseCaseKeyIndicatorList(this.keyIndicatorGetData).then(res => {
@@ -1580,62 +1547,179 @@ export default {
         this.customerGroupList = res.data
       })
     },
-    // 执行情况 - 导出到excel
-    handleExecuteStatusExport() {
-      const params = {
+    // 总览列表 下载excel
+    handleOverviewDownload() {
+      const data = {
+        pageNo: this.overview.currentPage,
+        pageSize: this.overview.pageSize,
+        channel: this.overview.searchForm.channel,
+        category: this.overview.searchForm.category,
+        useCaseIds: this.overview.searchForm.useCase,
+        dateRange: this.overview.searchForm.dateRange,
+        pcList: this.overview.searchForm.batch,
+        week: this.overview.searchForm.week,
+        sort: this.overview.tableSort
+      }
+      this.overview.downloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadChannelAndUseCasePage', data, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '督导总览.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.overview.downloadLoading = false
+      })
+    },
+    // 执行情况 - 下载为excel
+    handleExecuteStatusDownload() {
+      this.executeStatus.downloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadSubBranchExecutiveCondition', this.executeStatusRankingGetData, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '各支行执行情况.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.executeStatus.downloadLoading = false
+      })
+    },
+    // 网点综合排名 - 下载为excel
+    handleOutletRankingDownload() {
+      const data = {
         ...this.executeStatusRankingGetData,
-        useCaseIds: this.executeStatusRankingGetData.useCaseIds.join(','),
-        dateRange: this.executeStatusRankingGetData.dateRange.join(',')
+        scope: this.ranking.org.scope === '前20名'
+          ? 'front'
+          : this.ranking.org.scope === '后20名'
+            ? 'rear'
+            : 'all',
+        pageNo: this.ranking.org.currentPage,
+        pageSize: this.ranking.org.pageSize
       }
-      // downloadFile('/aaa', params)
+      this.ranking.org.downloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadNetworkRanking', data, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '网点综合排名.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.ranking.org.downloadLoading = false
+      })
     },
-    // 网点综合排名 - 导出到excel
-    handleOutletRankingExport() {
-      const params = {
+    // 人员综合排名 - 下载为excel
+    handlePeopleRankingDownload() {
+      const data = {
         ...this.executeStatusRankingGetData,
-        useCaseIds: this.executeStatusRankingGetData.useCaseIds.join(','),
-        dateRange: this.executeStatusRankingGetData.dateRange.join(',')
+        scope: this.ranking.people.scope === '前20名'
+          ? 'front'
+          : this.ranking.people.scope === '后20名'
+            ? 'rear'
+            : 'all',
+        pageNo: this.ranking.people.currentPage,
+        pageSize: this.ranking.people.pageSize
       }
-      // downloadFile('/aaa', params)
+      this.ranking.people.downloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadMarketingPersonnelRanking', data, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '人员综合排名.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.ranking.people.downloadLoading = false
+      })
     },
-    // 人员综合排名 - 导出到excel
-    handlePeopleRankingExport() {
-      const params = {
-        ...this.executeStatusRankingGetData,
-        useCaseIds: this.executeStatusRankingGetData.useCaseIds.join(','),
-        dateRange: this.executeStatusRankingGetData.dateRange.join(',')
-      }
-      // downloadFile('/aaa', params)
+    // 关键指标趋势表现(图1) - 下载为excel
+    handleChart1Download() {
+      this.keyIndicator.chart1DownloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadDebtsTendency', this.keyIndicatorGetData, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '各支行用例关键指标趋势表现.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.keyIndicator.chart1DownloadLoading = false
+      })
     },
-    // 关键指标趋势表现(图1) - 导出到excel
-    handleChart1Export() {
-      const params = {
+    // 各支行成功执行率(图2) - 下载为excel
+    handleChart2Download() {
+      this.keyIndicator.chart2DownloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadBranchExecuteRate', this.keyIndicatorGetData, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '各支行成功执行率.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.keyIndicator.chart2DownloadLoading = false
+      })
+    },
+    // 意向购买产品/预约网点见面 - 成功占比与比上批情况(图3) - 下载为excel
+    handleChart3Download() {
+      const data = {
         ...this.keyIndicatorGetData,
-        useCaseIds: this.keyIndicatorGetData.useCaseIds.join(','),
-        pcList: this.keyIndicatorGetData.pcList.join(','),
-        dateRange: this.keyIndicatorGetData.dateRange.join(',')
+        PC: this.keyIndicator.batch
       }
-      // downloadFile('/aaa', params)
+      this.keyIndicator.chart3DownloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadBranchPurchaseIntention', data, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '意向购买产品/预约网点见面-成功占比与比上批情况.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.keyIndicator.chart3DownloadLoading = false
+      })
     },
-    // 各支行成功执行率(图2) - 导出到excel
-    handleChart2Export() {
-      const params = {
-        ...this.keyIndicatorGetData,
-        useCaseIds: this.keyIndicatorGetData.useCaseIds.join(','),
-        pcList: this.keyIndicatorGetData.pcList.join(','),
-        dateRange: this.keyIndicatorGetData.dateRange.join(',')
+    // 用例各支行督导看板 - 下载为excel
+    handleOrgDownload() {
+      const data = {
+        useCaseIds: this.org.filterForm.useCase,
+        dateRange: this.org.filterForm.dateRange,
+        PC: this.org.filterForm.batch,
+        customerGroup: this.org.filterForm.customerGroup
       }
-      // downloadFile('/aaa', params)
+      this.org.downloadLoading = true
+      downloadFilePost('/supervisorSpectaculars/downloadUseCaseSituation', data, {
+        headers: {
+          userNo: this.user.userId
+        }
+      }).then(res => {
+        this.downloadHandler(res.data, '用例各支行督导看板.xlsx')
+      }).catch(e => {
+        console.log(e)
+      }).finally(() => {
+        this.org.downloadLoading = false
+      })
     },
-    // 意向购买产品/预约网点见面 - 成功占比与比上批情况(图3) - 导出到excel
-    handleChart3Export() {
-      const params = {
-        ...this.keyIndicatorGetData,
-        useCaseIds: this.keyIndicatorGetData.useCaseIds.join(','),
-        PC: this.keyIndicator.batch,
-        dateRange: this.keyIndicatorGetData.dateRange.join(',')
+    // post请求下载文件 打开下载弹框
+    downloadHandler(blob, filename) {
+      const reader = new FileReader()
+      reader.readAsDataURL(blob)
+      reader.onload = e => {
+        const a = document.createElement('a')
+        a.download = filename
+        a.href = e.target.result
+        document.body.appendChild(a)
+        a.click()
+        document.body.removeChild(a)
       }
-      // downloadFile('/aaa', params)
     }
   }
 }
@@ -1703,7 +1787,7 @@ export default {
         color: #303133;
         font-weight: bold;
 
-        .export {
+        .download {
           margin-left: 5px;
           transform: scale(0.8);
         }
@@ -1712,6 +1796,12 @@ export default {
       .filter {
         padding-top: 18px;
         overflow: hidden;
+        width: 100%;
+
+        .filter-end {
+          float: right;
+          margin-right: 0;
+        }
       }
     }
 
@@ -1726,7 +1816,7 @@ export default {
           font-weight: bold;
           height: 60px;
 
-          .export {
+          .download {
             margin-left: 5px;
             transform: scale(0.8);
           }
@@ -1736,12 +1826,12 @@ export default {
           display: flex;
           justify-content: space-between;
 
-          .chart-title {
-            .export {
-              margin-left: 5px;
-              transform: scale(0.8);
-            }
-          }
+          // .item-head-title {
+          //   .download {
+          //     margin-left: 5px;
+          //     transform: scale(0.8);
+          //   }
+          // }
         }
       }
     }
@@ -1771,7 +1861,7 @@ export default {
           color: #303133;
           font-weight: bold;
 
-          .export {
+          .download {
             margin-left: 5px;
             transform: scale(0.8);
           }
