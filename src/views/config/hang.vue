@@ -50,15 +50,38 @@
           <div class="btn"
                style="color:#1890FF;"
                @click="handleDownload(scope.row)">下载预分发名单</div>
+          <div class="btn"
+               style="color:#1890FF;"
+               @click="handleAllocateResult(scope.row)">结果统计</div>
         </div>
       </template>
     </shun-table>
+    <el-dialog title="结果统计"
+               :visible.sync="showDialog"
+               custom-class="dialog"
+               @open="handleDialogOpen"
+               @closed="handleDialogClosed">
+      <div class="dialog-content">
+        <el-table :data="allocateResult"
+                  border>
+          <el-table-column prop="remark"
+                           label="分发结果" />
+          <el-table-column prop="count"
+                           label="数量"
+                           width="200" />
+        </el-table>
+      </div>
+      <template slot="footer">
+        <el-button type="primary"
+                   @click="handleDialogClose">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import ShunTable from '@/components/ShunTable'
-import { queryStatistics, allocate } from '@/api/api'
+import { queryStatistics, allocate, allocateResult } from '@/api/api'
 
 export default {
   name: 'Hang',
@@ -79,6 +102,8 @@ export default {
   },
   data() {
     return {
+      showDialog: false,
+      id: '',
       channelOpt: [
         { label: 'CRM', value: '1' },
         { label: '短信', value: '2' }
@@ -144,8 +169,106 @@ export default {
         }
       ],
       tableData: [
+        // {
+        //   id: 1,
+        //   eventName: '123123',
+        //   failedSupply: 1,
+        //   unSupply: 2,
+        //   unAllocate: 3,
+        //   preAllocate: 4,
+        //   toAllocate: 5,
+        //   allocated: 6,
+        //   total: 1000,
+        //   useCaseName: '用例111'
+        // }, {
+        //   id: 2,
+        //   eventName: 'asdf',
+        //   failedSupply: 10,
+        //   unSupply: 20,
+        //   unAllocate: 30,
+        //   preAllocate: 40,
+        //   toAllocate: 50,
+        //   allocated: 60,
+        //   total: 1000,
+        //   useCaseName: '用例111'
+        // }
       ],
-      selection: []
+      selection: [],
+      // 分发结果
+      allocateResult: [
+        // {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // },
+        // {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // }, {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // }, {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // }, {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // }, {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // }, {
+        //   count: 9
+        // },
+        // {
+        //   count: 222,
+        //   remark: '分发失败，网点线索数量达到上限'
+        // },
+        // {
+        //   count: 16,
+        //   remark: '分发成功，按照生效中线索执行人分发'
+        // }
+      ]
     }
   },
   computed: {
@@ -227,8 +350,27 @@ export default {
           duration: '3000'
         })
       }
+    },
+    // 查看分发结果统计
+    handleAllocateResult(row) {
+      this.id = row.id
+      this.showDialog = true
+    },
+    // 打开弹框
+    handleDialogOpen() {
+      allocateResult({ eventId: this.id }).then(res => {
+        this.allocateResult = res.data
+      })
+    },
+    // 关闭弹框
+    handleDialogClose() {
+      this.showDialog = false
+    },
+    // 关闭弹框回调
+    handleDialogClosed() {
+      this.id = ''
+      this.allocateResult = []
     }
-
   }
 }
 </script>
@@ -267,6 +409,14 @@ export default {
   }
   .unit {
     margin-left: 10px;
+  }
+
+  .dialog {
+    .dialog-content {
+      max-height: 500px;
+      padding: 0 20px;
+      overflow: auto;
+    }
   }
 }
 </style>

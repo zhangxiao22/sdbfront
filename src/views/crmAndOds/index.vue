@@ -27,7 +27,7 @@
                          :value="item.value" />
             </el-select>
           </el-form-item>
-          <el-form-item label="日期范围："
+          <el-form-item label="生效日期范围："
                         prop="dateRange">
             <el-date-picker v-model="filterForm.dateRange"
                             value-format="yyyy-MM-dd"
