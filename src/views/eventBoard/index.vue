@@ -199,6 +199,26 @@
                   ref="detailDialog"
                   :visible.sync="showDetailDialog"
                   @afterClose="afterDetailDialogClose" />
+    <el-dialog title="分发结果"
+               :visible.sync="showAllocateResultDialog"
+               custom-class="allocate-result-dialog"
+               @open="handleAllocateResultDialogOpen"
+               @closed="handleAllocateResultDialogClosed">
+      <div class="allocate-result-dialog-content">
+        <el-table :data="allocateResultList"
+                  border>
+          <el-table-column prop="remark"
+                           label="分发结果" />
+          <el-table-column prop="count"
+                           label="数量"
+                           width="200" />
+        </el-table>
+      </div>
+      <template slot="footer">
+        <el-button type="primary"
+                   @click="handleAllocateResultDialogClose">确 定</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -217,7 +237,8 @@ import {
   copyEvent,
   syncProduct,
   offlineEvent,
-  deleteEvent
+  deleteEvent,
+  allocateResult
 } from '@/api/api'
 import { mapGetters } from 'vuex'
 import Dialog from './dialog.vue'
@@ -250,6 +271,82 @@ export default {
   },
   data() {
     return {
+      showAllocateResultDialog: false,
+      allocateResultList: [
+        {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        },
+        {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        }, {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        }, {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        }, {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        }, {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        }, {
+          count: 9
+        },
+        {
+          count: 222,
+          remark: '分发失败，网点线索数量达到上限'
+        },
+        {
+          count: 16,
+          remark: '分发成功，按照生效中线索执行人分发'
+        }
+      ],
+      rowId: '',
       showDialog: false,
       updateRow: {},
       showDetailDialog: false,
@@ -418,6 +515,19 @@ export default {
               return _this.handleDownloadAssign(scope.row)
             },
             name: '下载预分发名单'
+          },
+          {
+            condition:
+              this.judgeStatus(scope.row.status.value) === 4 &&
+              (this.user.userName === scope.row.creater ||
+                this.user.userName === scope.row.reviewer),
+            style: {
+              color: '#1890FF'
+            },
+            clickFn() {
+              return _this.handleAllocateResult(scope.row)
+            },
+            name: '查看分发结果'
           },
           {
             //   condition: this.judgeStatus(scope.row.status.value) === 4 && (this.user.userName === scope.row.creater || this.user.userName === scope.row.reviewer),
@@ -672,8 +782,8 @@ export default {
       if (row.group.length) {
         window.open(
           process.env.VUE_APP_BASE_API +
-            '/customer/customerDownload?baseId=' +
-            row.id,
+          '/customer/customerDownload?baseId=' +
+          row.id,
           '_self'
         )
       } else {
@@ -690,8 +800,8 @@ export default {
       if (row.id) {
         window.open(
           process.env.VUE_APP_BASE_API +
-            '/event/download_assign_result?eventId=' +
-            row.id,
+          '/event/download_assign_result?eventId=' +
+          row.id,
           '_self'
         )
       } else {
@@ -701,6 +811,26 @@ export default {
           duration: '3000'
         })
       }
+    },
+    // 查看分发结果
+    handleAllocateResult(row) {
+      this.rowId = row.id
+      this.showAllocateResultDialog = true
+    },
+    // 打开分发结果弹框
+    handleAllocateResultDialogOpen() {
+      allocateResult({ eventId: this.rowId }).then(res => {
+        this.allocateResultList = res.data
+      })
+    },
+    // 关闭分发结果弹框
+    handleAllocateResultDialogClose() {
+      this.showAllocateResultDialog = false
+    },
+    // 关闭分发结果弹框回调
+    handleAllocateResultDialogClosed() {
+      this.rowId = ''
+      this.allocateResultList = []
     },
     handleEdit(row) {
       this.$router.push({
@@ -869,6 +999,13 @@ export default {
       font-size: 20px;
       color: $blue;
       cursor: pointer;
+    }
+  }
+  .allocate-result-dialog {
+    &-content {
+      max-height: 500px;
+      padding: 0 20px;
+      overflow: auto;
     }
   }
 }
