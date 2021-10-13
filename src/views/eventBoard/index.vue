@@ -271,82 +271,11 @@ export default {
   },
   data() {
     return {
-      showAllocateResultDialog: false,
-      allocateResultList: [
-        {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        },
-        {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        }, {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        }, {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        }, {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        }, {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        }, {
-          count: 9
-        },
-        {
-          count: 222,
-          remark: '分发失败，网点线索数量达到上限'
-        },
-        {
-          count: 16,
-          remark: '分发成功，按照生效中线索执行人分发'
-        }
-      ],
+      // 事件分发结果
       rowId: '',
+      showAllocateResultDialog: false,
+      allocateResultList: [],
+      // 事件分发结果end
       showDialog: false,
       updateRow: {},
       showDetailDialog: false,
