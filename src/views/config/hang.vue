@@ -56,13 +56,13 @@
         </div>
       </template>
     </shun-table>
-    <el-dialog title="结果统计"
+    <el-dialog title="分发结果"
                :visible.sync="showDialog"
                custom-class="dialog"
                @open="handleDialogOpen"
                @closed="handleDialogClosed">
       <div class="dialog-content">
-        <el-table :data="allocateResult"
+        <el-table :data="allocateResultList"
                   border>
           <el-table-column prop="remark"
                            label="分发结果" />
@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       showDialog: false,
-      id: '',
+      rowId: '',
       channelOpt: [
         { label: 'CRM', value: '1' },
         { label: '短信', value: '2' }
@@ -195,7 +195,7 @@ export default {
       ],
       selection: [],
       // 分发结果
-      allocateResult: [
+      allocateResultList: [
         // {
         //   count: 9
         // },
@@ -351,15 +351,15 @@ export default {
         })
       }
     },
-    // 查看分发结果统计
+    // 查看分发结果
     handleAllocateResult(row) {
-      this.id = row.id
+      this.rowId = row.id
       this.showDialog = true
     },
     // 打开弹框
     handleDialogOpen() {
-      allocateResult({ eventId: this.id }).then(res => {
-        this.allocateResult = res.data
+      allocateResult({ eventId: this.rowId }).then(res => {
+        this.allocateResultList = res.data
       })
     },
     // 关闭弹框
@@ -368,8 +368,8 @@ export default {
     },
     // 关闭弹框回调
     handleDialogClosed() {
-      this.id = ''
-      this.allocateResult = []
+      this.rowId = ''
+      this.allocateResultList = []
     }
   }
 }

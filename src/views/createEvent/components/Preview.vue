@@ -253,12 +253,15 @@
                                   class="preview-table"
                                   size="mini"
                                   style="width: 100%;">
-                          <el-table-column prop="content"
-                                           show-overflow-tooltip
-                                           label="话术内容" />
                           <el-table-column prop="category.label"
                                            width="150"
                                            label="话术分类" />
+                          <el-table-column prop="content"
+                                           show-overflow-tooltip
+                                           label="话术内容" />
+                          <el-table-column prop="description"
+                                           show-overflow-tooltip
+                                           label="话术说明" />
                         </el-table>
                         <el-table v-show="channelItem.advanceSMSInfoList.length"
                                   :data="channelItem.advanceSMSInfoList"

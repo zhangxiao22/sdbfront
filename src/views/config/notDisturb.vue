@@ -139,7 +139,7 @@
           </div>
           <el-input-number v-model="form.adviserWeeklyDistribution"
                            controls-position="right"
-                           :min="1"
+                           :min="0"
                            :max="100" />
           <span class="unit">条</span>
         </el-form-item>
@@ -151,7 +151,7 @@
           </div>
           <el-input-number v-model="form.personalWeeklyDistribution"
                            controls-position="right"
-                           :min="1"
+                           :min="0"
                            :max="100" />
           <span class="unit">条</span>
         </el-form-item>
@@ -163,7 +163,7 @@
           </div>
           <el-input-number v-model="form.networkManagerWeeklyDistribution"
                            controls-position="right"
-                           :min="1"
+                           :min="0"
                            :max="100" />
           <span class="unit">条</span>
         </el-form-item>
@@ -175,7 +175,7 @@
           </div>
           <el-input-number v-model="form.networkClerkWeeklyDistribution"
                            controls-position="right"
-                           :min="1"
+                           :min="0"
                            :max="100" />
           <span class="unit">条</span>
         </el-form-item>
