@@ -272,13 +272,30 @@ export default {
     this.getDitributeModeOptions()
     this.getType()
     this.getApproverOpt()
-    this.getParticipant()
     this.getCluePriorityOpt()
-    this.targetList().then(() => {
-      if (this.id) {
-        this.getUseCaseById()
-      }
-    })
+    this.targetList()
+    if (this.id) {
+      Promise.all([this.getUseCaseById(), this.getParticipant()]).then(() => {
+        this.baseInfo.participants = this.baseInfo.participants.map(n => {
+          return ((id) => {
+            var value
+            this.participantsOptions.forEach(a => {
+              a.children.forEach(b => {
+                b.children.forEach(c => {
+                  if (c.value === id) {
+                    value = [a.value, b.value, id]
+                  }
+                })
+              })
+            })
+            return value
+          })(n[2])
+        })
+        // console.log(this.baseInfo.participants)
+      })
+    } else {
+      this.getParticipant()
+    }
   },
   mounted() {
   },
@@ -308,10 +325,13 @@ export default {
     },
     // 获取参与人
     getParticipant() {
-      getUseCaseParticipant().then(res => {
-        this.participantsOptions = translate(res.data.orgGraphVOList, {
-          id: 'value',
-          noChildren: null
+      return new Promise(resolve => {
+        getUseCaseParticipant().then(res => {
+          this.participantsOptions = translate(res.data.orgGraphVOList, {
+            id: 'value',
+            noChildren: null
+          })
+          resolve()
         })
       })
     },
@@ -337,29 +357,32 @@ export default {
       })
     },
     getUseCaseById() {
-      getUseCaseDetailById({ id: this.id }).then(res => {
-        this.baseInfo.name = res.data.name
-        this.baseInfo.type = res.data.category.value
-        this.baseInfo.participants = res.data.eventParticipants
-        this.baseInfo.isSwithOnUnDisturb = res.data.isSwithOnUnDisturb
-        this.baseInfo.ditributeMode = res.data.distributeMode.value
-        this.baseInfo.cluePriority = res.data.cluePriorityRule.value
-        this.baseInfo.approver = res.data.approverId
-        // 目标
-        this.baseInfo.target = res.data.achieveList.map(item => {
-          let obj = this.targetOpt.find(n => {
-            if (n.value === item.tagId) {
-              obj = n
-              return true
-            }
+      return new Promise(resolve => {
+        getUseCaseDetailById({ id: this.id }).then(res => {
+          this.baseInfo.name = res.data.name
+          this.baseInfo.type = res.data.category.value
+          this.baseInfo.participants = res.data.eventParticipants
+          this.baseInfo.isSwithOnUnDisturb = res.data.isSwithOnUnDisturb
+          this.baseInfo.ditributeMode = res.data.distributeMode.value
+          this.baseInfo.cluePriority = res.data.cluePriorityRule.value
+          this.baseInfo.approver = res.data.approverId
+          // 目标
+          this.baseInfo.target = res.data.achieveList.map(item => {
+            let obj = this.targetOpt.find(n => {
+              if (n.value === item.tagId) {
+                obj = n
+                return true
+              }
+            })
+            return Object.assign({}, obj, {
+              targetSelect: item.tagId,
+              targetValue: item.value
+            })
           })
-          return Object.assign({}, obj, {
-            targetSelect: item.tagId,
-            targetValue: item.value
-          })
+          this.resetTargetOpt()
+          this.baseInfo.desc = res.data.description
+          resolve()
         })
-        this.resetTargetOpt()
-        this.baseInfo.desc = res.data.description
       })
     },
     save() {
@@ -390,31 +413,28 @@ export default {
 
     // 获取目标
     targetList() {
-      return new Promise(resolve => {
-        getTargetList().then(res => {
-          this.targetOpt = res.data.achieveTagBOList.map(n => {
-            return {
-              // 目标名称
-              label: n.name,
-              // 单位
-              unit: n.unit.label,
-              // 单位id
-              unitId: n.unit.value,
-              // 目标值
-              value: n.id,
-              // 是否可选
-              disabled: false,
-              // 目标值-小数点精度
-              precision: n.unit.value === 4 ? 2 : 0,
-              // 目标值-最小值
-              min: n.unit.value === 4 ? 0.01 : 1,
-              // 目标值-最大值
-              max: n.unit.value === 4 ? 100 : MAX_NUMBER,
-              // 比较符号
-              compare: n.relation.label
-            }
-          })
-          resolve()
+      getTargetList().then(res => {
+        this.targetOpt = res.data.achieveTagBOList.map(n => {
+          return {
+            // 目标名称
+            label: n.name,
+            // 单位
+            unit: n.unit.label,
+            // 单位id
+            unitId: n.unit.value,
+            // 目标值
+            value: n.id,
+            // 是否可选
+            disabled: false,
+            // 目标值-小数点精度
+            precision: n.unit.value === 4 ? 2 : 0,
+            // 目标值-最小值
+            min: n.unit.value === 4 ? 0.01 : 1,
+            // 目标值-最大值
+            max: n.unit.value === 4 ? 100 : MAX_NUMBER,
+            // 比较符号
+            compare: n.relation.label
+          }
         })
       })
     },
