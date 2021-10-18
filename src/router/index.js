@@ -126,7 +126,7 @@ let asyncRoutes = [
         path: 'crmAndOds',
         name: 'CrmAndOds',
         component: () => import(/* webpackChunkName: "crmAndOds" */ '@/views/crmAndOds/index'),
-        meta: { title: 'crm与ods反馈数据的查询列表', icon: 'crmAndOds' }
+        meta: { title: '线索执行记录查询', icon: 'crmAndOds' }
       },
       {
         // 设置

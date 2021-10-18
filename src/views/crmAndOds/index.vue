@@ -1,7 +1,7 @@
 <template>
   <div class="container">
     <shun-table ref="table"
-                title="crm与ods反馈数据的查询列表"
+                title="线索执行记录查询"
                 :loading="loading"
                 :page-size.sync="pageSize"
                 :is-card="false"
@@ -36,6 +36,69 @@
                             :picker-options="pickerOptions"
                             start-placeholder="开始日期"
                             end-placeholder="结束日期" />
+          </el-form-item>
+          <el-form-item label="用例名称："
+                        prop="useCaseName">
+            <el-input v-model="filterForm.useCaseName"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="网点ID："
+                        prop="outletId">
+            <el-input v-model="filterForm.outletId"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="网点名称："
+                        prop="outletName">
+            <el-input v-model="filterForm.outletName"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="执行人姓名："
+                        prop="executorName">
+            <el-input v-model="filterForm.executorName"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="执行人工号："
+                        prop="executorId">
+            <el-input v-model="filterForm.executorId"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="客群标签："
+                        prop="customerTag">
+            <el-input v-model="filterForm.customerTag"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="执行情况："
+                        prop="executeRes">
+            <el-input v-model="filterForm.executeRes"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="客户号："
+                        prop="customerNo">
+            <el-input v-model="filterForm.customerNo"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
+          </el-form-item>
+          <el-form-item label="客户姓名："
+                        prop="customerName">
+            <el-input v-model="filterForm.customerName"
+                      placeholder="请输入"
+                      clearable
+                      @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item class="filter-item-end">
             <el-button type="primary"
@@ -86,13 +149,33 @@ export default {
         { label: '短信', value: '2' }
       ],
       filterForm: {
+        // 渠道
         channel: '',
+        // 日期范围
         dateRange: [
           moment()
             .subtract(7, 'days')
             .format('YYYY-MM-DD'),
           moment().format('YYYY-MM-DD')
-        ]
+        ],
+        // 用例名称
+        useCaseName: '',
+        // 网点id
+        outletId: '',
+        // 网点名称
+        outletName: '',
+        // 执行人姓名
+        executorName: '',
+        // 执行人工号
+        executorId: '',
+        // 客群标签
+        customerTag: '',
+        // 执行情况
+        executeRes: '',
+        // 客户号
+        customerNo: '',
+        // 客户姓名
+        customerName: ''
       },
       pickerOptions: {
         shortcuts: [
@@ -140,6 +223,22 @@ export default {
           fixed: 'left'
         },
         { prop: 'odsPhoneNum', label: '电话号码', width: 120, fixed: 'left' },
+        { prop: 'odsCustomerAge', label: '客户年龄', width: 100, fixed: 'left' },
+        {
+          prop: 'odsUseCaseName',
+          label: '用例名称',
+          minWidth: 180,
+          fixed: 'left'
+        },
+        { prop: 'odsUseCaseCustomerLabel', label: '客群标签', fixed: 'left' },
+        {
+          prop: 'distributionChannelName',
+          label: '下发渠道',
+          width: 100,
+          fixed: 'left'
+        },
+        { prop: 'isTrial', label: '是否对照组', width: 100, fixed: 'left' },
+        { prop: 'odsIsExecuteCustomer', label: '是否执行', fixed: 'left' },
         { prop: 'odsEffectDate', label: '生效日期', width: 100, fixed: 'left' },
         {
           prop: 'odsInvalidDate',
@@ -147,14 +246,7 @@ export default {
           width: 100,
           fixed: 'left'
         },
-        {
-          prop: 'distributionChannelName',
-          label: '下发渠道',
-          width: 100,
-          fixed: 'left'
-        },
-        { prop: 'odsUseCaseCustomerLabel', label: '客群标签' },
-        { prop: 'odsIsExecuteCustomer', label: '是否执行' },
+        { prop: 'clueExecuteDate', label: '执行时间', width: 100, fixed: 'left' },
         { prop: 'odsExecutorId', label: '执行人工号', width: 120 },
         { prop: 'odsExecutorName', label: '执行人姓名', width: 100 },
         { prop: 'odsExecutorOutlet', label: '执行人所属网点号', width: 140 },
@@ -173,43 +265,35 @@ export default {
           label: '执行人所属支行名称',
           width: 150
         },
-        { prop: 'odsBmpExecutorId', label: '平台分配执行人工号', width: 150 },
-        { prop: 'odsBmpExecutorName', label: '平台分配执行人姓名', width: 150 },
-        {
-          prop: 'odsBmpExecutorOutlet',
-          label: '平台分配执行人所属网点号',
-          width: 110
-        },
-        {
-          prop: 'odsBmpExecutorOutletName',
-          label: '平台分配执行人所属网点名称',
-          width: 120
-        },
-        {
-          prop: 'odsBmpExecutorSubBranchId',
-          label: '平台分配执行人所属支行号',
-          width: 110
-        },
-        {
-          prop: 'odsBmpExecutorSubBranchName',
-          label: '平台分配执行人所属支行名称',
-          width: 120
-        },
-        {
-          prop: 'odsUseCaseName',
-          label: '用例名称',
-          minWidth: 180,
-          fixed: 'left'
-        },
-        { prop: 'clueExecuteDate', label: '执行时间', width: 100 },
         { prop: 'crmProcessResult', label: '处理状态' },
         {
           prop: 'odsCrmProcessResultDetail',
           label: '处理结果详情',
           width: 110
         },
-        { prop: 'remarks', label: '处理备注' },
-        { prop: 'isTrial', label: '是否对照组', width: 100 }
+        { prop: 'remarks', label: '处理备注' }
+        // { prop: 'odsBmpExecutorId', label: '平台分配执行人工号', width: 150 },
+        // { prop: 'odsBmpExecutorName', label: '平台分配执行人姓名', width: 150 },
+        // {
+        //   prop: 'odsBmpExecutorOutlet',
+        //   label: '平台分配执行人所属网点号',
+        //   width: 110
+        // },
+        // {
+        //   prop: 'odsBmpExecutorOutletName',
+        //   label: '平台分配执行人所属网点名称',
+        //   width: 120
+        // },
+        // {
+        //   prop: 'odsBmpExecutorSubBranchId',
+        //   label: '平台分配执行人所属支行号',
+        //   width: 110
+        // },
+        // {
+        //   prop: 'odsBmpExecutorSubBranchName',
+        //   label: '平台分配执行人所属支行名称',
+        //   width: 120
+        // },
       ]
     }
   },
