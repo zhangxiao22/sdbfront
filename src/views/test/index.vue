@@ -1,135 +1,70 @@
 <template>
-  <div class="container">
-    <el-table :data="parseTable(product)"
-              :span-method="objectSpanMethod"
-              border
-              style="width: 100%;margin-bottom:18px;">
-      <el-table-column prop="groupName"
-                       label="组合" />
-      <el-table-column prop="amount1"
-                       min-width="100"
-                       label="综合收益" />
-      <el-table-column prop="productName"
-                       min-width="120"
-                       label="产品名称" />
-      <el-table-column prop="productType"
-                       label="产品类型" />
-      <el-table-column prop="risklLevel"
-                       label="风险等级" />
-      <el-table-column prop="rateOfReturn"
-                       min-width="150"
-                       label="收益率/行业比较基准" />
-      <el-table-column prop="minimumPurchaseAmount"
-                       label="起购金额" />
-      <el-table-column prop="begin_time"
-                       label="起息日" />
-      <el-table-column prop="end_time"
-                       label="到期日" />
-      <el-table-column prop="proportion"
-                       label="比例" />
-    </el-table>
-  </div>
+  <el-table :data="tableData"
+            style="width: 100%">
+    <el-table-column label="日期"
+                     width="180">
+      <div slot-scope="scope">
+        1123
+        <i class="el-icon-time" />
+        <span style="margin-left: 10px">{{ scope.row.date }}</span>
+      </div>
+    </el-table-column>
+    <el-table-column label="姓名"
+                     width="180">
+      <template slot-scope="scope">
+        <el-popover trigger="hover"
+                    placement="top">
+          <p>姓名: {{ scope.row.name }}</p>
+          <p>住址: {{ scope.row.address }}</p>
+          <div slot="reference"
+               class="name-wrapper">
+            <el-tag size="medium">{{ scope.row.name }}</el-tag>
+          </div>
+        </el-popover>
+      </template>
+    </el-table-column>
+    <el-table-column label="操作">
+      <template slot-scope="scope">
+        <el-button size="mini"
+                   @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+        <el-button size="mini"
+                   type="danger"
+                   @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+      </template>
+    </el-table-column>
+  </el-table>
 </template>
 
 <script>
-import ShunTable from '@/components/ShunTable'
-import { getSmsList, getStragetyList, fuzzySearch } from '@/api/api'
-
 export default {
-  components: {
-  },
-  props: {
-  },
   data() {
     return {
-      product: {
-        groupName: '组合A',
-        amount1: '3.065-3.385%',
-        list: [
-          {
-            productName: '顺盈2号',
-            productType: '开放式理财',
-            risklLevel: 'R2',
-            rateOfReturn: '2.8-3.2%',
-            minimumPurchaseAmount: '10000',
-            begin_time: 'XXXX',
-            end_time: 'XXXX',
-            proportion: '50%'
-          },
-          {
-            productName: '顺盈3号',
-            productType: '开放式理财',
-            risklLevel: 'R2',
-            rateOfReturn: '2.8-3.2%',
-            minimumPurchaseAmount: '10000',
-            begin_time: 'XXXX',
-            end_time: 'XXXX',
-            proportion: '30%'
-          },
-          {
-            productName: '三年期定期',
-            productType: '存款',
-            risklLevel: '',
-            rateOfReturn: '4.13%',
-            minimumPurchaseAmount: '50',
-            begin_time: 'T',
-            end_time: 'T+3年',
-            proportion: '20%'
-          }
-        ]
-      }
+      tableData: [{
+        date: '2016-05-02',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1518 弄'
+      }, {
+        date: '2016-05-04',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1517 弄'
+      }, {
+        date: '2016-05-01',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1519 弄'
+      }, {
+        date: '2016-05-03',
+        name: '王小虎',
+        address: '上海市普陀区金沙江路 1516 弄'
+      }]
     }
   },
-  computed: {
-  },
-  watch: {},
-  created() {
-    console.log(this.parseTable(this.product))
-  },
-  mounted() {
-  },
   methods: {
-    parseTable(data) {
-      return data.list.map((n, i) => {
-        return Object.assign({
-          groupName: data.groupName,
-          amount1: data.amount1,
-          total: data.list.length
-        }, n)
-      })
+    handleEdit(index, row) {
+      console.log(index, row)
     },
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.property === 'groupName' || column.property === 'amount1') {
-        if (rowIndex === 0) {
-          return {
-            rowspan: row.total,
-            colspan: 1
-          }
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0
-          }
-        }
-      }
+    handleDelete(index, row) {
+      console.log(index, row)
     }
   }
 }
 </script>
-
-<style lang="scss" scoped>
-@import "~@/styles/mixin.scss";
-
-.container {
-  .box {
-    width: 400px;
-    display: inline-flex;
-    flex-wrap: wrap;
-    span {
-      height: 30px;
-      border: 1px solid;
-      margin: 0 20px;
-    }
-  }
-}
-</style>
