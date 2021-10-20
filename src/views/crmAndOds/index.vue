@@ -237,14 +237,13 @@ export default {
           width: 100,
           fixed: 'left'
         },
-        { prop: 'isTrial', label: '是否对照组', width: 100, fixed: 'left' },
-        { prop: 'odsIsExecuteCustomer', label: '是否执行', fixed: 'left' },
-        { prop: 'odsEffectDate', label: '生效日期', width: 100, fixed: 'left' },
+        { prop: 'isTrial', label: '是否对照组', width: 100 },
+        { prop: 'odsIsExecuteCustomer', label: '是否执行' },
+        { prop: 'odsEffectDate', label: '生效日期', width: 100 },
         {
           prop: 'odsInvalidDate',
           label: '失效日期',
-          width: 100,
-          fixed: 'left'
+          width: 100
         },
         { prop: 'clueExecuteDate', label: '执行时间', width: 100, fixed: 'left' },
         { prop: 'odsExecutorId', label: '执行人工号', width: 120 },
