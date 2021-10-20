@@ -62,16 +62,16 @@ export default {
           label: {
             formatter: (v) => v + this.unit
           }
-        },
-        tooltip: {
-          showTitle: false,
-          formatter: (datum) => {
-            return {
-              name: datum.label,
-              value: datum.value + this.unit
-            }
-          }
         }
+        // tooltip: {
+        //   showTitle: false,
+        //   formatter: (datum) => {
+        //     return {
+        //       name: datum.label,
+        //       value: datum.value + this.unit
+        //     }
+        //   }
+        // }
         // label: {
         //   // 可手动配置 label 数据标签位置
         //   position: 'middle', // 'left', 'middle', 'right'
