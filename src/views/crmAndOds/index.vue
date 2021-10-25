@@ -4,7 +4,7 @@
                 title="线索执行记录查询"
                 :loading="loading"
                 :page-size.sync="pageSize"
-                :is-card="false"
+                :is-card="true"
                 :current-page.sync="currentPage"
                 :total="total"
                 :table-data="tableData"
@@ -38,25 +38,28 @@
                             end-placeholder="结束日期" />
           </el-form-item>
           <el-form-item label="用例名称："
-                        prop="useCaseName">
-            <el-input v-model="filterForm.useCaseName"
-                      placeholder="请输入"
-                      clearable
-                      @keyup.enter.native="search" />
+                        prop="useCase">
+            <el-select v-model="filterForm.useCase"
+                       placeholder="请选择"
+                       clearable
+                       filterable
+                       @keyup.enter.native="search">
+              <el-option v-for="({label, value}, i) of useCaseOpt"
+                         :key="i"
+                         :label="label"
+                         :value="value" />
+            </el-select>
           </el-form-item>
-          <el-form-item label="网点ID："
+          <el-form-item label="网点："
                         prop="outletId">
-            <el-input v-model="filterForm.outletId"
-                      placeholder="请输入"
-                      clearable
-                      @keyup.enter.native="search" />
-          </el-form-item>
-          <el-form-item label="网点名称："
-                        prop="outletName">
-            <el-input v-model="filterForm.outletName"
-                      placeholder="请输入"
-                      clearable
-                      @keyup.enter.native="search" />
+            <el-cascader v-model="filterForm.outletId"
+                         :options="outletOpt"
+                         placeholder="请输入网点号/网点名"
+                         :show-all-levels="false"
+                         clearable
+                         filterable
+                         :filter-method="outletFilterMethod"
+                         @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item label="执行人姓名："
                         prop="executorName">
@@ -80,11 +83,16 @@
                       @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item label="执行情况："
-                        prop="executeRes">
-            <el-input v-model="filterForm.executeRes"
-                      placeholder="请输入"
-                      clearable
-                      @keyup.enter.native="search" />
+                        prop="executeStatus">
+            <el-select v-model="filterForm.executeStatus"
+                       placeholder="请选择"
+                       clearable
+                       @keyup.enter.native="search">
+              <el-option v-for="({label, value}, i) of executeStatusOpt"
+                         :key="i"
+                         :label="label"
+                         :value="value" />
+            </el-select>
           </el-form-item>
           <el-form-item label="客户号："
                         prop="customerNo">
@@ -134,7 +142,7 @@
 <script>
 import { downloadFile } from '@/utils'
 import ShunTable from '@/components/ShunTable/index'
-import { getRecordPage } from '@/api/api'
+import { getAllUseCase, getRecordPage, getOrgList } from '@/api/api'
 import moment from 'moment'
 export default {
   name: 'CrmAndOds',
@@ -148,22 +156,27 @@ export default {
         { label: 'CRM', value: '1' },
         { label: '短信', value: '2' }
       ],
+      useCaseOpt: [],
+      outletOpt: [],
+      executeStatusOpt: [{
+        label: '未执行',
+        value: 0
+      }, {
+        label: '已执行',
+        value: 1
+      }],
       filterForm: {
         // 渠道
         channel: '',
         // 日期范围
         dateRange: [
-          moment()
-            .subtract(7, 'days')
-            .format('YYYY-MM-DD'),
+          moment().subtract(7, 'days').format('YYYY-MM-DD'),
           moment().format('YYYY-MM-DD')
         ],
         // 用例名称
-        useCaseName: '',
-        // 网点id
+        useCase: '',
+        // 网点
         outletId: '',
-        // 网点名称
-        outletName: '',
         // 执行人姓名
         executorName: '',
         // 执行人工号
@@ -171,13 +184,14 @@ export default {
         // 客群标签
         customerTag: '',
         // 执行情况
-        executeRes: '',
+        executeStatus: '',
         // 客户号
         customerNo: '',
         // 客户姓名
         customerName: ''
       },
       pickerOptions: {
+        firstDayOfWeek: 1,
         shortcuts: [
           {
             text: '最近一个月',
@@ -304,9 +318,37 @@ export default {
   },
   watch: {},
   created() {
+    this.getUseCaseOpt()
+    this.getOutletOpt()
     this.search()
   },
   methods: {
+    // 网点级联筛选输入匹配方法
+    outletFilterMethod(node, keyword) {
+      return node.label.includes(keyword) || node.value.includes(keyword)
+    },
+    getOutletOpt() {
+      getOrgList().then(res => {
+        this.outletOpt = res.data.filter(n => n.branch_code === n.org_code).map(n => ({
+          label: n.branch_name,
+          value: n.branch_code,
+          children: res.data.filter(m => m.branch_code === n.branch_code && m.org_code !== m.branch_code).map(m => ({
+            label: m.org_name,
+            value: m.org_code
+          }))
+        }))
+      })
+    },
+    getUseCaseOpt() {
+      getAllUseCase().then(res => {
+        this.useCaseOpt = res.data.map(n => {
+          return {
+            label: n.name,
+            value: n.id
+          }
+        })
+      })
+    },
     search() {
       this.searchForm = JSON.parse(JSON.stringify(this.filterForm))
       this.getList(1)
@@ -317,23 +359,24 @@ export default {
     },
     getList(pageNo) {
       this.currentPage = pageNo || this.currentPage
-      const data = Object.assign(
-        {
-          pageNo: this.currentPage,
-          pageSize: this.pageSize
-        },
-        this.filterForm
-      )
+      const data = {
+        pageNo: this.currentPage,
+        pageSize: this.pageSize,
+        ...this.filterForm,
+        // 待后台优化以下入参
+        outletId: this.filterForm.outletId.length && this.filterForm.outletId.slice(-1)[0] || '',
+        useCaseName: this.useCaseOpt.find(n => n.value === this.filterForm.useCase)?.label || '',
+        executeRes: this.filterForm.executeStatus === '' ? '' : this.filterForm.executeStatus === 0 ? '未执行' : '已执行'
+      }
+      console.log(data)
       this.loading = true
       // this.tableData = [{ odsCustomerId: '12345678901', odsUseCaseName: '用例网点分配比例测试2' }]
-      getRecordPage(data)
-        .then(res => {
-          this.tableData = res.data.resultList
-          this.total = res.pagination.totalItemCount
-        })
-        .finally(() => {
-          this.loading = false
-        })
+      getRecordPage(data).then(res => {
+        this.tableData = res.data.resultList
+        this.total = res.pagination.totalItemCount
+      }).finally(() => {
+        this.loading = false
+      })
     },
     downloadAll() {
       const data = {
