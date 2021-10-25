@@ -375,7 +375,7 @@ export default {
       this.loading = true
       getProductList(data).then(res => {
         this.tableData = res.data.resultList.map((n) => {
-          return Object.assign({}, n, n.extraField)
+          return Object.assign({}, n.extraField, n)
         })
         this.total = res.pagination.totalItemCount
         // this.loading = false

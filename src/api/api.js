@@ -275,6 +275,15 @@ export function queryStatistics() {
   })
 }
 
+// 根据事件id获取运行中事件分发结果统计
+export function allocateResult(params) {
+  return request({
+    url: '/event/count_allocate_result',
+    method: 'get',
+    params
+  })
+}
+
 /** ************************************************ 模型 ************************************************************/
 // 获取模型库
 export function queryModelList() {
