@@ -172,6 +172,7 @@
     </shun-table>
     <el-dialog :title="isEdit ? '编辑话术' : '新增话术'"
                append-to-body
+               :close-on-click-modal="false"
                :visible.sync="showDialog"
                @closed="handleDialogClosed">
       <el-form ref="regFormRef"

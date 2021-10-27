@@ -109,6 +109,7 @@
       </template>
     </shun-table>
     <el-dialog title="新增名单"
+               :close-on-click-modal="false"
                :before-close="cancelAddList"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"

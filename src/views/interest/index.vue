@@ -167,6 +167,7 @@
     </shun-table>
     <!-- dialog -->
     <el-dialog :title="isEdit?'编辑权益':'新增权益'"
+               :close-on-click-modal="false"
                :visible.sync="showDialog"
                append-to-body
                @closed="handleClosedDialog">

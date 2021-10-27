@@ -57,6 +57,7 @@
       </template>
     </shun-table>
     <el-dialog title="分发结果"
+               :close-on-click-modal="false"
                :visible.sync="showDialog"
                custom-class="dialog"
                @open="handleDialogOpen"

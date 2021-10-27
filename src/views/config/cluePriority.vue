@@ -16,6 +16,7 @@
       </template>
     </shun-table>
     <el-dialog title="修改优先级"
+               :close-on-click-modal="false"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"
                :model="form">

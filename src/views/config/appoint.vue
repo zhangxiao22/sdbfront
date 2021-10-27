@@ -77,6 +77,7 @@
       </template>
     </shun-table>
     <el-dialog title="网点指派"
+               :close-on-click-modal="false"
                :before-close="cancelAppoint"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"

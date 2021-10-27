@@ -200,6 +200,7 @@
                   :visible.sync="showDetailDialog"
                   @afterClose="afterDetailDialogClose" />
     <el-dialog title="分发结果"
+               :close-on-click-modal="false"
                :visible.sync="showAllocateResultDialog"
                custom-class="allocate-result-dialog"
                @open="handleAllocateResultDialogOpen"

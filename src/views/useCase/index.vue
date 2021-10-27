@@ -122,6 +122,7 @@
       </template>
     </shun-table>
     <el-dialog title="修改归属人"
+               :close-on-click-modal="false"
                :before-close="closeOwnerDialog"
                :visible.sync="ownerDialog">
       <el-form ref="regFormRef"

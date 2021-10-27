@@ -79,6 +79,7 @@
       </template>
     </shun-table>
     <el-dialog title="分配岗位"
+               :close-on-click-modal="false"
                :visible.sync="showDialog"
                @open="dialogOpen">
       <el-form ref="formRef"

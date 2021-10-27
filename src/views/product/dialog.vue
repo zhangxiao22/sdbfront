@@ -1,6 +1,7 @@
 <template>
   <div class="dialog-container">
     <el-dialog :title="isEdit?'编辑产品':'新增产品'"
+               :close-on-click-modal="false"
                :visible="visible"
                append-to-body
                @open="handleOpen"

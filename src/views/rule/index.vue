@@ -69,6 +69,7 @@
     </shun-table>
     <!-- 右侧边 -->
     <ShunDrawer title="规则"
+                :close-on-click-modal="false"
                 :show.sync="showDrawer"
                 :append-to-body="true"
                 :loading="drawerButtonLoading"

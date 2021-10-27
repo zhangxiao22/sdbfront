@@ -71,6 +71,7 @@
       </template>
     </shun-table>
     <el-dialog title="请假代办"
+               :close-on-click-modal="false"
                :before-close="cancelAdd"
                :visible.sync="showDialog">
       <el-form ref="regFormRef"

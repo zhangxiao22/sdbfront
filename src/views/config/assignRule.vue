@@ -192,6 +192,7 @@
     </el-drawer>
     <!-- dialog -->
     <el-dialog title="规则"
+               :close-on-click-modal="false"
                :visible.sync="showDialog"
                @close="handleCloseDialog">
       <el-form ref="dialogFormRef"
@@ -245,6 +246,7 @@
 
     <!-- dialog2 -->
     <el-dialog title="规则"
+               :close-on-click-modal="false"
                :visible.sync="showTableDialog"
                @close="handleCloseTableDialog">
       <el-form ref="dialogTableFormRef"

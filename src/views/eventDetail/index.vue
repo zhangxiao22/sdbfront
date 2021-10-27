@@ -82,6 +82,7 @@
                not-auto-render />
     </div>
     <el-dialog title="通过"
+               :close-on-click-modal="false"
                :visible.sync="showResolve">
       <el-form ref="regFormRef"
                label-width="110px"
@@ -105,6 +106,7 @@
       </div>
     </el-dialog>
     <el-dialog title="驳回"
+               :close-on-click-modal="false"
                :visible.sync="showReject">
       <el-form ref="formRef"
                label-width="110px"

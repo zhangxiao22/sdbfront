@@ -77,6 +77,7 @@
                  @click="reset">重置排序</el-button>
     </div>
     <el-dialog title="每周线索分配上限设置"
+               :close-on-click-modal="false"
                :visible.sync="clueDialog">
       <el-form ref="formRef"
                style="width:500px;margin:0 auto;"

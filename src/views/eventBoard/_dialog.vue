@@ -721,7 +721,7 @@ export default {
         const bHas = isNaN(b[1])
         return aHas - bHas || (aHas === true && a[1] - b[1]) || 0
       })
-      return newArray.sort(function(a, b) {
+      return newArray.sort(function (a, b) {
         return a[0] - b[0]
       })
     },

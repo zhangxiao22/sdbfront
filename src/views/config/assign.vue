@@ -32,6 +32,7 @@
       </template>
     </shun-table>
     <el-dialog :title="isEdit?'编辑岗位':'新增岗位'"
+               :close-on-click-modal="false"
                :visible.sync="showDialog"
                @open="dialogOpen">
       <el-form ref="formRef"
@@ -147,7 +148,7 @@ export default {
   },
 
   watch: {},
-  created() {},
+  created() { },
   methods: {
     init() {
       this.getList()
