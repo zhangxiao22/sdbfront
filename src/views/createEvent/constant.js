@@ -1,4 +1,151 @@
-export const CHANNEL_OPT = [
+export const CHANNEL_OPT = process.env.NODE_ENV === 'staging' ? [
+  {
+    value: 1,
+    label: 'CRM',
+    disabled: false,
+    icon: 'phone',
+    iconColor: '#409eff',
+    // 1:定时型 2:规则
+    chooseType: 1,
+    timingDateType: 1,
+    timingDateValue: '',
+    timingTimeValue: '07:00',
+    dateRange: [],
+    ruleValue: [{
+      date: 0,
+      time: '00:00'
+    }],
+    // 触发型的值-触发规则
+    trigger: [
+      {
+        rule: [],
+        date: 0,
+        time: '00:00'
+      }
+    ],
+    type: [{
+      id: 1,
+      icon: 'el-icon-alarm-clock',
+      name: '定时型'
+    },
+    {
+      id: 3,
+      icon: 'el-icon-position',
+      name: '触发型'
+    }
+    ],
+    beforeSms: [],
+    afterSms: [],
+    validPeriod: 0,
+    model: []
+  },
+  {
+    value: 2,
+    label: '短信',
+    disabled: false,
+    icon: 'sms',
+    iconColor: '#FF9933',
+    chooseType: 1,
+    // 定时型的值-规则 (每周几或每月)
+    timingDateType: 1,
+    // 定时型的值-规则 (周几或者几号) (多选)
+    timingDateValue: '',
+    // 定时型的值-时间
+    timingTimeValue: '07:00',
+    // 定时型的值-起止时间
+    dateRange: [],
+    // 规则型的值
+    ruleValue: [{
+      date: 0,
+      time: '00:00'
+    }],
+    // 触发型的值-触发规则
+    trigger: [
+      {
+        rule: [],
+        date: 0,
+        time: '00:00'
+      }
+    ],
+    // 精准内测
+    test: '',
+    smsSendMode: 1,
+    type: [{
+      id: 1,
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    },
+    {
+      id: 2,
+      name: '规则型',
+      icon: 'el-icon-tickets'
+    },
+    {
+      id: 3,
+      name: '触发型',
+      icon: 'el-icon-position'
+    }
+    ],
+    model: []
+  },
+  // {
+  //   value: 3,
+  //   label: '微信',
+  //   disabled: false,
+  //   icon: 'wechat',
+  //   iconColor: '#67c23a',
+  //   chooseType: 1,
+  //   timingDateType: 1,
+  //   timingDateValue: [],
+  //   timingTimeValue: '07:00',
+  //   dateRange: [],
+  //   ruleValue: [{
+  //     date: 0,
+  //     time: '00:00'
+  //   }],
+  //   type: [{
+  //     id: 1,
+  //     name: '定时型',
+  //     icon: 'el-icon-alarm-clock'
+  //   }, {
+  //     id: 2,
+  //     name: '规则型',
+  //     icon: 'el-icon-tickets'
+  //   }],
+  //   model: []
+  // }
+  {
+    value: 5,
+    label: 'STM',
+    disabled: false,
+    icon: 'stm',
+    iconColor: '#990099',
+    chooseType: 1,
+    isBigDeposit: 0,
+    type: [{
+      id: 1,
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    }],
+    // 定时型的值-起止时间
+    dateRange: []
+  },
+  {
+    value: 6,
+    label: '智能客服',
+    disabled: false,
+    icon: 'ai-customer',
+    iconColor: '#f56c6c',
+    chooseType: 1,
+    type: [{
+      id: 1,
+      name: '定时型',
+      icon: 'el-icon-alarm-clock'
+    }],
+    // 定时型的值-起止时间
+    dateRange: []
+  }
+] : [
   {
     value: 1,
     label: 'CRM',
@@ -146,6 +293,7 @@ export const CHANNEL_OPT = [
   //   dateRange: []
   // }
 ]
+
 export const TIMING_OPT = [
   {
     value: 1,

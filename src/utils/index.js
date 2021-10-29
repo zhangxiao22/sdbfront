@@ -1,6 +1,20 @@
 import qs from 'qs'
+import axios from 'axios'
 
 export const MAX_NUMBER = 1e14
+
+export function formatTenThousand(val) {
+  return (+val / 10000).toFixed(2)
+}
+
+/**
+ * Format decimal to string
+ * @param {Number} val
+ * @returns {string}
+ */
+export function formatPercent(val) {
+  return `${(+val * 100).toFixed(2)}%`
+}
 
 export function formatMoney(val) {
   return `${val}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
@@ -476,6 +490,15 @@ export function param2Obj(url) {
 export function downloadFile(url, params) {
   const openUrl = process.env.VUE_APP_BASE_API + url + '?' + qs.stringify(params)
   window.open(openUrl, '_self')
+}
+
+// post请求下载文件
+export function downloadFilePost(url, data, config) {
+  return axios.post(url, data, {
+    baseURL: process.env.VUE_APP_BASE_API,
+    responseType: 'blob',
+    ...config
+  })
 }
 
 // nb数据转tree
