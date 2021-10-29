@@ -4,6 +4,7 @@
 
 <script>
 import { Chart } from '@antv/g2'
+import { percentFormatter } from '@/utils'
 
 export default {
   name: 'BarChart',
@@ -31,7 +32,7 @@ export default {
         container: this.id,
         autoFit: true,
         height: 300,
-        appendPadding: [0, 50, 50, 0]
+        appendPadding: [10, 50, 50, 0]
       })
       this.chart.data(this.data)
       this.chart.scale('value', {
@@ -43,7 +44,7 @@ export default {
         customItems: items => {
           return items.map(item => ({
             ...item,
-            value: `${Math.floor(+item.value * 100)}%`
+            value: percentFormatter(null, null, item.value)
           }))
         }
       })
@@ -59,11 +60,33 @@ export default {
         .interval()
         .position('label*value')
         .color('category')
+        .label('value', v => ({
+          content: percentFormatter(null, null, v),
+          layout: {
+            type: 'overlap'
+          },
+          position: 'top',
+          rotate: -0.8,
+          offsetX: 15,
+          style: {
+            fill: 'grey'
+          }
+        }))
         .adjust([{
           type: 'dodge',
           marginRatio: 0
         }])
       this.chart.interaction('active-region')
+      this.chart.interaction('legend-filter', {
+        showEnable: [
+          { trigger: 'legend-item:mouseenter', action: 'cursor:pointer' },
+          { trigger: 'legend-item:mouseleave', action: 'cursor:default' }
+        ],
+        start: [
+          { trigger: 'legend-item:click', action: 'list-checked:toggle' },
+          { trigger: 'legend-item:click', action: 'data-filter:filter' }
+        ]
+      })
       this.chart.render()
     }
   }

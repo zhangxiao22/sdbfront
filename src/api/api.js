@@ -1546,3 +1546,20 @@ export function getBatchList(data) {
     data
   })
 }
+
+// *******************
+// 获取 营销用例类型-用例 级联选项
+export function getUseCaseCascaderList() {
+  return request({
+    url: '/supervisorSpectaculars/selectTypeCascade',
+    method: 'get'
+  })
+}
+
+// 获取 批次-日期 级联选项
+export function getBatchCascaderList() {
+  return request({
+    url: '/supervisorSpectaculars/selectPCCascade',
+    method: 'get'
+  })
+}

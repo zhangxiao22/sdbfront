@@ -3,8 +3,28 @@ import axios from 'axios'
 
 export const MAX_NUMBER = 1e14
 
-export function formatTenThousand(val) {
-  return (+val / 10000).toFixed(2)
+// for el-table-column 百分比保留两位小数
+export const percentFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return (+cellValue * 100).toFixed(2) + '%'
+}
+
+// for el-table-column 万元保留两位小数
+export const tenThousandFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return Number((+cellValue / 10000).toFixed(2)).toLocaleString()
+}
+
+// for el-table-column 整数保留两位小数
+export const wholeNumberFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return cellValue.toLocaleString()
 }
 
 /**
