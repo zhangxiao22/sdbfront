@@ -1546,3 +1546,12 @@ export function getBatchList(data) {
     data
   })
 }
+
+/** ************************************************ 线索执行 ************************************************************/
+//  获取网点列表
+export function getOrgList() {
+  return request({
+    url: '/config/org/getAll',
+    method: 'get'
+  })
+}
