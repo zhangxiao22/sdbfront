@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <!-- 顶栏 -->
+    <!-- ******************************************************************************** 顶栏 ******************************************************************************** -->
     <!-- // this.baseInfo[0].value = data.count // 线索数量
         // this.baseInfo[1].value = data.purchasedNum // 销售成功数量
         // this.baseInfo[2].value = data.purchaseRate // 成功购买率
@@ -67,41 +67,6 @@
         </div>
       </div>
     </div>
-    <!-- <el-row v-loading="baseInfoLoading"
-            class="base-info">
-      <el-col v-for="(baseInfoSegment, i) of [baseInfo.filter(v => v.name.includes('AUM')), baseInfo.filter(v => !v.name.includes('AUM'))]"
-              :key="i"
-              :span="8"
-              class="base-info-col">
-        <template v-for="(item, j) of baseInfoSegment">
-          <div :key="j"
-               class="item-box">
-            <div class="item-inner shun-card">
-              <div class="label">
-                <svg-icon v-if="item.icon"
-                          class="main-icon"
-                          :icon-class="item.icon" />
-                <i v-else
-                   class="el-icon-s-data main-icon" />
-                {{ item.name }}
-              </div>
-              <div class="value">
-                <span :style="{color: item.color}">
-                  {{
-                    item.unit === '万元' ?
-                      Number((item.value / 10000).toFixed(2)).toLocaleString()
-                      : item.unit === '%'
-                        ? (item.value * 100).toFixed(2)
-                        : item.value.toLocaleString()
-                  }}
-                </span>
-                <div class="unit">{{ item.unit }}</div>
-              </div>
-            </div>
-          </div>
-        </template>
-      </el-col>
-    </el-row> -->
     <!-- <div v-loading="baseInfoLoading"
          class="base-info">
       <template v-for="(item,i) of baseInfo">
@@ -136,7 +101,8 @@
         </div>
       </template>
     </div> -->
-    <!-- 督导总览 -->
+
+    <!-- ******************************************************************************** 督导总览 ******************************************************************************** -->
     <ShunTable ref="overviewRef"
                title="督导总览"
                :loading="overview.loading"
@@ -177,20 +143,6 @@
                          collapse-tags
                          :props="{multiple: true}" />
           </el-form-item>
-          <!-- <el-form-item label="营销事件："
-                        prop="event">
-            <el-select v-model="overview.filterForm.event"
-                       placeholder="请选择营销事件"
-                       clearable
-                       multiple
-                       collapse-tags
-                       style="width: 200px">
-              <el-option v-for="item of eventList"
-                         :key="item.value"
-                         :label="item.label"
-                         :value="item.value" />
-            </el-select>
-          </el-form-item> -->
           <el-form-item label="批次："
                         prop="batch">
             <el-cascader ref="overviewBatchRef"
@@ -246,8 +198,9 @@
         <div>客户户均AUM增量(万元)</div>
         <span>(成功/失败/全体)</span>
       </template>
-
     </ShunTable>
+
+    <!-- ******************************************************************************** 生成按钮 ******************************************************************************** -->
     <div class="block"
          style="display:flex; justify-content: center;">
       <el-button type="primary"
@@ -257,9 +210,11 @@
         生成详细督导数据
       </el-button>
     </div>
+
+    <!-- ******************************************************************************** 生成后的内容 ******************************************************************************** -->
     <div v-if="showExtra"
          id="scroll-content">
-      <!-- 执行情况 -->
+      <!-- ********************************************************************** 执行情况 ********************************************************************** -->
       <div class="block shun-card">
         <div class="top">
           <div class="head">
@@ -389,8 +344,9 @@
           </div>
         </div>
       </div>
-      <!-- 综合排名 -->
+      <!-- ********************************************************************** 综合排名 ********************************************************************** -->
       <div class="block half-block">
+        <!-- 营销人员综合排名 -->
         <div class="left shun-card">
           <div class="top">
             <div class="head">
@@ -488,6 +444,7 @@
             </div>
           </div>
         </div>
+        <!-- 营销人员综合排名 -->
         <div class="right shun-card">
           <div class="top">
             <div class="head">
@@ -582,7 +539,7 @@
           </div>
         </div>
       </div>
-      <!-- 督导数据趋势对比 -->
+      <!-- ********************************************************************** 督导数据趋势对比 ********************************************************************** -->
       <div class="block block-title">督导数据趋势对比</div>
       <div class="block shun-card">
         <div class="top">
@@ -677,7 +634,7 @@
                              multiple
                              clearable
                              collapse-tags
-                             @change="handleKeyIndicatorChart2BatchChange">
+                             @change="handleChart2BatchChange">
                     <el-option v-for="item of keyIndicator.batchOpt"
                                :key="item"
                                :label="item"
@@ -715,7 +672,7 @@
                   <el-select v-model="keyIndicator.chart3Batch"
                              placeholder="请选择批次"
                              class="filter"
-                             @change="handleKeyIndicatorChart3BatchChange">
+                             @change="handleChart3BatchChange">
                     <el-option v-for="item of keyIndicator.batchOpt"
                                :key="item"
                                :label="item"
@@ -741,7 +698,7 @@
           </div>
         </div>
       </div>
-      <!-- 用例各支行督导看板 -->
+      <!-- ********************************************************************** 用例各支行督导看板 ********************************************************************** -->
       <div class="block block-title">用例各支行督导看板</div>
       <div class="block shun-card">
         <div class="top">
@@ -802,8 +759,8 @@
         </div>
         <div class="bottom">
           <el-table ref="orgTableRef1"
-                    v-loading="org.tableLoading1"
-                    :data="org.tableData1"
+                    v-loading="org.table1Loading"
+                    :data="org.table1Data"
                     :cell-style="orgTable1CellStyle"
                     stripe
                     class="item">
@@ -952,8 +909,8 @@
             </el-table-column>
           </el-table>
           <el-table ref="orgTableRef2"
-                    v-loading="org.tableLoading2"
-                    :data="org.tableData2"
+                    v-loading="org.table2Loading"
+                    :data="org.table2Data"
                     stripe
                     class="item">
             <el-table-column prop="useCaseName"
@@ -1079,8 +1036,8 @@
             </el-table-column>
           </el-table>
           <el-table ref="orgTableRef3"
-                    v-loading="org.tableLoading3"
-                    :data="org.tableData3"
+                    v-loading="org.table3Loading"
+                    :data="org.table3Data"
                     class="item"
                     stripe>
             <el-table-column prop="subBranchName"
@@ -1478,41 +1435,12 @@ export default {
           batch: [],
           customerGroup: ''
         },
-        tableLoading1: false,
-        tableLoading2: false,
-        tableLoading3: false,
-        tableData1: [],
-        tableData2: [],
-        tableData3: [],
-        tableColumnList3: [{
-          label: '支行',
-          prop: 'subBranchName'
-        }, {
-          label: '线索数量',
-          prop: 'count'
-        }, {
-          label: '实际购买率',
-          prop: 'purchaseRate',
-          formatter: this.percentFormatter
-        }, {
-          label: '比上批',
-          prop: 'purchaseRateCompareUp',
-          formatter: this.percentFormatter
-        }, {
-          label: '比对照组',
-          prop: 'purchaseRateCompareContrast',
-          formatter: this.percentFormatter
-        }, {
-          label: '留存率',
-          prop: 'retentionRate'
-          // formatter: this.percentFormatter
-        }, {
-          label: '总流出金额',
-          prop: 'totalOutflowAmount'
-        }, {
-          label: '总净流入金额',
-          prop: 'totalNetInflowAmount'
-        }]
+        table1Loading: false,
+        table2Loading: false,
+        table3Loading: false,
+        table1Data: [],
+        table2Data: [],
+        table3Data: []
       },
       // 渠道选项
       channelOpt: [{
@@ -1546,14 +1474,6 @@ export default {
       }
       return mappings[this.keyIndicator.rate]
     },
-    // 图1数据
-    realChart1Data() {
-      return this.keyIndicator.chart1Data[this.chartDataKey]
-    },
-    // 图2数据
-    realChart2Data() {
-      return this.keyIndicator.chart2Data[this.chartDataKey]
-    },
     // 图3数据key
     chart3DataKey() {
       const mappings = {
@@ -1561,6 +1481,14 @@ export default {
         预约网点见面: 'networkToMeet'
       }
       return mappings[this.keyIndicator.compareToLastBatchType]
+    },
+    // 图1数据
+    realChart1Data() {
+      return this.keyIndicator.chart1Data[this.chartDataKey]
+    },
+    // 图2数据
+    realChart2Data() {
+      return this.keyIndicator.chart2Data[this.chartDataKey]
     },
     // 图3数据
     realChart3Data() {
@@ -1584,136 +1512,61 @@ export default {
     }
   },
   created() {
+    this.overviewSearch() // 总览搜索
     this.getBaseInfoData() // 获取顶栏数据
     this.getUseCaseOpt() // 获取营销用例选项
     this.getBatchOpt() // 获取批次选项
-    this.overviewSearch() // 总览搜索
-    this.getCustomerGroupOpt() // 客群
+    this.getCustomerGroupOpt() // 获取客群选项
     // this.generate()
   },
   mounted() {
   },
   methods: {
-    setKeyIndicatorBatchOpt() {
-      const nodes = this.$refs.keyIndicatorBatchRef?.getCheckedNodes(true)
-      if (nodes?.length > 0) {
-        this.keyIndicator.batchOpt = nodes.map(m => m.value)
-      } else {
-        const options = []
-        this.childBatchOpt.forEach(m => {
-          m.children.forEach(n => options.push(n.value))
-        })
-        this.keyIndicator.batchOpt = options
-      }
+    // 总览列表 重置
+    overviewReset() {
+      this.$refs.overviewFilterRef.resetFields()
+      this.ranking.org.scope = '前20名'
+      this.ranking.people.scope = '前20名'
+      this.executeStatus.batch = ''
+      this.overviewSearch()
+      this.showExtra = false
     },
-    setExecuteStatusBatchOpt() {
-      const nodes = this.$refs.overviewBatchRef?.getCheckedNodes(true)
-      if (nodes?.length > 0) {
-        this.executeStatus.batchOpt = nodes.map(m => m.value)
-      } else {
-        const options = []
-        this.batchOpt.forEach(m => {
-          m.children.forEach(n => options.push(n.value))
-        })
-        this.executeStatus.batchOpt = options
-      }
+    // 总览列表 搜索
+    overviewSearch() {
+      this.overview.searchForm = JSON.parse(JSON.stringify(this.overview.filterForm))
+      this.overviewClearSort()
+      this.overviewGetList(1)
     },
-    setChildChannelOpt() {
-      this.childChannelOpt = this.overview.searchForm.channel && this.channelOpt.filter(m => m.value === this.overview.searchForm.channel) || this.channelOpt
-    },
-    setChildBatchOpt() {
-      const nodes = this.$refs.overviewBatchRef?.getCheckedNodes(true)
-      if (nodes?.length > 0) {
-        const optionsSet = new Set(nodes.map(m => m.parent))
-        this.childBatchOpt = [...optionsSet].map(m => ({
-          ...m,
-          children: m.children.filter(n => nodes.includes(n))
-        })).map(m => ({
-          ...m.data,
-          children: m.children.map(n => n.data)
-        }))
-      } else {
-        this.childBatchOpt = this.batchOpt
-      }
-    },
-    setChildUseCaseOpt() {
-      const nodes = this.$refs.overviewUseCaseRef?.getCheckedNodes(true)
-      if (nodes?.length > 0) {
-        const optionsSet = new Set(nodes.map(m => m.parent))
-        this.childUseCaseOpt = [...optionsSet].map(m => ({
-          ...m,
-          children: m.children.filter(n => nodes.includes(n))
-        })).map(m => ({
-          ...m.data,
-          children: m.children.map(n => n.data)
-        }))
-      } else {
-        this.childUseCaseOpt = this.useCaseOpt
-      }
-    },
-    orgTable1CellStyle({ row, column, rowIndex, columnIndex }) {
-      return this.executeStatusCellStyle({ row, column, rowIndex, columnIndex })
-    },
-    executeStatusCellStyle({ row, column, rowIndex, columnIndex }) {
-      if (/^purchaseAum+/.test(column.property)) {
-        return {
-          // backgroundColor: 'rgba(0, 255, 0, 0.03)'
-          color: 'green'
-        }
-      }
-      if (/^losingAum+/.test(column.property)) {
-        return {
-          // backgroundColor: 'rgba(255, 0, 0, 0.03)'
-          color: 'red'
-        }
-      }
-      if (/^aumUp$/.test(column.property) || /^aumAverage$/.test(column.property)) {
-        return {
-          // backgroundColor: 'rgba(0, 0, 255, 0.03)'
-          color: 'blue'
-        }
-      }
-    },
-    // 顶栏数据
-    getBaseInfoData() {
-      this.baseInfoLoading = true
+    // 总览列表 获取数据
+    overviewGetList(pageNo) {
+      this.overview.currentPage = pageNo || this.overview.currentPage
       const data = {
-        channel: '',
-        useCaseIds: [],
-        pcList: []
+        pageNo: this.overview.currentPage,
+        pageSize: this.overview.pageSize,
+        channel: this.overview.searchForm.channel,
+        useCaseIds: this.overview.searchForm.useCase,
+        pcList: this.overview.searchForm.batch.length > 0 && this.overview.searchForm.batch.map(n => n[1]) || [],
+        sort: this.overview.tableSort
       }
-      inspectorOverview(data).then(res => {
-        this.baseInfo = res.data
-        // this.baseInfo[0].value = data.count // 线索数量
-        // this.baseInfo[1].value = data.purchasedNum // 销售成功数量
-        // this.baseInfo[2].value = data.purchaseRate // 成功购买率
-        // this.baseInfo[3].value = data.aumUp // 全体客户aum增量
-        // this.baseInfo[4].value = data.aumAverage // 全体客户户均aum增量
-        // this.baseInfo[5].value = data.purchaseAumUp // 成功客户aum增量
-        // this.baseInfo[6].value = data.purchaseAumAverage // 成功客户户均aum增量
+      this.overview.filterForm = JSON.parse(JSON.stringify(this.overview.searchForm))
+      // 督导总览列表数据
+      this.overview.loading = true
+      getInspectorOverviewList(data).then(res => {
+        this.overview.tableData = res.data.resultList
+        this.overview.total = res.pagination.totalItemCount
       }).finally(() => {
-        this.baseInfoLoading = false
+        this.overview.loading = false
       })
     },
-    // 获取 用例类型-用例 级联选项
-    getUseCaseOpt() {
-      getUseCaseCascaderList().then(res => {
-        this.useCaseOpt = res.data.map(n => ({
-          label: n.label,
-          value: '' + n.value,
-          children: n.useCaseList
-        }))
-      })
+    // 总览列表 清除排序
+    overviewClearSort() {
+      this.$refs.overviewRef && this.$refs.overviewRef.clearSort()
+      this.overview.tableSort = {}
     },
-    // 获取 批次-日期 级联选项
-    getBatchOpt() {
-      getBatchCascaderList().then(res => {
-        this.batchOpt = res.data.map(n => ({
-          label: n.value,
-          value: n.value,
-          children: n.childList
-        }))
-      })
+    // 总览列表 表头 列排序
+    handleOverviewSortChange({ column, prop, order }) {
+      this.overview.tableSort = order ? { [prop]: order } : {}
+      this.overviewGetList()
     },
     // 生成详细督导数据
     generate() {
@@ -1741,71 +1594,60 @@ export default {
         })
       })
     },
-    // 总览列表 搜索
-    overviewSearch() {
-      this.overview.searchForm = JSON.parse(JSON.stringify(this.overview.filterForm))
-      this.overviewClearSort()
-      this.overviewGetList(1)
+    // 生成内容的渠道选项
+    setChildChannelOpt() {
+      this.childChannelOpt = this.overview.searchForm.channel && this.channelOpt.filter(m => m.value === this.overview.searchForm.channel) || this.channelOpt
     },
-    // 总览列表 重置
-    overviewReset() {
-      this.$refs.overviewFilterRef.resetFields()
+    // 生成内容的用例选项(级联)
+    setChildUseCaseOpt() {
+      const nodes = this.$refs.overviewUseCaseRef?.getCheckedNodes(true)
+      if (nodes?.length > 0) {
+        const optionsSet = new Set(nodes.map(m => m.parent))
+        this.childUseCaseOpt = [...optionsSet].map(m => ({
+          ...m,
+          children: m.children.filter(n => nodes.includes(n))
+        })).map(m => ({
+          ...m.data,
+          children: m.children.map(n => n.data)
+        }))
+      } else {
+        this.childUseCaseOpt = this.useCaseOpt
+      }
+    },
+    // 生成内容的批次选项(级联)
+    setChildBatchOpt() {
+      const nodes = this.$refs.overviewBatchRef?.getCheckedNodes(true)
+      if (nodes?.length > 0) {
+        const optionsSet = new Set(nodes.map(m => m.parent))
+        this.childBatchOpt = [...optionsSet].map(m => ({
+          ...m,
+          children: m.children.filter(n => nodes.includes(n))
+        })).map(m => ({
+          ...m.data,
+          children: m.children.map(n => n.data)
+        }))
+      } else {
+        this.childBatchOpt = this.batchOpt
+      }
+    },
+    // 执行情况的下拉批次选项(单选)
+    setExecuteStatusBatchOpt() {
+      const nodes = this.$refs.overviewBatchRef?.getCheckedNodes(true)
+      if (nodes?.length > 0) {
+        this.executeStatus.batchOpt = nodes.map(m => m.value)
+      } else {
+        const options = []
+        this.batchOpt.forEach(m => {
+          m.children.forEach(n => options.push(n.value))
+        })
+        this.executeStatus.batchOpt = options
+      }
+    },
+    // 设置执行情况和综合排行筛选条件
+    setExecuteStatusRankingFilters() {
+      this.executeStatus.batch = ''
       this.ranking.org.scope = '前20名'
       this.ranking.people.scope = '前20名'
-      this.executeStatus.batch = ''
-      this.overviewSearch()
-      this.showExtra = false
-    },
-    // 总览列表 获取数据
-    overviewGetList(pageNo) {
-      this.overview.currentPage = pageNo || this.overview.currentPage
-      const data = {
-        pageNo: this.overview.currentPage,
-        pageSize: this.overview.pageSize,
-        channel: this.overview.searchForm.channel,
-        useCaseIds: this.overview.searchForm.useCase,
-        pcList: this.overview.searchForm.batch.length > 0 && this.overview.searchForm.batch.map(n => n[1]) || [],
-        sort: this.overview.tableSort
-      }
-      this.overview.filterForm = JSON.parse(JSON.stringify(this.overview.searchForm))
-      // 督导总览列表数据
-      this.overview.loading = true
-      getInspectorOverviewList(data).then(res => {
-        this.overview.tableData = res.data.resultList
-        this.overview.total = res.pagination.totalItemCount
-      }).finally(() => {
-        this.overview.loading = false
-      })
-    },
-    // 总览列表 表头 列排序
-    handleOverviewSortChange({ column, prop, order }) {
-      this.overview.tableSort = order ? { [prop]: order } : {}
-      this.overviewGetList()
-    },
-    // 总览列表 清除排序
-    overviewClearSort() {
-      this.$refs.overviewRef && this.$refs.overviewRef.clearSort()
-      this.overview.tableSort = {}
-    },
-    // 总览列表 用例下拉选择框 清空 刷新渠道下拉选项
-    handleOverviewUseCaseClear() {
-      this.getBatchOpt()
-    },
-    // 总览列表 用例下拉选择框 隐藏 刷新渠道下拉选项
-    handleOverviewUseCaseVisibleChange(isShow) {
-      !isShow && this.getBatchOpt()
-    },
-    // 总览列表 渠道下拉选择框 清空 刷新用例下拉选项
-    handleOverviewBatchClear() {
-      this.getUseCaseOpt()
-    },
-    // 总览列表 渠道下拉选择框 隐藏 刷新用例下拉选项
-    handleOverviewBatchVisibleChange(isShow) {
-      !isShow && this.getUseCaseOpt()
-    },
-    // 执行情况批次更改
-    handleExecuteStatusBatchChange() {
-      this.executeStatusRankingGetList()
     },
     // 执行情况、2个排名获取数据
     executeStatusRankingGetList() {
@@ -1868,6 +1710,10 @@ export default {
         this.ranking.people.loading = false
       })
     },
+    // 执行情况批次更改
+    handleExecuteStatusBatchChange() {
+      this.executeStatusRankingGetList()
+    },
     // 网点综合排名筛选
     handleOutletRankingChange() {
       this.ranking.org.showPagination = this.ranking.org.scope === '查看全部'
@@ -1888,11 +1734,26 @@ export default {
       this.ranking.people.currentPage = val
       this.peopleRankingGetList()
     },
-    // 设置执行情况和综合排行筛选条件
-    setExecuteStatusRankingFilters() {
-      this.executeStatus.batch = ''
-      this.ranking.org.scope = '前20名'
-      this.ranking.people.scope = '前20名'
+    // 执行情况列表Cell样式
+    executeStatusCellStyle({ row, column, rowIndex, columnIndex }) {
+      if (/^purchaseAum+/.test(column.property)) {
+        return {
+          // backgroundColor: 'rgba(0, 255, 0, 0.03)'
+          color: 'green'
+        }
+      }
+      if (/^losingAum+/.test(column.property)) {
+        return {
+          // backgroundColor: 'rgba(255, 0, 0, 0.03)'
+          color: 'red'
+        }
+      }
+      if (/^aumUp$/.test(column.property) || /^aumAverage$/.test(column.property)) {
+        return {
+          // backgroundColor: 'rgba(0, 0, 255, 0.03)'
+          color: 'blue'
+        }
+      }
     },
     // 设置关键指标趋势筛选条件
     setKeyIndicatorFilter() {
@@ -1906,13 +1767,10 @@ export default {
       this.keyIndicator.chart2Batch = []
       this.keyIndicator.chart3Batch = ''
     },
-    // 设置用例各支行督导看板筛选条件
-    setOrgFilter() {
-      this.org.filterForm = {
-        useCase: this.overview.searchForm.useCase,
-        batch: this.overview.searchForm.batch,
-        customerGroup: ''
-      }
+    // 关键指标趋势重置
+    keyIndicatorReset() {
+      this.setKeyIndicatorFilter()
+      this.keyIndicatorSearch()
     },
     // 关键指标趋势搜索
     keyIndicatorSearch() {
@@ -1921,10 +1779,18 @@ export default {
       this.getChart2Data()
       this.getChart3Data()
     },
-    // 关键指标趋势重置
-    keyIndicatorReset() {
-      this.setKeyIndicatorFilter()
-      this.keyIndicatorSearch()
+    // 关键指标趋势的批次选项(非级联)
+    setKeyIndicatorBatchOpt() {
+      const nodes = this.$refs.keyIndicatorBatchRef?.getCheckedNodes(true)
+      if (nodes?.length > 0) {
+        this.keyIndicator.batchOpt = nodes.map(m => m.value)
+      } else {
+        const options = []
+        this.childBatchOpt.forEach(m => {
+          m.children.forEach(n => options.push(n.value))
+        })
+        this.keyIndicator.batchOpt = options
+      }
     },
     // 图1数据 各支行用例关键指标趋势表现
     getChart1Data() {
@@ -1961,11 +1827,26 @@ export default {
         this.keyIndicator.chart3Loading = false
       })
     },
-    handleKeyIndicatorChart2BatchChange() {
+    // 图2 批次更改
+    handleChart2BatchChange() {
       this.getChart2Data()
     },
-    handleKeyIndicatorChart3BatchChange() {
+    // 图3 批次更改
+    handleChart3BatchChange() {
       this.getChart3Data()
+    },
+    // 设置用例各支行督导看板筛选条件
+    setOrgFilter() {
+      this.org.filterForm = {
+        useCase: this.overview.searchForm.useCase,
+        batch: this.overview.searchForm.batch,
+        customerGroup: ''
+      }
+    },
+    // 用例各支行督导看板重置
+    orgReset() {
+      this.setOrgFilter()
+      this.orgSearch()
     },
     // 用例各支行督导看板搜索
     orgSearch() {
@@ -1975,56 +1856,72 @@ export default {
         customerGroup: this.org.filterForm.customerGroup
       }
       // 表1
-      this.org.tableLoading1 = true
+      this.org.table1Loading = true
       getUseCaseSalesAmount(data).then(res => {
-        this.org.tableData1 = res.data
+        this.org.table1Data = res.data
       }).finally(() => {
-        this.org.tableLoading1 = false
+        this.org.table1Loading = false
       })
       // 表2
-      // this.org.tableLoading2 = true
+      // this.org.table2Loading = true
       // (data).then(res => {
-      //   this.org.tableData2 = res.data
+      //   this.org.table2Data = res.data
       // }).finally(() => {
-      //   this.org.tableLoading2 = false
+      //   this.org.table2Loading = false
       // })
       // 表3
-      this.org.tableLoading3 = true
+      this.org.table3Loading = true
       getInspectorSummary(data).then(res => {
-        this.org.tableData3 = res.data
+        this.org.table3Data = res.data
       }).finally(() => {
-        this.org.tableLoading3 = false
+        this.org.table3Loading = false
       })
     },
-    // 用例各支行督导看板重置
-    orgReset() {
-      this.setOrgFilter()
-      this.orgSearch()
+    // 机构第一张表Cell样式
+    orgTable1CellStyle({ row, column, rowIndex, columnIndex }) {
+      return this.executeStatusCellStyle({ row, column, rowIndex, columnIndex })
     },
-    // 获取用例下拉选项
-    // getUseCaseOpt() {
-    //   const data = {
-    //     pcList: this.overview.filterForm.batch
-    //   }
-    //   this.overview.useCaseLoading = true
-    //   getUseCaseListByBatchList(data).then(res => {
-    //     this.useCaseList = res.data
-    //   }).finally(() => {
-    //     this.overview.useCaseLoading = false
-    //   })
-    // },
-    // 获取批次下拉选项
-    // getBatchOpt() {
-    //   const data = {
-    //     useCaseIds: this.overview.filterForm.useCase
-    //   }
-    //   this.overview.filterForm.batchLoading = true
-    //   getBatchList(data).then(res => {
-    //     this.batchList = res.data
-    //   }).finally(() => {
-    //     this.overview.filterForm.batchLoading = false
-    //   })
-    // },
+    // 顶栏数据
+    getBaseInfoData() {
+      this.baseInfoLoading = true
+      const data = {
+        channel: '',
+        useCaseIds: [],
+        pcList: []
+      }
+      inspectorOverview(data).then(res => {
+        this.baseInfo = res.data
+        // this.baseInfo[0].value = data.count // 线索数量
+        // this.baseInfo[1].value = data.purchasedNum // 销售成功数量
+        // this.baseInfo[2].value = data.purchaseRate // 成功购买率
+        // this.baseInfo[3].value = data.aumUp // 全体客户aum增量
+        // this.baseInfo[4].value = data.aumAverage // 全体客户户均aum增量
+        // this.baseInfo[5].value = data.purchaseAumUp // 成功客户aum增量
+        // this.baseInfo[6].value = data.purchaseAumAverage // 成功客户户均aum增量
+      }).finally(() => {
+        this.baseInfoLoading = false
+      })
+    },
+    // 获取 用例类型-用例 级联选项
+    getUseCaseOpt() {
+      getUseCaseCascaderList().then(res => {
+        this.useCaseOpt = res.data.map(n => ({
+          label: n.label,
+          value: '' + n.value,
+          children: n.useCaseList
+        }))
+      })
+    },
+    // 获取 批次-日期 级联选项
+    getBatchOpt() {
+      getBatchCascaderList().then(res => {
+        this.batchOpt = res.data.map(n => ({
+          label: n.value,
+          value: n.value,
+          children: n.childList
+        }))
+      })
+    },
     // 获取客群类型下拉选项
     getCustomerGroupOpt() {
       getCustomerGroupList().then(res => {
@@ -2213,50 +2110,6 @@ export default {
 
 <style lang="scss" scoped>
 .container {
-  // .base-info {
-  //   font-size: 20px;
-  //   margin: -8px 0 8px -8px;
-
-  //   .base-info-col {
-  //     .item-box {
-  //       padding: 8px;
-
-  //       .item-inner {
-  //         flex: 1;
-  //         display: flex;
-  //         flex-direction: column;
-  //         padding: 20px;
-  //         overflow: hidden;
-
-  //         .label {
-  //           font-size: 16px;
-  //           font-weight: 300;
-  //           display: flex;
-  //           align-items: center;
-
-  //           .main-icon {
-  //             margin-right: 5px;
-  //             font-size: 18px;
-  //             color: #aaa;
-  //           }
-  //         }
-
-  //         .value {
-  //           margin-top: 15px;
-  //           display: flex;
-  //           align-items: center;
-  //           font-size: 30px;
-
-  //           .unit {
-  //             font-size: 16px;
-  //             margin-left: 15px;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
-
   .base-info {
     display: flex;
     flex-wrap: wrap;
