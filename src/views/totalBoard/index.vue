@@ -548,18 +548,23 @@ export default {
         }, {
           label: '网点',
           value: 2
-        }, {
-          label: '理财顾问',
-          value: 3
-        }, {
-          label: '网经',
-          value: 4
-        }, {
-          label: '个经',
-          value: 5
-        }, {
-          label: '柜员',
-          value: 6
+        },
+        // {
+        //   label: '理财顾问',
+        //   value: 3
+        // }, {
+        //   label: '网经',
+        //   value: 4
+        // }, {
+        //   label: '个经',
+        //   value: 5
+        // }, {
+        //   label: '柜员',
+        //   value: 6
+        // },
+        {
+          label: '员工',
+          value: 7
         }
       ],
       // 成效的筛选条件
@@ -1082,7 +1087,31 @@ export default {
     // 切换rate排名
     hangleChangeRateTypeRank() {
       const data = this.getRateParams()
-      this.getRateRank(data)
+      if (data.type === 7) {
+        this.getRateRank7(data)
+      } else {
+        this.getRateRank(data)
+      }
+    },
+    // 获取rate的排名
+    getRateRank7(val) {
+      this.loading.rateRankLoading = true
+      totalRateRankCopy(val).then(res => {
+        const ObjectData = {}
+        const paramArray = ['effectRate', 'finishedRate', 'activeEffectRate', 'contactedRate', 'purchasedRate']
+        res.data.forEach(n => {
+          this.pushMethod(ObjectData, paramArray, n)
+        })
+        this.rankChartData_origin = ObjectData
+        this.changeRateRankData()
+      }).finally(() => {
+        this.loading.rateRankLoading = false
+      })
+    },
+    pushMethod(data, paramArray, item) {
+      paramArray.forEach(n => {
+        data[n].push(...item[n])
+      })
     },
     /** ******************************** result *************************************** */
     // 用例成效
@@ -1134,7 +1163,11 @@ export default {
     renderResult() {
       const data = this.getResultParams()
       this.getResult(data)
-      this.getResultRank(data)
+      if (data.type === 7) {
+        this.getResultRank7(data)
+      } else {
+        this.getResultRank(data)
+      }
     },
     // 获取result的柱状图
     getResult(val) {
@@ -1156,7 +1189,20 @@ export default {
         this.loading.resultRankLoading = false
       })
     },
-
+    getResultRank7(val) {
+      this.loading.resultRankLoading = true
+      totalResultRankCopy(val).then(res => {
+        const ObjectData = {}
+        const paramArray = ['activeEffectNum', 'purchasedNum', 'aumUp', 'purchasedAmount', 'contactedNum']
+        res.data.forEach(n => {
+          this.pushMethod(ObjectData, paramArray, n)
+        })
+        this.resultRankData_origin = ObjectData
+        this.changeResultRankData()
+      }).finally(() => {
+        this.loading.resultRankLoading = false
+      })
+    },
     // 获取result柱状图数据
     changeResultData() {
       // 柱状图
@@ -1249,6 +1295,20 @@ export default {
         this.loading.effectRankLoading = false
       })
     },
+    getEffectRank7(val) {
+      this.loading.effectRankLoading = true
+      totalEffectRankCopy(val).then(res => {
+        const ObjectData = {}
+        const paramArray = ['effectCredit', 'lum', 'newCredit', 'aum', 'purchaseNum', 'depositUpAmount']
+        res.data.forEach(n => {
+          this.pushMethod(ObjectData, paramArray, n)
+        })
+        this.effectRankData_origin = ObjectData
+        this.changeEffectRankData()
+      }).finally(() => {
+        this.loading.effectRankLoading = false
+      })
+    },
 
     // 获取effect折线图数据
     changeEffectData() {
@@ -1275,7 +1335,11 @@ export default {
     // 切换effect排名
     hangleChangeEffectTypeRank() {
       const data = this.getEffectParams()
-      this.getEffectRank(data)
+      if (data.type === 7) {
+        this.getEffectRank7(data)
+      } else {
+        this.getEffectRank(data)
+      }
     },
 
     // ------------------- amount ---------------------------------------------------------------------------------------------------------
@@ -1331,7 +1395,20 @@ export default {
         this.loading.amountRankLoading = false
       })
     },
-
+    getAmountRank7(val) {
+      this.loading.amountRankLoading = true
+      totalResultRankCopy(val).then(res => {
+        const ObjectData = {}
+        const paramArray = ['activeEffectNum', 'total', 'purchasedNum', 'aumUp', 'purchasedAmount', 'contactedNum']
+        res.data.forEach(n => {
+          this.pushMethod(ObjectData, paramArray, n)
+        })
+        this.amountRankData_origin = ObjectData
+        this.changeAmountRankData()
+      }).finally(() => {
+        this.loading.amountRankLoading = false
+      })
+    },
     // 获取amount柱状图数据
     changeAmountData() {
       // 柱状图
@@ -1374,7 +1451,11 @@ export default {
     // 切换amount排名
     hangleChangeAmountTypeRank() {
       const data = this.getAmountParams()
-      this.getAmountRank(data)
+      if (data.type === 7) {
+        this.getAmountRank7(data)
+      } else {
+        this.getAmountRank(data)
+      }
     }
 
   }
