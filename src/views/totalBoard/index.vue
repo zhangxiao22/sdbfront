@@ -236,7 +236,7 @@
               </el-radio-button>
             </el-radio-group>
 
-            <el-radio-group v-model="resultFilter.rankType"
+            <!-- <el-radio-group v-model="resultFilter.rankType"
                             size="mini"
                             text-color="#224191"
                             fill="#DCDFE6"
@@ -247,7 +247,7 @@
                                :label="item.value">
                 {{ item.label }}
               </el-radio-button>
-            </el-radio-group>
+            </el-radio-group> -->
 
           </div>
 
@@ -394,7 +394,7 @@
               </el-radio-button>
             </el-radio-group>
 
-            <el-radio-group v-model="amountFilter.rankType"
+            <!-- <el-radio-group v-model="amountFilter.rankType"
                             size="mini"
                             text-color="#224191"
                             fill="#DCDFE6"
@@ -405,7 +405,7 @@
                                :label="item.value">
                 {{ item.label }}
               </el-radio-button>
-            </el-radio-group>
+            </el-radio-group> -->
           </div>
 
           <div v-loading="loading.amountRankLoading"
@@ -1163,7 +1163,8 @@ export default {
         start: this.resultFilter.timeVal[0],
         end: this.resultFilter.timeVal[1],
         channel: this.resultFilter.activeName.toUpperCase(),
-        type: this.resultFilter.rankType,
+        // type: this.resultFilter.rankType,
+        type: 7,
         useCaseId: this.resultUsecaseFilter
       }
     },
@@ -1386,7 +1387,8 @@ export default {
         start: this.amountFilter.timeVal[0],
         end: this.amountFilter.timeVal[1],
         channel: this.amountFilter.crmSmsType.toUpperCase(),
-        type: this.amountFilter.rankType,
+        // type: this.amountFilter.rankType,
+        type: 7,
         useCaseId: this.amountUsecaseFilter
       }
     },
