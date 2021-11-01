@@ -1097,16 +1097,24 @@ export default {
     getRateRank7(val) {
       this.loading.rateRankLoading = true
       totalRateRankCopy(val).then(res => {
-        const ObjectData = {}
+        const ObjectData = {
+          'effectRate': [],
+          'finishedRate': [],
+          'activeEffectRate': [],
+          'contactedRate': [],
+          'purchasedRate': []
+        }
         const paramArray = ['effectRate', 'finishedRate', 'activeEffectRate', 'contactedRate', 'purchasedRate']
+        // res.data.forEach(n => {
         res.data.forEach(n => {
           this.pushMethod(ObjectData, paramArray, n)
         })
         this.rankChartData_origin = ObjectData
         this.changeRateRankData()
-      }).finally(() => {
-        this.loading.rateRankLoading = false
       })
+        .finally(() => {
+          this.loading.rateRankLoading = false
+        })
     },
     pushMethod(data, paramArray, item) {
       paramArray.forEach(n => {
@@ -1192,7 +1200,13 @@ export default {
     getResultRank7(val) {
       this.loading.resultRankLoading = true
       totalResultRankCopy(val).then(res => {
-        const ObjectData = {}
+        const ObjectData = {
+          'activeEffectNum': [],
+          'purchasedNum': [],
+          'aumUp': [],
+          'purchasedAmount': [],
+          'contactedNum': []
+        }
         const paramArray = ['activeEffectNum', 'purchasedNum', 'aumUp', 'purchasedAmount', 'contactedNum']
         res.data.forEach(n => {
           this.pushMethod(ObjectData, paramArray, n)
@@ -1298,7 +1312,14 @@ export default {
     getEffectRank7(val) {
       this.loading.effectRankLoading = true
       totalEffectRankCopy(val).then(res => {
-        const ObjectData = {}
+        const ObjectData = {
+          'effectCredit': [],
+          'lum': [],
+          'newCredit': [],
+          'aum': [],
+          'purchaseNum': [],
+          'depositUpAmount': []
+        }
         const paramArray = ['effectCredit', 'lum', 'newCredit', 'aum', 'purchaseNum', 'depositUpAmount']
         res.data.forEach(n => {
           this.pushMethod(ObjectData, paramArray, n)
@@ -1398,7 +1419,14 @@ export default {
     getAmountRank7(val) {
       this.loading.amountRankLoading = true
       totalResultRankCopy(val).then(res => {
-        const ObjectData = {}
+        const ObjectData = {
+          'activeEffectNum': [],
+          'total': [],
+          'purchasedNum': [],
+          'aumUp': [],
+          'purchasedAmount': [],
+          'contactedNum': []
+        }
         const paramArray = ['activeEffectNum', 'total', 'purchasedNum', 'aumUp', 'purchasedAmount', 'contactedNum']
         res.data.forEach(n => {
           this.pushMethod(ObjectData, paramArray, n)
