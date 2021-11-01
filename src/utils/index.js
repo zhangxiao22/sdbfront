@@ -1,4 +1,29 @@
 import qs from 'qs'
+import axios from 'axios'
+
+// for el-table-column 百分比保留两位小数
+export const percentFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return (+cellValue * 100).toFixed(2) + '%'
+}
+
+// for el-table-column 万元保留两位小数
+export const tenThousandFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return Number((+cellValue / 10000).toFixed(2)).toLocaleString()
+}
+
+// for el-table-column 整数保留两位小数
+export const wholeNumberFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return cellValue.toLocaleString()
+}
 
 export const MAX_NUMBER = 1e14
 
@@ -476,6 +501,15 @@ export function param2Obj(url) {
 export function downloadFile(url, params) {
   const openUrl = process.env.VUE_APP_BASE_API + url + '?' + qs.stringify(params)
   window.open(openUrl, '_self')
+}
+
+// post请求下载文件
+export function downloadFilePost(url, data, config) {
+  return axios.post(url, data, {
+    baseURL: process.env.VUE_APP_BASE_API,
+    responseType: 'blob',
+    ...config
+  })
 }
 
 // nb数据转tree
