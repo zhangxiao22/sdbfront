@@ -224,7 +224,7 @@
                 <el-select v-model="executeStatus.batch"
                            placeholder="请选择批次"
                            clearable
-                           class="filter"
+                           class="filter-item"
                            @change="handleExecuteStatusBatchChange">
                   <el-option v-for="item of executeStatus.batchOpt"
                              :key="item"
@@ -354,8 +354,7 @@
                 <div class="title">网点综合排名</div>
                 <div class="filter-box">
                   <el-radio-group v-model="ranking.org.scope"
-                                  size="mini"
-                                  class="filter"
+                                  class="filter-item"
                                   @change="handleOutletRankingChange">
                     <el-radio-button label="前20名" />
                     <el-radio-button label="查看全部" />
@@ -452,8 +451,7 @@
                 <div class="title">营销人员综合排名</div>
                 <div class="filter-box">
                   <el-radio-group v-model="ranking.people.scope"
-                                  size="mini"
-                                  class="filter"
+                                  class="filter-item"
                                   @change="handlePeopleRankingChange">
                     <el-radio-button label="前20名" />
                     <el-radio-button label="查看全部" />
@@ -598,9 +596,8 @@
               <div class="title-box">
                 <div class="title">各支行用例关键指标趋势表现</div>
                 <div class="filter-box">
-                  <el-radio-group v-model="keyIndicator.rate"
-                                  size="mini"
-                                  class="filter">
+                  <el-radio-group v-model="keyIndicator.chart1Rate"
+                                  class="filter-item">
                     <el-radio-button label="实际购买率" />
                     <el-radio-button label="执行率" />
                     <el-radio-button label="联络成功率" />
@@ -628,9 +625,15 @@
               <div class="title-box">
                 <div class="title">各支行成功执行率</div>
                 <div class="filter-box">
+                  <el-radio-group v-model="keyIndicator.chart2Rate"
+                                  class="filter-item">
+                    <el-radio-button label="实际购买率" />
+                    <el-radio-button label="执行率" />
+                    <el-radio-button label="联络成功率" />
+                  </el-radio-group>
                   <el-select v-model="keyIndicator.chart2Batch"
                              placeholder="请选择批次"
-                             class="filter"
+                             class="filter-item"
                              multiple
                              clearable
                              collapse-tags
@@ -664,14 +667,13 @@
                 <div class="title">意向购买产品/预约网点见面 - 成功占比与比上批情况</div>
                 <div class="filter-box">
                   <el-radio-group v-model="keyIndicator.compareToLastBatchType"
-                                  size="mini"
-                                  class="filter">
+                                  class="filter-item">
                     <el-radio-button label="意向购买产品" />
                     <el-radio-button label="预约网点见面" />
                   </el-radio-group>
                   <el-select v-model="keyIndicator.chart3Batch"
                              placeholder="请选择批次"
-                             class="filter"
+                             class="filter-item"
                              @change="handleChart3BatchChange">
                     <el-option v-for="item of keyIndicator.batchOpt"
                                :key="item"
@@ -1410,7 +1412,8 @@ export default {
           useCase: [],
           batch: []
         },
-        rate: '实际购买率',
+        chart1Rate: '实际购买率',
+        chart2Rate: '实际购买率',
         compareToLastBatchType: '意向购买产品',
         chart2Batch: [],
         chart3Batch: '',
@@ -1465,14 +1468,23 @@ export default {
     ...mapGetters([
       'user'
     ]),
-    // 图1、2数据key
-    chartDataKey() {
+    // 图1数据key
+    chart1DataKey() {
       const mappings = {
         实际购买率: 'purchaseRate',
         执行率: 'executeRate',
         联络成功率: 'contactedRate'
       }
-      return mappings[this.keyIndicator.rate]
+      return mappings[this.keyIndicator.chart1Rate]
+    },
+    // 图2数据key
+    chart2DataKey() {
+      const mappings = {
+        实际购买率: 'purchaseRate',
+        执行率: 'executeRate',
+        联络成功率: 'contactedRate'
+      }
+      return mappings[this.keyIndicator.chart2Rate]
     },
     // 图3数据key
     chart3DataKey() {
@@ -1484,11 +1496,11 @@ export default {
     },
     // 图1数据
     realChart1Data() {
-      return this.keyIndicator.chart1Data[this.chartDataKey]
+      return this.keyIndicator.chart1Data[this.chart1DataKey]
     },
     // 图2数据
     realChart2Data() {
-      return this.keyIndicator.chart2Data[this.chartDataKey]
+      return this.keyIndicator.chart2Data[this.chart2DataKey]
     },
     // 图3数据
     realChart3Data() {
@@ -1762,7 +1774,8 @@ export default {
         useCase: this.overview.searchForm.useCase,
         batch: this.overview.searchForm.batch
       }
-      this.keyIndicator.rate = '实际购买率'
+      this.keyIndicator.chart1Rate = '实际购买率'
+      this.keyIndicator.chart2Rate = '实际购买率'
       this.keyIndicator.compareToLastBatchType = '意向购买产品'
       this.keyIndicator.chart2Batch = []
       this.keyIndicator.chart3Batch = ''
@@ -2259,7 +2272,7 @@ export default {
             display: flex;
             align-items: center;
 
-            .filter {
+            .filter-item {
               margin-left: 20px;
             }
           }
@@ -2295,7 +2308,7 @@ export default {
               display: flex;
               align-items: center;
 
-              .filter {
+              .filter-item {
                 margin-left: 20px;
               }
             }
