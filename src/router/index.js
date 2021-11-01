@@ -129,6 +129,13 @@ let asyncRoutes = [
         meta: { title: '线索执行记录查询', icon: 'crmAndOds' }
       },
       {
+        // 督导看板
+        path: 'inspectorBoard',
+        name: 'InspectorBoard',
+        component: () => import(/* webpackChunkName: "inspectorBoard" */ '@/views/inspectorBoard/index'),
+        meta: { title: '督导看板', icon: 'inspector' }
+      },
+      {
         // 设置
         path: 'config',
         name: 'Config',
