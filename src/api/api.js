@@ -1427,6 +1427,143 @@ export function ruleDetail(params) {
   })
 }
 
+/** ************************************************ 督导看板 ************************************************************/
+// 督导总览顶栏
+export function inspectorOverview(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectChannelAndUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 督导总览列表数据
+export function getInspectorOverviewList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectChannelAndUseCasePage',
+    method: 'post',
+    data
+  })
+}
+
+// CRM渠道各支行执行情况列表数据
+export function getExecuteStatusList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectSubBranchExecutiveCondition',
+    method: 'post',
+    data
+  })
+}
+
+// 网点综合排名
+export function getOutletRankingList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectNetworkRanking',
+    method: 'post',
+    data
+  })
+}
+
+// 人员综合排名
+export function getPeopleRankingList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectMarketingPersonnelRanking',
+    method: 'post',
+    data
+  })
+}
+
+// 各支行负债类小计用例关键指标趋势表现
+export function getUseCaseKeyIndicatorList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectDebtsTendency',
+    method: 'post',
+    data
+  })
+}
+
+// 各支行执行率
+export function getOutletExecuteRateList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchExecuteRate',
+    method: 'post',
+    data
+  })
+}
+
+// 意向购买产品 / 预约网点见面 成功占比与比上批情况
+export function getIntentToBuySuccessRate(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchPurchaseIntention',
+    method: 'post',
+    data
+  })
+}
+
+// 用例各支行督导看板 销售金额
+export function getUseCaseSalesAmount(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectUseCaseSituation',
+    method: 'post',
+    data
+  })
+}
+
+// 用例各支行督导看板 资金流向
+
+// 用例各支行督导看板 （最后一张表）
+export function getInspectorSummary(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectBranchCondition',
+    method: 'post',
+    data
+  })
+}
+
+// 获取客群类型下拉选项
+export function getCustomerGroupList(params) {
+  return request({
+    url: '/supervisorSpectaculars/selectCustomerGroup',
+    method: 'get',
+    params
+  })
+}
+
+// 获取营销用例(与批次关联)下拉选项
+export function getUseCaseListByBatchList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectUseCase',
+    method: 'post',
+    data
+  })
+}
+
+// 获取批次(与营销用例关联)下拉选项(多选单选通用，参数不同)
+export function getBatchList(data) {
+  return request({
+    url: '/supervisorSpectaculars/selectPC',
+    method: 'post',
+    data
+  })
+}
+
+// *******************
+// 获取 营销用例类型-用例 级联选项
+export function getUseCaseCascaderList() {
+  return request({
+    url: '/supervisorSpectaculars/selectTypeCascade',
+    method: 'get'
+  })
+}
+
+// 获取 批次-日期 级联选项
+export function getBatchCascaderList() {
+  return request({
+    url: '/supervisorSpectaculars/selectPCCascade',
+    method: 'get'
+  })
+}
+
 /** ************************************************ 线索执行 ************************************************************/
 //  获取网点列表
 export function getOrgList() {
