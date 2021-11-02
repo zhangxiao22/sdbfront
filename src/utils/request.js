@@ -22,10 +22,14 @@ service.interceptors.request.use(
     //   config.headers.tokenId = getToken()
     // }
     if (process.env.NODE_ENV === 'development') {
-      config.headers.userNo = '01' + '01957' // 线索统筹
-      // config.headers.userNo = '01' + '00752' // 用例管理
-      // config.headers.userNo = '01' + '10440' // 审批
+      // config.headers.userNo = '01' + '01957' // 线索统筹
+      config.headers.userNo = '01' + '00752' // 用例管理
+      // config.headers.userNo = '01' + '10440' // 领导审批
       // config.headers.userNo = '01' + '01479' // 业务管理
+      // config.headers.userNo = '01' + '01819' // 支行业务管理
+      // config.headers.userNo = '01' + '06476' // 支行用例管理
+      // config.headers.userNo = '01' + '06145' // 支行审批岗
+      // config.headers.userNo = '01' + '06474' // 支行普通员工
     }
     return config
   },
