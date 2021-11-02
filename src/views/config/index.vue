@@ -65,13 +65,13 @@ export default {
         label: '指派网点',
         component: 'Appoint',
         loading: false,
-        roles: ['线索统筹']
+        roles: ['线索统筹', '支行业务管理']
       },
       {
         label: '分发规则参数',
         component: 'NotDisturb',
         loading: false,
-        roles: ['线索统筹']
+        roles: ['线索统筹', '支行业务管理']
       },
       {
         label: '全局网点分配比例',
@@ -89,7 +89,7 @@ export default {
         label: '用例管理',
         component: 'UseCasePriority',
         loading: false,
-        roles: ['线索统筹']
+        roles: ['线索统筹', '支行业务管理']
       },
       {
         label: '事件分发',
@@ -131,7 +131,7 @@ export default {
         label: '请假代办',
         component: 'Agent',
         loading: false,
-        roles: ['线索统筹']
+        roles: ['线索统筹', '支行业务管理']
       },
       {
         label: '分配规则',
