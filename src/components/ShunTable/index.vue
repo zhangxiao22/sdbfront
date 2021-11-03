@@ -239,9 +239,9 @@ export default {
     clearFilter() {
       this.$refs.table.clearFilter()
     },
-    translate(obj, paramPropStr) {
+    translate(obj, { prop, formatter }) {
       let val = obj
-      const arr = paramPropStr.split('.')
+      const arr = prop.split('.')
       for (let i = 0; i < arr.length; i++) {
         if (val) {
           val = val[arr[i]]
@@ -251,9 +251,9 @@ export default {
         }
       }
       // paramPropStr.split('.').forEach(n => {
-
       // })
-      return val
+      // formatter({row, column, cellValue, index})
+      return formatter && formatter(null, null, val, null) || val
     },
     // 能否选择
     selectable(row, index) {
