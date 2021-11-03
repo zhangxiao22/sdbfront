@@ -360,6 +360,10 @@ export default {
     },
     getVal() {
       return this.selection
+    },
+    // 清除排序
+    clearSort() {
+      this.$refs.table.clearSort()
     }
   }
 }
