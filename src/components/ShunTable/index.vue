@@ -91,7 +91,13 @@
                            :label="item.label"
                            :width="item.width"
                            :fixed="item.fixed"
-                           :min-width="item.minWidth">
+                           :min-width="item.minWidth"
+                           :align="item.align">
+            <template #header>
+              <slot v-if="item.headerSlot"
+                    :name="`${item.prop}HeaderSlot`" />
+              <template v-else>{{ item.label }}</template>
+            </template>
             <template slot-scope="scope">
               <slot v-if="item.slot"
                     :name="`${item.prop}Slot`"
