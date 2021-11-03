@@ -64,7 +64,8 @@ let asyncRoutes = [
         path: 'eventBoard',
         name: 'EventBoard',
         component: () => import(/* webpackChunkName: "eventBoard" */ '@/views/eventBoard/index'),
-        meta: { title: '事件列表', icon: 'eventList', roles: ['支行用例管理', '支行审批岗'] }
+        // meta: { title: '事件列表', icon: 'eventList', roles: ['支行用例管理', '支行审批岗'] }
+        meta: { title: '事件列表', icon: 'eventList' }
       },
       {
         // 事件详情
@@ -120,13 +121,15 @@ let asyncRoutes = [
         path: 'totalBoard',
         name: 'TotalBoard',
         component: () => import(/* webpackChunkName: "totalBoard" */ '@/views/totalBoard/index'),
-        meta: { title: '成效看板', icon: 'board', roles: ['支行业务管理', '支行用例管理', '支行审批岗', '支行普通员工'] }
+        // meta: { title: '成效看板', icon: 'board', roles: ['支行业务管理', '支行用例管理', '支行审批岗', '支行普通员工'] }
+        meta: { title: '成效看板', icon: 'board' }
       },
       {
         path: 'crmAndOds',
         name: 'CrmAndOds',
         component: () => import(/* webpackChunkName: "crmAndOds" */ '@/views/crmAndOds/index'),
-        meta: { title: '线索执行记录查询', icon: 'crmAndOds', roles: ['支行业务管理', '支行用例管理', '支行审批岗'] }
+        // meta: { title: '线索执行记录查询', icon: 'crmAndOds', roles: ['支行业务管理', '支行用例管理', '支行审批岗'] }
+        meta: { title: '线索执行记录查询', icon: 'crmAndOds' }
       },
       {
         // 督导看板
