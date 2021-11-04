@@ -214,6 +214,7 @@
             <div style="width:100%;">
               <svg-icon icon-class="chart-bar" />排名
               <el-select v-model="resultUsecaseFilter"
+                         filterable
                          style="margin-left:50px;width:250px;"
                          placeholder="请选择用例"
                          @change="changeResultUseCase">
@@ -372,6 +373,7 @@
             <div style="width:100%;">
               <svg-icon icon-class="chart-bar" />排名
               <el-select v-model="amountUsecaseFilter"
+                         filterable
                          style="margin-left:50px;width:250px;"
                          placeholder="请选择用例"
                          @change="changeAmountUseCase">
