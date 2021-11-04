@@ -260,21 +260,21 @@ export default {
           width: 100
         },
         { prop: 'clueExecuteDate', label: '执行时间', width: 100, fixed: 'left' },
-        { prop: 'odsExecutorId', label: '执行人工号', width: 120 },
-        { prop: 'odsExecutorName', label: '执行人姓名', width: 100 },
-        { prop: 'odsExecutorOutlet', label: '执行人所属网点号', width: 140 },
+        { prop: 'odsBmpExecutorId', label: '执行人工号', width: 120 },
+        { prop: 'odsBmpExecutorName', label: '执行人姓名', width: 100 },
+        { prop: 'odsBmpExecutorOutlet', label: '执行人所属网点号', width: 140 },
         {
-          prop: 'odsExecutorOutletName',
+          prop: 'odsBmpExecutorOutletName',
           label: '执行人所属网点名称',
           width: 150
         },
         {
-          prop: 'odsExecutorSubBranchId',
+          prop: 'odsBmpExecutorSubBranchId',
           label: '执行人所属支行号',
           width: 140
         },
         {
-          prop: 'odsExecutorSubBranchName',
+          prop: 'odsBmpExecutorSubBranchName',
           label: '执行人所属支行名称',
           width: 150
         },
