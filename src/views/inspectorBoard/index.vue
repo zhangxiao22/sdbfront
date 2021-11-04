@@ -640,10 +640,7 @@
               </el-tooltip>
             </div>
             <LineChart id="chart-1"
-<<<<<<< HEAD
-=======
                        ref="chart1Ref"
->>>>>>> 117-feature-督导看板
                        v-loading="keyIndicator.chart1Loading"
                        class="content chart"
                        :data="realChart1Data"
@@ -727,10 +724,7 @@
               </el-tooltip>
             </div>
             <StackDodgeBarChart id="chart-3"
-<<<<<<< HEAD
-=======
                                 ref="chart3Ref"
->>>>>>> 117-feature-督导看板
                                 v-loading="keyIndicator.chart3Loading"
                                 class="content chart"
                                 :data="realChart3Data"
