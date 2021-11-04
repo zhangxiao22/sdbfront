@@ -1260,48 +1260,53 @@ export default {
           prop: 'useCaseName',
           label: '用例名称',
           notShowOverflowTooltip: false,
-          align: 'right'
+          align: 'right',
+          minWidth: '180'
         }, {
           prop: 'channelName',
           label: '渠道',
-          align: 'right'
-          // width: '100'
+          align: 'right',
+          width: '80'
         }, {
           prop: 'type',
           label: '用例类型',
-          align: 'right'
-          // width: '100'
+          align: 'right',
+          width: '80'
         }, {
           prop: 'count',
           label: '线索数量(条)',
           sortable: 'custom',
           formatter: wholeNumberFormatter,
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchasedNum',
           label: '销售成功数量(个)',
           sortable: 'custom',
           formatter: wholeNumberFormatter,
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchaseRate',
           label: '购买成功率(%)',
           formatter: percentFormatter,
           sortable: 'custom',
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchasedAmount',
           label: '销售金额(万元)',
           sortable: 'custom',
           formatter: tenThousandFormatter,
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchaseAumUp',
           // label: '客户AUM增量(万元)(成功/全体/失败)',
           slot: true,
           sortable: 'custom',
           align: 'right',
-          // minWidth: '120',
+          minWidth: '280',
           headerSlot: true
         }, {
           prop: 'purchaseAumAverage',
@@ -1309,8 +1314,8 @@ export default {
           slot: true,
           sortable: 'custom',
           align: 'right',
-          headerSlot: true
-          // minWidth: '120'
+          headerSlot: true,
+          minWidth: '280'
         }]
       },
       // 执行情况

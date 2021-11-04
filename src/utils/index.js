@@ -35,15 +35,6 @@ export const wholeNumberFormatter = (row, column, cellValue, index) => {
   return cellValue.toLocaleString()
 }
 
-/**
- * Format decimal to string
- * @param {Number} val
- * @returns {string}
- */
-export function formatPercent(val) {
-  return `${(+val * 100).toFixed(2)}%`
-}
-
 export function formatMoney(val) {
   return `${val}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
 }
