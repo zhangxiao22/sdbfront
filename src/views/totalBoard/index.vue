@@ -294,6 +294,7 @@
           <div v-loading="loading.effectLoading"
                class="chart-box">
             <AreaChart id="effect-area"
+                       :unit="effectDataUnit"
                        :data="effectLineChartData" />
           </div>
         </div>
@@ -320,6 +321,7 @@
                class="chart-box"
                style="height:340px;">
             <BarChart id="rank3"
+                      :unit="effectDataUnit"
                       :data="effectRankData" />
           </div>
         </div>
@@ -365,6 +367,7 @@
                class="chart-box"
                style="height:450px;">
             <StackedBarChart id="stacked-bar2"
+                             :unit="amountUnit"
                              :data="stackedBarData_amount" />
           </div>
         </div>
@@ -413,6 +416,7 @@
                class="chart-box"
                style="height:340px;">
             <BarChart id="rank4"
+                      unit="万元"
                       :data="amountRankData" />
           </div>
         </div>
@@ -709,6 +713,7 @@ export default {
         { label: '9月第1批', value: 30 }
       ],
       effectRankData: [],
+      effectDataUnit: '',
 
       effectLineChartData_origin: [],
       // lineChartData_crm: [
@@ -760,6 +765,7 @@ export default {
         // }
       ],
       stackedBarData_amount: [],
+      amountUnit: '',
       stackedBarData_amount_origin: [],
       // 顶栏数据
       baseInfo: [{
@@ -1332,18 +1338,38 @@ export default {
         this.loading.effectRankLoading = false
       })
     },
-
+    getEffectFlag() {
+      const amuntParams = ['lum', 'aum', 'purchaseNum', 'depositUpAmount']
+      const flag = amuntParams.includes(this.effectFilter.activeName)
+      if (flag) {
+        this.effectDataUnit = '万元'
+      } else {
+        this.effectDataUnit = '张'
+      }
+      return flag
+    },
     // 获取effect折线图数据
     changeEffectData() {
       // 折线图
-      this.effectLineChartData = this.effectLineChartData_origin.find(n => {
+      const data = this.effectLineChartData_origin.find(n => {
         return this.effectFilter.activeName === n.key
       })?.data
+      this.effectLineChartData = this.getEffectFlag() ? data.map(n => {
+        return {
+          label: n.label,
+          value: +(n.value / 10000).toFixed(2)
+        }
+      }) : data
     },
     // 获取effect排名数据
     changeEffectRankData() {
       // 排名
-      this.effectRankData = this.effectRankData_origin?.[this.effectFilter.activeName]
+      this.effectRankData = this.getEffectFlag() ? this.effectRankData_origin?.[this.effectFilter.activeName].map(n => {
+        return {
+          label: n.label,
+          value: +(n.value / 10000).toFixed(2)
+        }
+      }) : this.effectRankData_origin?.[this.effectFilter.activeName]
     },
 
     hangleChangeEffectDatePicker() {
@@ -1389,7 +1415,7 @@ export default {
         end: this.amountFilter.timeVal[1],
         channel: this.amountFilter.crmSmsType.toUpperCase(),
         // type: this.amountFilter.rankType,
-        type: 7,
+        type: 1,
         useCaseId: this.amountUsecaseFilter
       }
     },
@@ -1462,12 +1488,24 @@ export default {
       t.map(n => {
         rd = rd.concat(n)
       })
-      this.stackedBarData_amount = rd
+      this.stackedBarData_amount = rd.map(n => {
+        return {
+          type: n.type,
+          label: n.label,
+          value: +(n.value / 10000).toFixed(2)
+        }
+      })
     },
     // 获取amount排名数据
     changeAmountRankData() {
       // 排名
       this.amountRankData = this.amountRankData_origin[this.amountFilter.amountType]
+        .map(n => {
+          return {
+            label: n.label,
+            value: +(n.value / 10000).toFixed(2)
+          }
+        })
     },
 
     // 修改时间
