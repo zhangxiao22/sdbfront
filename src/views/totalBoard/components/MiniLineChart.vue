@@ -70,7 +70,7 @@ export default {
           formatter: (datum) => {
             return {
               name: datum.label,
-              value: formatMoney(datum.value)
+              value: formatMoney(datum.value / 10000) + '万元'
             }
           }
         }

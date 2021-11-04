@@ -38,7 +38,7 @@
           <div class="item">
             <div class="inner-box">
               <div class="title">AUM提升额</div>
-              <div class="count">{{ increaseInfo.aumUp | formatMoney }}</div>
+              <div class="count">{{ increaseInfo.aumUp /10000 | formatMoney }}万元</div>
               <div class="mini-chart">
                 <MiniLineChart id="chart-mini-1"
                                :data="increaseInfo.aumMiniData" />
@@ -48,7 +48,7 @@
           <div class="item">
             <div class="inner-box">
               <div class="title">LUM提升</div>
-              <div class="count">{{ increaseInfo.lumUp | formatMoney }}</div>
+              <div class="count">{{ increaseInfo.lumUp /10000 | formatMoney }}万元</div>
               <div class="mini-chart">
                 <MiniLineChart id="chart-mini-2"
                                :data="increaseInfo.lumMiniData" />
@@ -73,7 +73,8 @@
               <svg-icon icon-class="chart-funnel" />销售漏斗
             </div>
             <div class="chart-box">
-              <FunnelChart id="funnel"
+              <FunnelChart v-if="funnelData.length"
+                           id="funnel"
                            :data="funnelData" />
             </div>
 
@@ -1164,7 +1165,7 @@ export default {
         end: this.resultFilter.timeVal[1],
         channel: this.resultFilter.activeName.toUpperCase(),
         // type: this.resultFilter.rankType,
-        type: 7,
+        type: 1,
         useCaseId: this.resultUsecaseFilter
       }
     },
