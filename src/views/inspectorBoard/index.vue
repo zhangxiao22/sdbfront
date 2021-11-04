@@ -16,11 +16,11 @@
             <div class="right">(全体/成功/失败)</div>
           </div>
           <div class="value">
-            <div class="blue">{{ tenThousandFormatter(null, null, baseInfo.aumUp) }}</div>
+            <div class="blue">{{ tenThousandWholeNumberFormatter(null, null, baseInfo.aumUp) }}</div>
             <div class="separator">/</div>
-            <div class="green">{{ tenThousandFormatter(null, null, baseInfo.purchaseAumUp) }}</div>
+            <div class="green">{{ tenThousandWholeNumberFormatter(null, null, baseInfo.purchaseAumUp) }}</div>
             <div class="separator">/</div>
-            <div class="red">{{ tenThousandFormatter(null, null, baseInfo.losingAumUp) }}</div>
+            <div class="red">{{ tenThousandWholeNumberFormatter(null, null, baseInfo.losingAumUp) }}</div>
             <div class="unit">万元</div>
           </div>
         </div>
@@ -640,10 +640,11 @@
               </el-tooltip>
             </div>
             <LineChart id="chart-1"
+                       ref="chart1Ref"
                        v-loading="keyIndicator.chart1Loading"
                        class="content chart"
                        :data="realChart1Data"
-                       :rate-type="keyIndicator.chart1Rate" />
+                       :filter="keyIndicator.chart1Rate" />
           </div>
           <div class="item">
             <div class="head">
@@ -683,9 +684,11 @@
               </el-tooltip>
             </div>
             <BarChart id="chart-2"
+                      ref="chart2Ref"
                       v-loading="keyIndicator.chart2Loading"
                       class="content chart"
-                      :data="realChart2Data" />
+                      :data="realChart2Data"
+                      :filter="keyIndicator.chart2Rate" />
           </div>
           <div class="item">
             <div class="head">
@@ -721,9 +724,11 @@
               </el-tooltip>
             </div>
             <StackDodgeBarChart id="chart-3"
+                                ref="chart3Ref"
                                 v-loading="keyIndicator.chart3Loading"
                                 class="content chart"
-                                :data="realChart3Data" />
+                                :data="realChart3Data"
+                                :filter="keyIndicator.compareToLastBatchType" />
           </div>
         </div>
       </div>
@@ -1166,6 +1171,7 @@ import {
 } from '@/api/api'
 import {
   percentFormatter,
+  tenThousandWholeNumberFormatter,
   tenThousandFormatter,
   wholeNumberFormatter,
   downloadFilePost
@@ -1182,6 +1188,7 @@ export default {
   data() {
     return {
       percentFormatter,
+      tenThousandWholeNumberFormatter,
       tenThousandFormatter,
       wholeNumberFormatter,
       // 更多图表显示
@@ -1848,6 +1855,9 @@ export default {
     // 关键指标趋势搜索
     keyIndicatorSearch() {
       this.setKeyIndicatorBatchOpt()
+      // this.$refs.chart1Ref && this.$refs.chart1Ref.reset()
+      // this.$refs.chart2Ref && this.$refs.chart2Ref.reset()
+      // this.$refs.chart3Ref && this.$refs.chart3Ref.reset()
       this.getChart1Data()
       this.getChart2Data()
       this.getChart3Data()

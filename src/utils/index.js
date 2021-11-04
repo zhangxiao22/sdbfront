@@ -19,6 +19,14 @@ export const tenThousandFormatter = (row, column, cellValue, index) => {
   return Number((+cellValue / 10000).toFixed(2)).toLocaleString()
 }
 
+// for el-table-column 万元整数
+export const tenThousandWholeNumberFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return (Math.round(+cellValue / 10000)).toLocaleString()
+}
+
 // for el-table-column 整数保留两位小数
 export const wholeNumberFormatter = (row, column, cellValue, index) => {
   if (!cellValue && cellValue !== 0) {

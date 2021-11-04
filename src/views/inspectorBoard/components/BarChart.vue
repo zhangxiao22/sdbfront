@@ -16,11 +16,18 @@ export default {
     data: {
       type: Array,
       default() { return [] }
+    },
+    filter: {
+      type: String,
+      required: true
     }
   },
   watch: {
     data() {
       this.chart.changeData(this.data)
+    },
+    filter() {
+      this.reset()
     }
   },
   mounted() {
@@ -53,7 +60,7 @@ export default {
       })
       this.chart.axis('value', {
         label: {
-          formatter: n => `${Math.floor(n * 100)}%`
+          formatter: n => percentFormatter(null, null, n)
         }
       })
       this.chart
@@ -88,6 +95,10 @@ export default {
         ]
       })
       this.chart.render()
+    },
+    reset() {
+      this.chart?.destroy()
+      this.render()
     }
   }
 }

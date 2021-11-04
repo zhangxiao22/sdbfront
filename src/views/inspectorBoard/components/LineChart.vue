@@ -16,16 +16,23 @@ export default {
     data: {
       type: Array,
       default() { return [] }
+    },
+    filter: {
+      type: String,
+      required: true
     }
   },
   watch: {
     data() {
       this.chart.changeData(this.data)
+    },
+    filter() {
+      this.reset()
     }
   },
   created() {
-    this.legendItem = ''
-    this.isShow = false
+    this.line = null
+    this.controlGroupLine = null
   },
   mounted() {
     this.render()
@@ -39,8 +46,15 @@ export default {
         appendPadding: [10, 50, 50, 0]
       })
       this.chart.data(this.data)
-      this.chart.scale('value', {
-        nice: true
+      this.chart.scale({
+        value: {
+          nice: true,
+          sync: true
+        },
+        controlGroupValue: {
+          sync: 'value',
+          nice: true
+        }
       })
       this.chart.tooltip({
         showCrosshairs: true,
@@ -48,7 +62,8 @@ export default {
         customItems: items => {
           return items.map(item => ({
             ...item,
-            value: percentFormatter(null, null, item.value)
+            value: percentFormatter(null, null, item.value),
+            name: item.name === 'controlGroupValue' ? '对照组' : item.name
           }))
         }
       })
@@ -57,14 +72,19 @@ export default {
       })
       this.chart.axis('value', {
         label: {
-          formatter: n => `${Math.floor(n * 100)}%`
+          formatter: n => percentFormatter(null, null, n)
         }
       })
-      this.line = this.chart.line().position('label*value').color('category').shape('smooth')
-      this.line.label('value')
-      this.line.label(false)
-
+      // 隐藏对照组y轴
+      this.chart.axis('controlGroupValue', false)
+      // 线
+      this.chart.line().position('label*value').color('category').shape('smooth')
+      // 用来控制labels显示隐藏的线
+      this.line = this.chart.line().position('label*value').color('category').shape('smooth').label(false)
+      // 点
       this.chart.point().position('label*value').color('category').shape('circle')
+
+      // 修改legend-filter默认行为：点击一个消失一个 -> 点击哪个就只显示哪个
       this.chart.interaction('legend-filter', {
         showEnable: [
           { trigger: 'legend-item:mouseenter', action: 'cursor:pointer' },
@@ -76,13 +96,16 @@ export default {
         ]
       })
       this.chart.render()
+
       this.chart.on('legend:click', (e) => {
         const legendItemsList = e.gEvent.delegateObject.legend.cfg.items
         const checkedNumber = legendItemsList.filter(n => !n.unchecked).length
+        // 清楚所有 标注
         this.chart.annotation().clear(true)
         if (checkedNumber === 1) {
           const filteredData = this.chart.getData()
           const yMax = Math.max(...filteredData.map(n => n.value))
+          // 画最大值辅助线 标注
           this.chart.annotation().line({
             start: ['min', yMax],
             end: ['max', yMax],
@@ -96,81 +119,48 @@ export default {
                 fill: 'grey',
                 fontWeight: 'normal'
               },
-              content: percentFormatter(null, null, yMax),
+              // content: percentFormatter(null, null, yMax),
+              content: '最大值',
               offsetY: -5
             }
           })
-          this.line.label('value')
+          // 显示label 线
+          this.line.label('value', value => ({
+            content: percentFormatter(null, null, value),
+            layout: {
+              type: 'overlap'
+            },
+            style: {
+              fill: 'grey'
+            }
+          }))
+          // 画对照组 文字标注
+          this.chart.annotation().text({
+            content: '对照组',
+            position: filteredData.slice(-1)[0],
+            offsetX: 20,
+            offsetY: -10
+          })
+          // 对照组 线
+          if (this.controlGroupLine) {
+            this.controlGroupLine.paint()
+          } else {
+            this.controlGroupLine = this.chart.line().position('label*controlGroupValue').color('#ff4d4f50').shape('smooth')
+          }
+          this.chart.render(true)
         } else {
-          console.log('all')
-          this.line.label(false)
+          // 隐藏label 线
+          this.line.clear()
+          // 隐藏对照组 线
+          this.controlGroupLine.clear()
         }
-        console.log(this.line.getAttribute('label'))
-        this.chart.render(true)
-        // setTimeout(() => {
-        //   this.line.label(false)
-        //   this.chart.render(true)
-        // }, 3000)
-
-        // this.chart.annotation().clear(true)
-        // this.line.label(false)
-        // const legendItem = e.gEvent.target.cfg.delegateObject.item.id
-        // const filteredData = this.chart.getData()
-        // if (filteredData.length <= 0) {
-        //   return
-        // }
-        // const yMax = Math.max(...filteredData.map(n => n.value))
-        // const annotate = () => {
-        //   this.chart.annotation().line({
-        //     start: ['min', yMax],
-        //     end: ['max', yMax],
-        //     style: {
-        //       stroke: '#ff4d4f',
-        //       lineWidth: 1,
-        //       lineDash: [3, 3]
-        //     }, text: {
-        //       position: 'end',
-        //       style: {
-        //         fill: 'grey',
-        //         fontWeight: 'normal'
-        //       },
-        //       content: percentFormatter(null, null, yMax),
-        //       offsetY: -5
-        //     }
-        //   })
-        // }
-        // if (this.legendItem !== legendItem) {
-        //   this.legendItem = legendItem
-        //   this.isShow = true
-        //   annotate()
-        //   this.line.label('value', value => ({
-        //     content: percentFormatter(null, null, value),
-        //     layout: {
-        //       type: 'overlap'
-        //     },
-        //     style: {
-        //       fill: 'grey'
-        //     }
-        //   }))
-        // } else {
-        //   if (this.isShow) {
-        //     this.isShow = false
-        //   } else {
-        //     this.isShow = true
-        //     annotate()
-        //     this.line.label('value', value => ({
-        //       content: percentFormatter(null, null, value),
-        //       layout: {
-        //         type: 'overlap'
-        //       },
-        //       style: {
-        //         fill: 'grey'
-        //       }
-        //     }))
-        //   }
-        // }
-        // this.chart.changeData(this.data)
       })
+    },
+    reset() {
+      this.line = null
+      this.controlGroupLine = null
+      this.chart?.destroy()
+      this.render()
     }
   }
 }
