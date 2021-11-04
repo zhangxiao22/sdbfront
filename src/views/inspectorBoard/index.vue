@@ -1855,9 +1855,9 @@ export default {
     // 关键指标趋势搜索
     keyIndicatorSearch() {
       this.setKeyIndicatorBatchOpt()
-      // this.$refs.chart1Ref && this.$refs.chart1Ref.reset()
-      // this.$refs.chart2Ref && this.$refs.chart2Ref.reset()
-      // this.$refs.chart3Ref && this.$refs.chart3Ref.reset()
+      this.$refs.chart1Ref && this.$refs.chart1Ref.reset()
+      this.$refs.chart2Ref && this.$refs.chart2Ref.reset()
+      this.$refs.chart3Ref && this.$refs.chart3Ref.reset()
       this.getChart1Data()
       this.getChart2Data()
       this.getChart3Data()

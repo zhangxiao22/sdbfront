@@ -97,7 +97,7 @@ export default {
       })
       this.chart.render()
 
-      this.chart.on('legend:click', (e) => {
+      this.chart.on('legend-item:click', (e) => {
         const legendItemsList = e.gEvent.delegateObject.legend.cfg.items
         const checkedNumber = legendItemsList.filter(n => !n.unchecked).length
         // 清楚所有 标注
@@ -106,24 +106,26 @@ export default {
           const filteredData = this.chart.getData()
           const yMax = Math.max(...filteredData.map(n => n.value))
           // 画最大值辅助线 标注
-          this.chart.annotation().line({
-            start: ['min', yMax],
-            end: ['max', yMax],
-            style: {
-              stroke: '#ff4d4f',
-              lineWidth: 1,
-              lineDash: [3, 3]
-            }, text: {
-              position: 'end',
+          if (yMax !== 0) {
+            this.chart.annotation().line({
+              start: ['min', yMax],
+              end: ['max', yMax],
               style: {
-                fill: 'grey',
-                fontWeight: 'normal'
-              },
-              // content: percentFormatter(null, null, yMax),
-              content: '最大值',
-              offsetY: -5
-            }
-          })
+                stroke: '#ff4d4f',
+                lineWidth: 1,
+                lineDash: [3, 3]
+              }, text: {
+                position: 'end',
+                style: {
+                  fill: 'grey',
+                  fontWeight: 'normal'
+                },
+                // content: percentFormatter(null, null, yMax),
+                content: '最大值',
+                offsetY: -5
+              }
+            })
+          }
           // 显示label 线
           this.line.label('value', value => ({
             content: percentFormatter(null, null, value),
@@ -135,12 +137,14 @@ export default {
             }
           }))
           // 画对照组 文字标注
-          this.chart.annotation().text({
-            content: '对照组',
-            position: filteredData.slice(-1)[0],
-            offsetX: 20,
-            offsetY: -10
-          })
+          if (this.filter === '实际购买率') {
+            this.chart.annotation().text({
+              content: '对照组',
+              position: filteredData.slice(-1)[0],
+              offsetX: 20,
+              offsetY: -10
+            })
+          }
           // 对照组 线
           if (this.controlGroupLine) {
             this.controlGroupLine.paint()
