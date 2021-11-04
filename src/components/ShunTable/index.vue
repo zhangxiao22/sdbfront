@@ -85,6 +85,7 @@
           <el-table-column :key="index"
                            :show-overflow-tooltip="!item.notShowOverflowTooltip"
                            :sortable="item.sortable"
+                           :formatter="item.formatter"
                            :prop="item.prop"
                            :column-key="item.columnKey"
                            :filters="item.filters"
@@ -103,7 +104,7 @@
                     :name="`${item.prop}Slot`"
                     :row="scope.row" />
               <!-- <template v-if="item.slot">{{ item.filteredValue }}</template> -->
-              <template v-else>{{ translate(scope.row,item.prop) }}</template>
+              <template v-else>{{ translate(scope.row,item) }}</template>
             </template>
           </el-table-column>
         </template>
@@ -222,6 +223,7 @@ export default {
     // displayData() {
     //   return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
     // }
+
   },
   watch: {
     tableData() {
