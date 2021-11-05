@@ -82,7 +82,7 @@
                       clearable
                       @keyup.enter.native="search" />
           </el-form-item>
-          <el-form-item label="执行情况："
+          <el-form-item label="执行结果："
                         prop="executeRes">
             <el-select v-model="filterForm.executeRes"
                        placeholder="请选择"
@@ -92,6 +92,18 @@
                          :key="i"
                          :label="label"
                          :value="value" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="是否执行："
+                        prop="odsIsExecuteCustomer">
+            <el-select v-model="filterForm.odsIsExecuteCustomer"
+                       placeholder="请选择"
+                       clearable
+                       @keyup.enter.native="search">
+              <el-option label="是"
+                         :value="1" />
+              <el-option label="否"
+                         :value="0" />
             </el-select>
           </el-form-item>
           <el-form-item label="客户号："
@@ -212,8 +224,10 @@ export default {
         executorId: '',
         // 客群标签
         customerTag: '',
-        // 执行情况
+        // 执行结果
         executeRes: '',
+        // 是否执行
+        odsIsExecuteCustomer: '',
         // 客户号
         customerNo: '',
         // 客户姓名
