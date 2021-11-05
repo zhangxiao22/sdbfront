@@ -83,8 +83,8 @@
                       @keyup.enter.native="search" />
           </el-form-item>
           <el-form-item label="执行情况："
-                        prop="executeStatus">
-            <el-select v-model="filterForm.executeStatus"
+                        prop="executeRes">
+            <el-select v-model="filterForm.executeRes"
                        placeholder="请选择"
                        clearable
                        @keyup.enter.native="search">
@@ -159,12 +159,41 @@ export default {
       useCaseOpt: [],
       outletOpt: [],
       executeStatusOpt: [{
-        label: '未执行',
+        label: '无反馈',
         value: 0
       }, {
-        label: '已执行',
+        label: '待跟进',
         value: 1
-      }],
+      }, {
+        label: '联络成功',
+        value: 2
+      }, {
+        label: '失败',
+        value: 3
+      }, {
+        label: '电话接通-介绍完产品',
+        value: 4
+      }, {
+        label: '电话接通-未介绍完产品',
+        value: 5
+      }, {
+        label: '电话未接通',
+        value: 6
+      }
+        // , {
+        //   label: '电话接通-意向购买',
+        //   value: 7
+        // }, {
+        //   label: '电话接通-无意向',
+        //   value: 8
+        // }, {
+        //   label: '电话接通-其他情况',
+        //   value: 9
+        // }, {
+        //   label: '电话未接通',
+        //   value: 10
+        // }
+      ],
       filterForm: {
         // 渠道
         channel: '',
@@ -184,7 +213,7 @@ export default {
         // 客群标签
         customerTag: '',
         // 执行情况
-        executeStatus: '',
+        executeRes: '',
         // 客户号
         customerNo: '',
         // 客户姓名
@@ -364,8 +393,7 @@ export default {
         ...this.filterForm,
         // 待后台优化以下入参
         outletId: this.filterForm.outletId.length && this.filterForm.outletId.slice(-1)[0] || '',
-        useCaseName: this.useCaseOpt.find(n => n.value === this.filterForm.useCase)?.label || '',
-        executeRes: this.filterForm.executeStatus === '' ? '' : this.filterForm.executeStatus === 0 ? '未执行' : '已执行'
+        useCaseName: this.useCaseOpt.find(n => n.value === this.filterForm.useCase)?.label || ''
       }
       console.log(data)
       this.loading = true
