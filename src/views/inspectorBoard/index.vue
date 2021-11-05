@@ -13,14 +13,14 @@
         <div class="item-inner shun-card">
           <div class="label">
             <i class="el-icon-s-data main-icon" />客户AUM增量
-            <div class="right">(成功/失败/全体)</div>
+            <div class="right">(全体/成功/失败)</div>
           </div>
           <div class="value">
-            <div class="success">{{ tenThousandFormatter(null, null, baseInfo.purchaseAumUp) }}</div>
+            <div class="blue">{{ tenThousandWholeNumberFormatter(null, null, baseInfo.aumUp) }}</div>
             <div class="separator">/</div>
-            <div class="fail">{{ tenThousandFormatter(null, null, baseInfo.losingAumUp) }}</div>
+            <div class="green">{{ tenThousandWholeNumberFormatter(null, null, baseInfo.purchaseAumUp) }}</div>
             <div class="separator">/</div>
-            <div class="overall">{{ tenThousandFormatter(null, null, baseInfo.aumUp) }}</div>
+            <div class="red">{{ tenThousandWholeNumberFormatter(null, null, baseInfo.losingAumUp) }}</div>
             <div class="unit">万元</div>
           </div>
         </div>
@@ -29,14 +29,14 @@
         <div class="item-inner shun-card">
           <div class="label">
             <i class="el-icon-s-data main-icon" />客户户均AUM增量
-            <div class="right">(成功/失败/全体)</div>
+            <div class="right">(全体/成功/失败)</div>
           </div>
           <div class="value">
-            <div class="success">{{ tenThousandFormatter(null, null, baseInfo.purchaseAumAverage) }}</div>
+            <div class="blue">{{ tenThousandFormatter(null, null, baseInfo.aumAverage) }}</div>
             <div class="separator">/</div>
-            <div class="fail">{{ tenThousandFormatter(null, null, baseInfo.losingAumAverage) }}</div>
+            <div class="green">{{ tenThousandFormatter(null, null, baseInfo.purchaseAumAverage) }}</div>
             <div class="separator">/</div>
-            <div class="overall">{{ tenThousandFormatter(null, null, baseInfo.aumAverage) }}</div>
+            <div class="red">{{ tenThousandFormatter(null, null, baseInfo.losingAumAverage) }}</div>
             <div class="unit">万元</div>
           </div>
         </div>
@@ -141,7 +141,8 @@
                          :options="useCaseOpt"
                          clearable
                          collapse-tags
-                         :props="{multiple: true}" />
+                         :props="{multiple: true}"
+                         style="width: 250px;" />
           </el-form-item>
           <el-form-item label="批次："
                         prop="batch">
@@ -151,7 +152,9 @@
                          :options="batchOpt"
                          clearable
                          collapse-tags
-                         :props="{multiple: true}" />
+                         :props="{multiple: true}"
+                         :show-all-levels="false"
+                         style="width: 280px" />
           </el-form-item>
           <el-form-item class="filter-item-end">
             <el-button type="primary"
@@ -177,26 +180,26 @@
         </el-form>
       </template>
       <template v-slot:purchaseAumUpSlot="{row}">
+        <span style="color: blue;">{{ tenThousandFormatter(null, null, row.aumUp) }}</span>
+        /
         <span style="color: green;">{{ tenThousandFormatter(null, null, row.purchaseAumUp) }}</span>
         /
         <span style="color: red;">{{ tenThousandFormatter(null, null, row.losingAumUp) }}</span>
-        /
-        <span style="color: blue;">{{ tenThousandFormatter(null, null, row.aumUp) }}</span>
       </template>
       <template v-slot:purchaseAumAverageSlot="{row}">
+        <span style="color: blue;">{{ tenThousandFormatter(null, null, row.aumAverage) }}</span>
+        /
         <span style="color: green;">{{ tenThousandFormatter(null, null, row.purchaseAumAverage) }}</span>
         /
         <span style="color: red;">{{ tenThousandFormatter(null, null, row.losingAumAverage) }}</span>
-        /
-        <span style="color: blue;">{{ tenThousandFormatter(null, null, row.aumAverage) }}</span>
       </template>
       <template #purchaseAumUpHeaderSlot>
         <div>客户AUM增量(万元)</div>
-        <span>(成功/失败/全体)</span>
+        <span>(全体/成功/失败)</span>
       </template>
       <template #purchaseAumAverageHeaderSlot>
         <div>客户户均AUM增量(万元)</div>
-        <span>(成功/失败/全体)</span>
+        <span>(全体/成功/失败)</span>
       </template>
     </ShunTable>
 
@@ -278,10 +281,10 @@
                                  align="right"
                                  sortable
                                  :formatter="percentFormatter" />
-                <el-table-column label="实际购买率与比上批(%)"
+                <el-table-column label="实际购买率(%)"
                                  align="center">
                   <el-table-column prop="purchaseRate"
-                                   label="实际购买率"
+                                   label="本批"
                                    align="right"
                                    sortable
                                    :formatter="percentFormatter" />
@@ -290,21 +293,31 @@
                                    align="right"
                                    sortable>
                     <template slot-scope="scope">
-                      {{ percentFormatter(scope.row, null, scope.row.comparison) }}
-                      <i v-if="scope.row.comparison < 0"
-                         class="el-icon-caret-bottom"
-                         style="color: red;" />
-                      <i v-else-if="scope.row.comparison > 0"
-                         class="el-icon-caret-top"
-                         style="color: green;" />
-                      <i v-else
-                         class="el-icon-minus"
-                         style="color: grey;" />
+                      <div v-if="scope.row.comparison < 0"
+                           class="red">
+                        {{ percentFormatter(scope.row, null, scope.row.comparison) }}
+                        <i class="el-icon-bottom" />
+                      </div>
+                      <div v-else-if="scope.row.comparison > 0"
+                           class="green">
+                        {{ percentFormatter(scope.row, null, scope.row.comparison) }}
+                        <i class="el-icon-top" />
+                      </div>
+                      <div v-else
+                           class="grey">
+                        {{ percentFormatter(scope.row, null, scope.row.comparison) }}
+                        <i class="el-icon-minus" />
+                      </div>
                     </template>
                   </el-table-column>
                 </el-table-column>
                 <el-table-column label="客户AUM增量(万元)"
                                  align="center">
+                  <el-table-column prop="aumUp"
+                                   label="全体"
+                                   align="right"
+                                   sortable
+                                   :formatter="tenThousandFormatter" />
                   <el-table-column prop="purchaseAumUp"
                                    label="成功"
                                    align="right"
@@ -315,14 +328,14 @@
                                    align="right"
                                    sortable
                                    :formatter="tenThousandFormatter" />
-                  <el-table-column prop="aumUp"
+                </el-table-column>
+                <el-table-column label="客户户均AUM增量(万元)"
+                                 align="center">
+                  <el-table-column prop="aumAverage"
                                    label="全体"
                                    align="right"
                                    sortable
                                    :formatter="tenThousandFormatter" />
-                </el-table-column>
-                <el-table-column label="客户户均AUM增量(万元)"
-                                 align="center">
                   <el-table-column prop="purchaseAumAverage"
                                    label="成功"
                                    align="right"
@@ -330,11 +343,6 @@
                                    :formatter="tenThousandFormatter" />
                   <el-table-column prop="losingAumAverage"
                                    label="失败"
-                                   align="right"
-                                   sortable
-                                   :formatter="tenThousandFormatter" />
-                  <el-table-column prop="aumAverage"
-                                   label="全体"
                                    align="right"
                                    sortable
                                    :formatter="tenThousandFormatter" />
@@ -389,7 +397,8 @@
                         stripe
                         border
                         :header-cell-style="{background: '#F5F7FA'}"
-                        :data="ranking.org.tableData">
+                        :data="ranking.org.tableData"
+                        @sort-change="handleOutletRankingSortChange">
                 <template v-for="(item, i) of ranking.org.tableColumnList">
                   <el-table-column v-if="item.prop==='comparison'"
                                    :key="i"
@@ -401,16 +410,21 @@
                                    :width="item.width"
                                    :show-overflow-tooltip="item.showOverflowTooltip">
                     <template slot-scope="scope">
-                      {{ scope.row.comparison }}
-                      <i v-if="scope.row.comparison < 0"
-                         class="el-icon-caret-bottom"
-                         style="color: red;" />
-                      <i v-else-if="scope.row.comparison > 0"
-                         class="el-icon-caret-top"
-                         style="color: green;" />
-                      <i v-else
-                         class="el-icon-minus"
-                         style="color: grey;" />
+                      <div v-if="scope.row.comparison < 0"
+                           class="red">
+                        {{ scope.row.comparison }}
+                        <i class="el-icon-bottom" />
+                      </div>
+                      <div v-else-if="scope.row.comparison > 0"
+                           class="green">
+                        {{ scope.row.comparison }}
+                        <i class="el-icon-top" />
+                      </div>
+                      <div v-else
+                           class="grey">
+                        {{ scope.row.comparison }}
+                        <i class="el-icon-minus" />
+                      </div>
                     </template>
                   </el-table-column>
                   <el-table-column v-else
@@ -486,7 +500,8 @@
                         stripe
                         border
                         :header-cell-style="{background: '#F5F7FA'}"
-                        :data="ranking.people.tableData">
+                        :data="ranking.people.tableData"
+                        @sort-change="handlePeopleRankingSortChange">
                 <template v-for="({prop, label, sortable, formatter, align}, i) of ranking.people.tableColumnList">
                   <el-table-column v-if="prop==='comparison'"
                                    :key="i"
@@ -496,16 +511,21 @@
                                    :align="align"
                                    :formatter="formatter">
                     <template slot-scope="scope">
-                      {{ scope.row.comparison }}
-                      <i v-if="scope.row.comparison < 0"
-                         class="el-icon-caret-bottom"
-                         style="color: red;" />
-                      <i v-else-if="scope.row.comparison > 0"
-                         class="el-icon-caret-top"
-                         style="color: green;" />
-                      <i v-else
-                         class="el-icon-minus"
-                         style="color: grey;" />
+                      <div v-if="scope.row.comparison < 0"
+                           class="red">
+                        {{ scope.row.comparison }}
+                        <i class="el-icon-bottom" />
+                      </div>
+                      <div v-else-if="scope.row.comparison > 0"
+                           class="green">
+                        {{ scope.row.comparison }}
+                        <i class="el-icon-top" />
+                      </div>
+                      <div v-else
+                           class="grey">
+                        {{ scope.row.comparison }}
+                        <i class="el-icon-minus" />
+                      </div>
                     </template>
                   </el-table-column>
                   <el-table-column v-else
@@ -565,7 +585,8 @@
                            :options="childUseCaseOpt"
                            clearable
                            collapse-tags
-                           :props="{multiple: true}" />
+                           :props="{multiple: true}"
+                           style="width: 250px;" />
             </el-form-item>
             <el-form-item label="批次："
                           prop="batch">
@@ -575,7 +596,9 @@
                            :options="childBatchOpt"
                            clearable
                            collapse-tags
-                           :props="{multiple: true}" />
+                           :show-all-levels="false"
+                           :props="{multiple: true}"
+                           style="width: 280px;" />
             </el-form-item>
             <el-form-item class="top-filter-end">
               <el-button type="primary"
@@ -617,8 +640,11 @@
               </el-tooltip>
             </div>
             <LineChart id="chart-1"
+                       ref="chart1Ref"
+                       v-loading="keyIndicator.chart1Loading"
                        class="content chart"
-                       :data="realChart1Data" />
+                       :data="realChart1Data"
+                       :filter="keyIndicator.chart1Rate" />
           </div>
           <div class="item">
             <div class="head">
@@ -658,8 +684,11 @@
               </el-tooltip>
             </div>
             <BarChart id="chart-2"
+                      ref="chart2Ref"
+                      v-loading="keyIndicator.chart2Loading"
                       class="content chart"
-                      :data="realChart2Data" />
+                      :data="realChart2Data"
+                      :filter="keyIndicator.chart2Rate" />
           </div>
           <div class="item">
             <div class="head">
@@ -695,8 +724,11 @@
               </el-tooltip>
             </div>
             <StackDodgeBarChart id="chart-3"
+                                ref="chart3Ref"
+                                v-loading="keyIndicator.chart3Loading"
                                 class="content chart"
-                                :data="realChart3Data" />
+                                :data="realChart3Data"
+                                :filter="keyIndicator.compareToLastBatchType" />
           </div>
         </div>
       </div>
@@ -716,7 +748,8 @@
                            :options="childUseCaseOpt"
                            clearable
                            collapse-tags
-                           :props="{multiple: true}" />
+                           :props="{multiple: true}"
+                           style="width: 250px;" />
             </el-form-item>
             <el-form-item label="批次："
                           prop="batch">
@@ -724,7 +757,8 @@
                            placeholder="请选择批次"
                            :show-all-levels="false"
                            :options="childBatchOpt"
-                           clearable />
+                           clearable
+                           style="width: 280px;" />
             </el-form-item>
             <el-form-item label="客群类型："
                           prop="customerGroup">
@@ -780,17 +814,17 @@
                   {{ tenThousandFormatter(scope.row, null, scope.row.purchasedAmount) }}
                   (
                   <span v-if="scope.row.purchasedAmountPC < 0"
-                        style="color: red;">
+                        class="red">
                     {{ tenThousandFormatter(scope.row, null, scope.row.purchasedAmountPC) }}
-                    <i class="el-icon-caret-bottom" />
+                    <i class="el-icon-bottom" />
                   </span>
                   <span v-else-if="scope.row.purchasedAmountPC > 0"
-                        style="color: green;">
+                        class="green">
                     {{ tenThousandFormatter(scope.row, null, scope.row.purchasedAmountPC) }}
-                    <i class="el-icon-caret-top" />
+                    <i class="el-icon-top" />
                   </span>
                   <span v-else
-                        style="color: grey;">
+                        class="grey">
                     {{ tenThousandFormatter(scope.row, null, scope.row.purchasedAmountPC) }}
                     <i class="el-icon-minus" />
                   </span>
@@ -805,17 +839,17 @@
                   {{ tenThousandFormatter(scope.row, null, scope.row.fixedTimeDeposit) }}
                   (
                   <span v-if="scope.row.fixedTimeDepositPC < 0"
-                        style="color: red;">
+                        class="red">
                     {{ tenThousandFormatter(scope.row, null, scope.row.fixedTimeDepositPC) }}
-                    <i class="el-icon-caret-bottom" />
+                    <i class="el-icon-bottom" />
                   </span>
                   <span v-else-if="scope.row.fixedTimeDepositPC > 0"
-                        style="color: green;">
+                        class="green">
                     {{ tenThousandFormatter(scope.row, null, scope.row.fixedTimeDepositPC) }}
-                    <i class="el-icon-caret-top" />
+                    <i class="el-icon-top" />
                   </span>
                   <span v-else
-                        style="color: grey;">
+                        class="grey">
                     {{ tenThousandFormatter(scope.row, null, scope.row.fixedTimeDepositPC) }}
                     <i class="el-icon-minus" />
                   </span>
@@ -830,17 +864,17 @@
                   {{ tenThousandFormatter(scope.row, null, scope.row.selfSupportManagement) }}
                   (
                   <span v-if="scope.row.selfSupportManagementPC < 0"
-                        style="color: red;">
+                        class="red">
                     {{ tenThousandFormatter(scope.row, null, scope.row.selfSupportManagementPC) }}
-                    <i class="el-icon-caret-bottom" />
+                    <i class="el-icon-bottom" />
                   </span>
                   <span v-else-if="scope.row.selfSupportManagementPC > 0"
-                        style="color: green;">
+                        class="green">
                     {{ tenThousandFormatter(scope.row, null, scope.row.selfSupportManagementPC) }}
-                    <i class="el-icon-caret-top" />
+                    <i class="el-icon-top" />
                   </span>
                   <span v-else
-                        style="color: grey;">
+                        class="grey">
                     {{ tenThousandFormatter(scope.row, null, scope.row.selfSupportManagementPC) }}
                     <i class="el-icon-minus" />
                   </span>
@@ -855,17 +889,17 @@
                   {{ tenThousandFormatter(scope.row, null, scope.row.agencyManagement) }}
                   (
                   <span v-if="scope.row.agencyManagementPC < 0"
-                        style="color: red;">
+                        class="red">
                     {{ tenThousandFormatter(scope.row, null, scope.row.agencyManagementPC) }}
-                    <i class="el-icon-caret-bottom" />
+                    <i class="el-icon-bottom" />
                   </span>
                   <span v-else-if="scope.row.agencyManagementPC > 0"
-                        style="color: green;">
+                        class="green">
                     {{ tenThousandFormatter(scope.row, null, scope.row.agencyManagementPC) }}
-                    <i class="el-icon-caret-top" />
+                    <i class="el-icon-top" />
                   </span>
                   <span v-else
-                        style="color: grey;">
+                        class="grey">
                     {{ tenThousandFormatter(scope.row, null, scope.row.agencyManagementPC) }}
                     <i class="el-icon-minus" />
                   </span>
@@ -875,6 +909,11 @@
             </el-table-column>
             <el-table-column label="客户AUM增量(万元)"
                              align="center">
+              <el-table-column prop="aumUp"
+                               label="全体"
+                               align="right"
+                               sortable
+                               :formatter="tenThousandFormatter" />
               <el-table-column prop="purchaseAumUp"
                                label="成功"
                                align="right"
@@ -885,14 +924,14 @@
                                align="right"
                                sortable
                                :formatter="tenThousandFormatter" />
-              <el-table-column prop="aumUp"
+            </el-table-column>
+            <el-table-column label="客户户均AUM增量(万元)"
+                             align="center">
+              <el-table-column prop="aumAverage"
                                label="全体"
                                align="right"
                                sortable
                                :formatter="tenThousandFormatter" />
-            </el-table-column>
-            <el-table-column label="客户户均AUM增量(万元)"
-                             align="center">
               <el-table-column prop="purchaseAumAverage"
                                label="成功"
                                align="right"
@@ -900,11 +939,6 @@
                                :formatter="tenThousandFormatter" />
               <el-table-column prop="losingAumAverage"
                                label="失败"
-                               align="right"
-                               sortable
-                               :formatter="tenThousandFormatter" />
-              <el-table-column prop="aumAverage"
-                               label="全体"
                                align="right"
                                sortable
                                :formatter="tenThousandFormatter" />
@@ -1061,16 +1095,21 @@
                                sortable
                                align="right">
                 <template slot-scope="scope">
-                  {{ percentFormatter(scope.row, null, scope.row.purchaseRateCompareUp) }}
-                  <i v-if="scope.row.purchaseRateCompareUp < 0"
-                     class="el-icon-caret-bottom"
-                     style="color: red;" />
-                  <i v-else-if="scope.row.purchaseRateCompareUp > 0"
-                     class="el-icon-caret-top"
-                     style="color: green;" />
-                  <i v-else
-                     class="el-icon-minus"
-                     style="color: grey;" />
+                  <div v-if="scope.row.purchaseRateCompareUp < 0"
+                       class="red">
+                    {{ percentFormatter(scope.row, null, scope.row.purchaseRateCompareUp) }}
+                    <i class="el-icon-bottom" />
+                  </div>
+                  <div v-else-if="scope.row.purchaseRateCompareUp > 0"
+                       class="green">
+                    {{ percentFormatter(scope.row, null, scope.row.purchaseRateCompareUp) }}
+                    <i class="el-icon-top" />
+                  </div>
+                  <div v-else
+                       class="grey">
+                    {{ percentFormatter(scope.row, null, scope.row.purchaseRateCompareUp) }}
+                    <i class="el-icon-minus" />
+                  </div>
                 </template>
               </el-table-column>
             </el-table-column>
@@ -1132,6 +1171,7 @@ import {
 } from '@/api/api'
 import {
   percentFormatter,
+  tenThousandWholeNumberFormatter,
   tenThousandFormatter,
   wholeNumberFormatter,
   downloadFilePost
@@ -1148,6 +1188,7 @@ export default {
   data() {
     return {
       percentFormatter,
+      tenThousandWholeNumberFormatter,
       tenThousandFormatter,
       wholeNumberFormatter,
       // 更多图表显示
@@ -1219,57 +1260,62 @@ export default {
           prop: 'useCaseName',
           label: '用例名称',
           notShowOverflowTooltip: false,
-          align: 'right'
+          align: 'right',
+          minWidth: '180'
         }, {
           prop: 'channelName',
           label: '渠道',
-          align: 'right'
-          // width: '100'
+          align: 'right',
+          width: '80'
         }, {
           prop: 'type',
           label: '用例类型',
-          align: 'right'
-          // width: '100'
+          align: 'right',
+          width: '80'
         }, {
           prop: 'count',
           label: '线索数量(条)',
           sortable: 'custom',
           formatter: wholeNumberFormatter,
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchasedNum',
           label: '销售成功数量(个)',
           sortable: 'custom',
           formatter: wholeNumberFormatter,
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchaseRate',
           label: '购买成功率(%)',
           formatter: percentFormatter,
           sortable: 'custom',
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchasedAmount',
           label: '销售金额(万元)',
           sortable: 'custom',
           formatter: tenThousandFormatter,
-          align: 'right'
+          align: 'right',
+          minWidth: '120'
         }, {
           prop: 'purchaseAumUp',
-          // label: '客户AUM增量(万元)(成功/失败/全体)',
+          // label: '客户AUM增量(万元)(成功/全体/失败)',
           slot: true,
           sortable: 'custom',
           align: 'right',
-          // minWidth: '120',
+          minWidth: '280',
           headerSlot: true
         }, {
           prop: 'purchaseAumAverage',
-          // label: '客户户均AUM增量(万元)(成功/失败/全体)',
+          // label: '客户户均AUM增量(万元)(成功/全体/失败)',
           slot: true,
           sortable: 'custom',
           align: 'right',
-          headerSlot: true
-          // minWidth: '120'
+          headerSlot: true,
+          minWidth: '280'
         }]
       },
       // 执行情况
@@ -1293,11 +1339,12 @@ export default {
           pageSize: 20,
           calculatedValue: [],
           tableData: [],
+          tableSort: {},
           tableColumnList: [{
             prop: 'ranking',
             label: '综合得分排名',
             align: 'right',
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'subBranchName',
             label: '支行',
@@ -1310,35 +1357,35 @@ export default {
             prop: 'purchaseRate',
             label: '实际购买率(%)',
             align: 'right',
-            sortable: true,
+            sortable: 'custom',
             formatter: percentFormatter
           }, {
             prop: 'purchasedNum',
             align: 'right',
-            sortable: true,
+            sortable: 'custom',
             label: '销售成功数量(个)',
             formatter: wholeNumberFormatter
           }, {
             prop: 'purchaseNumContribution',
             align: 'right',
             label: '销售成功数量贡献度',
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'purchaseRateContribution',
             align: 'right',
             label: '实际购买率贡献度',
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'comparison',
             align: 'right',
             label: '比上批',
             formatter: wholeNumberFormatter,
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'synthesisScore',
             label: '综合得分',
             align: 'right',
-            sortable: true
+            sortable: 'custom'
           }]
         },
         // 人员
@@ -1352,11 +1399,12 @@ export default {
           pageSize: 20,
           calculatedValue: [],
           tableData: [],
+          tableSort: {},
           tableColumnList: [{
             prop: 'ranking',
             label: '综合得分排名',
             align: 'right',
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'subBranchName',
             label: '支行',
@@ -1373,35 +1421,35 @@ export default {
             prop: 'purchaseRate',
             label: '实际购买率(%)',
             align: 'right',
-            sortable: true,
+            sortable: 'custom',
             formatter: percentFormatter
           }, {
             prop: 'purchasedNum',
             label: '销售成功数量(个)',
             align: 'right',
-            sortable: true,
+            sortable: 'custom',
             formatter: wholeNumberFormatter
           }, {
             prop: 'purchaseNumContribution',
             align: 'right',
             label: '销售成功数量贡献度',
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'purchaseRateContribution',
             align: 'right',
             label: '实际购买率贡献度',
-            sortable: true
+            sortable: 'custom'
           }, {
             prop: 'comparison',
             label: '比上批',
             align: 'right',
-            sortable: true,
+            sortable: 'custom',
             formatter: wholeNumberFormatter
           }, {
             prop: 'synthesisScore',
             label: '综合得分',
             align: 'right',
-            sortable: true
+            sortable: 'custom'
           }]
         }
       },
@@ -1686,7 +1734,8 @@ export default {
             ? 'rear'
             : 'all',
         pageNo: this.ranking.org.currentPage,
-        pageSize: this.ranking.org.pageSize
+        pageSize: this.ranking.org.pageSize,
+        sort: this.ranking.org.tableSort
       }
       this.ranking.org.loading = true
       getOutletRankingList(data).then(res => {
@@ -1709,7 +1758,8 @@ export default {
             ? 'rear'
             : 'all',
         pageNo: this.ranking.people.currentPage,
-        pageSize: this.ranking.people.pageSize
+        pageSize: this.ranking.people.pageSize,
+        sort: this.ranking.people.tableSort
       }
       this.ranking.people.loading = true
       getPeopleRankingList(data).then(res => {
@@ -1729,7 +1779,18 @@ export default {
     // 网点综合排名筛选
     handleOutletRankingChange() {
       this.ranking.org.showPagination = this.ranking.org.scope === '查看全部'
+      this.outletRankingClearSort()
       this.outletRankingGetList()
+    },
+    // 网点综合排名排序
+    handleOutletRankingSortChange({ column, prop, order }) {
+      this.ranking.org.tableSort = order ? { [prop]: order } : {}
+      this.outletRankingGetList()
+    },
+    // 网点综合排名 清除排序
+    outletRankingClearSort() {
+      this.$refs.orgRankingRef && this.$refs.orgRankingRef.clearSort()
+      this.ranking.org.tableSort = {}
     },
     // 网点综合排名翻页换页
     handleOutletRankingCurrentChange(val) {
@@ -1739,7 +1800,18 @@ export default {
     // 人员综合排名筛选
     handlePeopleRankingChange() {
       this.ranking.people.showPagination = this.ranking.people.scope === '查看全部'
+      this.peopleRankingClearSort()
       this.peopleRankingGetList()
+    },
+    // 人员综合排名排序
+    handlePeopleRankingSortChange({ column, prop, order }) {
+      this.ranking.people.tableSort = order ? { [prop]: order } : {}
+      this.peopleRankingGetList()
+    },
+    // 人员综合排名 清除排序
+    peopleRankingClearSort() {
+      this.$refs.peopleRankingRef && this.$refs.peopleRankingRef.clearSort()
+      this.ranking.people.tableSort = {}
     },
     // 人员综合排名翻页换页
     handlePeopleRankingCurrentChange(val) {
@@ -1788,6 +1860,9 @@ export default {
     // 关键指标趋势搜索
     keyIndicatorSearch() {
       this.setKeyIndicatorBatchOpt()
+      this.$refs.chart1Ref && this.$refs.chart1Ref.reset()
+      this.$refs.chart2Ref && this.$refs.chart2Ref.reset()
+      this.$refs.chart3Ref && this.$refs.chart3Ref.reset()
       this.getChart1Data()
       this.getChart2Data()
       this.getChart3Data()
@@ -2131,7 +2206,7 @@ export default {
     margin-bottom: 8px;
 
     .item-box {
-      width: 25%;
+      min-width: 25%;
       display: flex;
       padding: 8px;
 
@@ -2160,22 +2235,9 @@ export default {
         }
         .value {
           display: flex;
-          flex-wrap: wrap;
           align-items: center;
           font-size: 30px;
           margin-top: 15px;
-
-          .success {
-            color: green;
-          }
-
-          .fail {
-            color: red;
-          }
-
-          .overall {
-            color: blue;
-          }
 
           .separator {
             padding: 0 10px;
@@ -2363,5 +2425,21 @@ export default {
     color: #303133;
     font-weight: bold;
   }
+}
+
+.green {
+  color: green;
+}
+
+.red {
+  color: red;
+}
+
+.blue {
+  color: blue;
+}
+
+.grey {
+  color: grey;
 }
 </style>

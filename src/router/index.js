@@ -22,6 +22,9 @@ export const constantRoutes = [
   }
 ]
 
+// 总的角色
+// ['基础', '事件注册', '用例管理', '领导审批', '业务管理', '线索统筹', 'admin', '支行普通员工', '支行业务管理', '支行用例管理', '支行审批岗']
+
 let asyncRoutes = [
   {
     path: '/',
@@ -40,7 +43,7 @@ let asyncRoutes = [
         name: 'UseCase',
         component: () => import(/* webpackChunkName: "useCase" */ '@/views/useCase/index'),
         meta: {
-          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批', '事件注册']
+          title: '用例库', icon: 'useCase', roles: ['用例管理', '线索统筹', '领导审批', '事件注册', '支行用例管理', '支行审批岗']
         }
       },
       {
@@ -64,7 +67,7 @@ let asyncRoutes = [
         path: 'eventBoard',
         name: 'EventBoard',
         component: () => import(/* webpackChunkName: "eventBoard" */ '@/views/eventBoard/index'),
-        meta: { title: '事件列表', icon: 'eventList' }
+        meta: { title: '事件列表', icon: 'eventList', roles: ['基础', '事件注册', '用例管理', '领导审批', '业务管理', '线索统筹', 'admin', '支行用例管理', '支行审批岗'] }
       },
       {
         // 事件详情
@@ -78,21 +81,21 @@ let asyncRoutes = [
         path: 'product',
         name: 'Product',
         component: () => import(/* webpackChunkName: "product" */ '@/views/product/index'),
-        meta: { title: '产品库', icon: 'product', roles: ['事件注册', '用例管理'] }
+        meta: { title: '产品库', icon: 'product', roles: ['事件注册', '用例管理', '支行用例管理'] }
       },
       {
         // 话术库
         path: 'word',
         name: 'Word',
         component: () => import(/* webpackChunkName: "word" */ '@/views/word/index'),
-        meta: { title: '话术库', icon: 'chat', roles: ['事件注册', '用例管理'] }
+        meta: { title: '话术库', icon: 'chat', roles: ['事件注册', '用例管理', '支行用例管理'] }
       },
       {
         // 权益库
         path: 'interest',
         name: 'Interest',
         component: () => import(/* webpackChunkName: "interest" */ '@/views/interest/index'),
-        meta: { title: '权益库', icon: 'interest', roles: ['事件注册', '用例管理'] }
+        meta: { title: '权益库', icon: 'interest', roles: ['事件注册', '用例管理', '支行用例管理'] }
       },
       {
         // 短信库
@@ -120,13 +123,14 @@ let asyncRoutes = [
         path: 'totalBoard',
         name: 'TotalBoard',
         component: () => import(/* webpackChunkName: "totalBoard" */ '@/views/totalBoard/index'),
+        // meta: { title: '成效看板', icon: 'board', roles: ['支行业务管理', '支行用例管理', '支行审批岗', '支行普通员工'] }
         meta: { title: '成效看板', icon: 'board' }
       },
       {
         path: 'crmAndOds',
         name: 'CrmAndOds',
         component: () => import(/* webpackChunkName: "crmAndOds" */ '@/views/crmAndOds/index'),
-        meta: { title: '线索执行记录查询', icon: 'crmAndOds' }
+        meta: { title: '线索执行记录查询', icon: 'crmAndOds', roles: ['基础', '事件注册', '用例管理', '领导审批', '业务管理', '线索统筹', 'admin', '支行业务管理', '支行用例管理', '支行审批岗'] }
       },
       {
         // 督导看板
@@ -140,7 +144,7 @@ let asyncRoutes = [
         path: 'config',
         name: 'Config',
         component: () => import(/* webpackChunkName: "config" */ '@/views/config/index'),
-        meta: { title: '系统配置', icon: 'config', roles: ['线索统筹', '业务管理', '支行业务管理', '用例管理'] }
+        meta: { title: '系统配置', icon: 'config', roles: ['线索统筹', '业务管理', '用例管理', '支行业务管理'] }
       }
     ]
   },

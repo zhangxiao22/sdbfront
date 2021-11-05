@@ -16,11 +16,18 @@ export default {
     data: {
       type: Array,
       default() { return [] }
+    },
+    filter: {
+      type: String,
+      required: true
     }
   },
   watch: {
     data() {
       this.chart.changeData(this.data)
+    },
+    filter() {
+      this.reset()
     }
   },
   mounted() {
@@ -92,6 +99,10 @@ export default {
         ]
       })
       this.chart.render()
+    },
+    reset() {
+      this.chart?.destroy()
+      this.render()
     }
   }
 }
