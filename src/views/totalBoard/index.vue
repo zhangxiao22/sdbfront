@@ -1010,7 +1010,8 @@ export default {
     changeRateData() {
       // 折线图
       this.lineChartData_crm = {}
-      if ((this.rateFilter.activeName === 'crm' && this.rateFilter.rateType === 'finishedRate') || this.rateFilter.activeName === 'sms') {
+      // if ((this.rateFilter.activeName === 'crm' && this.rateFilter.rateType === 'finishedRate') || this.rateFilter.activeName === 'sms') {
+      if (this.rateFilter.activeName === 'false') {
         const data = []
         const _data = this.lineChartData_crm_origin.find(n => {
           return this.rateFilter.rateType === n.key
