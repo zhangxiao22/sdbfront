@@ -640,6 +640,7 @@
               </el-tooltip>
             </div>
             <LineChart id="chart-1"
+                       ref="chart1Ref"
                        v-loading="keyIndicator.chart1Loading"
                        class="content chart"
                        :data="realChart1Data"
@@ -683,6 +684,7 @@
               </el-tooltip>
             </div>
             <BarChart id="chart-2"
+                      ref="chart2Ref"
                       v-loading="keyIndicator.chart2Loading"
                       class="content chart"
                       :data="realChart2Data"
@@ -722,6 +724,7 @@
               </el-tooltip>
             </div>
             <StackDodgeBarChart id="chart-3"
+                                ref="chart3Ref"
                                 v-loading="keyIndicator.chart3Loading"
                                 class="content chart"
                                 :data="realChart3Data"
