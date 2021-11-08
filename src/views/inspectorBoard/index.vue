@@ -1082,7 +1082,8 @@
             <el-table-column prop="count"
                              label="线索数量(条)"
                              align="right"
-                             sortable />
+                             sortable
+                             :formatter="wholeNumberFormatter" />
             <el-table-column label="实际购买率与比上批(%)"
                              align="center">
               <el-table-column prop="purchaseRate"
