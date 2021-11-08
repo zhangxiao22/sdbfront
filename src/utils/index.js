@@ -2,6 +2,38 @@ import qs from 'qs'
 
 export const MAX_NUMBER = 1e14
 
+// for el-table-column 百分比保留两位小数
+export const percentFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return (+cellValue * 100).toFixed(2) + '%'
+}
+
+// for el-table-column 万元保留两位小数
+export const tenThousandFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return Number((+cellValue / 10000).toFixed(2)).toLocaleString()
+}
+
+// for el-table-column 万元整数
+export const tenThousandWholeNumberFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return (Math.round(+cellValue / 10000)).toLocaleString()
+}
+
+// for el-table-column 整数保留两位小数
+export const wholeNumberFormatter = (row, column, cellValue, index) => {
+  if (!cellValue && cellValue !== 0) {
+    return ''
+  }
+  return cellValue.toLocaleString()
+}
+
 export function formatMoney(val) {
   return `${val}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
 }

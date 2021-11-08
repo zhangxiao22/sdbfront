@@ -85,19 +85,26 @@
           <el-table-column :key="index"
                            :show-overflow-tooltip="!item.notShowOverflowTooltip"
                            :sortable="item.sortable"
+                           :formatter="item.formatter"
                            :prop="item.prop"
                            :column-key="item.columnKey"
                            :filters="item.filters"
                            :label="item.label"
                            :width="item.width"
                            :fixed="item.fixed"
-                           :min-width="item.minWidth">
+                           :min-width="item.minWidth"
+                           :align="item.align">
+            <template #header>
+              <slot v-if="item.headerSlot"
+                    :name="`${item.prop}HeaderSlot`" />
+              <template v-else>{{ item.label }}</template>
+            </template>
             <template slot-scope="scope">
               <slot v-if="item.slot"
                     :name="`${item.prop}Slot`"
                     :row="scope.row" />
               <!-- <template v-if="item.slot">{{ item.filteredValue }}</template> -->
-              <template v-else>{{ translate(scope.row,item.prop) }}</template>
+              <template v-else>{{ translate(scope.row,item) }}</template>
             </template>
           </el-table-column>
         </template>
@@ -216,6 +223,7 @@ export default {
     // displayData() {
     //   return this.tableData.slice((this.currentPage - 1) * this.pageSize, this.currentPage * this.pageSize)
     // }
+
   },
   watch: {
     tableData() {
@@ -233,9 +241,9 @@ export default {
     clearFilter() {
       this.$refs.table.clearFilter()
     },
-    translate(obj, paramPropStr) {
+    translate(obj, { prop, formatter }) {
       let val = obj
-      const arr = paramPropStr.split('.')
+      const arr = prop.split('.')
       for (let i = 0; i < arr.length; i++) {
         if (val) {
           val = val[arr[i]]
@@ -245,9 +253,9 @@ export default {
         }
       }
       // paramPropStr.split('.').forEach(n => {
-
       // })
-      return val
+      // formatter({row, column, cellValue, index})
+      return formatter && formatter(null, null, val, null) || val
     },
     // 能否选择
     selectable(row, index) {
@@ -354,6 +362,10 @@ export default {
     },
     getVal() {
       return this.selection
+    },
+    // 清除排序
+    clearSort() {
+      this.$refs.table.clearSort()
     }
   }
 }
