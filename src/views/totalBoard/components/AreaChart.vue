@@ -61,6 +61,9 @@ export default {
                 lineDash: [2, 2]
               }
             }
+          },
+          label: {
+            formatter: (v) => v + this.unit
           }
         },
         xField: 'label',
