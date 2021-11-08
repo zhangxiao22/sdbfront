@@ -1,6 +1,5 @@
 import qs from 'qs'
-
-export const MAX_NUMBER = 1e14
+import axios from 'axios'
 
 // for el-table-column 百分比保留两位小数
 export const percentFormatter = (row, column, cellValue, index) => {
@@ -33,6 +32,8 @@ export const wholeNumberFormatter = (row, column, cellValue, index) => {
   }
   return cellValue.toLocaleString()
 }
+
+export const MAX_NUMBER = 1e14
 
 export function formatMoney(val) {
   return `${val}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
@@ -508,6 +509,15 @@ export function param2Obj(url) {
 export function downloadFile(url, params) {
   const openUrl = process.env.VUE_APP_BASE_API + url + '?' + qs.stringify(params)
   window.open(openUrl, '_self')
+}
+
+// post请求下载文件
+export function downloadFilePost(url, data, config) {
+  return axios.post(url, data, {
+    baseURL: process.env.VUE_APP_BASE_API,
+    responseType: 'blob',
+    ...config
+  })
 }
 
 // nb数据转tree
