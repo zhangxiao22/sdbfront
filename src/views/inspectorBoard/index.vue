@@ -153,8 +153,7 @@
                          clearable
                          collapse-tags
                          :props="{multiple: true}"
-                         :show-all-levels="false"
-                         style="width: 280px" />
+                         style="width: 250px" />
           </el-form-item>
           <el-form-item class="filter-item-end">
             <el-button type="primary"
@@ -224,16 +223,13 @@
             <div class="title-box">
               <div class="title">各支行的执行情况</div>
               <div class="filter-box">
-                <el-select v-model="executeStatus.batch"
-                           placeholder="请选择批次"
-                           clearable
-                           class="filter-item"
-                           @change="handleExecuteStatusBatchChange">
-                  <el-option v-for="item of executeStatus.batchOpt"
-                             :key="item"
-                             :label="item"
-                             :value="item" />
-                </el-select>
+                <el-cascader v-model="executeStatus.batch"
+                             placeholder="请选择批次"
+                             :options="executeStatus.batchOpt"
+                             clearable
+                             class="filter-item"
+                             style="width: 250px;"
+                             @change="handleExecuteStatusBatchChange" />
               </div>
             </div>
             <el-tooltip content="下载为Excel"
@@ -590,15 +586,14 @@
             </el-form-item>
             <el-form-item label="批次："
                           prop="batch">
-              <el-cascader ref="keyIndicatorBatchRef"
+              <!-- <el-cascader ref="keyIndicatorBatchRef"
                            v-model="keyIndicator.filterForm.batch"
                            placeholder="请选择批次"
                            :options="childBatchOpt"
                            clearable
                            collapse-tags
-                           :show-all-levels="false"
                            :props="{multiple: true}"
-                           style="width: 280px;" />
+                           style="width: 280px;" /> -->
             </el-form-item>
             <el-form-item class="top-filter-end">
               <el-button type="primary"
@@ -657,18 +652,15 @@
                     <el-radio-button label="执行率" />
                     <el-radio-button label="联络成功率" />
                   </el-radio-group>
-                  <el-select v-model="keyIndicator.chart2Batch"
-                             placeholder="请选择批次"
-                             class="filter-item"
-                             multiple
-                             clearable
-                             collapse-tags
-                             @change="handleChart2BatchChange">
-                    <el-option v-for="item of keyIndicator.batchOpt"
-                               :key="item"
-                               :label="item"
-                               :value="item" />
-                  </el-select>
+                  <!-- <el-cascader v-model="keyIndicator.chart2Batch"
+                               placeholder="请选择批次"
+                               class="filter-item"
+                               :options="keyIndicator.batchOpt"
+                               clearable
+                               collapse-tags
+                               :props="{multiple: true}"
+                               style="width: 250px;"
+                               @change="handleChart2BatchChange" /> -->
                 </div>
               </div>
               <el-tooltip content="下载为Excel"
@@ -700,15 +692,13 @@
                     <el-radio-button label="意向购买产品" />
                     <el-radio-button label="预约网点见面" />
                   </el-radio-group>
-                  <el-select v-model="keyIndicator.chart3Batch"
-                             placeholder="请选择批次"
-                             class="filter-item"
-                             @change="handleChart3BatchChange">
-                    <el-option v-for="item of keyIndicator.batchOpt"
-                               :key="item"
-                               :label="item"
-                               :value="item" />
-                  </el-select>
+                  <!-- <el-cascader v-model="keyIndicator.chart3Batch"
+                               placeholder="请选择批次"
+                               class="filter-item"
+                               :options="keyIndicator.batchOpt"
+                               clearable
+                               style="width: 250px;"
+                               @change="handleChart3BatchChange" /> -->
                 </div>
               </div>
               <el-tooltip content="下载为Excel"
@@ -753,12 +743,11 @@
             </el-form-item>
             <el-form-item label="批次："
                           prop="batch">
-              <el-cascader v-model="org.filterForm.batch"
+              <!-- <el-cascader v-model="org.filterForm.batch"
                            placeholder="请选择批次"
-                           :show-all-levels="false"
                            :options="childBatchOpt"
                            clearable
-                           style="width: 280px;" />
+                           style="width: 250px;" /> -->
             </el-form-item>
             <el-form-item label="客群类型："
                           prop="customerGroup">
@@ -1322,7 +1311,7 @@ export default {
       executeStatus: {
         loading: false,
         downloadLoading: false,
-        batch: '',
+        batch: [],
         batchOpt: [],
         tableData: []
       },
@@ -1464,7 +1453,7 @@ export default {
         chart2Rate: '实际购买率',
         compareToLastBatchType: '意向购买产品',
         chart2Batch: [],
-        chart3Batch: '',
+        chart3Batch: [],
         // 批次选项
         batchOpt: [],
         chart1DownloadLoading: false,
@@ -1559,7 +1548,7 @@ export default {
       return {
         channel: this.overview.searchForm.channel,
         useCaseIds: this.overview.searchForm.useCase,
-        PC: this.executeStatus.batch
+        PC: this.executeStatus.batch?.[1] || ''
       }
     },
     // 督导数据趋势对比 公共请求字段
@@ -1587,7 +1576,7 @@ export default {
       this.$refs.overviewFilterRef.resetFields()
       this.ranking.org.scope = '前20名'
       this.ranking.people.scope = '前20名'
-      this.executeStatus.batch = ''
+      this.executeStatus.batch = []
       this.overviewSearch()
       this.showExtra = false
     },
@@ -1636,8 +1625,8 @@ export default {
       this.setChildUseCaseOpt()
       this.setChildBatchOpt()
       // executeStatus
-      this.setExecuteStatusBatchOpt()
       this.setExecuteStatusRankingFilters()
+      this.setExecuteStatusBatchOpt()
       this.executeStatusRankingGetList()
       // keyIndicator
       this.setKeyIndicatorFilter()
@@ -1678,34 +1667,39 @@ export default {
     setChildBatchOpt() {
       const nodes = this.$refs.overviewBatchRef?.getCheckedNodes(true)
       if (nodes?.length > 0) {
-        const optionsSet = new Set(nodes.map(m => m.parent))
-        this.childBatchOpt = [...optionsSet].map(m => ({
-          ...m,
-          children: m.children.filter(n => nodes.includes(n))
-        })).map(m => ({
-          ...m.data,
-          children: m.children.map(n => n.data)
+        const pSet = new Set(nodes.map(n => n.parent))
+        pSet.forEach(p => {
+          p.children = nodes.filter(n => new Set(p.children).has(n))
+        })
+        const options = [...pSet].map(n => ({
+          ...n.data,
+          children: n.children.map(m => ({ ...m.data }))
         }))
+        this.childBatchOpt = options
       } else {
         this.childBatchOpt = this.batchOpt
       }
     },
-    // 执行情况的下拉批次选项(单选)
+    // 执行情况的级联批次选项(单选)
     setExecuteStatusBatchOpt() {
       const nodes = this.$refs.overviewBatchRef?.getCheckedNodes(true)
       if (nodes?.length > 0) {
-        this.executeStatus.batchOpt = nodes.map(m => m.value)
-      } else {
-        const options = []
-        this.batchOpt.forEach(m => {
-          m.children.forEach(n => options.push(n.value))
+        const pSet = new Set(nodes.map(n => n.parent))
+        pSet.forEach(p => {
+          p.children = nodes.filter(n => new Set(p.children).has(n))
         })
+        const options = [...pSet].map(n => ({
+          ...n.data,
+          children: n.children.map(m => ({ ...m.data }))
+        }))
         this.executeStatus.batchOpt = options
+      } else {
+        this.executeStatus.batchOpt = this.batchOpt
       }
     },
     // 设置执行情况和综合排行筛选条件
     setExecuteStatusRankingFilters() {
-      this.executeStatus.batch = ''
+      this.executeStatus.batch = []
       this.ranking.org.scope = '前20名'
       this.ranking.people.scope = '前20名'
     },
@@ -1850,7 +1844,7 @@ export default {
       this.keyIndicator.chart2Rate = '实际购买率'
       this.keyIndicator.compareToLastBatchType = '意向购买产品'
       this.keyIndicator.chart2Batch = []
-      this.keyIndicator.chart3Batch = ''
+      this.keyIndicator.chart3Batch = []
     },
     // 关键指标趋势重置
     keyIndicatorReset() {
@@ -1867,17 +1861,18 @@ export default {
       this.getChart2Data()
       this.getChart3Data()
     },
-    // 关键指标趋势的批次选项(非级联)
+    // 关键指标趋势的批次选项
     setKeyIndicatorBatchOpt() {
       const nodes = this.$refs.keyIndicatorBatchRef?.getCheckedNodes(true)
       if (nodes?.length > 0) {
-        this.keyIndicator.batchOpt = nodes.map(m => m.value)
-      } else {
-        const options = []
-        this.childBatchOpt.forEach(m => {
-          m.children.forEach(n => options.push(n.value))
+        const pSet = new Set(nodes.map(n => n.parent))
+        const options = [...pSet].map(n => ({ ...n.data }))
+        Array.from(pSet).forEach((p, i) => {
+          options[i].children = nodes.filter(n => new Set(p.children).has(n)).map(n => ({ ...n.data }))
         })
         this.keyIndicator.batchOpt = options
+      } else {
+        this.keyIndicator.batchOpt = this.childBatchOpt
       }
     },
     // 图1数据 各支行用例关键指标趋势表现
@@ -1894,7 +1889,7 @@ export default {
       this.keyIndicator.chart2Loading = true
       const data = {
         ...this.keyIndicatorGetData,
-        pcList: this.keyIndicator.chart2Batch
+        pcList: this.keyIndicator.chart2Batch.map(n => n[1])
       }
       getOutletExecuteRateList(data).then(res => {
         this.keyIndicator.chart2Data = res.data
@@ -1907,7 +1902,7 @@ export default {
       this.keyIndicator.chart3Loading = true
       const data = {
         ...this.keyIndicatorGetData,
-        PC: this.keyIndicator.chart3Batch
+        PC: this.keyIndicator.chart3Batch?.[1] || ''
       }
       getIntentToBuySuccessRate(data).then(res => {
         this.keyIndicator.chart3Data = res.data
@@ -1927,7 +1922,7 @@ export default {
     setOrgFilter() {
       this.org.filterForm = {
         useCase: this.overview.searchForm.useCase,
-        batch: this.overview.searchForm.batch,
+        batch: [],
         customerGroup: ''
       }
     },
@@ -1940,7 +1935,7 @@ export default {
     orgSearch() {
       const data = {
         useCaseIds: this.org.filterForm.useCase,
-        PC: this.org.filterForm.batch.length > 0 ? this.org.filterForm.batch[1] : '',
+        PC: this.org.filterForm.batch?.[1] || '',
         customerGroup: this.org.filterForm.customerGroup
       }
       // 表1
@@ -2006,7 +2001,10 @@ export default {
         this.batchOpt = res.data.map(n => ({
           label: n.value,
           value: n.value,
-          children: n.childList
+          children: n.childList.map(n => ({
+            ...n,
+            label: `${n.label} ${n.value}`
+          }))
         }))
       })
     },
@@ -2159,14 +2157,12 @@ export default {
     },
     // 用例各支行督导看板 - 下载为excel
     handleOrgDownload() {
-      console.log(this.org.filterForm)
       const data = {
         useCaseIds: this.org.filterForm.useCase,
         PC: this.org.filterForm.batch.length > 0 ? this.org.filterForm.batch[1] : '',
         customerGroup: this.org.filterForm.customerGroup
       }
       this.org.downloadLoading = true
-      console.log(data)
       downloadFilePost('/supervisorSpectaculars/downloadUseCaseSituation', data, {
         headers: {
           userNo: this.user.userId
