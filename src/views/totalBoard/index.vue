@@ -1019,11 +1019,11 @@ export default {
         _data.forEach(n => {
           data.push({
             label: n.label,
-            value: +(n.value * 100),
+            value: +(+(n.value * 100).toFixed(2)),
             category: '执行组'
           }, {
             label: n.label,
-            value: +(n.compare * 100),
+            value: +(+(n.compare * 100).toFixed(2)),
             category: '对照组'
           })
         })
@@ -1039,7 +1039,7 @@ export default {
         _data.forEach(n => {
           data.push({
             label: n.label,
-            value: +(n.value * 100)
+            value: +(+(n.value * 100).toFixed(2))
           })
         })
         this.lineChartData_crm = {
