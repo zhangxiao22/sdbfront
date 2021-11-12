@@ -21,6 +21,10 @@ export default {
     unit: {
       type: String,
       default: ''
+    },
+    average: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -29,19 +33,22 @@ export default {
     }
   },
   computed: {
-    average() {
-      let count = 0
-      this.data.forEach(n => {
-        count += n.value
-      })
-      return (count / this.data.length).toFixed(2)
-    }
+    // average() {
+    //   let count = 0
+    //   this.data.forEach(n => {
+    //     count += n.value
+    //   })
+    //   console.log(123, count)
+    //   return (count / this.data.length).toFixed(2)
+    // }
   },
 
   watch: {
     data() {
       if (this.data.length) {
-        this.chart.changeData(this.data)
+        // this.chart.changeData(this.data)
+        this.chart.destroy()
+        this.render()
       }
     }
   },

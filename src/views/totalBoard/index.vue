@@ -138,11 +138,12 @@
           </div>
           <div v-loading="loading.rateLoading"
                class="chart-box">
-            <DoubleLineChart v-if="lineChartData_crm.type==='double'"
+            <DoubleLineChart v-if="lineChartData_crm.type==='double' && lineChartData_crm.data.length"
                              id="crm-line"
                              :data="lineChartData_crm.data" />
-            <SingleLineChart v-if="lineChartData_crm.type==='single'"
+            <SingleLineChart v-if="lineChartData_crm.type==='single' && lineChartData_crm.data.length"
                              id="crm-line2"
+                             :average="lineChartData_crm.average"
                              :data="lineChartData_crm.data" />
           </div>
         </div>
@@ -1042,9 +1043,17 @@ export default {
             value: +(+(n.value * 100).toFixed(2))
           })
         })
+        let count = 0
+        data.forEach(n => {
+          count += n.value
+        })
+        const average = +JSON.parse(JSON.stringify((count / data.length).toFixed(2)))
+        console.log('average:', average)
+
         this.lineChartData_crm = {
           data,
-          type: 'single'
+          type: 'single',
+          average: average
         }
       }
     },
