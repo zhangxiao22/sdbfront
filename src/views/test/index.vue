@@ -1,33 +1,16 @@
 <template>
   <div class="container">
-    <el-table :data="parseTable(product)"
-              :span-method="objectSpanMethod"
-              border
-              style="width: 100%;margin-bottom:18px;">
-      <el-table-column prop="groupName"
-                       label="组合" />
-      <el-table-column prop="amount1"
-                       min-width="100"
-                       label="综合收益" />
-      <el-table-column prop="productName"
-                       min-width="120"
-                       label="产品名称" />
-      <el-table-column prop="productType"
-                       label="产品类型" />
-      <el-table-column prop="risklLevel"
-                       label="风险等级" />
-      <el-table-column prop="rateOfReturn"
-                       min-width="150"
-                       label="收益率/行业比较基准" />
-      <el-table-column prop="minimumPurchaseAmount"
-                       label="起购金额" />
-      <el-table-column prop="begin_time"
-                       label="起息日" />
-      <el-table-column prop="end_time"
-                       label="到期日" />
-      <el-table-column prop="proportion"
-                       label="比例" />
-    </el-table>
+    <el-cascader ref="ref1"
+                 v-model="value1"
+                 :props="{multiple: true}"
+                 :options="options" />
+
+    <el-cascader ref="ref2"
+                 v-model="value2"
+                 :props="{multiple: true}"
+                 :options="childOptions" />
+
+    <el-button @click="handleClick">CLICK ME</el-button>
   </div>
 </template>
 
@@ -42,75 +25,72 @@ export default {
   },
   data() {
     return {
-      product: {
-        groupName: '组合A',
-        amount1: '3.065-3.385%',
-        list: [
-          {
-            productName: '顺盈2号',
-            productType: '开放式理财',
-            risklLevel: 'R2',
-            rateOfReturn: '2.8-3.2%',
-            minimumPurchaseAmount: '10000',
-            begin_time: 'XXXX',
-            end_time: 'XXXX',
-            proportion: '50%'
-          },
-          {
-            productName: '顺盈3号',
-            productType: '开放式理财',
-            risklLevel: 'R2',
-            rateOfReturn: '2.8-3.2%',
-            minimumPurchaseAmount: '10000',
-            begin_time: 'XXXX',
-            end_time: 'XXXX',
-            proportion: '30%'
-          },
-          {
-            productName: '三年期定期',
-            productType: '存款',
-            risklLevel: '',
-            rateOfReturn: '4.13%',
-            minimumPurchaseAmount: '50',
-            begin_time: 'T',
-            end_time: 'T+3年',
-            proportion: '20%'
-          }
-        ]
-      }
+      value1: [],
+      value2: [],
+      options: [{
+        label: '汉',
+        value: 0,
+        children: [{
+          label: '刘备',
+          value: '刘备'
+        }, {
+          label: '关羽',
+          value: '关羽'
+        }]
+      }, {
+        label: '魏',
+        value: 1,
+        children: [{
+          label: '曹操',
+          value: '曹操'
+        }, {
+          label: '司马懿',
+          value: '司马懿'
+        }]
+      }],
+      childOptions: [{
+        label: '汉',
+        value: 0,
+        children: [{
+          label: '刘备',
+          value: '刘备'
+        }, {
+          label: '关羽',
+          value: '关羽'
+        }]
+      }, {
+        label: '魏',
+        value: 1,
+        children: [{
+          label: '曹操',
+          value: '曹操'
+        }, {
+          label: '司马懿',
+          value: '司马懿'
+        }]
+      }]
     }
   },
   computed: {
   },
   watch: {},
   created() {
-    console.log(this.parseTable(this.product))
   },
   mounted() {
   },
   methods: {
-    parseTable(data) {
-      return data.list.map((n, i) => {
-        return Object.assign({
-          groupName: data.groupName,
-          amount1: data.amount1,
-          total: data.list.length
-        }, n)
-      })
-    },
-    objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      if (column.property === 'groupName' || column.property === 'amount1') {
-        if (rowIndex === 0) {
-          return {
-            rowspan: row.total,
-            colspan: 1
-          }
-        } else {
-          return {
-            rowspan: 0,
-            colspan: 0
-          }
-        }
+    handleClick() {
+      const nodes = this.$refs.ref1.getCheckedNodes(true)
+      if (nodes?.length > 0) {
+        const pSet = new Set(nodes.map(n => n.parent))
+        const options = Array.from(pSet, n => ({ ...n.data }))
+        Array.from(pSet).forEach((p, i) => {
+          options[i].children = nodes.filter(n => new Set(p.children).has(n)).map(n => ({ ...n.data }))
+        })
+        console.log(options)
+        this.childOptions = options
+      } else {
+        this.childOptions = this.options
       }
     }
   }

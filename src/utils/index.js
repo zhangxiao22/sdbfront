@@ -1,6 +1,24 @@
 import qs from 'qs'
 import axios from 'axios'
 
+export const MAX_NUMBER = 1e14
+
+/**
+ * filter tree
+ * @param {Array} data [{label: 'A', value: 'A', children: [{label: 'B', value: 'B'}]}]
+ * @param {Array} list ['B']
+ * @returns {Array}
+ */
+export function filterTreeByValueList(data, list) {
+  return data.filter(item => {
+    if (item.children && item.children.length > 0) {
+      item.children = filterTreeByValueList(item.children, list)
+      return item.children.length > 0
+    }
+    return list.includes(item.value)
+  })
+}
+
 // for el-table-column 百分比保留两位小数
 export const percentFormatter = (row, column, cellValue, index) => {
   if (!cellValue && cellValue !== 0) {
@@ -32,8 +50,6 @@ export const wholeNumberFormatter = (row, column, cellValue, index) => {
   }
   return cellValue.toLocaleString()
 }
-
-export const MAX_NUMBER = 1e14
 
 export function formatMoney(val) {
   return `${val}`.replace(/\d{1,3}(?=(\d{3})+$)/g, (s) => `${s},`)
