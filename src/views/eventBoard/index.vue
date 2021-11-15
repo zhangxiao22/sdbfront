@@ -491,7 +491,9 @@ export default {
   created() {
     // 是否能新建事件
     this.roleJudge.createEvent =
-      this.roles === '事件注册' || this.roles === '用例管理'
+      this.roles === '事件注册' ||
+      this.roles === '用例管理' ||
+      this.roles === '支行用例管理'
     this.roleJudge.downloadCustomer =
       this.roles === '事件注册' ||
       this.roles === '用例管理' ||

@@ -41,7 +41,8 @@ export default {
               img: require('../../assets/home/1-2.png'),
               title: '事件列表',
               path: '/eventBoard',
-              desc: '事件管理人员进行事件的创建、修改、审批、下线'
+              desc: '事件管理人员进行事件的创建、修改、审批、下线',
+              roles: ['基础', '事件注册', '用例管理', '领导审批', '业务管理', '线索统筹', 'admin', '支行用例管理', '支行审批岗']
             },
             {
               img: require('../../assets/home/1-3.png'),
@@ -59,15 +60,14 @@ export default {
               title: '用例库',
               desc: '',
               path: '/useCase',
-              roles: ['用例管理', '线索统筹', '领导审批']
-
+              roles: ['用例管理', '线索统筹', '领导审批', '事件注册', '支行用例管理', '支行审批岗']
             },
             {
               img: require('../../assets/home/2-2.png'),
               title: '产品库',
               desc: '',
               path: '/product',
-              roles: ['事件注册', '用例管理']
+              roles: ['事件注册', '用例管理', '支行用例管理']
 
             },
             {
@@ -75,7 +75,7 @@ export default {
               title: '话术库',
               desc: '',
               path: '/word',
-              roles: ['事件注册', '用例管理']
+              roles: ['事件注册', '用例管理', '支行用例管理']
 
             },
             {
@@ -83,7 +83,7 @@ export default {
               title: '权益库',
               desc: '',
               path: '/interest',
-              roles: ['事件注册', '用例管理']
+              roles: ['事件注册', '用例管理', '支行用例管理']
 
             },
             {
@@ -103,7 +103,7 @@ export default {
               title: '系统设置',
               desc: '',
               path: '/config',
-              roles: ['线索统筹', '业务管理']
+              roles: ['线索统筹', '业务管理', '用例管理', '支行业务管理']
             }
           ]
         }

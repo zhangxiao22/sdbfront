@@ -60,7 +60,7 @@ let asyncRoutes = [
         path: 'createEvent',
         name: 'CreateEvent',
         component: () => import(/* webpackChunkName: "createEvent" */ '@/views/createEvent/index'),
-        meta: { title: '新建营销事件', icon: 'create', roles: ['事件注册', '用例管理'] }
+        meta: { title: '新建营销事件', icon: 'create', roles: ['事件注册', '用例管理', '支行用例管理'] }
       },
       {
         // 事件看板
@@ -136,7 +136,7 @@ let asyncRoutes = [
         path: 'inspectorBoard',
         name: 'InspectorBoard',
         component: () => import(/* webpackChunkName: "inspectorBoard" */ '@/views/inspectorBoard/index'),
-        meta: { title: '督导看板', icon: 'inspector' }
+        meta: { title: '督导看板', icon: 'inspector', roles: ['基础', '事件注册', '用例管理', '领导审批', '业务管理', '线索统筹', 'admin'] }
       },
       {
         // 设置
